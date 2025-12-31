@@ -19,6 +19,7 @@ struct CaptureSheetView: View {
     @State private var rawText: String = ""
     @State private var showingPermissionAlert = false
     @State private var voiceService = VoiceRecordingService()
+    @State private var workflowService: BrainDumpWorkflowService?
     @State private var preRecordingText = ""
 
     var body: some View {
@@ -59,6 +60,14 @@ struct CaptureSheetView: View {
                             .foregroundStyle(.red)
                     }
                 }
+
+                if let errorMessage = workflowService?.errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
             }
             .navigationTitle("Capture")
             .navigationBarTitleDisplayMode(.inline)
@@ -75,7 +84,7 @@ struct CaptureSheetView: View {
                     Button("Save") {
                         saveThought()
                     }
-                    .disabled(rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || workflowService?.isProcessing == true)
                 }
             }
             .alert("Permissions Required", isPresented: $showingPermissionAlert) {
@@ -93,6 +102,11 @@ struct CaptureSheetView: View {
 
                 let separator = preRecordingText.isEmpty || preRecordingText.hasSuffix(" ") ? "" : " "
                 rawText = preRecordingText + separator + newValue
+            }
+            .task {
+                if workflowService == nil {
+                    workflowService = BrainDumpWorkflowService(modelContext: modelContext)
+                }
             }
         }
     }
@@ -123,14 +137,32 @@ struct CaptureSheetView: View {
             voiceService.stopRecording()
         }
 
-        let entry = BrainDumpEntry(
-            rawText: rawText.trimmingCharacters(in: .whitespacesAndNewlines),
-            inputType: voiceService.transcribedText.isEmpty ? .text : .voice,
-            source: .app,
-            lifecycleState: .raw
-        )
-        modelContext.insert(entry)
-        dismiss()
+        guard let workflowService = workflowService else {
+            // Fallback: if service not initialized, create entry directly
+            let entry = BrainDumpEntry(
+                rawText: rawText.trimmingCharacters(in: .whitespacesAndNewlines),
+                inputType: voiceService.transcribedText.isEmpty ? .text : .voice,
+                source: .app,
+                lifecycleState: .raw
+            )
+            modelContext.insert(entry)
+            dismiss()
+            return
+        }
+
+        _Concurrency.Task { @MainActor in
+            do {
+                _ = try await workflowService.captureEntry(
+                    rawText: rawText.trimmingCharacters(in: .whitespacesAndNewlines),
+                    inputType: voiceService.transcribedText.isEmpty ? .text : .voice,
+                    source: .app
+                )
+                dismiss()
+            } catch {
+                // Error is already set in workflowService.errorMessage
+                // Don't dismiss on error so user can see the error message
+            }
+        }
     }
 }
 

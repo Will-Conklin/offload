@@ -47,13 +47,15 @@ The app follows a simple principle:
 - Voice & text capture with on-device transcription
 - Brain dump inbox with lifecycle tracking
 - Event-sourced architecture for AI workflow
-- Core data models and repositories
+- Core data models (13 models) and repositories (10 repositories)
+- Service layer (BrainDumpWorkflowService) with comprehensive tests
+- View integration with service layer
 
 ### 🔄 In Progress
 
-- AI workflow repositories
+- Additional service layer components (HandOffOrchestrationService, SuggestionProcessingService)
 - Organization UI
-- Comprehensive test suite
+- AI integration and backend
 
 ### 📋 Upcoming
 
@@ -71,27 +73,27 @@ See [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for full roadmap.
 graph TB
     subgraph "iOS App (Swift)"
         UI[SwiftUI Views]
-        VM[View State]
+        SVC[Service Layer]
         REPO[Repositories]
         DB[(SwiftData)]
         VOICE[VoiceRecordingService]
 
-        UI --> VM
-        VM --> REPO
+        UI --> SVC
+        SVC --> REPO
         REPO --> DB
         UI --> VOICE
-        VOICE --> DB
     end
 
     subgraph "Future: Backend (Optional)"
         API[API Gateway]
         LLM[LLM Proxy]
 
-        REPO -.->|Phase 3+| API
+        SVC -.->|Phase 2+| API
         API -.-> LLM
     end
 
     style UI fill:#4CAF50
+    style SVC fill:#9C27B0
     style DB fill:#2196F3
     style API fill:#FFC107,stroke-dasharray: 5 5
     style LLM fill:#FFC107,stroke-dasharray: 5 5
@@ -109,40 +111,59 @@ graph LR
         ORGANIZE[OrganizeView]
     end
 
-    subgraph "Domain Layer"
-        THOUGHT[Thought Model]
-        TASK[Task Model]
-        PROJECT[Project Model]
-        TAG[Tag Model]
-        CATEGORY[Category Model]
+    subgraph "Service Layer"
+        WORKFLOW[BrainDumpWorkflowService]
+        VOICE[VoiceRecordingService]
+    end
+
+    subgraph "Repository Layer"
+        BDREPO[BrainDumpRepository]
+        HOREPO[HandOffRepository]
+        SUGREPO[SuggestionRepository]
+        PREPO[PlacementRepository]
+        PLANREPO[PlanRepository]
+        TREPO[TaskRepository]
+    end
+
+    subgraph "Domain Models"
+        BD[BrainDumpEntry]
+        HO[HandOffRequest/Run]
+        SUG[Suggestion]
+        PLAN[Plan]
+        TASK[Task]
     end
 
     subgraph "Data Layer"
-        TREPO[TaskRepository]
-        PREPO[ProjectRepository]
-        VOICE[VoiceRecordingService]
         SWIFTDATA[(SwiftData)]
     end
 
-    INBOX --> THOUGHT
-    CAPTURE --> THOUGHT
+    INBOX --> WORKFLOW
+    CAPTURE --> WORKFLOW
     CAPTURE --> VOICE
-    ORGANIZE --> TASK
-    ORGANIZE --> PROJECT
+    ORGANIZE --> WORKFLOW
 
-    THOUGHT --> TREPO
-    TASK --> TREPO
-    PROJECT --> PREPO
-    TAG --> TREPO
-    CATEGORY --> TREPO
+    WORKFLOW --> BDREPO
+    WORKFLOW --> HOREPO
+    WORKFLOW --> SUGREPO
+    WORKFLOW --> PREPO
 
-    TREPO --> SWIFTDATA
-    PREPO --> SWIFTDATA
-    VOICE --> SWIFTDATA
+    BDREPO --> BD
+    HOREPO --> HO
+    SUGREPO --> SUG
+    PLANREPO --> PLAN
+    TREPO --> TASK
+
+    BD --> SWIFTDATA
+    HO --> SWIFTDATA
+    SUG --> SWIFTDATA
+    PLAN --> SWIFTDATA
+    TASK --> SWIFTDATA
 
     style INBOX fill:#4CAF50
     style CAPTURE fill:#4CAF50
     style ORGANIZE fill:#4CAF50
+    style WORKFLOW fill:#9C27B0
+    style VOICE fill:#9C27B0
     style SWIFTDATA fill:#2196F3
 ```
 
@@ -278,12 +299,14 @@ offload/
 ### Building & Running
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Will-Conklin/offload.git
    cd offload
    ```
 
 2. **Open the Xcode project**
+
    ```bash
    open ios/Offload.xcodeproj
    ```
