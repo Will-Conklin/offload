@@ -158,10 +158,20 @@ final class BrainDumpWorkflowServiceTests: XCTestCase {
         let repository = BrainDumpRepository(modelContext: modelContext)
 
         let rawEntry = BrainDumpEntry(rawText: "Raw", inputType: .text, source: .app, lifecycleState: .raw)
-        let handedOffEntry = BrainDumpEntry(rawText: "Handed off", inputType: .text, source: .app, lifecycleState: .handedOff)
+        let handedOffEntry = BrainDumpEntry(
+            rawText: "Handed off",
+            inputType: .text,
+            source: .app,
+            lifecycleState: .handedOff
+        )
         let readyEntry = BrainDumpEntry(rawText: "Ready", inputType: .text, source: .app, lifecycleState: .ready)
         let placedEntry = BrainDumpEntry(rawText: "Placed", inputType: .text, source: .app, lifecycleState: .placed)
-        let archivedEntry = BrainDumpEntry(rawText: "Archived", inputType: .text, source: .app, lifecycleState: .archived)
+        let archivedEntry = BrainDumpEntry(
+            rawText: "Archived",
+            inputType: .text,
+            source: .app,
+            lifecycleState: .archived
+        )
 
         try repository.create(entry: rawEntry)
         try repository.create(entry: handedOffEntry)
