@@ -23,7 +23,11 @@ An iOS app for adults with ADHD to quickly offload thoughts and organize them la
 
 ## About
 
-Offload helps adults with ADHD externalize thoughts quickly without forcing immediate organization. The app follows a simple principle:
+Offload is an iOS-first app that turns quick “brain dump” captures (text or voice) into simple, organized **plans** and lists—tasks, shopping, and follow-ups—so you can get mental space back.
+
+Most productivity tools assume you’ll calmly plan everything up front. Offload starts where real life starts: random thoughts, urgency spikes, and “I’ll remember” moments. Capture in seconds, then let the app help you sort and clarify what’s next—without making everything feel time-sensitive or turning your life into a project management system.
+
+The app follows a simple principle:
 
 **Capture First, Organize Later (Optionally with AI)**
 
@@ -36,42 +40,26 @@ Offload helps adults with ADHD externalize thoughts quickly without forcing imme
 
 ## Current Status
 
-🚧 **Active Development** - Implementing event-sourced brain dump architecture
+🚧 **Active Development** - Pre-release prototype
 
-### ⚠️ Breaking Changes (Week 2.5)
+### ✅ Implemented
 
-#### Data Model Migration In Progress
-
-The app is transitioning from a simple Task/Project model to an event-sourced brain dump architecture. This is a **breaking change** that requires data migration.
-
-#### What Changed
-
-- Thought → BrainDumpEntry (with lifecycle state tracking)
-- Project → Plan (simplified)
-- Task simplified (importance 1-5, isDone boolean)
-- Added AI workflow tracking (HandOffRequest, Suggestion, etc.)
-
-#### Impact
-
-Existing Week 2 data will be lost. Migration strategy TBD before public beta.
-
-### ✅ Completed Features
-
-- **Week 0 (Phase 0)**: Project scaffolding and domain models
-- **Week 1**: Voice recording with real-time transcription
-- **Week 2**: SwiftData relationships and repository queries
-- **Week 2.5**: Event-sourced brain dump model architecture
+- Voice & text capture with on-device transcription
+- Brain dump inbox with lifecycle tracking
+- Event-sourced architecture for AI workflow
+- Core data models and repositories
 
 ### 🔄 In Progress
 
-- Repository implementation (BrainDump, Plan, Task complete)
-- UI updates for new model
+- AI workflow repositories
+- Organization UI
 - Comprehensive test suite
 
 ### 📋 Upcoming
 
-- **Week 3**: Complete AI workflow repositories and organization UI
-- **Week 4**: AI organization prototype with hand-off flow
+- AI-assisted organization with user approval
+- Manual task/plan organization
+- Advanced features (recurrence, sharing, widgets)
 
 See [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for full roadmap.
 
