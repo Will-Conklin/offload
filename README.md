@@ -44,26 +44,22 @@ The app follows a simple principle:
 
 ### ✅ Implemented
 
-- Voice & text capture with on-device transcription
-- Brain dump inbox with lifecycle tracking
-- Event-sourced architecture for AI workflow
-- Core data models (13 models) and repositories (10 repositories)
-- Service layer (BrainDumpWorkflowService) with comprehensive tests
-- View integration with service layer
+- Brain dump data model (BrainDumpEntry, HandOff*, Suggestion, Placement) stored with SwiftData
+- Destination models for plans, tasks, tags, categories, lists, and communication items
+- Repository layer for all models plus a BrainDumpWorkflowService for capture and inbox operations
+- SwiftUI inbox and capture sheet with voice recording and transcription via `VoiceRecordingService`
 
 ### 🔄 In Progress
 
-- Additional service layer components (HandOffOrchestrationService, SuggestionProcessingService)
-- Organization UI
-- AI integration and backend
+- Organization surfaces for plans, tags, and categories (Organize tab scaffolded)
+- AI hand-off orchestration, suggestion processing, and placement (stubbed in workflow service)
+- Settings and deeper navigation
 
 ### 📋 Upcoming
 
 - AI-assisted organization with user approval
-- Manual task/plan organization
-- Advanced features (recurrence, sharing, widgets)
-
-See [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for full roadmap.
+- Expanded placement targets and manual organization flows
+- Optional backend sync, widgets, and sharing after validation
 
 ## Architecture
 
@@ -169,93 +165,53 @@ graph LR
 
 ## Data Model
 
-### Entity Relationship Diagram
+### Capture & Destination Models
+
+- **Capture + Workflow**: BrainDumpEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision → Placement
+- **Destinations**: Plan/Task, Tag, Category, ListEntity/ListItem, CommunicationItem
+- **Lifecycle States**: raw → handedOff → ready → placed → archived
 
 ```mermaid
-erDiagram
-    Thought ||--o{ Task : "derives"
-    Task }o--|| Project : "belongs to"
-    Task }o--|| Category : "categorized as"
-    Task }o--o{ Tag : "tagged with"
-    Task }o--o{ Task : "blocked by"
-    Project ||--o{ Project : "parent of"
+flowchart LR
+    Entry[BrainDumpEntry\n(raw capture)]
+    Request[HandOffRequest]
+    Run[HandOffRun]
+    Suggestion[Suggestion]
+    Decision[SuggestionDecision]
+    Placement[Placement\n(targetType,targetId)]
+    Destination[Plans / Tasks / Lists / Communication]
 
-    Thought {
-        UUID id PK
-        Date createdAt
-        String source
-        String rawText
-        String status
-    }
-
-    Task {
-        UUID id PK
-        String title
-        String notes
-        Date createdAt
-        Date updatedAt
-        Date completedAt
-        Date dueDate
-        Priority priority
-        TaskStatus status
-    }
-
-    Project {
-        UUID id PK
-        String name
-        String notes
-        String color
-        String icon
-        Date createdAt
-        Date updatedAt
-        Date archivedAt
-    }
-
-    Tag {
-        UUID id PK
-        String name
-        String color
-        Date createdAt
-    }
-
-    Category {
-        UUID id PK
-        String name
-        String icon
-        Date createdAt
-    }
+    Entry --> Request --> Run --> Suggestion --> Decision --> Placement --> Destination
 ```
 
-### Data Flow: Thought Capture to Task
+### Data Flow: Capture to Inbox
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant CaptureView
+    participant CaptureSheet as CaptureSheetView
     participant VoiceService
-    participant Repository
+    participant Workflow as BrainDumpWorkflowService
     participant SwiftData
 
-    User->>CaptureView: Tap microphone
-    CaptureView->>VoiceService: startRecording()
-    VoiceService->>VoiceService: Request permissions
-    VoiceService->>User: Show permission dialog
-    User->>VoiceService: Grant permissions
+    User->>CaptureSheet: Tap microphone
+    CaptureSheet->>VoiceService: startRecording()
+    VoiceService->>User: Request mic + speech permissions
+    VoiceService-->>CaptureSheet: Partial transcription
+    CaptureSheet->>User: Show live text
 
     loop Real-time transcription
         User->>VoiceService: Speak
-        VoiceService->>CaptureView: Update transcribedText
-        CaptureView->>User: Display text
+        VoiceService->>CaptureSheet: Update transcribedText
+        CaptureSheet->>User: Display text
     end
 
-    User->>CaptureView: Tap stop
-    VoiceService->>CaptureView: Final transcription
-    User->>CaptureView: Tap save
-    CaptureView->>Repository: create(thought)
-    Repository->>SwiftData: Insert & save
-    SwiftData->>Repository: Success
-    Repository->>CaptureView: Thought saved
-    CaptureView->>User: Show in Inbox
+    User->>CaptureSheet: Tap save
+    CaptureSheet->>Workflow: captureEntry(rawText,inputType,source)
+    Workflow->>SwiftData: Insert BrainDumpEntry
+    SwiftData-->>Workflow: Persisted
+    Workflow-->>CaptureSheet: Entry saved
+    CaptureSheet-->>User: Entry appears in Inbox
 ```
 
 ## Project Structure
@@ -284,7 +240,8 @@ offload/
 ├── docs/                         # Documentation
 │   ├── prd/                      # Product requirements
 │   ├── decisions/                # Architecture Decision Records
-│   └── VOICE_CAPTURE_TESTING.md
+│   ├── plans/                    # Implementation plans
+│   └── testing/                  # Test guides and results
 └── scripts/                      # Build scripts
 ```
 
@@ -319,57 +276,29 @@ offload/
 
 ### Running Tests
 
-1. Add test files to Xcode project (one-time setup):
-   - Right-click `OffloadTests` folder → "Add Files to 'Offload'..."
-   - Select `TaskRepositoryTests.swift` and `ProjectRepositoryTests.swift`
-   - Ensure "OffloadTests" target is checked
-
-2. Run tests (⌘U)
+Run tests with ⌘U in Xcode. Unit tests use in-memory SwiftData containers so they are isolated and fast; ensure test files are included in the `OffloadTests` target after adding new ones.
 
 ## Features
 
-### ✅ Implemented (Weeks 0-2)
+### ✅ Implemented
 
-#### Thought Capture
-
-- **Text Input**: Quick capture with minimal friction
-- **Voice Recording**: Real-time on-device transcription
-  - Uses iOS Speech framework (offline, iOS 17+)
-  - Live transcription updates as you speak
-  - Editable after transcription
-  - Privacy-first (no cloud processing)
-
-#### Data Management
-
-- **SwiftData Persistence**: All data stored locally
-- **Relationships**: Tasks ↔ Projects, Tags, Categories
-- **Query System**: 15 optimized repository methods
-- **Delete Safety**: Nullify rules prevent data loss
+- **Capture**: Text and voice capture with live transcription using the Speech framework (offline-first)
+- **Inbox**: BrainDumpEntry inbox with lifecycle tracking (raw → archived)
+- **Data Layer**: SwiftData models for brain dump workflow plus destinations (plans, tasks, tags, categories, lists, communication)
+- **Repositories**: CRUD + lifecycle helpers for every model
+- **Workflow Service**: `BrainDumpWorkflowService` for capture, inbox queries, and lifecycle actions
 
 ### 🚧 In Development
 
-#### Manual Organization (Week 3)
+- Manual organization surfaces for plans, tags, and categories
+- AI hand-off orchestration and suggestion processing
+- Settings, deeper navigation, and placement flows
 
-- Task detail editing
-- Project management
-- Category and tag assignment
-- Inbox → Task conversion
+### 📅 Planned
 
-### 📅 Planned (Weeks 4+)
-
-#### AI-Assisted Organization (Phase 3)
-
-- Optional AI suggestions for organizing thoughts
-- Pattern detection (e.g., "call dentist" → Communication)
-- User approval required for all changes
-- Can be completely disabled
-
-#### Advanced Features (Phase 4+)
-
-- Overwhelm detection and gentle nudges
-- Recurring tasks (if validated by user research)
-- Multiple capture sources (clipboard, share extension, widget)
-- Backend sync (optional)
+- AI-assisted organization with explicit user approval
+- Optional backend sync and collaboration features
+- Widgets, share extension, and recurrence (based on validation)
 
 ## Documentation
 
@@ -378,20 +307,20 @@ offload/
 - 📱 [iOS Development Guide](ios/README.md)
 - 📋 [Product Requirements Document](docs/prd/v1.md)
 - 🏗️ [Architecture Decision Records](docs/decisions/)
+- 🧠 [Brain Dump Model Plan](docs/plans/brain-dump-model.md)
 - 📦 [Project Scaffolding Details](ios/SCAFFOLDING.md)
 
 ### Testing & Development
 
-- 🎤 [Voice Capture Testing Guide](docs/VOICE_CAPTURE_TESTING.md)
-- 🧪 Test Coverage: 45+ unit tests for repositories
+- 🎤 [Voice Capture Testing Guide](docs/testing/voice-capture.md)
+- 📊 [Voice Capture Test Results](docs/testing/voice-capture-results.md)
+- 🧪 SwiftData repositories and workflow tests in `ios/OffloadTests`
 
 ### Implementation
 
-- 📅 [30-Day Implementation Plan](~/.claude/plans/reactive-greeting-clover.md)
-- ✅ Week 0: Scaffolding (Complete)
-- ✅ Week 1: Voice Capture (Complete)
-- ✅ Week 2: Data Layer (Complete)
-- 🔄 Week 3: Organization UI (In Progress)
+- ✅ Brain dump data layer and repositories
+- 🔄 Inbox and capture experience
+- 🔄 Organization UI and AI hand-off workflows
 
 ## Tech Stack
 
@@ -413,7 +342,7 @@ offload/
 
 - **Language**: Swift 5.9
 - **Min iOS**: 17.0
-- **Testing**: XCTest
+- **Testing**: XCTest + SwiftData in-memory containers
 - **CI/CD**: GitHub Actions (planned)
 
 See [ADR-0001](docs/decisions/ADR-0001-stack.md) for detailed technical decisions.
