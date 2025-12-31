@@ -36,6 +36,7 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 
 - ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
 - ALWAYS clean up merged branches.
+- ALWAYS label pull requests with appropriate labels (bug, enhancement, documentation, etc.).
 - ALWAYS keep documentation up to date.
 - ALWAYS run markdownlint prior to committing documentation.
 - DO NOT make README a changelog.  While in development, PR history can be used to track changes, release notes will be used after initial v1 release.
