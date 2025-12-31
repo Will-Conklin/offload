@@ -7,7 +7,7 @@
 
 import XCTest
 import SwiftData
-@testable import Offload
+@testable import offload
 
 @MainActor
 final class TaskRepositoryTests: XCTestCase {
