@@ -19,7 +19,7 @@ final class HandOffRequest {
     var mode: String  // Stored as String for SwiftData compatibility
 
     // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \BrainDumpEntry.handOffRequests)
+    @Relationship(deleteRule: .nullify)
     var brainDumpEntry: BrainDumpEntry?
 
     @Relationship(deleteRule: .cascade, inverse: \HandOffRun.handOffRequest)

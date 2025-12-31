@@ -15,7 +15,7 @@ final class ListItem {
     var isChecked: Bool
 
     // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \ListEntity.items)
+    @Relationship(deleteRule: .nullify)
     var list: ListEntity?
 
     init(

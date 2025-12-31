@@ -23,7 +23,7 @@ final class HandOffRun {
     var errorMessage: String?
 
     // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \HandOffRequest.runs)
+    @Relationship(deleteRule: .nullify)
     var handOffRequest: HandOffRequest?
 
     @Relationship(deleteRule: .cascade, inverse: \Suggestion.handOffRun)

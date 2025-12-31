@@ -126,8 +126,8 @@ struct PersistenceController {
             )
             let task2 = Task(
                 title: "Schedule dentist appointment",
-                importance: 3,
-                isDone: true
+                isDone: true,
+                importance: 3
             )
 
             context.insert(task1)
