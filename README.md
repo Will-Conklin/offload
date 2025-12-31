@@ -1,10 +1,20 @@
 # Offload
 
-A productivity app for capturing and processing thoughts on iOS.
+An iOS app for adults with ADHD to quickly offload thoughts and organize them later, optionally with AI.
 
-## Overview
+## Table of Contents
 
-Offload helps you quickly capture thoughts, ideas, and tasks as they occur, then organize them later. Built with SwiftUI and SwiftData for a native iOS experience.
+- [About](#about)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Documentation](#documentation)
+- [Tech Stack](#tech-stack)
+- [Contributing](#contributing)
+- [License](#license)
+
+## About
+
+Offload focuses on externalizing first and organizing later without forcing structure. Thoughts are captured instantly into an Inbox, then optionally organized with AI via a review screen that preserves user control.
 
 ## Project Structure
 
@@ -32,23 +42,7 @@ This is a monorepo containing:
 
 2. Select a simulator or device
 
-3. Build and run (⌘R)
-
-## Features
-
-### Current
-- ✅ Quick thought capture
-- ✅ Inbox view with chronological list
-- ✅ SwiftData persistence
-- ✅ Text-based input
-
-### Planned
-- ⬜ Voice capture
-- ⬜ Thought processing and organization
-- ⬜ Projects and tags
-- ⬜ Search and filtering
-- ⬜ Cloud sync
-- ⬜ Widgets
+3. Build and run (Cmd+R)
 
 ## Documentation
 
