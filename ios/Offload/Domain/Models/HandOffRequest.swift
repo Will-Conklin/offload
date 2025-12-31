@@ -15,8 +15,8 @@ import SwiftData
 final class HandOffRequest {
     var id: UUID
     var requestedAt: Date
-    var requestedBy: String  // Stored as String for SwiftData compatibility
-    var mode: String  // Stored as String for SwiftData compatibility
+    var requestedBy: String // Stored as String for SwiftData compatibility
+    var mode: String // Stored as String for SwiftData compatibility
 
     // Relationships
     @Relationship(deleteRule: .nullify)
@@ -56,14 +56,14 @@ final class HandOffRequest {
 // MARK: - RequestSource Enum
 
 enum RequestSource: String, Codable, CaseIterable {
-    case user = "user"
-    case auto = "auto"
-    case scheduled = "scheduled"
+    case user
+    case auto
+    case scheduled
 }
 
 // MARK: - HandOffMode Enum
 
 enum HandOffMode: String, Codable, CaseIterable {
-    case manual = "manual"
-    case auto = "auto"
+    case manual
+    case auto
 }

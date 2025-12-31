@@ -67,7 +67,7 @@ final class PlanRepository {
         let descriptor = FetchDescriptor<Plan>(
             predicate: #Predicate { plan in
                 plan.title.contains(query) ||
-                (plan.detail?.contains(query) ?? false)
+                    (plan.detail?.contains(query) ?? false)
             },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
@@ -76,7 +76,7 @@ final class PlanRepository {
 
     // MARK: - Update
 
-    func update(plan: Plan) throws {
+    func update(plan _: Plan) throws {
         try modelContext.save()
     }
 

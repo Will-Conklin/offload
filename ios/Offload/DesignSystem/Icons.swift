@@ -1,14 +1,7 @@
-//
-//  Icons.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
 import SwiftUI
 
 /// Centralized icon definitions using SF Symbols
-struct Icons {
+enum Icons {
     // MARK: - Navigation
 
     static let inbox = "tray"

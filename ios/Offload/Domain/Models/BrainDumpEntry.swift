@@ -17,9 +17,9 @@ final class BrainDumpEntry {
     var id: UUID
     var createdAt: Date
     var rawText: String
-    var inputType: String  // Stored as String for SwiftData compatibility
-    var source: String     // Stored as String for SwiftData compatibility
-    var lifecycleState: String  // Stored as String for SwiftData compatibility
+    var inputType: String // Stored as String for SwiftData compatibility
+    var source: String // Stored as String for SwiftData compatibility
+    var lifecycleState: String // Stored as String for SwiftData compatibility
     var acceptedSuggestionId: UUID?
 
     // Relationships
@@ -66,25 +66,25 @@ final class BrainDumpEntry {
 // MARK: - InputType Enum
 
 enum InputType: String, Codable, CaseIterable {
-    case text = "text"
-    case voice = "voice"
+    case text
+    case voice
 }
 
 // MARK: - CaptureSource Enum
 
 enum CaptureSource: String, Codable, CaseIterable {
-    case app = "app"
-    case shortcut = "shortcut"
-    case shareSheet = "shareSheet"
-    case widget = "widget"
+    case app
+    case shortcut
+    case shareSheet
+    case widget
 }
 
 // MARK: - LifecycleState Enum
 
 enum LifecycleState: String, Codable, CaseIterable {
-    case raw = "raw"
-    case handedOff = "handedOff"
-    case ready = "ready"
-    case placed = "placed"
-    case archived = "archived"
+    case raw
+    case handedOff
+    case ready
+    case placed
+    case archived
 }

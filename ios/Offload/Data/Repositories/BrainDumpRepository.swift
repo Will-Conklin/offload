@@ -81,7 +81,7 @@ final class BrainDumpRepository {
 
     // MARK: - Update
 
-    func update(entry: BrainDumpEntry) throws {
+    func update(entry _: BrainDumpEntry) throws {
         try modelContext.save()
     }
 

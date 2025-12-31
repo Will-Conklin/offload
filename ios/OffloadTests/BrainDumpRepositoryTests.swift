@@ -1,13 +1,6 @@
-//
-//  BrainDumpRepositoryTests.swift
-//  OffloadTests
-//
-//  Created by Claude Code on 12/31/25.
-//
-
-import XCTest
-import SwiftData
 @testable import offload
+import SwiftData
+import XCTest
 
 @MainActor
 final class BrainDumpRepositoryTests: XCTestCase {
@@ -29,7 +22,7 @@ final class BrainDumpRepositoryTests: XCTestCase {
             Category.self,
             ListEntity.self,
             ListItem.self,
-            CommunicationItem.self,
+            CommunicationItem.self
         ])
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         modelContainer = try ModelContainer(for: schema, configurations: [configuration])

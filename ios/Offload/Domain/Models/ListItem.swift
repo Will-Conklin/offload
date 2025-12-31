@@ -1,10 +1,3 @@
-//
-//  ListItem.swift
-//  Offload
-//
-//  Created by Claude Code on 12/31/25.
-//
-
 import Foundation
 import SwiftData
 

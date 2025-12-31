@@ -8,8 +8,8 @@
 //  Minimizes friction - saves to inbox immediately, no forced organization.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 import UIKit
 
 struct CaptureSheetView: View {
@@ -27,7 +27,7 @@ struct CaptureSheetView: View {
                 Section("Quick Capture") {
                     HStack(alignment: .top, spacing: 12) {
                         TextField("What's on your mind?", text: $rawText, axis: .vertical)
-                            .lineLimit(3...10)
+                            .lineLimit(3 ... 10)
 
                         VStack(spacing: 8) {
                             Button(action: handleVoiceButtonTap) {

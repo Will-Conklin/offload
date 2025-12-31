@@ -18,7 +18,7 @@ final class Task {
     var detail: String?
     var createdAt: Date
     var isDone: Bool
-    var importance: Int  // 1-5 scale
+    var importance: Int // 1-5 scale
     var dueDate: Date?
 
     // Relationships
@@ -47,7 +47,7 @@ final class Task {
         self.detail = detail
         self.createdAt = createdAt
         self.isDone = isDone
-        self.importance = min(max(importance, 1), 5)  // Clamp between 1-5
+        self.importance = min(max(importance, 1), 5) // Clamp between 1-5
         self.dueDate = dueDate
         self.plan = plan
         self.category = category

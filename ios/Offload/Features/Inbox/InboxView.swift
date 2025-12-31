@@ -8,8 +8,8 @@
 //  Displays lifecycle state and input type with minimal UI friction.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct InboxView: View {
     @Environment(\.modelContext) private var modelContext

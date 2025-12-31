@@ -15,8 +15,8 @@ import SwiftData
 final class Placement {
     var id: UUID
     var placedAt: Date
-    var targetType: String  // Stored as String for SwiftData compatibility
-    var targetId: UUID  // UUID reference to target entity
+    var targetType: String // Stored as String for SwiftData compatibility
+    var targetId: UUID // UUID reference to target entity
     var sourceSuggestionId: UUID
     var notes: String?
 
@@ -49,9 +49,9 @@ final class Placement {
 // MARK: - PlacementTargetType Enum
 
 enum PlacementTargetType: String, Codable, CaseIterable {
-    case plan = "plan"
-    case task = "task"
-    case list = "list"
-    case listItem = "listItem"
-    case communication = "communication"
+    case plan
+    case task
+    case list
+    case listItem
+    case communication
 }

@@ -12,8 +12,7 @@ import Foundation
 import SwiftData
 
 /// Simplified persistence controller for all SwiftData models
-struct PersistenceController {
-
+enum PersistenceController {
     /// Shared persistent container for production use
     static let shared: ModelContainer = {
         let schema = Schema([
@@ -31,7 +30,7 @@ struct PersistenceController {
             Category.self,
             ListEntity.self,
             ListItem.self,
-            CommunicationItem.self,
+            CommunicationItem.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -65,7 +64,7 @@ struct PersistenceController {
             Category.self,
             ListEntity.self,
             ListItem.self,
-            CommunicationItem.self,
+            CommunicationItem.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -103,7 +102,7 @@ struct PersistenceController {
                     inputType: .voice,
                     source: .widget,
                     lifecycleState: .ready
-                ),
+                )
             ]
 
             for entry in sampleEntries {

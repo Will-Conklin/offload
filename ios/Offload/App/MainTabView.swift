@@ -1,12 +1,5 @@
-//
-//  MainTabView.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .inbox

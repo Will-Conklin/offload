@@ -1,10 +1,3 @@
-//
-//  SwiftDataManager.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
 import Foundation
 import SwiftData
 
@@ -35,7 +28,7 @@ final class SwiftDataManager {
             Category.self,
             ListEntity.self,
             ListItem.self,
-            CommunicationItem.self,
+            CommunicationItem.self
         ])
 
         let modelConfiguration = ModelConfiguration(

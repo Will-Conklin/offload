@@ -1,12 +1,5 @@
-//
-//  ContentView.swift
-//  offload
-//
-//  Created by William Conklin on 12/30/25.
-//
-
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// Legacy demo view - kept for reference
 /// Use InboxView for the actual app

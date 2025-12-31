@@ -1,14 +1,7 @@
-//
-//  Theme.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
 import SwiftUI
 
 /// App-wide theme configuration
-struct Theme {
+enum Theme {
     // MARK: - Colors
 
     struct Colors {
@@ -31,7 +24,7 @@ struct Theme {
 
     // MARK: - Spacing
 
-    struct Spacing {
+    enum Spacing {
         static let xs: CGFloat = 4
         static let sm: CGFloat = 8
         static let md: CGFloat = 16
@@ -44,7 +37,7 @@ struct Theme {
 
     // MARK: - Corner Radius
 
-    struct CornerRadius {
+    enum CornerRadius {
         static let sm: CGFloat = 4
         static let md: CGFloat = 8
         static let lg: CGFloat = 12

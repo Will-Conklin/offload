@@ -1,12 +1,5 @@
-//
-//  CaptureView.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// Legacy placeholder capture view
 /// Use CaptureSheetView for the actual app (supports voice + text)
@@ -25,7 +18,7 @@ struct CaptureView: View {
                         .font(.headline)
 
                     TextField("Notes (optional)", text: $notes, axis: .vertical)
-                        .lineLimit(5...10)
+                        .lineLimit(5 ... 10)
                 }
 
                 // TODO: Add capture type selection (task, note, idea, etc.)
