@@ -1,0 +1,207 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  ios-build-and-test:
+    name: iOS Build & Test
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Cache derived data
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('ios/Offload.xcodeproj/project.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Install SwiftFormat
+        run: brew install swiftformat
+
+      - name: Run SwiftFormat check
+        working-directory: ios
+        run: |
+          swiftformat --lint .
+          if [ $? -ne 0 ]; then
+            echo "❌ SwiftFormat check failed. Run 'swiftformat .' to fix formatting issues."
+            exit 1
+          fi
+
+      - name: Run SwiftLint
+        working-directory: ios
+        run: |
+          swiftlint --strict
+          if [ $? -ne 0 ]; then
+            echo "❌ SwiftLint check failed. Fix linting issues before committing."
+            exit 1
+          fi
+
+      - name: Build iOS app
+        working-directory: ios
+        run: |
+          xcodebuild clean build \
+            -project Offload.xcodeproj \
+            -scheme Offload \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Run unit tests with coverage
+        working-directory: ios
+        run: |
+          xcodebuild test \
+            -project Offload.xcodeproj \
+            -scheme Offload \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Generate coverage report
+        working-directory: ios
+        run: |
+          xcrun xccov view --report TestResults.xcresult > coverage.txt
+          cat coverage.txt
+
+      - name: Check coverage threshold
+        working-directory: ios
+        run: |
+          chmod +x ../scripts/ios/check_coverage.sh
+          ../scripts/ios/check_coverage.sh coverage.txt 50
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: ios/TestResults.xcresult
+          retention-days: 7
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-coverage-report
+          path: ios/coverage.txt
+          retention-days: 30
+
+  docs-lint:
+    name: Documentation Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+
+      - name: Run markdownlint
+        run: |
+          markdownlint '**/*.md' --ignore node_modules --ignore .github
+          if [ $? -ne 0 ]; then
+            echo "❌ Markdown linting failed. Fix formatting issues in .md files."
+            exit 1
+          fi
+
+  backend-check:
+    name: Backend Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for Python files
+        id: check-python
+        run: |
+          if [ -f "backend/pyproject.toml" ] && [ -n "$(find backend -name '*.py' -type f)" ]; then
+            echo "has_python=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_python=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Python
+        if: steps.check-python.outputs.has_python == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        if: steps.check-python.outputs.has_python == 'true'
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Cache uv dependencies
+        if: steps.check-python.outputs.has_python == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('backend/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+
+      - name: Install dependencies
+        if: steps.check-python.outputs.has_python == 'true'
+        working-directory: backend
+        run: uv pip install -e ".[dev]"
+
+      - name: Run ruff format check
+        if: steps.check-python.outputs.has_python == 'true'
+        working-directory: backend
+        run: uv run ruff format --check .
+
+      - name: Run ruff lint
+        if: steps.check-python.outputs.has_python == 'true'
+        working-directory: backend
+        run: uv run ruff check .
+
+      - name: Run tests with coverage
+        if: steps.check-python.outputs.has_python == 'true'
+        working-directory: backend
+        run: uv run pytest --cov --cov-report=html --cov-report=term --cov-fail-under=50
+
+      - name: Upload coverage report
+        if: steps.check-python.outputs.has_python == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/htmlcov
+          retention-days: 30
+
+      - name: Skip backend checks
+        if: steps.check-python.outputs.has_python == 'false'
+        run: echo "ℹ️ Skipping backend checks - no Python implementation found"

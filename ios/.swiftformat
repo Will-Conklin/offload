@@ -1,0 +1,28 @@
+# SwiftFormat Configuration for Offload iOS
+
+# Format options
+--indent 4
+--indentcase false
+--trimwhitespace always
+--wraparguments before-first
+--wrapcollections before-first
+--maxwidth 120
+--tabwidth 4
+--semicolons never
+--commas inline
+
+# Enabled rules
+--enable isEmpty
+--enable sortedImports
+--enable blankLinesAtStartOfScope
+--enable blankLinesAtEndOfScope
+--enable blankLinesBetweenScopes
+
+# Disabled rules
+--disable redundantSelf # SwiftUI often needs explicit self
+
+# File options
+--exclude Offload/Resources,DerivedData,.build,OffloadUITests
+
+# Header options
+--header strip

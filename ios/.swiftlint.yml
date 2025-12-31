@@ -1,0 +1,78 @@
+# SwiftLint Configuration for Offload iOS
+
+# Paths to include/exclude
+included:
+  - Offload
+  - OffloadTests
+
+excluded:
+  - Offload/Resources
+  - OffloadUITests
+  - DerivedData
+  - .build
+
+# Disabled rules
+disabled_rules:
+  - todo # Allow TODO comments during development
+  - trailing_whitespace # Let SwiftFormat handle this
+
+# Opt-in rules
+opt_in_rules:
+  - empty_count # Prefer isEmpty over count == 0
+  - explicit_init # Prefer T.init() over T()
+  - first_where # Prefer first(where:) over filter.first
+  - contains_over_first_not_nil # Prefer contains over first != nil
+  - sorted_first_last # Prefer min/max over sorted().first
+  - force_unwrapping # Warn on force unwraps
+  - implicitly_unwrapped_optional # Warn on implicitly unwrapped optionals
+
+# Rule configurations
+line_length:
+  warning: 120
+  error: 150
+  ignores_comments: true
+  ignores_urls: true
+
+file_length:
+  warning: 500
+  error: 1000
+
+function_body_length:
+  warning: 50
+  error: 100
+
+type_body_length:
+  warning: 300
+  error: 500
+
+identifier_name:
+  min_length:
+    warning: 2
+    error: 1
+  max_length:
+    warning: 50
+    error: 60
+  allowed_symbols: ['_']
+  validates_start_with_lowercase: true
+
+type_name:
+  min_length: 3
+  max_length: 50
+
+cyclomatic_complexity:
+  warning: 10
+  error: 20
+
+nesting:
+  type_level:
+    warning: 2
+  statement_level:
+    warning: 5
+
+# Custom rules for project conventions
+custom_rules:
+  no_print:
+    name: "No Print Statements"
+    regex: '(?<!// )print\('
+    message: "Use proper logging instead of print()"
+    severity: warning
