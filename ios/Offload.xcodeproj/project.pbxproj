@@ -30,19 +30,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		34B95EC52F04D56F0005166B /* offload */ = {
+		34B95EC52F04D56F0005166B /* Offload */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = offload;
+			path = Offload;
 			sourceTree = "<group>";
 		};
-		34B95ED52F04D5710005166B /* offloadTests */ = {
+		34B95ED52F04D5710005166B /* OffloadTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = offloadTests;
+			path = OffloadTests;
 			sourceTree = "<group>";
 		};
-		34B95EDF2F04D5710005166B /* offloadUITests */ = {
+		34B95EDF2F04D5710005166B /* OffloadUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = offloadUITests;
+			path = OffloadUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		34B95EBA2F04D56F0005166B = {
 			isa = PBXGroup;
 			children = (
-				34B95EC52F04D56F0005166B /* offload */,
-				34B95ED52F04D5710005166B /* offloadTests */,
-				34B95EDF2F04D5710005166B /* offloadUITests */,
+				34B95EC52F04D56F0005166B /* Offload */,
+				34B95ED52F04D5710005166B /* OffloadTests */,
+				34B95EDF2F04D5710005166B /* OffloadUITests */,
 				34B95EC42F04D56F0005166B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,7 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				34B95EC52F04D56F0005166B /* offload */,
+				34B95EC52F04D56F0005166B /* Offload */,
 			);
 			name = offload;
 			packageProductDependencies = (
@@ -131,7 +131,7 @@
 				34B95ED42F04D5710005166B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				34B95ED52F04D5710005166B /* offloadTests */,
+				34B95ED52F04D5710005166B /* OffloadTests */,
 			);
 			name = offloadTests;
 			packageProductDependencies = (
@@ -154,7 +154,7 @@
 				34B95EDE2F04D5710005166B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				34B95EDF2F04D5710005166B /* offloadUITests */,
+				34B95EDF2F04D5710005166B /* OffloadUITests */,
 			);
 			name = offloadUITests;
 			packageProductDependencies = (
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 34B95EBE2F04D56F0005166B /* Build configuration list for PBXProject "offload" */;
+			buildConfigurationList = 34B95EBE2F04D56F0005166B /* Build configuration list for PBXProject "Offload" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -541,7 +541,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		34B95EBE2F04D56F0005166B /* Build configuration list for PBXProject "offload" */ = {
+		34B95EBE2F04D56F0005166B /* Build configuration list for PBXProject "Offload" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				34B95EE42F04D5710005166B /* Debug */,
