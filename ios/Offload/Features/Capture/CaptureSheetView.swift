@@ -116,12 +116,13 @@ struct CaptureSheetView: View {
             voiceService.stopRecording()
         }
 
-        let thought = Thought(
-            source: voiceService.transcribedText.isEmpty ? .text : .voice,
+        let entry = BrainDumpEntry(
             rawText: rawText.trimmingCharacters(in: .whitespacesAndNewlines),
-            status: .inbox
+            inputType: voiceService.transcribedText.isEmpty ? .text : .voice,
+            source: .app,
+            lifecycleState: .raw
         )
-        modelContext.insert(thought)
+        modelContext.insert(entry)
         dismiss()
     }
 }

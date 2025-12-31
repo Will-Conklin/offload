@@ -36,23 +36,42 @@ Offload helps adults with ADHD externalize thoughts quickly without forcing imme
 
 ## Current Status
 
-🚧 **Active Development** - Week 2 of 30-day implementation plan
+🚧 **Active Development** - Implementing event-sourced brain dump architecture
+
+### ⚠️ Breaking Changes (Week 2.5)
+
+#### Data Model Migration In Progress
+
+The app is transitioning from a simple Task/Project model to an event-sourced brain dump architecture. This is a **breaking change** that requires data migration.
+
+#### What Changed
+
+- Thought → BrainDumpEntry (with lifecycle state tracking)
+- Project → Plan (simplified)
+- Task simplified (importance 1-5, isDone boolean)
+- Added AI workflow tracking (HandOffRequest, Suggestion, etc.)
+
+#### Impact
+
+Existing Week 2 data will be lost. Migration strategy TBD before public beta.
 
 ### ✅ Completed Features
 
 - **Week 0 (Phase 0)**: Project scaffolding and domain models
 - **Week 1**: Voice recording with real-time transcription
 - **Week 2**: SwiftData relationships and repository queries
+- **Week 2.5**: Event-sourced brain dump model architecture
 
 ### 🔄 In Progress
 
-- Voice capture testing on physical device (Day 3 checkpoint)
-- Unit test integration with Xcode
+- Repository implementation (BrainDump, Plan, Task complete)
+- UI updates for new model
+- Comprehensive test suite
 
 ### 📋 Upcoming
 
-- **Week 3**: Manual organization UI (OrganizeView, TaskDetailView)
-- **Week 4**: AI organization prototype
+- **Week 3**: Complete AI workflow repositories and organization UI
+- **Week 4**: AI organization prototype with hand-off flow
 
 See [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) for full roadmap.
 

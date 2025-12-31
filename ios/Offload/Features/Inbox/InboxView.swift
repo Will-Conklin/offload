@@ -10,16 +10,16 @@ import SwiftData
 
 struct InboxView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Thought.createdAt, order: .reverse) private var thoughts: [Thought]
+    @Query(sort: \BrainDumpEntry.createdAt, order: .reverse) private var entries: [BrainDumpEntry]
 
     @State private var showingCapture = false
 
     var body: some View {
         List {
-            ForEach(thoughts) { thought in
-                ThoughtRow(thought: thought)
+            ForEach(entries) { entry in
+                BrainDumpRow(entry: entry)
             }
-            .onDelete(perform: deleteThoughts)
+            .onDelete(perform: deleteEntries)
         }
         .navigationTitle("Inbox")
         .toolbar {
@@ -39,27 +39,44 @@ struct InboxView: View {
         }
     }
 
-    private func deleteThoughts(offsets: IndexSet) {
+    private func deleteEntries(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(thoughts[index])
+                modelContext.delete(entries[index])
             }
         }
     }
 }
 
-struct ThoughtRow: View {
-    let thought: Thought
+struct BrainDumpRow: View {
+    let entry: BrainDumpEntry
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(thought.rawText)
+            Text(entry.rawText)
                 .font(.body)
                 .lineLimit(2)
 
-            Text(thought.createdAt, format: .dateTime)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            HStack {
+                Text(entry.createdAt, format: .dateTime)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                if entry.entryInputType == .voice {
+                    Image(systemName: "waveform")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                if entry.currentLifecycleState != .raw {
+                    Text(entry.currentLifecycleState.rawValue)
+                        .font(.caption2)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(4)
+                }
+            }
         }
         .padding(.vertical, 4)
     }
