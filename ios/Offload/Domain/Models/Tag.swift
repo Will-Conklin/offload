@@ -15,18 +15,23 @@ final class Tag {
     var color: String?
     var createdAt: Date
 
-    // TODO: Add relationship to Tasks (many-to-many)
-    // TODO: Add sorting/ordering
+    // Relationships
+    @Relationship(deleteRule: .nullify, inverse: \Task.tags)
+    var tasks: [Task]?
+
+    // TODO: Add sorting/ordering (Phase 3+)
 
     init(
         id: UUID = UUID(),
         name: String,
         color: String? = nil,
-        createdAt: Date = Date()
+        createdAt: Date = Date(),
+        tasks: [Task]? = nil
     ) {
         self.id = id
         self.name = name
         self.color = color
         self.createdAt = createdAt
+        self.tasks = tasks
     }
 }

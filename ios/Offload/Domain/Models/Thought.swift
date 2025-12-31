@@ -16,18 +16,24 @@ final class Thought {
     var rawText: String
     var status: String
 
+    // Relationships
+    @Relationship(deleteRule: .nullify, inverse: \Task.sourceThought)
+    var derivedTasks: [Task]?
+
     init(
         id: UUID = UUID(),
         createdAt: Date = Date(),
         source: ThoughtSource,
         rawText: String,
-        status: ThoughtStatus = .inbox
+        status: ThoughtStatus = .inbox,
+        derivedTasks: [Task]? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
         self.source = source.rawValue
         self.rawText = rawText
         self.status = status.rawValue
+        self.derivedTasks = derivedTasks
     }
 
     // Computed properties for type-safe access to enums

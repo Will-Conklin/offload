@@ -15,18 +15,23 @@ final class Category {
     var icon: String?
     var createdAt: Date
 
-    // TODO: Add relationship to Tasks
-    // TODO: Add ordering/sorting
+    // Relationships
+    @Relationship(deleteRule: .nullify, inverse: \Task.category)
+    var tasks: [Task]?
+
+    // TODO: Add ordering/sorting (Phase 3+)
 
     init(
         id: UUID = UUID(),
         name: String,
         icon: String? = nil,
-        createdAt: Date = Date()
+        createdAt: Date = Date(),
+        tasks: [Task]? = nil
     ) {
         self.id = id
         self.name = name
         self.icon = icon
         self.createdAt = createdAt
+        self.tasks = tasks
     }
 }

@@ -26,10 +26,51 @@ final class ProjectRepository {
 
     // MARK: - Read
 
-    // TODO: Implement fetchAll() -> [Project]
-    // TODO: Implement fetchActive() -> [Project]
-    // TODO: Implement fetchArchived() -> [Project]
-    // TODO: Implement fetchById(_ id: UUID) -> Project?
+    /// Fetch all projects (active and archived)
+    func fetchAll() throws -> [Project] {
+        let descriptor = FetchDescriptor<Project>(
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    /// Fetch all active (non-archived) projects
+    func fetchActive() throws -> [Project] {
+        let descriptor = FetchDescriptor<Project>(
+            predicate: #Predicate { $0.archivedAt == nil },
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    /// Fetch all archived projects
+    func fetchArchived() throws -> [Project] {
+        let descriptor = FetchDescriptor<Project>(
+            predicate: #Predicate { $0.archivedAt != nil },
+            sortBy: [SortDescriptor(\.archivedAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    /// Fetch a project by ID
+    func fetchById(_ id: UUID) throws -> Project? {
+        let descriptor = FetchDescriptor<Project>(
+            predicate: #Predicate { $0.id == id }
+        )
+        return try modelContext.fetch(descriptor).first
+    }
+
+    /// Search projects by name or notes (case-sensitive)
+    func search(query: String) throws -> [Project] {
+        let descriptor = FetchDescriptor<Project>(
+            predicate: #Predicate { project in
+                project.name.contains(query) ||
+                (project.notes?.contains(query) ?? false)
+            },
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
 
     // MARK: - Update
 

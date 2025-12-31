@@ -19,11 +19,13 @@ final class Project {
     var updatedAt: Date
     var archivedAt: Date?
 
-    // TODO: Add relationship to Tasks
-    // TODO: Add relationship to parent Project (for hierarchical projects)
-    // TODO: Add relationship to subprojects
-    // TODO: Add goal/outcome description
-    // TODO: Add progress tracking
+    // Relationships
+    @Relationship(deleteRule: .nullify, inverse: \Task.project)
+    var tasks: [Task]?
+    var parentProject: Project?
+
+    // TODO: Add goal/outcome description (Phase 3+)
+    // TODO: Add progress tracking (Phase 3+)
 
     init(
         id: UUID = UUID(),
@@ -33,7 +35,9 @@ final class Project {
         icon: String? = nil,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
-        archivedAt: Date? = nil
+        archivedAt: Date? = nil,
+        tasks: [Task]? = nil,
+        parentProject: Project? = nil
     ) {
         self.id = id
         self.name = name
@@ -43,5 +47,7 @@ final class Project {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.archivedAt = archivedAt
+        self.tasks = tasks
+        self.parentProject = parentProject
     }
 }

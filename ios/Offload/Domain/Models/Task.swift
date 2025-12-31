@@ -20,12 +20,16 @@ final class Task {
     var priority: Priority
     var status: TaskStatus
 
-    // TODO: Add relationship to Project
-    // TODO: Add relationship to Tags
-    // TODO: Add relationship to Category
-    // TODO: Add attachments
-    // TODO: Add subtasks
-    // TODO: Add recurrence rules
+    // Relationships
+    var project: Project?
+    var category: Category?
+    var tags: [Tag]?
+    var blockedBy: [Task]?
+    var sourceThought: Thought?
+
+    // TODO: Add attachments (Phase 3+)
+    // TODO: Add subtasks (Phase 4+)
+    // TODO: Add recurrence rules (Phase 5+)
 
     init(
         id: UUID = UUID(),
@@ -36,7 +40,12 @@ final class Task {
         completedAt: Date? = nil,
         dueDate: Date? = nil,
         priority: Priority = .medium,
-        status: TaskStatus = .inbox
+        status: TaskStatus = .inbox,
+        project: Project? = nil,
+        category: Category? = nil,
+        tags: [Tag]? = nil,
+        blockedBy: [Task]? = nil,
+        sourceThought: Thought? = nil
     ) {
         self.id = id
         self.title = title
@@ -47,6 +56,11 @@ final class Task {
         self.dueDate = dueDate
         self.priority = priority
         self.status = status
+        self.project = project
+        self.category = category
+        self.tags = tags
+        self.blockedBy = blockedBy
+        self.sourceThought = sourceThought
     }
 }
 
