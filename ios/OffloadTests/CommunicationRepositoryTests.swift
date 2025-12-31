@@ -46,8 +46,8 @@ final class CommunicationRepositoryTests: XCTestCase {
     func testCreateCommunicationItem() throws {
         let item = CommunicationItem(
             channel: .email,
-            recipient: 'john@example.com',
-            content: 'Ask about project status'
+            recipient: "john@example.com",
+            content: "Ask about project status"
         )
 
         try repository.create(item: item)
@@ -55,14 +55,14 @@ final class CommunicationRepositoryTests: XCTestCase {
         let fetched = try repository.fetchAll()
         XCTAssertEqual(fetched.count, 1)
         XCTAssertEqual(fetched.first?.communicationChannel, .email)
-        XCTAssertEqual(fetched.first?.recipient, 'john@example.com')
+        XCTAssertEqual(fetched.first?.recipient, "john@example.com")
         XCTAssertEqual(fetched.first?.communicationStatus, .draft)
     }
 
     func testFetchByChannel() throws {
-        let item1 = CommunicationItem(channel: .email, recipient: 'john@example.com', content: 'Test 1')
-        let item2 = CommunicationItem(channel: .call, recipient: 'Jane', content: 'Test 2')
-        let item3 = CommunicationItem(channel: .email, recipient: 'bob@example.com', content: 'Test 3')
+        let item1 = CommunicationItem(channel: .email, recipient: "john@example.com", content: "Test 1")
+        let item2 = CommunicationItem(channel: .call, recipient: "Jane", content: "Test 2")
+        let item3 = CommunicationItem(channel: .email, recipient: "bob@example.com", content: "Test 3")
 
         try repository.create(item: item1)
         try repository.create(item: item2)
@@ -76,9 +76,9 @@ final class CommunicationRepositoryTests: XCTestCase {
     }
 
     func testFetchByStatus() throws {
-        let item1 = CommunicationItem(channel: .email, recipient: 'john@example.com', content: 'Test 1', status: .draft)
-        let item2 = CommunicationItem(channel: .call, recipient: 'Jane', content: 'Test 2', status: .sent)
-        let item3 = CommunicationItem(channel: .text, recipient: 'Bob', content: 'Test 3', status: .draft)
+        let item1 = CommunicationItem(channel: .email, recipient: "john@example.com", content: "Test 1", status: .draft)
+        let item2 = CommunicationItem(channel: .call, recipient: "Jane", content: "Test 2", status: .sent)
+        let item3 = CommunicationItem(channel: .text, recipient: "Bob", content: "Test 3", status: .draft)
 
         try repository.create(item: item1)
         try repository.create(item: item2)
@@ -92,38 +92,38 @@ final class CommunicationRepositoryTests: XCTestCase {
     }
 
     func testFetchDrafts() throws {
-        let item1 = CommunicationItem(channel: .email, recipient: 'john@example.com', content: 'Test 1', status: .draft)
-        let item2 = CommunicationItem(channel: .call, recipient: 'Jane', content: 'Test 2', status: .sent)
+        let item1 = CommunicationItem(channel: .email, recipient: "john@example.com", content: "Test 1", status: .draft)
+        let item2 = CommunicationItem(channel: .call, recipient: "Jane", content: "Test 2", status: .sent)
 
         try repository.create(item: item1)
         try repository.create(item: item2)
 
         let drafts = try repository.fetchDrafts()
         XCTAssertEqual(drafts.count, 1)
-        XCTAssertEqual(drafts.first?.content, 'Test 1')
+        XCTAssertEqual(drafts.first?.content, "Test 1")
     }
 
     func testFetchByRecipient() throws {
-        let item1 = CommunicationItem(channel: .email, recipient: 'john@example.com', content: 'Test 1')
-        let item2 = CommunicationItem(channel: .call, recipient: 'Jane Doe', content: 'Test 2')
-        let item3 = CommunicationItem(channel: .email, recipient: 'john@work.com', content: 'Test 3')
+        let item1 = CommunicationItem(channel: .email, recipient: "john@example.com", content: "Test 1")
+        let item2 = CommunicationItem(channel: .call, recipient: "Jane Doe", content: "Test 2")
+        let item3 = CommunicationItem(channel: .email, recipient: "john@work.com", content: "Test 3")
 
         try repository.create(item: item1)
         try repository.create(item: item2)
         try repository.create(item: item3)
 
-        let johnItems = try repository.fetchByRecipient('john')
+        let johnItems = try repository.fetchByRecipient("john")
         XCTAssertEqual(johnItems.count, 2)
 
-        let janeItems = try repository.fetchByRecipient('Jane')
+        let janeItems = try repository.fetchByRecipient("Jane")
         XCTAssertEqual(janeItems.count, 1)
     }
 
     func testMarkAsSent() throws {
         let item = CommunicationItem(
             channel: .email,
-            recipient: 'john@example.com',
-            content: 'Test',
+            recipient: "john@example.com",
+            content: "Test",
             status: .draft
         )
 
@@ -137,8 +137,8 @@ final class CommunicationRepositoryTests: XCTestCase {
     func testMarkAsDeferred() throws {
         let item = CommunicationItem(
             channel: .call,
-            recipient: 'Jane',
-            content: 'Test',
+            recipient: "Jane",
+            content: "Test",
             status: .draft
         )
 
@@ -152,24 +152,24 @@ final class CommunicationRepositoryTests: XCTestCase {
     func testUpdateItem() throws {
         let item = CommunicationItem(
             channel: .email,
-            recipient: 'john@example.com',
-            content: 'Original content'
+            recipient: "john@example.com",
+            content: "Original content"
         )
 
         try repository.create(item: item)
 
-        item.content = 'Updated content'
+        item.content = "Updated content"
         try repository.update(item: item)
 
         let fetched = try repository.fetchById(item.id)
-        XCTAssertEqual(fetched?.content, 'Updated content')
+        XCTAssertEqual(fetched?.content, "Updated content")
     }
 
     func testDeleteItem() throws {
         let item = CommunicationItem(
             channel: .email,
-            recipient: 'john@example.com',
-            content: 'Test'
+            recipient: "john@example.com",
+            content: "Test"
         )
 
         try repository.create(item: item)

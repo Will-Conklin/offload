@@ -44,20 +44,20 @@ final class ListRepositoryTests: XCTestCase {
     }
 
     func testCreateList() throws {
-        let list = ListEntity(title: 'Groceries', kind: .shopping)
+        let list = ListEntity(title: "Groceries", kind: .shopping)
 
         try repository.createList(list: list)
 
         let fetched = try repository.fetchAllLists()
         XCTAssertEqual(fetched.count, 1)
-        XCTAssertEqual(fetched.first?.title, 'Groceries')
+        XCTAssertEqual(fetched.first?.title, "Groceries")
         XCTAssertEqual(fetched.first?.listKind, .shopping)
     }
 
     func testFetchListsByKind() throws {
-        let list1 = ListEntity(title: 'Groceries', kind: .shopping)
-        let list2 = ListEntity(title: 'Vacation packing', kind: .packing)
-        let list3 = ListEntity(title: 'Weekend shopping', kind: .shopping)
+        let list1 = ListEntity(title: "Groceries", kind: .shopping)
+        let list2 = ListEntity(title: "Vacation packing", kind: .packing)
+        let list3 = ListEntity(title: "Weekend shopping", kind: .shopping)
 
         try repository.createList(list: list1)
         try repository.createList(list: list2)
@@ -71,23 +71,23 @@ final class ListRepositoryTests: XCTestCase {
     }
 
     func testCreateItem() throws {
-        let list = ListEntity(title: 'Groceries', kind: .shopping)
+        let list = ListEntity(title: "Groceries", kind: .shopping)
         try repository.createList(list: list)
 
-        let item = ListItem(text: 'Milk', list: list)
+        let item = ListItem(text: "Milk", list: list)
         try repository.createItem(item: item)
 
         let items = try repository.fetchItemsByList(list.id)
         XCTAssertEqual(items.count, 1)
-        XCTAssertEqual(items.first?.text, 'Milk')
+        XCTAssertEqual(items.first?.text, "Milk")
         XCTAssertFalse(items.first?.isChecked ?? true)
     }
 
     func testToggleItemChecked() throws {
-        let list = ListEntity(title: 'Groceries', kind: .shopping)
+        let list = ListEntity(title: "Groceries", kind: .shopping)
         try repository.createList(list: list)
 
-        let item = ListItem(text: 'Milk', list: list)
+        let item = ListItem(text: "Milk", list: list)
         try repository.createItem(item: item)
 
         XCTAssertFalse(item.isChecked)
@@ -100,12 +100,12 @@ final class ListRepositoryTests: XCTestCase {
     }
 
     func testGetListStats() throws {
-        let list = ListEntity(title: 'Groceries', kind: .shopping)
+        let list = ListEntity(title: "Groceries", kind: .shopping)
         try repository.createList(list: list)
 
-        let item1 = ListItem(text: 'Milk', isChecked: false, list: list)
-        let item2 = ListItem(text: 'Bread', isChecked: true, list: list)
-        let item3 = ListItem(text: 'Eggs', isChecked: true, list: list)
+        let item1 = ListItem(text: "Milk", isChecked: false, list: list)
+        let item2 = ListItem(text: "Bread", isChecked: true, list: list)
+        let item3 = ListItem(text: "Eggs", isChecked: true, list: list)
 
         try repository.createItem(item: item1)
         try repository.createItem(item: item2)
@@ -117,12 +117,12 @@ final class ListRepositoryTests: XCTestCase {
     }
 
     func testClearCheckedItems() throws {
-        let list = ListEntity(title: 'Groceries', kind: .shopping)
+        let list = ListEntity(title: "Groceries", kind: .shopping)
         try repository.createList(list: list)
 
-        let item1 = ListItem(text: 'Milk', isChecked: false, list: list)
-        let item2 = ListItem(text: 'Bread', isChecked: true, list: list)
-        let item3 = ListItem(text: 'Eggs', isChecked: true, list: list)
+        let item1 = ListItem(text: "Milk", isChecked: false, list: list)
+        let item2 = ListItem(text: "Bread", isChecked: true, list: list)
+        let item3 = ListItem(text: "Eggs", isChecked: true, list: list)
 
         try repository.createItem(item: item1)
         try repository.createItem(item: item2)
@@ -134,15 +134,15 @@ final class ListRepositoryTests: XCTestCase {
 
         let remaining = try repository.fetchItemsByList(list.id)
         XCTAssertEqual(remaining.count, 1)
-        XCTAssertEqual(remaining.first?.text, 'Milk')
+        XCTAssertEqual(remaining.first?.text, "Milk")
     }
 
     func testDeleteListCascadesToItems() throws {
-        let list = ListEntity(title: 'Groceries', kind: .shopping)
+        let list = ListEntity(title: "Groceries", kind: .shopping)
         try repository.createList(list: list)
 
-        let item1 = ListItem(text: 'Milk', list: list)
-        let item2 = ListItem(text: 'Bread', list: list)
+        let item1 = ListItem(text: "Milk", list: list)
+        let item2 = ListItem(text: "Bread", list: list)
 
         try repository.createItem(item: item1)
         try repository.createItem(item: item2)
@@ -158,16 +158,16 @@ final class ListRepositoryTests: XCTestCase {
     }
 
     func testUpdateItem() throws {
-        let list = ListEntity(title: 'Groceries', kind: .shopping)
+        let list = ListEntity(title: "Groceries", kind: .shopping)
         try repository.createList(list: list)
 
-        let item = ListItem(text: 'Milk', list: list)
+        let item = ListItem(text: "Milk", list: list)
         try repository.createItem(item: item)
 
-        item.text = 'Whole Milk'
+        item.text = "Whole Milk"
         try repository.updateItem(item: item)
 
         let fetched = try repository.fetchItemById(item.id)
-        XCTAssertEqual(fetched?.text, 'Whole Milk')
+        XCTAssertEqual(fetched?.text, "Whole Milk")
     }
 }

@@ -47,7 +47,7 @@ final class HandOffRepositoryTests: XCTestCase {
     }
 
     func testCreateRequest() throws {
-        let entry = BrainDumpEntry(rawText: 'Test entry', inputType: .text, source: .app)
+        let entry = BrainDumpEntry(rawText: "Test entry", inputType: .text, source: .app)
         try brainDumpRepo.create(entry: entry)
 
         let request = HandOffRequest(
@@ -65,8 +65,8 @@ final class HandOffRepositoryTests: XCTestCase {
     }
 
     func testFetchRequestsByEntry() throws {
-        let entry1 = BrainDumpEntry(rawText: 'Entry 1', inputType: .text, source: .app)
-        let entry2 = BrainDumpEntry(rawText: 'Entry 2', inputType: .text, source: .app)
+        let entry1 = BrainDumpEntry(rawText: "Entry 1", inputType: .text, source: .app)
+        let entry2 = BrainDumpEntry(rawText: "Entry 2", inputType: .text, source: .app)
         try brainDumpRepo.create(entry: entry1)
         try brainDumpRepo.create(entry: entry2)
 
@@ -103,9 +103,9 @@ final class HandOffRepositoryTests: XCTestCase {
         try repository.createRequest(request: request)
 
         let run = HandOffRun(
-            modelId: 'claude-3-5-sonnet',
-            promptVersion: 'v1.0',
-            inputSnapshot: 'Test input',
+            modelId: "claude-3-5-sonnet",
+            promptVersion: "v1.0",
+            inputSnapshot: "Test input",
             handOffRequest: request
         )
 
@@ -113,15 +113,15 @@ final class HandOffRepositoryTests: XCTestCase {
 
         let fetched = try repository.fetchRunsByRequest(request.id)
         XCTAssertEqual(fetched.count, 1)
-        XCTAssertEqual(fetched.first?.modelId, 'claude-3-5-sonnet')
+        XCTAssertEqual(fetched.first?.modelId, "claude-3-5-sonnet")
         XCTAssertEqual(fetched.first?.status, .running)
     }
 
     func testUpdateRunStatus() throws {
         let run = HandOffRun(
-            modelId: 'claude-3-5-sonnet',
-            promptVersion: 'v1.0',
-            inputSnapshot: 'Test'
+            modelId: "claude-3-5-sonnet",
+            promptVersion: "v1.0",
+            inputSnapshot: "Test"
         )
 
         try repository.createRun(run: run)
@@ -135,23 +135,23 @@ final class HandOffRepositoryTests: XCTestCase {
 
     func testUpdateRunStatusWithError() throws {
         let run = HandOffRun(
-            modelId: 'claude-3-5-sonnet',
-            promptVersion: 'v1.0',
-            inputSnapshot: 'Test'
+            modelId: "claude-3-5-sonnet",
+            promptVersion: "v1.0",
+            inputSnapshot: "Test"
         )
 
         try repository.createRun(run: run)
 
-        try repository.updateRunStatus(run: run, status: .failed, errorMessage: 'API timeout')
+        try repository.updateRunStatus(run: run, status: .failed, errorMessage: "API timeout")
         XCTAssertEqual(run.status, .failed)
-        XCTAssertEqual(run.errorMessage, 'API timeout')
+        XCTAssertEqual(run.errorMessage, "API timeout")
         XCTAssertNotNil(run.completedAt)
     }
 
     func testFetchRunsByStatus() throws {
-        let run1 = HandOffRun(modelId: 'model1', promptVersion: 'v1', inputSnapshot: 'Test1')
-        let run2 = HandOffRun(modelId: 'model2', promptVersion: 'v1', inputSnapshot: 'Test2')
-        let run3 = HandOffRun(modelId: 'model3', promptVersion: 'v1', inputSnapshot: 'Test3')
+        let run1 = HandOffRun(modelId: "model1", promptVersion: "v1", inputSnapshot: "Test1")
+        let run2 = HandOffRun(modelId: "model2", promptVersion: "v1", inputSnapshot: "Test2")
+        let run3 = HandOffRun(modelId: "model3", promptVersion: "v1", inputSnapshot: "Test3")
 
         try repository.createRun(run: run1)
         try repository.createRun(run: run2)
@@ -175,9 +175,9 @@ final class HandOffRepositoryTests: XCTestCase {
         try repository.createRequest(request: request)
 
         let run = HandOffRun(
-            modelId: 'claude-3-5-sonnet',
-            promptVersion: 'v1.0',
-            inputSnapshot: 'Test',
+            modelId: "claude-3-5-sonnet",
+            promptVersion: "v1.0",
+            inputSnapshot: "Test",
             handOffRequest: request
         )
         try repository.createRun(run: run)

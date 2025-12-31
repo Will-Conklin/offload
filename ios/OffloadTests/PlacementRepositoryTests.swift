@@ -51,7 +51,7 @@ final class PlacementRepositoryTests: XCTestCase {
             targetType: .task,
             targetId: targetId,
             sourceSuggestionId: suggestionId,
-            notes: 'Placed successfully'
+            notes: "Placed successfully"
         )
 
         try repository.create(placement: placement)
@@ -121,11 +121,11 @@ final class PlacementRepositoryTests: XCTestCase {
         try repository.create(placement: placement)
         XCTAssertNil(placement.notes)
 
-        placement.notes = 'Updated notes'
+        placement.notes = "Updated notes"
         try repository.update(placement: placement)
 
         let fetched = try repository.fetchById(placement.id)
-        XCTAssertEqual(fetched?.notes, 'Updated notes')
+        XCTAssertEqual(fetched?.notes, "Updated notes")
     }
 
     func testDeletePlacement() throws {

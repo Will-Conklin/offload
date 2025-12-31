@@ -46,7 +46,7 @@ final class SuggestionRepositoryTests: XCTestCase {
     func testCreateSuggestion() throws {
         let suggestion = Suggestion(
             kind: .task,
-            payloadJSON: '{\"title\":\"Buy groceries\"}',
+            payloadJSON: "{\"title\":\"Buy groceries\"}",
             confidence: 0.95
         )
 
@@ -59,14 +59,14 @@ final class SuggestionRepositoryTests: XCTestCase {
     }
 
     func testFetchSuggestionsByRun() throws {
-        let run1 = HandOffRun(modelId: 'claude', promptVersion: 'v1', inputSnapshot: 'Test1')
-        let run2 = HandOffRun(modelId: 'claude', promptVersion: 'v1', inputSnapshot: 'Test2')
+        let run1 = HandOffRun(modelId: "claude", promptVersion: "v1", inputSnapshot: "Test1")
+        let run2 = HandOffRun(modelId: "claude", promptVersion: "v1", inputSnapshot: "Test2")
         modelContext.insert(run1)
         modelContext.insert(run2)
 
-        let suggestion1 = Suggestion(kind: .task, payloadJSON: '{}', handOffRun: run1)
-        let suggestion2 = Suggestion(kind: .plan, payloadJSON: '{}', handOffRun: run1)
-        let suggestion3 = Suggestion(kind: .list, payloadJSON: '{}', handOffRun: run2)
+        let suggestion1 = Suggestion(kind: .task, payloadJSON: "{}", handOffRun: run1)
+        let suggestion2 = Suggestion(kind: .plan, payloadJSON: "{}", handOffRun: run1)
+        let suggestion3 = Suggestion(kind: .list, payloadJSON: "{}", handOffRun: run2)
 
         try repository.createSuggestion(suggestion: suggestion1)
         try repository.createSuggestion(suggestion: suggestion2)
@@ -77,9 +77,9 @@ final class SuggestionRepositoryTests: XCTestCase {
     }
 
     func testFetchSuggestionsByKind() throws {
-        let suggestion1 = Suggestion(kind: .task, payloadJSON: '{}')
-        let suggestion2 = Suggestion(kind: .plan, payloadJSON: '{}')
-        let suggestion3 = Suggestion(kind: .task, payloadJSON: '{}')
+        let suggestion1 = Suggestion(kind: .task, payloadJSON: "{}")
+        let suggestion2 = Suggestion(kind: .plan, payloadJSON: "{}")
+        let suggestion3 = Suggestion(kind: .task, payloadJSON: "{}")
 
         try repository.createSuggestion(suggestion: suggestion1)
         try repository.createSuggestion(suggestion: suggestion2)
@@ -93,7 +93,7 @@ final class SuggestionRepositoryTests: XCTestCase {
     }
 
     func testRecordDecision() throws {
-        let suggestion = Suggestion(kind: .task, payloadJSON: '{}')
+        let suggestion = Suggestion(kind: .task, payloadJSON: "{}")
         try repository.createSuggestion(suggestion: suggestion)
 
         let decision = SuggestionDecision(
@@ -111,8 +111,8 @@ final class SuggestionRepositoryTests: XCTestCase {
     }
 
     func testFetchDecisionsByType() throws {
-        let suggestion1 = Suggestion(kind: .task, payloadJSON: '{}')
-        let suggestion2 = Suggestion(kind: .plan, payloadJSON: '{}')
+        let suggestion1 = Suggestion(kind: .task, payloadJSON: "{}")
+        let suggestion2 = Suggestion(kind: .plan, payloadJSON: "{}")
         try repository.createSuggestion(suggestion: suggestion1)
         try repository.createSuggestion(suggestion: suggestion2)
 
@@ -130,17 +130,17 @@ final class SuggestionRepositoryTests: XCTestCase {
     }
 
     func testFetchPendingSuggestionsForEntry() throws {
-        let entry = BrainDumpEntry(rawText: 'Test entry', inputType: .text, source: .app)
+        let entry = BrainDumpEntry(rawText: "Test entry", inputType: .text, source: .app)
         let request = HandOffRequest(requestedBy: .user, mode: .manual, brainDumpEntry: entry)
-        let run = HandOffRun(modelId: 'claude', promptVersion: 'v1', inputSnapshot: 'Test', handOffRequest: request)
+        let run = HandOffRun(modelId: "claude", promptVersion: "v1", inputSnapshot: "Test", handOffRequest: request)
 
         modelContext.insert(entry)
         modelContext.insert(request)
         modelContext.insert(run)
 
-        let suggestion1 = Suggestion(kind: .task, payloadJSON: '{}', handOffRun: run)
-        let suggestion2 = Suggestion(kind: .plan, payloadJSON: '{}', handOffRun: run)
-        let suggestion3 = Suggestion(kind: .list, payloadJSON: '{}', handOffRun: run)
+        let suggestion1 = Suggestion(kind: .task, payloadJSON: "{}", handOffRun: run)
+        let suggestion2 = Suggestion(kind: .plan, payloadJSON: "{}", handOffRun: run)
+        let suggestion3 = Suggestion(kind: .list, payloadJSON: "{}", handOffRun: run)
 
         try repository.createSuggestion(suggestion: suggestion1)
         try repository.createSuggestion(suggestion: suggestion2)
@@ -155,7 +155,7 @@ final class SuggestionRepositoryTests: XCTestCase {
     }
 
     func testDeleteSuggestionCascadesToDecisions() throws {
-        let suggestion = Suggestion(kind: .task, payloadJSON: '{}')
+        let suggestion = Suggestion(kind: .task, payloadJSON: "{}")
         try repository.createSuggestion(suggestion: suggestion)
 
         let decision = SuggestionDecision(decision: .accepted, decidedBy: .user, suggestion: suggestion)
