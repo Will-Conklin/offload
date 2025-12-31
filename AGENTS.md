@@ -24,12 +24,20 @@ offload/
     Offload.xcodeproj           # Xcode project
     Offload/
       App/                      # App entry point, configuration
-        offloadApp.swift        # ModelContainer setup
+        offloadApp.swift        # App entry + modelContainer injection
+        AppRootView.swift       # Root navigation
+        MainTabView.swift       # Tab shell (inbox/organize/settings)
       Features/                 # Feature modules
-        ContentView.swift       # Main view (NavigationSplitView)
+        Inbox/InboxView.swift   # Inbox list
+        Capture/                # Capture flows (sheet + full screen)
+        Organize/OrganizeView.swift
+        ContentView.swift       # Legacy scaffold view
       Domain/                   # Business logic, models
-        Item.swift              # SwiftData models
+        Models/                 # SwiftData models
       Data/                     # Data layer, repositories
+        Persistence/            # SwiftData container setup
+        Repositories/           # CRUD/query repositories
+        Networking/APIClient.swift
       DesignSystem/             # UI components, theme
       Resources/                # Assets, fonts
         Assets.xcassets/
@@ -92,20 +100,22 @@ Code is organized by feature and layer:
 
 ### iOS - SwiftData Setup
 
-1. **ModelContainer** created in `App/offloadApp.swift` with schema registration
-2. **Models** defined with `@Model` macro in `Domain/`
-3. **Storage** configured as persistent (not in-memory)
-4. **Context** accessed via `@Environment(\.modelContext)` in views
-5. **Queries** use `@Query` property wrapper for reactive data
+1. **ModelContainer** created in `Data/Persistence/PersistenceController.swift`
+2. **Container injection** happens in `App/offloadApp.swift`
+3. **Models** defined with `@Model` macro in `Domain/`
+4. **Storage** configured as persistent (not in-memory) in `PersistenceController.shared`
+5. **Context** accessed via `@Environment(\.modelContext)` in views
+6. **Queries** use `@Query` property wrapper for reactive data
 
 ### iOS - Adding New Models
 
 1. Create model with `@Model` macro in `Domain/`
-2. Register in schema: `App/offloadApp.swift` (ModelContainer setup)
-3. Query in views with `@Query`
+2. Register in schema: `Data/Persistence/PersistenceController.swift`
+3. If using the full schema container, also update `Data/Persistence/SwiftDataManager.swift`
+4. Query in views with `@Query`
 
 ### iOS - SwiftUI Patterns
 
-- **Navigation**: `NavigationSplitView` for master-detail
+- **Navigation**: `NavigationStack` + `TabView` for top-level flows
 - **Model Context**: Use `modelContext.insert()` / `.delete()`
 - **Animations**: Wrap SwiftData mutations in `withAnimation`
