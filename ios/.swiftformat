@@ -21,6 +21,8 @@
 --disable redundantSelf # SwiftUI often needs explicit self
 --disable fileHeader # No header template configured
 --disable sortImports # Using sortedImports option instead
+--disable unusedArguments # Some protocol conformance requires unused arguments
+--disable consecutiveSpaces # Allow intentional spacing for alignment
 
 # File options
 --exclude Offload/Resources,DerivedData,.build
