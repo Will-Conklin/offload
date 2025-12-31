@@ -23,4 +23,4 @@
 --disable sortImports # Using sortedImports option instead
 
 # File options
---exclude Offload/Resources,DerivedData,.build,OffloadUITests
+--exclude Offload/Resources,DerivedData,.build
