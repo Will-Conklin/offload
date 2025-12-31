@@ -8,12 +8,19 @@
 import Foundation
 import SwiftData
 
-/// Simplified persistence controller for Thought model
+/// Simplified persistence controller for all SwiftData models
 struct PersistenceController {
 
     /// Shared persistent container for production use
     static let shared: ModelContainer = {
-        let schema = Schema([Thought.self])
+        let schema = Schema([
+            Item.self,
+            Task.self,
+            Project.self,
+            Tag.self,
+            Category.self,
+            Thought.self,
+        ])
         let configuration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false
@@ -31,7 +38,14 @@ struct PersistenceController {
 
     /// Preview container with sample data for SwiftUI previews
     static let preview: ModelContainer = {
-        let schema = Schema([Thought.self])
+        let schema = Schema([
+            Item.self,
+            Task.self,
+            Project.self,
+            Tag.self,
+            Category.self,
+            Thought.self,
+        ])
         let configuration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: true
