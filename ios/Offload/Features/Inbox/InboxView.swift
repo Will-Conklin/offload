@@ -42,9 +42,9 @@ struct InboxView: View {
             _Concurrency.Task {
                 await loadInbox()
             }
-        }) {
+        }, content: {
             CaptureSheetView()
-        }
+        })
         .task {
             if workflowService == nil {
                 workflowService = BrainDumpWorkflowService(modelContext: modelContext)

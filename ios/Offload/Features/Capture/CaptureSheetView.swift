@@ -84,7 +84,10 @@ struct CaptureSheetView: View {
                     Button("Save") {
                         saveThought()
                     }
-                    .disabled(rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || workflowService?.isProcessing == true)
+                    .disabled(
+                        rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            || workflowService?.isProcessing == true
+                    )
                 }
             }
             .alert("Permissions Required", isPresented: $showingPermissionAlert) {
