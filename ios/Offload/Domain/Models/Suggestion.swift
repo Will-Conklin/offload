@@ -19,7 +19,7 @@ final class Suggestion {
     var confidence: Double?
 
     // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \HandOffRun.suggestions)
+    @Relationship(deleteRule: .nullify)
     var handOffRun: HandOffRun?
 
     @Relationship(deleteRule: .cascade, inverse: \SuggestionDecision.suggestion)

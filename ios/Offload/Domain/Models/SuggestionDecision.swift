@@ -20,7 +20,7 @@ final class SuggestionDecision {
     var undoOfDecisionId: UUID?
 
     // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \Suggestion.decisions)
+    @Relationship(deleteRule: .nullify)
     var suggestion: Suggestion?
 
     init(

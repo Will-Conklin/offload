@@ -22,7 +22,7 @@ final class Task {
     var dueDate: Date?
 
     // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \Plan.tasks)
+    @Relationship(deleteRule: .nullify)
     var plan: Plan?
 
     var category: Category?
