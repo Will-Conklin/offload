@@ -8,48 +8,54 @@
 import SwiftUI
 import SwiftData
 
+/// Legacy demo view - kept for reference
+/// Use InboxView for the actual app
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var entries: [BrainDumpEntry]
 
     var body: some View {
         NavigationSplitView {
             List {
-                ForEach(items) { item in
+                ForEach(entries) { entry in
                     NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                        Text("Entry: \(entry.rawText)")
                     } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                        Text(entry.createdAt, format: Date.FormatStyle(date: .numeric, time: .standard))
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: deleteEntries)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    Button(action: addEntry) {
+                        Label("Add Entry", systemImage: "plus")
                     }
                 }
             }
         } detail: {
-            Text("Select an item")
+            Text("Select an entry")
         }
     }
 
-    private func addItem() {
+    private func addEntry() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+            let newEntry = BrainDumpEntry(
+                rawText: "Demo entry at \(Date())",
+                inputType: .text,
+                source: .app
+            )
+            modelContext.insert(newEntry)
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
+    private func deleteEntries(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(items[index])
+                modelContext.delete(entries[index])
             }
         }
     }
@@ -57,5 +63,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(PersistenceController.preview)
 }

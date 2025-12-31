@@ -9,33 +9,53 @@ import SwiftUI
 import SwiftData
 
 struct OrganizeView: View {
-    @Query private var items: [Item]
+    @Query private var plans: [Plan]
+    @Query private var categories: [Category]
+    @Query private var tags: [Tag]
 
     var body: some View {
         NavigationStack {
             List {
-                // TODO: Implement project/category sections
-                Section("Projects") {
-                    Text("No projects yet")
-                        .foregroundStyle(.secondary)
+                // TODO: Implement plan/category sections
+                Section("Plans") {
+                    if plans.isEmpty {
+                        Text("No plans yet")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(plans) { plan in
+                            Text(plan.title)
+                        }
+                    }
                 }
 
                 Section("Categories") {
-                    Text("No categories yet")
-                        .foregroundStyle(.secondary)
+                    if categories.isEmpty {
+                        Text("No categories yet")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(categories) { category in
+                            Text(category.name)
+                        }
+                    }
                 }
 
                 Section("Tags") {
-                    Text("No tags yet")
-                        .foregroundStyle(.secondary)
+                    if tags.isEmpty {
+                        Text("No tags yet")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(tags) { tag in
+                            Text(tag.name)
+                        }
+                    }
                 }
             }
             .navigationTitle("Organize")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
-                        Button("New Project") {
-                            // TODO: Show project creation sheet
+                        Button("New Plan") {
+                            // TODO: Show plan creation sheet
                         }
                         Button("New Category") {
                             // TODO: Show category creation sheet
@@ -54,5 +74,5 @@ struct OrganizeView: View {
 
 #Preview {
     OrganizeView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(PersistenceController.preview)
 }

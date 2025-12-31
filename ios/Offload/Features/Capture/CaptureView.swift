@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+/// Legacy placeholder capture view
+/// Use CaptureSheetView for the actual app (supports voice + text)
 struct CaptureView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -43,7 +45,7 @@ struct CaptureView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        saveItem()
+                        saveEntry()
                     }
                     .disabled(title.isEmpty)
                 }
@@ -51,11 +53,15 @@ struct CaptureView: View {
         }
     }
 
-    // TODO: Implement proper item creation with all metadata
-    private func saveItem() {
+    private func saveEntry() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+            let combinedText = notes.isEmpty ? title : "\(title)\n\n\(notes)"
+            let entry = BrainDumpEntry(
+                rawText: combinedText,
+                inputType: .text,
+                source: .app
+            )
+            modelContext.insert(entry)
             dismiss()
         }
     }
@@ -63,5 +69,5 @@ struct CaptureView: View {
 
 #Preview {
     CaptureView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(PersistenceController.preview)
 }

@@ -2,6 +2,12 @@
 
 iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 
+## Critical
+
+- ALWAYS keep documentation up to date.
+- ALWAYS run markdownlint prior to committing documentation.
+- DO NOT make README a changelog.  While in development, PR history can be used to track changes, release notes will be used after initial v1 release.
+
 ## Project
 
 - **Type**: Monorepo (iOS app + backend)
