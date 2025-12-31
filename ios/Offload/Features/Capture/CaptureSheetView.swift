@@ -10,6 +10,7 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct CaptureSheetView: View {
     @Environment(\.dismiss) private var dismiss
@@ -17,7 +18,8 @@ struct CaptureSheetView: View {
 
     @State private var rawText: String = ""
     @State private var showingPermissionAlert = false
-    private let voiceService = VoiceRecordingService()
+    @State private var voiceService = VoiceRecordingService()
+    @State private var preRecordingText = ""
 
     var body: some View {
         NavigationStack {
@@ -87,9 +89,10 @@ struct CaptureSheetView: View {
                 Text("Please enable microphone and speech recognition permissions in Settings to use voice capture.")
             }
             .onChange(of: voiceService.transcribedText) { _, newValue in
-                if !newValue.isEmpty {
-                    rawText = newValue
-                }
+                guard !newValue.isEmpty else { return }
+
+                let separator = preRecordingText.isEmpty || preRecordingText.hasSuffix(" ") ? "" : " "
+                rawText = preRecordingText + separator + newValue
             }
         }
     }
@@ -98,6 +101,7 @@ struct CaptureSheetView: View {
         if voiceService.isRecording {
             voiceService.stopRecording()
         } else {
+            preRecordingText = rawText
             _Concurrency.Task {
                 do {
                     try await voiceService.startRecording()
