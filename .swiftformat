@@ -1,0 +1,50 @@
+# SwiftFormat Configuration
+# https://github.com/nicklockwood/SwiftFormat
+
+--swiftversion 5.9
+
+# Indentation
+--indent 4
+--indentcase false
+--tabwidth 4
+--xcodeindentation enabled
+
+# Wrapping
+--maxwidth 120
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+--wrapternary before-operators
+
+# Spacing
+--trimwhitespace always
+--insertblanklines enabled
+--removeblanklines enabled
+
+# Organization
+--importgrouping testable-bottom
+--enable sortImports
+
+# Braces and Parentheses
+--allman false
+--elseposition same-line
+--guardelse auto
+
+# Comments
+--stripunusedargs closure-only
+
+# Redundancy
+--redundanttype inferred
+--enable redundantSelf
+--self remove
+
+# Disable specific rules (only if needed)
+# Currently no rules disabled - all standard rules apply
+
+# Exclude paths
+--exclude ios/Offload.xcodeproj
+--exclude ios/Offload.xcodeproj/**
+--exclude ios/DerivedData
+--exclude ios/**/DerivedData
+--exclude .build
+--exclude **/.build
