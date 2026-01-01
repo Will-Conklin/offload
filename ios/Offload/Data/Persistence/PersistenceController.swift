@@ -30,7 +30,7 @@ enum PersistenceController {
             Category.self,
             ListEntity.self,
             ListItem.self,
-            CommunicationItem.self,
+            CommunicationItem.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -64,7 +64,7 @@ enum PersistenceController {
             Category.self,
             ListEntity.self,
             ListItem.self,
-            CommunicationItem.self,
+            CommunicationItem.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -102,7 +102,7 @@ enum PersistenceController {
                     inputType: .voice,
                     source: .widget,
                     lifecycleState: .ready
-                ),
+                )
             ]
 
             for entry in sampleEntries {

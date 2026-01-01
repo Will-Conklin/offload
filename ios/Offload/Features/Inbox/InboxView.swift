@@ -38,11 +38,7 @@ struct InboxView: View {
                 EditButton()
             }
         }
-        .sheet(isPresented: $showingCapture, onDismiss: {
-            _Concurrency.Task {
-                await loadInbox()
-            }
-        }) {
+        .sheet(isPresented: $showingCapture, onDismiss: onDismissCapture) {
             CaptureSheetView()
         }
         .task {
@@ -62,6 +58,12 @@ struct InboxView: View {
             entries = try workflowService.fetchInbox()
         } catch {
             // Error is already set in workflowService.errorMessage
+        }
+    }
+
+    private func onDismissCapture() {
+        _Concurrency.Task {
+            await loadInbox()
         }
     }
 
