@@ -2,6 +2,17 @@
 
 iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 
+## Critical
+
+- NEVER guess - if something is unclear, research or ask for input.
+- ALWAYS add intent header to key files.
+- ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
+- ALWAYS clean up merged branches.
+- ALWAYS label pull requests with appropriate labels (bug, enhancement, documentation, etc.).
+- ALWAYS keep documentation up to date.
+- ALWAYS run markdownlint prior to committing documentation.
+- DO NOT make README a changelog.  While in development, PR history can be used to track changes, release notes will be used after initial v1 release.
+
 ## Product Philosophy
 
 **Offload** helps people capture thoughts and organize them with minimal friction.
@@ -31,16 +42,6 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 - Default to simpler designs over complex ones
 - Prioritize speed of capture over completeness
 - Let users organize later rather than forcing structure upfront
-
-## Critical
-
-- ALWAYS add intent header to key files.
-- ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
-- ALWAYS clean up merged branches.
-- ALWAYS label pull requests with appropriate labels (bug, enhancement, documentation, etc.).
-- ALWAYS keep documentation up to date.
-- ALWAYS run markdownlint prior to committing documentation.
-- DO NOT make README a changelog.  While in development, PR history can be used to track changes, release notes will be used after initial v1 release.
 
 ## Implementation Plans
 
