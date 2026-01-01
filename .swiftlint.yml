@@ -9,9 +9,9 @@ included:
 excluded:
   - ios/Offload.xcodeproj
   - ios/DerivedData
-  - ios/**/DerivedData
+  - "ios/**/DerivedData"
   - .build
-  - **/.build
+  - "**/.build"
 
 # Reporter type for GitHub Actions
 reporter: "github-actions-logging"
@@ -44,7 +44,7 @@ opt_in_rules:
 
 # Disabled rules (only when necessary)
 disabled_rules:
-  # Add rules here only if conflicts arise during testing
+  - todo  # Disable TODO warnings - track TODOs via issue tracker instead
 
 # Rule configurations
 line_length:
@@ -84,6 +84,11 @@ identifier_name:
     - id
     - url
     - db
+    - xs  # Design system spacing
+    - sm  # Design system spacing
+    - md  # Design system spacing
+    - lg  # Design system spacing
+    - xl  # Design system spacing
 
 # Require explicit type annotations for API boundaries
 # (can be adjusted based on team preference)
