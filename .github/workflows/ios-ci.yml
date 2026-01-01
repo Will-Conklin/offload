@@ -101,6 +101,7 @@ jobs:
           set -o pipefail && xcodebuild build \
             -project ios/Offload.xcodeproj \
             -scheme offload \
+            -sdk iphonesimulator \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             CODE_SIGN_IDENTITY="" \
@@ -148,6 +149,7 @@ jobs:
           set -o pipefail && xcodebuild test \
             -project ios/Offload.xcodeproj \
             -scheme offload \
+            -sdk iphonesimulator \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             -resultBundlePath "$TEST_RESULT_PATH" \
