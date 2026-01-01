@@ -62,20 +62,12 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO
 
-      - name: List and select simulator
+      - name: Select visionOS simulator
         run: |
-          echo "=== Available Simulators ==="
-          xcrun simctl list devices available
-          echo "=== Selecting iPhone simulator ==="
-          SIMULATOR_ID=$(xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | .value[] | select(.name | contains("iPhone")) | select(.isAvailable == true) | .udid' | head -1)
-          if [ -z "$SIMULATOR_ID" ]; then
-            echo "No iPhone simulator found, listing all available devices:"
-            xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | .value[] | select(.isAvailable == true) | "\(.name) - \(.udid)"'
-            echo "Using xcodebuild -showdestinations to find valid destination:"
-            xcodebuild -project Offload.xcodeproj -scheme offload -showdestinations -sdk iphonesimulator
-            exit 1
-          fi
-          echo "Using simulator: $SIMULATOR_ID"
+          # The offload scheme only supports visionOS simulators as concrete destinations
+          # Using latest visionOS simulator with "Designed for iPad/iPhone" support
+          SIMULATOR_ID=$(xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | .value[] | select(.name == "Apple Vision Pro") | select(.isAvailable == true) | .udid' | tail -1)
+          echo "Using visionOS simulator (Designed for iPad/iPhone): $SIMULATOR_ID"
           xcrun simctl boot "$SIMULATOR_ID" || echo "Simulator already booted or boot failed"
           echo "SIMULATOR_ID=$SIMULATOR_ID" >> $GITHUB_ENV
 
