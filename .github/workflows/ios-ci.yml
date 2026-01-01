@@ -92,7 +92,7 @@ jobs:
           set -o pipefail && xcodebuild build \
             -project ios/Offload.xcodeproj \
             -scheme offload \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
@@ -139,7 +139,7 @@ jobs:
           set -o pipefail && xcodebuild test \
             -project ios/Offload.xcodeproj \
             -scheme offload \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             -resultBundlePath "$TEST_RESULT_PATH" \
             -enableCodeCoverage YES \
