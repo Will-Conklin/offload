@@ -87,12 +87,18 @@ jobs:
         run: |
           defaults write com.apple.dt.Xcode IgnoreFileSystemDeviceInodeChanges -bool YES
 
+      - name: Show available destinations
+        run: |
+          xcodebuild -project ios/Offload.xcodeproj \
+            -scheme offload \
+            -showdestinations || true
+
       - name: Build
         run: |
           set -o pipefail && xcodebuild build \
             -project ios/Offload.xcodeproj \
             -scheme offload \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
@@ -139,7 +145,7 @@ jobs:
           set -o pipefail && xcodebuild test \
             -project ios/Offload.xcodeproj \
             -scheme offload \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             -resultBundlePath "$TEST_RESULT_PATH" \
             -enableCodeCoverage YES \
