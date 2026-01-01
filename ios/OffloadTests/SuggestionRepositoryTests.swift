@@ -17,7 +17,7 @@ final class SuggestionRepositoryTests: XCTestCase {
 
     override func setUp() async throws {
         let schema = Schema([
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,
@@ -130,8 +130,8 @@ final class SuggestionRepositoryTests: XCTestCase {
     }
 
     func testFetchPendingSuggestionsForEntry() throws {
-        let entry = BrainDumpEntry(rawText: "Test entry", inputType: .text, source: .app)
-        let request = HandOffRequest(requestedBy: .user, mode: .manual, brainDumpEntry: entry)
+        let entry = CaptureEntry(rawText: "Test entry", inputType: .text, source: .app)
+        let request = HandOffRequest(requestedBy: .user, mode: .manual, captureEntry: entry)
         let run = HandOffRun(modelId: "claude", promptVersion: "v1", inputSnapshot: "Test", handOffRequest: request)
 
         modelContext.insert(entry)

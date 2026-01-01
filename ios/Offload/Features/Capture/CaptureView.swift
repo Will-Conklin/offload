@@ -56,7 +56,7 @@ struct CaptureView: View {
     private func saveEntry() {
         withAnimation {
             let combinedText = notes.isEmpty ? title : "\(title)\n\n\(notes)"
-            let entry = BrainDumpEntry(
+            let entry = CaptureEntry(
                 rawText: combinedText,
                 inputType: .text,
                 source: .app

@@ -14,11 +14,11 @@ final class HandOffRepositoryTests: XCTestCase {
     var modelContainer: ModelContainer!
     var modelContext: ModelContext!
     var repository: HandOffRepository!
-    var brainDumpRepo: BrainDumpRepository!
+    var brainDumpRepo: CaptureRepository!
 
     override func setUp() async throws {
         let schema = Schema([
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,
@@ -36,7 +36,7 @@ final class HandOffRepositoryTests: XCTestCase {
         modelContainer = try ModelContainer(for: schema, configurations: [configuration])
         modelContext = modelContainer.mainContext
         repository = HandOffRepository(modelContext: modelContext)
-        brainDumpRepo = BrainDumpRepository(modelContext: modelContext)
+        brainDumpRepo = CaptureRepository(modelContext: modelContext)
     }
 
     override func tearDown() {
@@ -47,13 +47,13 @@ final class HandOffRepositoryTests: XCTestCase {
     }
 
     func testCreateRequest() throws {
-        let entry = BrainDumpEntry(rawText: "Test entry", inputType: .text, source: .app)
+        let entry = CaptureEntry(rawText: "Test entry", inputType: .text, source: .app)
         try brainDumpRepo.create(entry: entry)
 
         let request = HandOffRequest(
             requestedBy: .user,
             mode: .manual,
-            brainDumpEntry: entry
+            captureEntry: entry
         )
 
         try repository.createRequest(request: request)
@@ -65,14 +65,14 @@ final class HandOffRepositoryTests: XCTestCase {
     }
 
     func testFetchRequestsByEntry() throws {
-        let entry1 = BrainDumpEntry(rawText: "Entry 1", inputType: .text, source: .app)
-        let entry2 = BrainDumpEntry(rawText: "Entry 2", inputType: .text, source: .app)
+        let entry1 = CaptureEntry(rawText: "Entry 1", inputType: .text, source: .app)
+        let entry2 = CaptureEntry(rawText: "Entry 2", inputType: .text, source: .app)
         try brainDumpRepo.create(entry: entry1)
         try brainDumpRepo.create(entry: entry2)
 
-        let request1 = HandOffRequest(requestedBy: .user, mode: .manual, brainDumpEntry: entry1)
-        let request2 = HandOffRequest(requestedBy: .auto, mode: .auto, brainDumpEntry: entry1)
-        let request3 = HandOffRequest(requestedBy: .user, mode: .manual, brainDumpEntry: entry2)
+        let request1 = HandOffRequest(requestedBy: .user, mode: .manual, captureEntry: entry1)
+        let request2 = HandOffRequest(requestedBy: .auto, mode: .auto, captureEntry: entry1)
+        let request3 = HandOffRequest(requestedBy: .user, mode: .manual, captureEntry: entry2)
 
         try repository.createRequest(request: request1)
         try repository.createRequest(request: request2)

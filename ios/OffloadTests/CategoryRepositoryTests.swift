@@ -18,7 +18,7 @@ final class CategoryRepositoryTests: XCTestCase {
 
     override func setUp() async throws {
         let schema = Schema([
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,

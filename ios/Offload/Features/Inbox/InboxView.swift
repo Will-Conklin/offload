@@ -4,7 +4,7 @@
 //
 //  Created by Claude Code on 12/30/25.
 //
-//  Intent: Primary inbox for raw brain dump entries awaiting organization.
+//  Intent: Primary inbox for raw thought captures awaiting organization.
 //  Displays lifecycle state and input type with minimal UI friction.
 //
 
@@ -15,13 +15,13 @@ struct InboxView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var showingCapture = false
-    @State private var workflowService: BrainDumpWorkflowService?
-    @State private var entries: [BrainDumpEntry] = []
+    @State private var workflowService: CaptureWorkflowService?
+    @State private var entries: [CaptureEntry] = []
 
     var body: some View {
         List {
             ForEach(entries) { entry in
-                BrainDumpRow(entry: entry)
+                CaptureRow(entry: entry)
             }
             .onDelete(perform: deleteEntries)
         }
@@ -47,7 +47,7 @@ struct InboxView: View {
         }
         .task {
             if workflowService == nil {
-                workflowService = BrainDumpWorkflowService(modelContext: modelContext)
+                workflowService = CaptureWorkflowService(modelContext: modelContext)
             }
             await loadInbox()
         }
@@ -84,8 +84,8 @@ struct InboxView: View {
     }
 }
 
-struct BrainDumpRow: View {
-    let entry: BrainDumpEntry
+struct CaptureRow: View {
+    let entry: CaptureEntry
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {

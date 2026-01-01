@@ -1,10 +1,10 @@
 //
-//  BrainDumpWorkflowService.swift
+//  CaptureWorkflowService.swift
 //  Offload
 //
 //  Created by Claude Code on 12/31/25.
 //
-//  Intent: Orchestrates the brain dump capture → organization → placement workflow.
+//  Intent: Orchestrates the thought capture → organization → placement workflow.
 //  Provides high-level business operations for SwiftUI views.
 //
 
@@ -14,7 +14,7 @@ import Observation
 
 @Observable
 @MainActor
-final class BrainDumpWorkflowService {
+final class CaptureWorkflowService {
     // MARK: - Published State
 
     var isProcessing = false
@@ -22,7 +22,7 @@ final class BrainDumpWorkflowService {
 
     // MARK: - Dependencies
 
-    private let brainDumpRepo: BrainDumpRepository
+    private let captureRepo: CaptureRepository
     private let handOffRepo: HandOffRepository
     private let suggestionRepo: SuggestionRepository
     private let placementRepo: PlacementRepository
@@ -32,7 +32,7 @@ final class BrainDumpWorkflowService {
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
-        self.brainDumpRepo = BrainDumpRepository(modelContext: modelContext)
+        self.captureRepo = CaptureRepository(modelContext: modelContext)
         self.handOffRepo = HandOffRepository(modelContext: modelContext)
         self.suggestionRepo = SuggestionRepository(modelContext: modelContext)
         self.placementRepo = PlacementRepository(modelContext: modelContext)
@@ -40,12 +40,12 @@ final class BrainDumpWorkflowService {
 
     // MARK: - Capture Operations
 
-    /// Capture a new brain dump entry
+    /// Capture a new thought entry
     func captureEntry(
         rawText: String,
         inputType: InputType,
         source: CaptureSource
-    ) async throws -> BrainDumpEntry {
+    ) async throws -> CaptureEntry {
         guard !isProcessing else {
             throw WorkflowError.alreadyProcessing
         }
@@ -55,14 +55,14 @@ final class BrainDumpWorkflowService {
         defer { isProcessing = false }
 
         do {
-            let entry = BrainDumpEntry(
+            let entry = CaptureEntry(
                 rawText: rawText,
                 inputType: inputType,
                 source: source,
                 lifecycleState: .raw
             )
 
-            try brainDumpRepo.create(entry: entry)
+            try captureRepo.create(entry: entry)
             return entry
         } catch {
             errorMessage = error.localizedDescription
@@ -71,7 +71,7 @@ final class BrainDumpWorkflowService {
     }
 
     /// Archive an entry (marks as archived, no deletion)
-    func archiveEntry(_ entry: BrainDumpEntry) async throws {
+    func archiveEntry(_ entry: CaptureEntry) async throws {
         guard !isProcessing else {
             throw WorkflowError.alreadyProcessing
         }
@@ -81,7 +81,7 @@ final class BrainDumpWorkflowService {
         defer { isProcessing = false }
 
         do {
-            try brainDumpRepo.updateLifecycleState(entry: entry, to: .archived)
+            try captureRepo.updateLifecycleState(entry: entry, to: .archived)
         } catch {
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
@@ -89,7 +89,7 @@ final class BrainDumpWorkflowService {
     }
 
     /// Permanently delete an entry
-    func deleteEntry(_ entry: BrainDumpEntry) async throws {
+    func deleteEntry(_ entry: CaptureEntry) async throws {
         guard !isProcessing else {
             throw WorkflowError.alreadyProcessing
         }
@@ -99,7 +99,7 @@ final class BrainDumpWorkflowService {
         defer { isProcessing = false }
 
         do {
-            try brainDumpRepo.delete(entry: entry)
+            try captureRepo.delete(entry: entry)
         } catch {
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
@@ -109,9 +109,9 @@ final class BrainDumpWorkflowService {
     // MARK: - Query Operations
 
     /// Fetch inbox entries (raw state)
-    func fetchInbox() throws -> [BrainDumpEntry] {
+    func fetchInbox() throws -> [CaptureEntry] {
         do {
-            return try brainDumpRepo.fetchInbox()
+            return try captureRepo.fetchInbox()
         } catch {
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
@@ -119,9 +119,9 @@ final class BrainDumpWorkflowService {
     }
 
     /// Fetch entries by lifecycle state
-    func fetchByState(_ state: LifecycleState) throws -> [BrainDumpEntry] {
+    func fetchByState(_ state: LifecycleState) throws -> [CaptureEntry] {
         do {
-            return try brainDumpRepo.fetchByState(state)
+            return try captureRepo.fetchByState(state)
         } catch {
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
@@ -129,9 +129,9 @@ final class BrainDumpWorkflowService {
     }
 
     /// Fetch entries awaiting placement (ready state)
-    func fetchAwaitingPlacement() throws -> [BrainDumpEntry] {
+    func fetchAwaitingPlacement() throws -> [CaptureEntry] {
         do {
-            return try brainDumpRepo.fetchReady()
+            return try captureRepo.fetchReady()
         } catch {
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
@@ -139,9 +139,9 @@ final class BrainDumpWorkflowService {
     }
 
     /// Full-text search on raw text
-    func searchEntries(_ query: String) throws -> [BrainDumpEntry] {
+    func searchEntries(_ query: String) throws -> [CaptureEntry] {
         do {
-            return try brainDumpRepo.search(query: query)
+            return try captureRepo.search(query: query)
         } catch {
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
@@ -152,21 +152,21 @@ final class BrainDumpWorkflowService {
 
     /// Submit an entry for AI organization (not yet implemented)
     func submitForOrganization(
-        _ entry: BrainDumpEntry,
+        _ entry: CaptureEntry,
         mode: HandOffMode = .manual
     ) async throws {
         throw WorkflowError.notImplemented
     }
 
     /// Fetch suggestions for an entry (not yet implemented)
-    func fetchSuggestions(for entry: BrainDumpEntry) throws -> [Suggestion] {
+    func fetchSuggestions(for entry: CaptureEntry) throws -> [Suggestion] {
         throw WorkflowError.notImplemented
     }
 
     /// Accept a suggestion and place it (not yet implemented)
     func acceptSuggestion(
         _ suggestion: Suggestion,
-        for entry: BrainDumpEntry
+        for entry: CaptureEntry
     ) async throws {
         throw WorkflowError.notImplemented
     }

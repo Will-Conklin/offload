@@ -12,7 +12,7 @@ import SwiftData
 /// Use InboxView for the actual app
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var entries: [BrainDumpEntry]
+    @Query private var entries: [CaptureEntry]
 
     var body: some View {
         NavigationSplitView {
@@ -43,7 +43,7 @@ struct ContentView: View {
 
     private func addEntry() {
         withAnimation {
-            let newEntry = BrainDumpEntry(
+            let newEntry = CaptureEntry(
                 rawText: "Demo entry at \(Date())",
                 inputType: .text,
                 source: .app

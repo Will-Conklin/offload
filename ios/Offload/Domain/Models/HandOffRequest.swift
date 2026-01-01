@@ -4,7 +4,7 @@
 //
 //  Created by Claude Code on 12/31/25.
 //
-//  Intent: Tracks when user requests AI to organize a brain dump entry.
+//  Intent: Tracks when user requests AI to organize a thought capture.
 //  Each request can have multiple runs (retries, different AI models, etc.).
 //
 
@@ -20,7 +20,7 @@ final class HandOffRequest {
 
     // Relationships
     @Relationship(deleteRule: .nullify)
-    var brainDumpEntry: BrainDumpEntry?
+    var captureEntry: CaptureEntry?
 
     @Relationship(deleteRule: .cascade, inverse: \HandOffRun.handOffRequest)
     var runs: [HandOffRun]?
@@ -30,14 +30,14 @@ final class HandOffRequest {
         requestedAt: Date = Date(),
         requestedBy: RequestSource,
         mode: HandOffMode,
-        brainDumpEntry: BrainDumpEntry? = nil,
+        captureEntry: CaptureEntry? = nil,
         runs: [HandOffRun]? = nil
     ) {
         self.id = id
         self.requestedAt = requestedAt
         self.requestedBy = requestedBy.rawValue
         self.mode = mode.rawValue
-        self.brainDumpEntry = brainDumpEntry
+        self.captureEntry = captureEntry
         self.runs = runs
     }
 

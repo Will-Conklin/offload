@@ -34,6 +34,7 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 
 ## Critical
 
+- ALWAYS add intent header to key files.
 - ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
 - ALWAYS clean up merged branches.
 - ALWAYS label pull requests with appropriate labels (bug, enhancement, documentation, etc.).
@@ -151,7 +152,7 @@ Code is organized by feature and layer:
 
 Event-sourced capture architecture with 13 SwiftData models:
 
-**Workflow Models**: BrainDumpEntry, HandOffRequest, HandOffRun, Suggestion, SuggestionDecision, Placement
+**Workflow Models**: CaptureEntry, HandOffRequest, HandOffRun, Suggestion, SuggestionDecision, Placement
 
 **Destination Models**: Plan, Task, Tag, Category, ListEntity, ListItem, CommunicationItem
 

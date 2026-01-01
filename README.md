@@ -44,9 +44,9 @@ The app follows a simple principle:
 
 ### ✅ Implemented
 
-- Thought capture data model (BrainDumpEntry, HandOff*, Suggestion, Placement) stored with SwiftData
+- Thought capture data model (CaptureEntry, HandOff*, Suggestion, Placement) stored with SwiftData
 - Destination models for plans, tasks, tags, categories, lists, and communication items
-- Repository layer for all models plus a BrainDumpWorkflowService for capture and inbox operations
+- Repository layer for all models plus a CaptureWorkflowService for capture and inbox operations
 - SwiftUI inbox and capture sheet with voice recording and transcription via `VoiceRecordingService`
 
 ### 🔄 In Progress

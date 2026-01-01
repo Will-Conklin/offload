@@ -22,7 +22,7 @@ final class SwiftDataManager {
     func createModelContainer() throws -> ModelContainer {
         let schema = Schema([
             // Core workflow models
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,

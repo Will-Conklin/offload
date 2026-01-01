@@ -1,5 +1,5 @@
 //
-//  BrainDumpEntry.swift
+//  CaptureEntry.swift
 //  Offload
 //
 //  Created by Claude Code on 12/31/25.
@@ -13,7 +13,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class BrainDumpEntry {
+final class CaptureEntry {
     var id: UUID
     var createdAt: Date
     var rawText: String
@@ -23,7 +23,7 @@ final class BrainDumpEntry {
     var acceptedSuggestionId: UUID?
 
     // Relationships
-    @Relationship(deleteRule: .cascade, inverse: \HandOffRequest.brainDumpEntry)
+    @Relationship(deleteRule: .cascade, inverse: \HandOffRequest.captureEntry)
     var handOffRequests: [HandOffRequest]?
 
     init(

@@ -1,5 +1,5 @@
 //
-//  BrainDumpRepositoryTests.swift
+//  CaptureRepositoryTests.swift
 //  OffloadTests
 //
 //  Created by Claude Code on 12/31/25.
@@ -10,14 +10,14 @@ import SwiftData
 @testable import offload
 
 @MainActor
-final class BrainDumpRepositoryTests: XCTestCase {
+final class CaptureRepositoryTests: XCTestCase {
     var modelContainer: ModelContainer!
     var modelContext: ModelContext!
-    var repository: BrainDumpRepository!
+    var repository: CaptureRepository!
 
     override func setUp() async throws {
         let schema = Schema([
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,
@@ -34,7 +34,7 @@ final class BrainDumpRepositoryTests: XCTestCase {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         modelContainer = try ModelContainer(for: schema, configurations: [configuration])
         modelContext = modelContainer.mainContext
-        repository = BrainDumpRepository(modelContext: modelContext)
+        repository = CaptureRepository(modelContext: modelContext)
     }
 
     override func tearDown() {
@@ -44,7 +44,7 @@ final class BrainDumpRepositoryTests: XCTestCase {
     }
 
     func testCreateEntry() throws {
-        let entry = BrainDumpEntry(
+        let entry = CaptureEntry(
             rawText: "Test entry",
             inputType: .text,
             source: .app
@@ -58,7 +58,7 @@ final class BrainDumpRepositoryTests: XCTestCase {
     }
 
     func testLifecycleStateTransitions() throws {
-        let entry = BrainDumpEntry(
+        let entry = CaptureEntry(
             rawText: "Test lifecycle",
             inputType: .text,
             source: .app,
@@ -76,8 +76,8 @@ final class BrainDumpRepositoryTests: XCTestCase {
     }
 
     func testFetchInbox() throws {
-        let entry1 = BrainDumpEntry(rawText: "Inbox entry", inputType: .text, source: .app, lifecycleState: .raw)
-        let entry2 = BrainDumpEntry(rawText: "Placed entry", inputType: .text, source: .app, lifecycleState: .placed)
+        let entry1 = CaptureEntry(rawText: "Inbox entry", inputType: .text, source: .app, lifecycleState: .raw)
+        let entry2 = CaptureEntry(rawText: "Placed entry", inputType: .text, source: .app, lifecycleState: .placed)
 
         try repository.create(entry: entry1)
         try repository.create(entry: entry2)

@@ -18,7 +18,7 @@ struct PersistenceController {
     static let shared: ModelContainer = {
         let schema = Schema([
             // Core workflow models
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,
@@ -52,7 +52,7 @@ struct PersistenceController {
     static let preview: ModelContainer = {
         let schema = Schema([
             // Core workflow models
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,
@@ -80,25 +80,25 @@ struct PersistenceController {
 
             let context = container.mainContext
 
-            // Insert sample brain dump entries
+            // Insert sample thought captures
             let sampleEntries = [
-                BrainDumpEntry(
+                CaptureEntry(
                     rawText: "Remember to review the quarterly budget analysis",
                     inputType: .text,
                     source: .app
                 ),
-                BrainDumpEntry(
+                CaptureEntry(
                     rawText: "Call the dentist to schedule appointment for next week",
                     inputType: .voice,
                     source: .app
                 ),
-                BrainDumpEntry(
+                CaptureEntry(
                     rawText: "Research SwiftData best practices for production apps",
                     inputType: .text,
                     source: .app,
                     lifecycleState: .handedOff
                 ),
-                BrainDumpEntry(
+                CaptureEntry(
                     rawText: "Buy groceries: milk, eggs, bread, coffee",
                     inputType: .voice,
                     source: .widget,

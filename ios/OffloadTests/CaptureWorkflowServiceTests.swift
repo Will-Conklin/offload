@@ -1,5 +1,5 @@
 //
-//  BrainDumpWorkflowServiceTests.swift
+//  CaptureWorkflowServiceTests.swift
 //  OffloadTests
 //
 //  Created by Claude Code on 12/31/25.
@@ -10,14 +10,14 @@ import SwiftData
 @testable import offload
 
 @MainActor
-final class BrainDumpWorkflowServiceTests: XCTestCase {
+final class CaptureWorkflowServiceTests: XCTestCase {
     var modelContainer: ModelContainer!
     var modelContext: ModelContext!
-    var service: BrainDumpWorkflowService!
+    var service: CaptureWorkflowService!
 
     override func setUp() async throws {
         let schema = Schema([
-            BrainDumpEntry.self,
+            CaptureEntry.self,
             HandOffRequest.self,
             HandOffRun.self,
             Suggestion.self,
@@ -34,7 +34,7 @@ final class BrainDumpWorkflowServiceTests: XCTestCase {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         modelContainer = try ModelContainer(for: schema, configurations: [configuration])
         modelContext = modelContainer.mainContext
-        service = BrainDumpWorkflowService(modelContext: modelContext)
+        service = CaptureWorkflowService(modelContext: modelContext)
     }
 
     override func tearDown() {
@@ -142,8 +142,8 @@ final class BrainDumpWorkflowServiceTests: XCTestCase {
         _ = try await service.captureEntry(rawText: "Inbox 1", inputType: .text, source: .app)
         _ = try await service.captureEntry(rawText: "Inbox 2", inputType: .text, source: .app)
 
-        let repository = BrainDumpRepository(modelContext: modelContext)
-        let placedEntry = BrainDumpEntry(rawText: "Placed", inputType: .text, source: .app, lifecycleState: .placed)
+        let repository = CaptureRepository(modelContext: modelContext)
+        let placedEntry = CaptureEntry(rawText: "Placed", inputType: .text, source: .app, lifecycleState: .placed)
         try repository.create(entry: placedEntry)
 
         let inbox = try service.fetchInbox()
@@ -155,13 +155,13 @@ final class BrainDumpWorkflowServiceTests: XCTestCase {
     }
 
     func testFetchByState() async throws {
-        let repository = BrainDumpRepository(modelContext: modelContext)
+        let repository = CaptureRepository(modelContext: modelContext)
 
-        let rawEntry = BrainDumpEntry(rawText: "Raw", inputType: .text, source: .app, lifecycleState: .raw)
-        let handedOffEntry = BrainDumpEntry(rawText: "Handed off", inputType: .text, source: .app, lifecycleState: .handedOff)
-        let readyEntry = BrainDumpEntry(rawText: "Ready", inputType: .text, source: .app, lifecycleState: .ready)
-        let placedEntry = BrainDumpEntry(rawText: "Placed", inputType: .text, source: .app, lifecycleState: .placed)
-        let archivedEntry = BrainDumpEntry(rawText: "Archived", inputType: .text, source: .app, lifecycleState: .archived)
+        let rawEntry = CaptureEntry(rawText: "Raw", inputType: .text, source: .app, lifecycleState: .raw)
+        let handedOffEntry = CaptureEntry(rawText: "Handed off", inputType: .text, source: .app, lifecycleState: .handedOff)
+        let readyEntry = CaptureEntry(rawText: "Ready", inputType: .text, source: .app, lifecycleState: .ready)
+        let placedEntry = CaptureEntry(rawText: "Placed", inputType: .text, source: .app, lifecycleState: .placed)
+        let archivedEntry = CaptureEntry(rawText: "Archived", inputType: .text, source: .app, lifecycleState: .archived)
 
         try repository.create(entry: rawEntry)
         try repository.create(entry: handedOffEntry)
@@ -177,11 +177,11 @@ final class BrainDumpWorkflowServiceTests: XCTestCase {
     }
 
     func testFetchAwaitingPlacement() async throws {
-        let repository = BrainDumpRepository(modelContext: modelContext)
+        let repository = CaptureRepository(modelContext: modelContext)
 
-        let readyEntry1 = BrainDumpEntry(rawText: "Ready 1", inputType: .text, source: .app, lifecycleState: .ready)
-        let readyEntry2 = BrainDumpEntry(rawText: "Ready 2", inputType: .text, source: .app, lifecycleState: .ready)
-        let rawEntry = BrainDumpEntry(rawText: "Raw", inputType: .text, source: .app, lifecycleState: .raw)
+        let readyEntry1 = CaptureEntry(rawText: "Ready 1", inputType: .text, source: .app, lifecycleState: .ready)
+        let readyEntry2 = CaptureEntry(rawText: "Ready 2", inputType: .text, source: .app, lifecycleState: .ready)
+        let rawEntry = CaptureEntry(rawText: "Raw", inputType: .text, source: .app, lifecycleState: .raw)
 
         try repository.create(entry: readyEntry1)
         try repository.create(entry: readyEntry2)
@@ -265,7 +265,7 @@ final class BrainDumpWorkflowServiceTests: XCTestCase {
 
         XCTAssertEqual(try service.fetchInbox().count, 0)
 
-        let repository = BrainDumpRepository(modelContext: modelContext)
+        let repository = CaptureRepository(modelContext: modelContext)
         let all = try repository.fetchAll()
         XCTAssertEqual(all.count, 0)
     }

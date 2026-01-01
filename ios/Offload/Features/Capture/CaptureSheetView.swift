@@ -19,7 +19,7 @@ struct CaptureSheetView: View {
     @State private var rawText: String = ""
     @State private var showingPermissionAlert = false
     @State private var voiceService = VoiceRecordingService()
-    @State private var workflowService: BrainDumpWorkflowService?
+    @State private var workflowService: CaptureWorkflowService?
     @State private var preRecordingText = ""
 
     var body: some View {
@@ -105,7 +105,7 @@ struct CaptureSheetView: View {
             }
             .task {
                 if workflowService == nil {
-                    workflowService = BrainDumpWorkflowService(modelContext: modelContext)
+                    workflowService = CaptureWorkflowService(modelContext: modelContext)
                 }
             }
         }
@@ -139,7 +139,7 @@ struct CaptureSheetView: View {
 
         guard let workflowService = workflowService else {
             // Fallback: if service not initialized, create entry directly
-            let entry = BrainDumpEntry(
+            let entry = CaptureEntry(
                 rawText: rawText.trimmingCharacters(in: .whitespacesAndNewlines),
                 inputType: voiceService.transcribedText.isEmpty ? .text : .voice,
                 source: .app,
