@@ -23,7 +23,7 @@ An iOS app for adults with ADHD to quickly offload thoughts and organize them la
 
 ## About
 
-Offload is an iOS-first app that turns quick “brain dump” captures (text or voice) into simple, organized **plans** and lists—tasks, shopping, and follow-ups—so you can get mental space back.
+Offload is an iOS-first app that turns quick “brain dump” captures (text or voice) into simple, organized **plans** and lists—tasks, shopping, and follow-ups—so you can get mental space back. Internally, the persisted entity is named **Project**, but we use the Plan term across UX and documentation for consistency.
 
 Most productivity tools assume you’ll calmly plan everything up front. Offload starts where real life starts: random thoughts, urgency spikes, and “I’ll remember” moments. Capture in seconds, then let the app help you sort and clarify what’s next—without making everything feel time-sensitive or turning your life into a project management system.
 
@@ -37,6 +37,8 @@ The app follows a simple principle:
 - **Offline-First**: Works completely offline, on-device processing
 - **User Control**: AI suggests, never auto-modifies
 - **Privacy**: All data stays on device, no cloud required
+
+AI can ask clarifying questions, surface patterns, and suggest handoffs or next steps, but it never changes anything automatically—user approval is always required, and all AI assistance can be fully disabled.
 
 ## Current Status
 
@@ -163,13 +165,24 @@ graph LR
     style SWIFTDATA fill:#2196F3
 ```
 
+Diagrams and UX copy use **Plan** to stay consistent with the experience; in code this maps directly to the **Project** model and related repositories.
+
 ## Data Model
+
+The brain dump workflow uses event-style state tracking to keep captures lightweight while enabling lifecycle-based orchestration.
+
+### Terminology Mapping
+
+- **Brain Dump** → Thought / **BrainDumpEntry**
+- **Plan** → **Project** (UX term; internal model name)
+- **Hand Off** → **HandOffRequest** / **HandOffRun**
 
 ### Capture & Destination Models
 
 - **Capture + Workflow**: BrainDumpEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision → Placement
 - **Destinations**: Plan/Task, Tag, Category, ListEntity/ListItem, CommunicationItem
 - **Lifecycle States**: raw → handedOff → ready → placed → archived
+- **Plan vs. Project**: Documentation and UX copy use Plan; the stored model remains Project to preserve the schema while keeping terminology aligned for users.
 
 ```mermaid
 flowchart LR
@@ -213,6 +226,10 @@ sequenceDiagram
     Workflow-->>CaptureSheet: Entry saved
     CaptureSheet-->>User: Entry appears in Inbox
 ```
+
+### Hand Offs
+
+Hand offs are an intentional way to delegate organization: users give captures to the system to revisit later, reducing cognitive load without forcing immediate structure. HandOffRequest and HandOffRun track each handoff through an event-driven workflow, and `HandOffRepository` manages this lifecycle without introducing automatic or hidden actions.
 
 ## Project Structure
 
@@ -365,7 +382,7 @@ See [ADR-0001](docs/decisions/ADR-0001-stack.md) for detailed technical decision
 
 ### Code Quality
 
-- **Test Coverage**: Comprehensive unit tests (45+ tests)
+- **Test Coverage**: Comprehensive unit tests across workflows and repositories
 - **Type Safety**: SwiftData relationships with proper typing
 - **Documentation**: Inline docs, ADRs, detailed commit messages
 - **Conventional Commits**: Semantic versioning ready
