@@ -163,7 +163,7 @@ jobs:
             -project ios/Offload.xcodeproj \
             -scheme offload \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -destination "id=$SIMULATOR_UDID" \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
@@ -261,6 +261,7 @@ jobs:
         run: |
           defaults write com.apple.dt.Xcode IgnoreFileSystemDeviceInodeChanges -bool YES
 
+      # Exit 117 has been observed here when CoreSimulator services are stuck; the boot script now retries with shutdown/erase and prints simulator inventories for RCA.
       - name: Boot simulator (timed)
         run: bash scripts/ios/boot-simulator.sh
 
@@ -275,7 +276,7 @@ jobs:
                 -project ios/Offload.xcodeproj \
                 -scheme offload \
                 -sdk iphonesimulator \
-                -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+                -destination "id=$SIMULATOR_UDID" \
                 -derivedDataPath "$DERIVED_DATA_PATH" \
                 CODE_SIGN_IDENTITY="" \
                 CODE_SIGNING_REQUIRED=NO \
@@ -300,7 +301,7 @@ jobs:
             -project ios/Offload.xcodeproj \
             -scheme offload \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -destination "id=$SIMULATOR_UDID" \
             -derivedDataPath "$DERIVED_DATA_PATH" \
             -resultBundlePath "$TEST_RESULT_PATH" \
             -enableCodeCoverage YES \
@@ -316,18 +317,31 @@ jobs:
         id: inspect-xcresult
         if: always()
         run: |
+          set -euo pipefail
           if [ -d "$TEST_RESULT_PATH" ]; then
               echo "bundle_present=true" >> "$GITHUB_OUTPUT"
               du -sh "$TEST_RESULT_PATH" || true
-          else
-              echo "bundle_present=false" >> "$GITHUB_OUTPUT"
-              echo "::error::Test result bundle missing at $TEST_RESULT_PATH (xcodebuild may have failed before writing results)."
+              exit 0
           fi
+
+          echo "bundle_present=false" >> "$GITHUB_OUTPUT"
+          echo "::error::Test result bundle missing at $TEST_RESULT_PATH. Simulator boot likely failed before tests ran; collecting diagnostics."
+
+          echo "== Post-failure simulator diagnostics =="
+          xcrun simctl list devices available || true
+          xcrun simctl list runtimes || true
+          if [ -n "${SIMULATOR_UDID:-}" ]; then
+              xcrun simctl list devices "$SIMULATOR_UDID" || true
+              xcrun simctl getenv "$SIMULATOR_UDID" SIMULATOR_DEVICE_NAME || true
+              xcrun simctl spawn "$SIMULATOR_UDID" launchctl print system || true
+          fi
+
+          exit 1
 
       - name: Check coverage threshold
         run: |
           if [ "${{ steps.inspect-xcresult.outputs.bundle_present }}" != "true" ]; then
-              echo "::error::Cannot check coverage because $TEST_RESULT_PATH is missing. Inspect test logs above for the root cause."
+              echo "::error::Cannot check coverage because $TEST_RESULT_PATH is missing. Simulator boot failures prevent xcodebuild from writing results; see diagnostics above."
               exit 1
           fi
           bash scripts/ios/check-coverage.sh "$TEST_RESULT_PATH"
