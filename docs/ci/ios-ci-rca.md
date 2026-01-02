@@ -33,6 +33,7 @@ applied so we do not retry the same changes.
 | 2026-01-01 | a2286b8 | Add `SUPPORTED_PLATFORMS` to offload target configs. | Run 20646427000 | Still failed to find destination. |
 | 2026-01-01 | c77090d | Add CI build-settings diagnostics for simulator SDK. | Run 20647277804 | Confirms scheme has no destinations. |
 | 2026-01-01 | b612a13 | Select newest installed Xcode on runner. | Run 20648070979 | Now fails in Swift compilation (no `brainDumpEntry` member). |
+| 2026-01-02 | N/A | Switch iOS workflow runners to `macos-26` for Xcode 26.x coverage. | Pending next CI run | Pending validation of simulator availability and build. |
 
 
 ## Additional Findings
@@ -78,10 +79,10 @@ applied so we do not retry the same changes.
 - Adding simulator selection by UDID in CI does not fix the issue.
 - Adding `SUPPORTED_PLATFORMS` at the project level alone does not fix the issue.
 
-## Next Checks (Not Yet Applied)
+## Next Steps
 - Inspect for build settings that override `SUPPORTED_PLATFORMS` or restrict
   `SUPPORTED_DEVICE_FAMILY` on the offload target during CI.
 - Validate the shared scheme in Xcode to ensure it targets iOS (not visionOS)
   and that the `offload` target is selected for iOS Simulator builds.
-- Try switching the workflow runner image to `macos-26` to confirm hosted
-  runner compatibility with Xcode 26.x.
+- Monitor CI results on `macos-26` to confirm simulator availability and track
+  any remaining compile-time errors.
