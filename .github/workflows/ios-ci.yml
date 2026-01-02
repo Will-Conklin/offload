@@ -17,7 +17,7 @@ concurrency:
 jobs:
   quality-checks:
     name: Code Quality Checks
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -52,7 +52,7 @@ jobs:
 
   build:
     name: Build iOS App
-    runs-on: macos-15
+    runs-on: macos-26
     needs: quality-checks
     timeout-minutes: 20
     env:
@@ -203,7 +203,7 @@ jobs:
 
   test-unit:
     name: Unit Tests with Coverage
-    runs-on: macos-15
+    runs-on: macos-26
     needs: build
     timeout-minutes: 15
     env:
