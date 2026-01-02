@@ -8,7 +8,7 @@
 
 ## Evidence
 - The test job runs on a clean macOS runner and invokes `xcodebuild test`, which performs a full build before running tests. With coverage enabled and no prebuilt artifacts, this duplicated the work already done in the separate build job.
-- The linked failing run shows the `Run unit tests` step running until the 15-minute timeout, confirming the time was spent inside the combined build+test command: https://github.com/Will-Conklin/offload/actions/runs/20659608247/job/59319225198.
+- The linked failing run shows the `Run unit tests` step running until the 15-minute timeout, confirming the time was spent inside the combined build+test command: [GitHub Actions run](https://github.com/Will-Conklin/offload/actions/runs/20659608247/job/59319225198).
 
 ## Time breakdown
 - Setup tasks (checkout, Xcode selection, simulator selection) complete before the `Run unit tests` step and did not hit the timeout.
