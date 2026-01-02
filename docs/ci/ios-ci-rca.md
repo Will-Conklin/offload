@@ -7,13 +7,12 @@ This document tracks failed GitHub Actions runs, observed symptoms, and fixes
 applied so we do not retry the same changes.
 
 ## Current Status
-- Latest run: 20647277804 (PR #17) failed in "Build iOS App".
-- Symptom: `xcodebuild -showdestinations` lists only an ineligible iOS device
-  placeholder and no iOS Simulator destinations. Build fails with
-  "Unable to find a destination matching the provided destination specifier."
-- Diagnostic: `xcodebuild -showBuildSettings` with `-sdk iphonesimulator`
-  reports "Found no destinations for the scheme 'offload' and action build"
-  (only `SDKROOT = iphonesimulator18.0` is printed).
+- Latest run: 20648070979 (PR #17) failed in "Build iOS App".
+- Symptom: Swift compile errors after selecting Xcode 26.1.1 on the runner:
+  - `HandOffRequest` has no member `brainDumpEntry` in
+    `HandOffRepository.swift` and `SuggestionRepository.swift`.
+  - `modelContext.fetch(descriptor)` fails with
+    "generic parameter 'T' could not be inferred" in `SuggestionRepository.swift`.
 
 ## Constraints
 - Local macOS cannot run Xcode 16, so downgrading locally is not viable.
@@ -33,6 +32,7 @@ applied so we do not retry the same changes.
 | 2026-01-01 | 7cc9490 | Select available simulator by UDID in CI. | Run 20646313834 | Still failed to find destination. |
 | 2026-01-01 | a2286b8 | Add `SUPPORTED_PLATFORMS` to offload target configs. | Run 20646427000 | Still failed to find destination. |
 | 2026-01-01 | c77090d | Add CI build-settings diagnostics for simulator SDK. | Run 20647277804 | Confirms scheme has no destinations. |
+| 2026-01-01 | b612a13 | Select newest installed Xcode on runner. | Run 20648070979 | Now fails in Swift compilation (no `brainDumpEntry` member). |
 
 
 ## Additional Findings
@@ -50,6 +50,9 @@ applied so we do not retry the same changes.
   when `SDKROOT = iphonesimulator18.0` is selected.
 - CI now detects installed Xcode apps, logs their versions, and selects the
   newest available Xcode for builds/tests.
+- Latest CI run selected Xcode 26.1.1, and the build now reaches Swift compile
+  before failing on missing `brainDumpEntry` and a generic inference error in
+  `SuggestionRepository.swift`.
 
 ## How to Get an Older Xcode (Reference)
 - Download older versions from
