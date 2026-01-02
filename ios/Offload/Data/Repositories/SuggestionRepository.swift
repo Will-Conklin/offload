@@ -54,12 +54,12 @@ final class SuggestionRepository {
 
     /// Fetch pending suggestions (no accepted decision) for a brain dump entry
     func fetchPendingSuggestionsForEntry(_ entryId: UUID) throws -> [Suggestion] {
-        let descriptor = FetchDescriptor<Suggestion>(
-            predicate: #Predicate { suggestion in
+        let descriptor: FetchDescriptor<Suggestion> = FetchDescriptor(
+            predicate: #Predicate<Suggestion> { suggestion in
                 suggestion.handOffRun?.handOffRequest?.captureEntry?.id == entryId
             }
         )
-        let suggestions = try modelContext.fetch(descriptor)
+        let suggestions: [Suggestion] = try modelContext.fetch(descriptor)
 
         // Filter to only suggestions without an accepted decision
         return suggestions.filter { suggestion in

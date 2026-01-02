@@ -13,6 +13,9 @@ applied so we do not retry the same changes.
     `HandOffRepository.swift` and `SuggestionRepository.swift`.
   - `modelContext.fetch(descriptor)` fails with
     "generic parameter 'T' could not be inferred" in `SuggestionRepository.swift`.
+- Fix in progress: Repository lookups now reference `captureEntry` and SwiftData
+  fetches have explicit typing to avoid inference issues. Pending validation in
+  the next CI run on `macos-26`.
 
 ## Constraints
 - Local macOS cannot run Xcode 16, so downgrading locally is not viable.
@@ -33,6 +36,7 @@ applied so we do not retry the same changes.
 | 2026-01-01 | a2286b8 | Add `SUPPORTED_PLATFORMS` to offload target configs. | Run 20646427000 | Still failed to find destination. |
 | 2026-01-01 | c77090d | Add CI build-settings diagnostics for simulator SDK. | Run 20647277804 | Confirms scheme has no destinations. |
 | 2026-01-01 | b612a13 | Select newest installed Xcode on runner. | Run 20648070979 | Now fails in Swift compilation (no `brainDumpEntry` member). |
+| 2026-01-02 | Pending (this PR) | Use `captureEntry` relationship and typed SwiftData fetches to satisfy Xcode 26.1.1 compiler. | Pending next CI run | Pending |
 | 2026-01-02 | N/A | Switch iOS workflow runners to `macos-26` for Xcode 26.x coverage. | Pending next CI run | Pending validation of simulator availability and build. |
 
 
