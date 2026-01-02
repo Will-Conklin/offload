@@ -1,0 +1,210 @@
+[
+  {
+    "run_id": 20662961598,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": "main",
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [
+      {
+        "name": "Unit Tests with Coverage",
+        "failing_steps": [
+          {
+            "name": "Boot simulator (timed)",
+            "exit_code": 117,
+            "excerpt": "`xcrun simctl bootstatus "$SIMULATOR_UDID" -b -s` returned 117 immediately after boot; diagnostics absent.",
+            "data_source": "docs/ci/RCA.md"
+          },
+          {
+            "name": "Generate coverage report",
+            "exit_code": 1,
+            "excerpt": "`xcrun xccov view --report --json ios/TestResults.xcresult` failed because the bundle was missing after tests did not run.",
+            "data_source": "docs/ci/RCA.md"
+          }
+        ],
+        "data_source": "docs/ci/RCA.md"
+      }
+    ],
+    "artifacts": [],
+    "notes": "Run captured locally; log and artifact downloads from GitHub API blocked (HTTP 403).",
+    "data_source": "docs/ci/RCA.md"
+  },
+  {
+    "run_id": 20659608247,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "cancelled (timeout)",
+    "attempt": null,
+    "failing_jobs": [
+      {
+        "name": "Unit Tests with Coverage",
+        "failing_steps": [
+          {
+            "name": "Run unit tests",
+            "exit_code": null,
+            "excerpt": "`xcodebuild test` rebuilt app and tests on a fresh runner and exceeded the 15-minute limit without watchdog logs.",
+            "data_source": "docs/testing/RCA.md"
+          }
+        ],
+        "data_source": "docs/testing/RCA.md"
+      }
+    ],
+    "artifacts": [],
+    "notes": "Linked job 59319225198 timed out; additional metadata unavailable locally due to GitHub API access being blocked (HTTP 403).",
+    "data_source": "docs/testing/RCA.md"
+  },
+  {
+    "run_id": 20648070979,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "Swift compilation failed after selecting Xcode 26.1.1 (missing `brainDumpEntry`; inference error in SuggestionRepository.swift). Details from docs/ci/ios-ci-rca.md; logs unavailable locally (HTTP 403 when fetching).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20647277804,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available despite diagnostics; drawn from docs/ci/ios-ci-rca.md. Logs not present locally (HTTP 403 when requesting API).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20646427000,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available; see docs/ci/ios-ci-rca.md. API downloads blocked (HTTP 403).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20646313834,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available; see docs/ci/ios-ci-rca.md. API downloads blocked (HTTP 403).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20644872115,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available; see docs/ci/ios-ci-rca.md. API downloads blocked (HTTP 403).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20644654196,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available; see docs/ci/ios-ci-rca.md. API downloads blocked (HTTP 403).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20644627990,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available; see docs/ci/ios-ci-rca.md. API downloads blocked (HTTP 403).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20644585026,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available; see docs/ci/ios-ci-rca.md. API downloads blocked (HTTP 403).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  },
+  {
+    "run_id": 20644510607,
+    "workflow_name": "iOS CI",
+    "run_number": null,
+    "event": null,
+    "branch": null,
+    "head_sha": null,
+    "created_at": null,
+    "updated_at": null,
+    "conclusion": "failure",
+    "attempt": null,
+    "failing_jobs": [],
+    "artifacts": [],
+    "notes": "No simulator destinations available; see docs/ci/ios-ci-rca.md. API downloads blocked (HTTP 403).",
+    "data_source": "docs/ci/ios-ci-rca.md"
+  }
+]
