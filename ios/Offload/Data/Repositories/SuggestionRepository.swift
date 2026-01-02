@@ -56,7 +56,7 @@ final class SuggestionRepository {
     func fetchPendingSuggestionsForEntry(_ entryId: UUID) throws -> [Suggestion] {
         let descriptor = FetchDescriptor<Suggestion>(
             predicate: #Predicate { suggestion in
-                suggestion.handOffRun?.handOffRequest?.brainDumpEntry?.id == entryId
+                suggestion.handOffRun?.handOffRequest?.captureEntry?.id == entryId
             }
         )
         let suggestions = try modelContext.fetch(descriptor)
