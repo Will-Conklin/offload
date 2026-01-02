@@ -83,3 +83,5 @@ applied so we do not retry the same changes.
   `SUPPORTED_DEVICE_FAMILY` on the offload target during CI.
 - Validate the shared scheme in Xcode to ensure it targets iOS (not visionOS)
   and that the `offload` target is selected for iOS Simulator builds.
+- Try switching the workflow runner image to `macos-26` to confirm hosted
+  runner compatibility with Xcode 26.x.
