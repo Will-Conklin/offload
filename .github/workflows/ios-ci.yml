@@ -1,4 +1,4 @@
-# Intent: Run code quality checks, build, and unit tests for the iOS app in CI.
+# Intent: Run code quality checks, build, and unit tests for the iOS app in CI with timing instrumentation.
 name: iOS CI
 
 on:
@@ -105,6 +105,9 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Show Swift version
+        run: swift --version
+
       - name: List available SDKs
         run: xcodebuild -showsdks
 
@@ -189,9 +192,15 @@ jobs:
             -scheme offload \
             -showdestinations || true
 
-      - name: Build
+      - name: Build for testing (timed)
         run: |
-          set -o pipefail && xcodebuild build \
+          set -euo pipefail
+          log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
+
+          log "Starting build-for-testing (simulator=$SIMULATOR_NAME $SIMULATOR_UDID)"
+          start=$(date +%s)
+
+          set -o pipefail && xcodebuild build-for-testing \
             -project ios/Offload.xcodeproj \
             -scheme offload \
             -sdk iphonesimulator \
@@ -201,11 +210,14 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
+          end=$(date +%s)
+          log "Completed build-for-testing in $((end - start))s"
+
   test-unit:
     name: Unit Tests with Coverage
     runs-on: macos-26
     needs: build
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       DERIVED_DATA_PATH: ios/DerivedData
       TEST_RESULT_PATH: ios/TestResults.xcresult
@@ -256,6 +268,9 @@ jobs:
 
       - name: Show Xcode version
         run: xcodebuild -version
+
+      - name: Show Swift version
+        run: swift --version
 
       - name: Setup simulator
         run: bash scripts/ios/setup-simulator.sh
@@ -311,6 +326,11 @@ jobs:
               env_file.write(f"SIMULATOR_NAME={selected['name']}\n")
           PY
 
+      - name: Log available simulators
+        run: |
+          echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Available iPhone simulators:"
+          xcrun simctl list devices available iPhone || true
+
       - name: Cache DerivedData
         uses: actions/cache@v4
         with:
@@ -323,9 +343,50 @@ jobs:
         run: |
           defaults write com.apple.dt.Xcode IgnoreFileSystemDeviceInodeChanges -bool YES
 
+      - name: Boot simulator (timed)
+        run: |
+          set -euo pipefail
+          log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
+          log "Booting simulator $SIMULATOR_NAME ($SIMULATOR_UDID)"
+          start=$(date +%s)
+          xcrun simctl boot "$SIMULATOR_UDID" || true
+          xcrun simctl bootstatus "$SIMULATOR_UDID" -b -s
+          end=$(date +%s)
+          log "Simulator boot ready in $((end - start))s"
+
       - name: Run unit tests
         run: |
-          set -o pipefail && xcodebuild test \
+          set -euo pipefail
+          log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
+
+          if [ ! -d "$DERIVED_DATA_PATH" ]; then
+              log "DerivedData missing; running build-for-testing fallback"
+              xcodebuild build-for-testing \
+                -project ios/Offload.xcodeproj \
+                -scheme offload \
+                -sdk iphonesimulator \
+                -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+                -derivedDataPath "$DERIVED_DATA_PATH" \
+                CODE_SIGN_IDENTITY="" \
+                CODE_SIGNING_REQUIRED=NO \
+                CODE_SIGNING_ALLOWED=NO
+          fi
+
+          watchdog() {
+            while true; do
+              sleep 60
+              log "watchdog: xcodebuild still running"
+              xcrun simctl list devices | grep "$SIMULATOR_UDID" || true
+            done
+          }
+
+          log "Starting tests without rebuild on simulator $SIMULATOR_NAME"
+          start=$(date +%s)
+          watchdog &
+          watchdog_pid=$!
+          trap 'kill "$watchdog_pid" || true' EXIT
+
+          set -o pipefail && xcodebuild test-without-building \
             -project ios/Offload.xcodeproj \
             -scheme offload \
             -sdk iphonesimulator \
@@ -335,7 +396,11 @@ jobs:
             -enableCodeCoverage YES \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            -destination-timeout 120
+
+          end=$(date +%s)
+          log "Completed tests in $((end - start))s"
 
       - name: Check coverage threshold
         run: bash scripts/ios/check-coverage.sh "$TEST_RESULT_PATH"
