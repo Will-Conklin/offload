@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 PROJECT_PATH="${PROJECT_PATH:-${REPO_ROOT}/ios/Offload.xcodeproj}"
-SCHEME="${SCHEME:-Offload}"
+SCHEME="${SCHEME:-offload}"
 DEVICE_NAME="${DEVICE_NAME:-iPhone 15}"
 OS_VERSION="${OS_VERSION:-17.5}"
 DESTINATION="${DESTINATION:-platform=iOS Simulator,name=${DEVICE_NAME},OS=${OS_VERSION}}"

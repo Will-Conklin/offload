@@ -9,7 +9,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 source "${REPO_ROOT}/scripts/ci/readiness_env.sh"
 
 PROJECT_PATH="${PROJECT_PATH:-${REPO_ROOT}/ios/Offload.xcodeproj}"
-SCHEME="${SCHEME:-Offload}"
+SCHEME="${SCHEME:-offload}"
 CONFIGURATION="${CONFIGURATION:-Debug}"
 DEVICE_NAME="${DEVICE_NAME:-${CI_SIM_DEVICE}}"
 OS_VERSION="${OS_VERSION:-${CI_SIM_OS}}"

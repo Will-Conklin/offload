@@ -3,8 +3,8 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+CI_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${CI_SCRIPT_DIR}/../.." && pwd)"
 DOC_PATH="${REPO_ROOT}/docs/ci/ci-readiness.md"
 
 SECTION_START_PATTERN='^## Pinned CI Environment$'
