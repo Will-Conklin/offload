@@ -1,3 +1,5 @@
+<!-- Intent: Provide an up-to-date overview of Offload, including current implementation status and remaining work. -->
+
 # Offload
 
 An iOS app to quickly capture thoughts and organize them later, optionally with AI assistance.
@@ -40,25 +42,25 @@ The app follows a simple principle:
 
 ## Current Status
 
-🚧 **Active Development** - Pre-release prototype
+🚧 **Active Development** — Capture and inbox flows are functional; organization and AI flows are still stubbed.
 
 ### ✅ Implemented
 
-- Thought capture data model (CaptureEntry, HandOff*, Suggestion, Placement) stored with SwiftData
-- Destination models for plans, tasks, tags, categories, lists, and communication items
-- Repository layer for all models plus a CaptureWorkflowService for capture and inbox operations
-- SwiftUI inbox and capture sheet with voice recording and transcription via `VoiceRecordingService`
+- SwiftData capture/organization models (CaptureEntry, HandOffRequest/Run, Suggestion, SuggestionDecision, Placement, Plan/Task/Tag/Category, ListEntity/ListItem, CommunicationItem)
+- Repository layer plus `CaptureWorkflowService` for capture, inbox queries, and lifecycle operations
+- SwiftUI inbox and capture sheet with text + voice recording via `VoiceRecordingService`
+- Persistence wired through `PersistenceController` for production and preview containers
 
 ### 🔄 In Progress
 
-- Organization surfaces for plans, tags, and categories (Organize tab scaffolded)
-- AI hand-off orchestration, suggestion processing, and placement (stubbed in workflow service)
-- Settings and deeper navigation
+- AI hand-off orchestration, suggestion processing, and placement (methods stubbed in `CaptureWorkflowService`)
+- Organize tab and Settings view (UI exists with TODOs; AppRoot currently routes straight to Inbox instead of the tab shell)
+- Consistent capture entry points (MainTabView floating action button vs. direct Inbox navigation)
 
 ### 📋 Upcoming
 
-- AI-assisted organization with user approval
-- Expanded placement targets and manual organization flows
+- Present and act on AI suggestions with user approval
+- Build destination management flows (plans, categories, tags, lists, communication items) in Organize
 - Optional backend sync, widgets, and sharing after validation
 
 ## Architecture
@@ -108,12 +110,12 @@ graph LR
     end
 
     subgraph "Service Layer"
-        WORKFLOW[BrainDumpWorkflowService]
+        WORKFLOW[CaptureWorkflowService]
         VOICE[VoiceRecordingService]
     end
 
     subgraph "Repository Layer"
-        BDREPO[BrainDumpRepository]
+        CREPO[CaptureRepository]
         HOREPO[HandOffRepository]
         SUGREPO[SuggestionRepository]
         PREPO[PlacementRepository]
@@ -122,7 +124,7 @@ graph LR
     end
 
     subgraph "Domain Models"
-        BD[BrainDumpEntry]
+        CAP[CaptureEntry]
         HO[HandOffRequest/Run]
         SUG[Suggestion]
         PLAN[Plan]
@@ -138,18 +140,18 @@ graph LR
     CAPTURE --> VOICE
     ORGANIZE --> WORKFLOW
 
-    WORKFLOW --> BDREPO
+    WORKFLOW --> CREPO
     WORKFLOW --> HOREPO
     WORKFLOW --> SUGREPO
     WORKFLOW --> PREPO
 
-    BDREPO --> BD
+    CREPO --> CAP
     HOREPO --> HO
     SUGREPO --> SUG
     PLANREPO --> PLAN
     TREPO --> TASK
 
-    BD --> SWIFTDATA
+    CAP --> SWIFTDATA
     HO --> SWIFTDATA
     SUG --> SWIFTDATA
     PLAN --> SWIFTDATA
@@ -165,15 +167,13 @@ graph LR
 
 ## Data Model
 
-### Capture & Destination Models
-
-- **Capture + Workflow**: BrainDumpEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision → Placement
+- **Capture + Workflow**: CaptureEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision → Placement
 - **Destinations**: Plan/Task, Tag, Category, ListEntity/ListItem, CommunicationItem
 - **Lifecycle States**: raw → handedOff → ready → placed → archived
 
 ```mermaid
 flowchart LR
-    Entry[BrainDumpEntry\n(raw capture)]
+    Entry[CaptureEntry\n(raw capture)]
     Request[HandOffRequest]
     Run[HandOffRun]
     Suggestion[Suggestion]
@@ -191,7 +191,7 @@ sequenceDiagram
     participant User
     participant CaptureSheet as CaptureSheetView
     participant VoiceService
-    participant Workflow as BrainDumpWorkflowService
+    participant Workflow as CaptureWorkflowService
     participant SwiftData
 
     User->>CaptureSheet: Tap microphone
@@ -208,7 +208,7 @@ sequenceDiagram
 
     User->>CaptureSheet: Tap save
     CaptureSheet->>Workflow: captureEntry(rawText,inputType,source)
-    Workflow->>SwiftData: Insert BrainDumpEntry
+    Workflow->>SwiftData: Insert CaptureEntry
     SwiftData-->>Workflow: Persisted
     Workflow-->>CaptureSheet: Entry saved
     CaptureSheet-->>User: Entry appears in Inbox
@@ -283,16 +283,15 @@ Run tests with ⌘U in Xcode. Unit tests use in-memory SwiftData containers so t
 ### ✅ Implemented
 
 - **Capture**: Text and voice capture with live transcription using the Speech framework (offline-first)
-- **Inbox**: Thought inbox with lifecycle tracking (raw → archived)
+- **Inbox**: Capture inbox with lifecycle tracking (raw → archived) powered by `CaptureWorkflowService`
 - **Data Layer**: SwiftData models for capture workflow plus destinations (plans, tasks, tags, categories, lists, communication)
-- **Repositories**: CRUD + lifecycle helpers for every model
-- **Workflow Service**: `BrainDumpWorkflowService` for capture, inbox queries, and lifecycle actions
+- **Repositories**: CRUD + lifecycle helpers for every model; preview container seeded for SwiftUI previews
 
 ### 🚧 In Development
 
-- Manual organization surfaces for plans, tags, and categories
-- AI hand-off orchestration and suggestion processing
-- Settings, deeper navigation, and placement flows
+- Manual organization surfaces for plans, tags, and categories (Organize tab contains placeholders)
+- AI hand-off orchestration and suggestion processing (workflow methods stubbed)
+- Settings, deeper navigation, placement flows, and consistent tab-based shell
 
 ### 📅 Planned
 
@@ -319,8 +318,8 @@ Run tests with ⌘U in Xcode. Unit tests use in-memory SwiftData containers so t
 ### Implementation
 
 - ✅ Thought capture data layer and repositories
-- 🔄 Inbox and capture experience
-- 🔄 Organization UI and AI hand-off workflows
+- ✅ Inbox and capture experience with voice/text
+- 🔄 Organization UI, AI hand-off workflows, and placement flows
 
 ## Tech Stack
 

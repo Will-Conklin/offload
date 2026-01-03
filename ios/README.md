@@ -1,6 +1,8 @@
+<!-- Intent: Summarize the current state of the iOS app, architecture, and outstanding implementation work. -->
+
 # Offload iOS App
 
-SwiftUI iOS application for Offload - a friction-free thought capture and organization tool.
+SwiftUI iOS application for Offload — a friction-free thought capture and organization tool.
 
 [![iOS](https://img.shields.io/badge/iOS-17.0+-blue.svg)](https://www.apple.com/ios/)
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
@@ -20,15 +22,15 @@ SwiftUI iOS application for Offload - a friction-free thought capture and organi
 Offload/
 ├── App/                    # Application entry point & root navigation
 ├── Features/               # Feature modules organized by screen/flow
-│   ├── Inbox/             # Inbox view & related components
+│   ├── Inbox/             # Inbox view & related components (uses CaptureWorkflowService)
 │   ├── Capture/           # Quick capture flow (text + voice)
-│   └── Organize/          # Organization views (projects, tags, categories)
+│   └── Organize/          # Organization views (plans, tags, categories; TODO actions)
 ├── Domain/                 # Business logic & models (SwiftData)
-│   └── Models/            # Task, Project, Tag, Category, Thought
+│   └── Models/            # CaptureEntry, HandOff*, Suggestion*, Placement, Plan/Task/Tag/Category/List/Communication
 ├── Data/                   # Data layer
-│   ├── Persistence/       # SwiftData configuration & PersistenceController
-│   ├── Repositories/      # Data access patterns (TaskRepository, ProjectRepository)
-│   └── Services/          # VoiceRecordingService, AI services
+│   ├── Persistence/       # SwiftData configuration via PersistenceController + SwiftDataManager
+│   ├── Repositories/      # Data access patterns for capture, hand-off, suggestions, placements, and destinations
+│   └── Services/          # VoiceRecordingService, CaptureWorkflowService stubs for AI orchestration
 ├── DesignSystem/          # UI components, theme, design tokens
 ├── Resources/             # Assets, fonts, etc.
 └── SupportingFiles/       # Info.plist, entitlements
@@ -75,34 +77,30 @@ graph LR
 
 ### SwiftData Models
 
-All models use the `@Model` macro with comprehensive relationships:
+All models use the `@Model` macro with enum raw-value storage for SwiftData compatibility:
 
-- **Task**: Core task model with project, category, tags, blockedBy, and sourceThought relationships
-- **Project**: Hierarchical project organization with tasks
-- **Tag**: Many-to-many tagging system
-- **Category**: Single-category assignment per task
-- **Thought**: Captured thoughts with derivedTasks tracking
+- **Capture workflow**: CaptureEntry → HandOffRequest/Run → Suggestion → SuggestionDecision → Placement
+- **Destinations**: Plan, Task, Tag, Category, ListEntity/ListItem, CommunicationItem
 
 See [../docs/decisions/ADR-0001-stack.md](../docs/decisions/ADR-0001-stack.md) for detailed architecture decisions.
 
 ## Development Status
 
-🚧 **Active Development** - See main [README](../README.md) for detailed implementation status.
+🚧 **Active Development** — Capture and inbox flows are in place; AI hand-off and most organization UI are still TODO.
 
 ### Architecture Implementation
 
-- ✅ SwiftData models with complete relationships
-- ✅ Repository pattern for data access
-- ✅ Voice recording with real-time transcription
-- ✅ Comprehensive unit tests (45+ tests)
-- 🔄 UI implementation in progress
+- ✅ SwiftData models for capture workflow and destination entities
+- ✅ Repository pattern for all models plus `CaptureWorkflowService` for inbox/capture orchestration
+- ✅ Voice recording with real-time transcription in `CaptureSheetView`
+- 🔄 Organize tab, Settings view, and AI submission/placement flows remain stubbed
 
 ### Key Features
 
 - **Offline-First**: All data stored locally with SwiftData
 - **Voice Capture**: On-device speech recognition (iOS 17+)
-- **Type-Safe Queries**: Repository pattern with SwiftData predicates
-- **Comprehensive Testing**: Unit tests for all data layer operations
+- **Lifecycle Helpers**: Repositories wrap state transitions for captures, suggestions, and placements
+- **Testing**: In-memory SwiftData containers exercised through XCTest
 
 ## Building & Running
 
@@ -118,26 +116,12 @@ Run tests with ⌘U in Xcode.
 
 ### Test Coverage
 
-- **TaskRepositoryTests**: 25 unit tests covering CRUD operations, queries, relationships
-- **ProjectRepositoryTests**: 20 unit tests covering CRUD, queries, delete rules
-- **In-memory ModelContainer**: All tests use isolated test database
-- **Performance Tests**: Benchmarks for query operations with 100+ items
+- Repository tests for capture, hand-off, suggestions, placements, plans, tasks, tags, categories, lists, and communication items
+- Workflow tests for capture + inbox behaviors (AI submission/placement tests not yet written)
+- In-memory `ModelContainer` setup in each test case for isolation
 
 ### Test Framework
 
-Tests use XCTest with the `@MainActor` annotation for SwiftData compatibility:
+Tests currently use **XCTest** (with `@MainActor` where needed) alongside SwiftData in-memory containers.
 
-- Define tests with `func test...()` methods
-- Use `XCTAssertEqual`, `XCTAssertTrue`, etc. for assertions
-- `setUp` and `tearDown` methods for test isolation
-
-### Adding Tests to Xcode
-
-Test files need manual integration with Xcode:
-
-1. Right-click `OffloadTests` folder → "Add Files to 'Offload'..."
-2. Select test files from `ios/OffloadTests/`
-3. Ensure "OffloadTests" target is checked
-4. Run tests with ⌘U
-
-See main [README](../README.md#running-tests) for detailed testing instructions.
+See main [README](../README.md#running-tests) for detailed testing instructions and outstanding work.

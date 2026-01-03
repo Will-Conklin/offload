@@ -1,3 +1,5 @@
+<!-- Intent: Record the chosen technology stack and keep implementation notes aligned with the current codebase. -->
+
 # ADR-0001: Technology Stack and Architecture
 
 **Status:** Accepted
@@ -61,8 +63,8 @@ We will use the following technology stack:
 **Version Control:** Git with GitHub
 - Standard choice, good CI/CD integration
 
-**Testing:** Swift Testing framework
-- Modern alternative to XCTest, cleaner syntax
+**Testing:** XCTest with SwiftData in-memory containers (Swift Testing can be revisited later)
+- Current codebase uses XCTest; Swift Testing remains an option once tooling stabilizes
 
 ## Consequences
 
@@ -111,31 +113,28 @@ We will use the following technology stack:
 ## Implementation Notes
 
 ### SwiftData Setup
-- Use `PersistenceController` for app-wide container
-- Separate `preview` container for SwiftUI previews with sample data
-- Keep `SwiftDataManager` for complex multi-model scenarios
-- All models registered in schema: Task, Project, Tag, Category, Thought
+- Use `PersistenceController` for the app-wide container.
+- Separate `preview` container for SwiftUI previews with sample data.
+- Keep `SwiftDataManager` for configurable containers (CloudKit, migrations, backup/restore TODOs).
+- Schema registers capture workflow models (`CaptureEntry`, `HandOffRequest`, `HandOffRun`, `Suggestion`, `SuggestionDecision`, `Placement`) plus destinations (`Plan`, `Task`, `Tag`, `Category`, `ListEntity`, `ListItem`, `CommunicationItem`).
 
 ### SwiftData Relationships
 
-- **@Relationship** annotation with deleteRule: .nullify
-- One-to-Many: Project → Tasks, Category → Tasks
-- Many-to-Many: Task ↔ Tags
-- Self-Referencing: Task → blockedBy Tasks, Project → parentProject
-- Source Tracking: Thought → derivedTasks
+- **@Relationship** annotations with delete rules tuned per entity:
+  - Cascade: CaptureEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision; Plan → Task; ListEntity → ListItem
+  - Nullify: Task → Category; Tag ↔ Task (many-to-many)
+- Enum properties stored as strings with computed wrappers for type safety.
 
 ### Feature Organization
 - Each feature gets its own directory
 - Related views, view models, and components stay together
 - Shared components go in DesignSystem
 
-### Repository Pattern (Implemented Week 2)
+### Repository Pattern (Current)
 
-- Repositories provide clean interface to data layer
-- Allow swapping persistence mechanisms if needed
-- Keep ViewModels focused on presentation logic
-- **TaskRepository**: 10 query methods (inbox, next, by status/project/tag/category, due today, overdue, search)
-- **ProjectRepository**: 5 query methods (all, active, archived, by ID, search)
+- Repositories wrap SwiftData operations for capture workflow and destination entities (Capture, HandOff, Suggestion, Placement, Plan, Task, Tag, Category, List, Communication).
+- `CaptureWorkflowService` orchestrates capture/inbox behaviors; AI submission/placement methods are stubbed for future implementation.
+- Pattern keeps views lightweight and enables future persistence swaps if needed.
 
 ### SwiftData Predicate Limitations (Week 2 Findings)
 
