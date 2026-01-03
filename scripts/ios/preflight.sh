@@ -89,7 +89,7 @@ assert_scheme_exists() {
     err "xcodebuild command: xcodebuild -list -project \"${PROJECT_PATH}\""
     err "exit code: ${list_status}"
     err "stderr:"
-    err "$(cat "${list_stderr}")"
+    cat "${list_stderr}" >&2
     print_diagnostics
     rm -f "${list_stderr}"
     exit 1
