@@ -186,6 +186,9 @@ main() {
     exit 1
   fi
 
+  # Show first 200 chars of simctl output for debugging
+  info "simctl output (first 200 chars): ${simctl_output:0:200}"
+
   if ! selection_output="$(printf "%s" "${simctl_output}" | select_simulator)"; then
     err "Simulator selection failed."
     exit 1
