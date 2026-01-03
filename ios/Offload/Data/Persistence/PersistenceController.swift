@@ -49,7 +49,6 @@ struct PersistenceController {
     }()
 
     /// Preview container with sample data for SwiftUI previews
-    @MainActor
     static let preview: ModelContainer = {
         let schema = Schema([
             // Core workflow models
@@ -79,7 +78,9 @@ struct PersistenceController {
                 configurations: [configuration]
             )
 
-            let context = container.mainContext
+            let context = MainActor.assumeIsolated {
+                container.mainContext
+            }
 
             // Insert sample thought captures
             let sampleEntries = [
