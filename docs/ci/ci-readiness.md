@@ -10,9 +10,11 @@
 
 ## Pinned CI Environment
 CI_MACOS_RUNNER: macos-14
-CI_XCODE_VERSION: 16.0
+CI_XCODE_VERSION: 16.2
 CI_SIM_DEVICE: iPhone 15
 CI_SIM_OS: 17.5
+
+> Note: macos-14 GitHub runners no longer provide Xcode 16.0; they ship Xcode 16.2+. Pin CI_XCODE_VERSION to 16.2 to avoid resolution failures.
 
 ## Local build and test commands (xcodebuild)
 Use the project file directly with the shared `offload` scheme.
