@@ -8,6 +8,10 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 source "${REPO_ROOT}/scripts/ci/readiness_env.sh"
 
+SIMCTL_RUNTIMES_OUTPUT=""
+SIMCTL_DEVICES_OUTPUT=""
+DESTINATIONS_OUTPUT=""
+
 PROJECT_PATH="${PROJECT_PATH:-${REPO_ROOT}/ios/Offload.xcodeproj}"
 SCHEME="${SCHEME:-offload}"
 CONFIGURATION="${CONFIGURATION:-Debug}"
@@ -23,6 +27,11 @@ info() {
   echo "[INFO] $*"
 }
 
+log_pinned_destination() {
+  info "Pinned simulator device: ${CI_SIM_DEVICE}"
+  info "Pinned simulator OS: ${CI_SIM_OS}"
+}
+
 log_toolchain_context() {
   echo "[INFO] sw_vers"
   if command -v sw_vers >/dev/null 2>&1; then
@@ -36,6 +45,20 @@ log_toolchain_context() {
     xcodebuild -version || true
   else
     echo "xcodebuild not available"
+  fi
+}
+
+log_simulator_inventory() {
+  if command -v xcrun >/dev/null 2>&1; then
+    echo "[INFO] xcrun simctl list runtimes"
+    SIMCTL_RUNTIMES_OUTPUT="$(xcrun simctl list runtimes || true)"
+    printf "%s\n" "${SIMCTL_RUNTIMES_OUTPUT}"
+
+    echo "[INFO] xcrun simctl list devices"
+    SIMCTL_DEVICES_OUTPUT="$(xcrun simctl list devices || true)"
+    printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}"
+  else
+    err "xcrun not available"
   fi
 }
 
@@ -106,31 +129,65 @@ assert_scheme_exists() {
   fi
 }
 
-assert_destination_available() {
-  local destinations_output=""
+query_destinations() {
   local destinations_status=0
 
-  if ! destinations_output="$(xcodebuild -showdestinations -project "${PROJECT_PATH}" -scheme "${SCHEME}" 2>&1)"; then
+  if ! DESTINATIONS_OUTPUT="$(xcodebuild -showdestinations -project "${PROJECT_PATH}" -scheme "${SCHEME}" 2>&1)"; then
     destinations_status=$?
   fi
 
   if [[ ${destinations_status} -ne 0 ]]; then
     err "Unable to query destinations with xcodebuild:"
-    err "${destinations_output}"
+    err "${DESTINATIONS_OUTPUT}"
     err "Fallback: ensure simulators are installed via Xcode > Settings > Platforms."
     print_diagnostics
     exit 1
   fi
+}
 
-  if printf "%s\n" "${destinations_output}" | grep -Eq "name:${DEVICE_NAME}.*,.*OS: ?${OS_VERSION}"; then
+print_available_ios_runtimes() {
+  if [[ -z ${SIMCTL_RUNTIMES_OUTPUT} ]]; then
+    echo "  (no runtimes found via xcrun simctl list runtimes)"
+    return
+  fi
+
+  printf "%s\n" "${SIMCTL_RUNTIMES_OUTPUT}" | awk '/iOS/ {print "  - " $0}'
+}
+
+print_devices_for_pinned_runtime() {
+  local runtime_header="-- iOS ${OS_VERSION} --"
+
+  if [[ -z ${SIMCTL_DEVICES_OUTPUT} ]]; then
+    echo "  (no devices found via xcrun simctl list devices)"
+    return
+  fi
+
+  if ! printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}" | grep -Fq "${runtime_header}"; then
+    echo "  (no devices found for ${runtime_header})"
+    return
+  fi
+
+  printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}" | awk -v header="${runtime_header}" '
+    $0 == header {flag=1; next}
+    /^-- / {flag=0}
+    flag && NF {sub(/^[[:space:]]*/, ""); print "  - " $0}
+  '
+}
+
+assert_destination_available() {
+  query_destinations
+
+  if printf "%s\n" "${DESTINATIONS_OUTPUT}" | grep -Eq "name:${DEVICE_NAME}.*,.*OS: ?${OS_VERSION}"; then
     return 0
   fi
 
   err "Destination not found for ${DESTINATION}"
-  err "Try installing the simulator (Xcode > Settings > Platforms) or update DEVICE_NAME/OS_VERSION."
-  err "Available destinations:"
-  printf "%s\n" "${destinations_output}" | sed 's/^/  /'
-  print_diagnostics
+  err "Available iOS runtimes:"
+  print_available_ios_runtimes >&2
+  err "Available devices for chosen runtime:"
+  print_devices_for_pinned_runtime >&2
+  err "Available destinations from xcodebuild:"
+  printf "%s\n" "${DESTINATIONS_OUTPUT}" | sed 's/^/  /' >&2
   exit 1
 }
 
@@ -138,6 +195,8 @@ main() {
   info "Project: ${PROJECT_PATH}"
   info "Scheme: ${SCHEME}"
   info "Destination: ${DESTINATION}"
+  log_pinned_destination
+  log_simulator_inventory
 
   require_command "xcodebuild" "Install Xcode: https://developer.apple.com/xcode/ or run 'xcode-select --install'."
 
