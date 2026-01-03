@@ -72,6 +72,11 @@ jobs:
           OS_VERSION: ${{ env.CI_SIM_OS }}
         run: scripts/ios/test.sh
 
+      - name: Coverage (non-blocking)
+        if: ${{ always() }}
+        continue-on-error: true
+        run: scripts/ios/coverage.sh
+
       - name: Write diagnostics report
         if: ${{ always() }}
         run: |
@@ -95,6 +100,14 @@ jobs:
         with:
           name: ios-test-results
           path: .ci/TestResults.xcresult
+          if-no-files-found: ignore
+
+      - name: Upload coverage
+        if: ${{ always() && hashFiles('.ci/coverage/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-coverage
+          path: .ci/coverage
           if-no-files-found: ignore
 
       - name: Upload diagnostics
