@@ -9,7 +9,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 source "${REPO_ROOT}/scripts/ci/readiness_env.sh"
 
 PROJECT_PATH="${PROJECT_PATH:-${REPO_ROOT}/ios/Offload.xcodeproj}"
-SCHEME="${SCHEME:-Offload}"
+SCHEME="${SCHEME:-offload}"
 CONFIGURATION="${CONFIGURATION:-Debug}"
 DEVICE_NAME="${DEVICE_NAME:-${CI_SIM_DEVICE}}"
 OS_VERSION="${OS_VERSION:-${CI_SIM_OS}}"
@@ -21,6 +21,31 @@ err() {
 
 info() {
   echo "[INFO] $*"
+}
+
+print_diagnostics() {
+  echo "[DIAG] sw_vers"
+  if command -v sw_vers >/dev/null 2>&1; then
+    sw_vers || true
+  else
+    echo "sw_vers not available"
+  fi
+
+  echo "[DIAG] xcodebuild -version"
+  if command -v xcodebuild >/dev/null 2>&1; then
+    xcodebuild -version || true
+  else
+    echo "xcodebuild not available"
+  fi
+
+  if command -v xcrun >/dev/null 2>&1; then
+    echo "[DIAG] simctl list runtimes"
+    xcrun simctl list runtimes || true
+    echo "[DIAG] simctl list devices"
+    xcrun simctl list devices || true
+  else
+    echo "[DIAG] xcrun not available"
+  fi
 }
 
 require_command() {
@@ -39,6 +64,7 @@ assert_scheme_exists() {
   if ! list_output="$(xcodebuild -list -project "${PROJECT_PATH}" 2>&1)"; then
     err "Unable to list schemes for ${PROJECT_PATH}"
     err "${list_output}"
+    print_diagnostics
     exit 1
   fi
 
@@ -63,6 +89,7 @@ assert_destination_available() {
     err "Unable to query destinations with xcodebuild:"
     err "${destinations_output}"
     err "Fallback: ensure simulators are installed via Xcode > Settings > Platforms."
+    print_diagnostics
     exit 1
   fi
 
@@ -74,6 +101,7 @@ assert_destination_available() {
   err "Try installing the simulator (Xcode > Settings > Platforms) or update DEVICE_NAME/OS_VERSION."
   err "Available destinations:"
   printf "%s\n" "${destinations_output}" | sed 's/^/  /'
+  print_diagnostics
   exit 1
 }
 
@@ -88,6 +116,7 @@ main() {
   xcode_version_output="$(xcodebuild -version 2>&1 || true)"
   if [[ -z ${xcode_version_output} ]]; then
     err "xcodebuild -version returned no output"
+    print_diagnostics
     exit 1
   fi
 
@@ -95,6 +124,7 @@ main() {
     err "Pinned CI_XCODE_VERSION in docs/ci/ci-readiness.md does not match runner Xcode"
     err "Expected: ${CI_XCODE_VERSION}"
     err "Actual xcodebuild -version: ${xcode_version_output//$'\n'/; }"
+    print_diagnostics
     exit 1
   fi
 

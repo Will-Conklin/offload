@@ -89,6 +89,10 @@ jobs:
           sw_vers
           xcodebuild -version
 
+      - name: Write diagnostics report
+        if: ${{ always() }}
+        run: scripts/ci/write-env-report.sh
+
       - name: Preflight
         run: scripts/ios/preflight.sh
 
@@ -102,23 +106,6 @@ jobs:
         if: ${{ always() }}
         continue-on-error: true
         run: scripts/ios/coverage.sh
-
-      - name: Write diagnostics report
-        if: ${{ always() }}
-        run: |
-          mkdir -p .ci
-          {
-            echo "CI_MACOS_RUNNER=${CI_MACOS_RUNNER}";
-            echo "CI_XCODE_VERSION=${CI_XCODE_VERSION}";
-            echo "CI_SIM_DEVICE=${CI_SIM_DEVICE}";
-            echo "CI_SIM_OS=${CI_SIM_OS}";
-            echo "";
-            echo "sw_vers:";
-            sw_vers || true;
-            echo "";
-            echo "xcodebuild -version:";
-            xcodebuild -version || true;
-          } > .ci/env-report.txt
 
       - name: Upload test results
         if: ${{ always() && hashFiles('.ci/TestResults.xcresult/**') != '' }}
