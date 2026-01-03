@@ -17,7 +17,8 @@ err() {
 }
 
 select_simulator() {
-  python3 - "${CI_SIM_DEVICE}" "${CI_SIM_OS}" <<'PY'
+  local json_data="$1"
+  python3 - "${CI_SIM_DEVICE}" "${CI_SIM_OS}" "${json_data}" <<'PY'
 import json
 import re
 import sys
@@ -25,6 +26,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 requested_device = sys.argv[1].strip()
 requested_os = sys.argv[2].strip()
+json_data = sys.argv[3]
 
 def parse_os_tuple(version: str) -> Tuple[int, ...]:
     numbers = re.findall(r"\d+", version)
@@ -82,7 +84,7 @@ def first_iphone(devices: List[Tuple[str, str]]) -> Optional[Tuple[str, str]]:
 
 def main() -> int:
     try:
-        payload = json.load(sys.stdin)
+        payload = json.loads(json_data)
     except Exception as exc:  # pragma: no cover - diagnostic path
         print(f"[ERROR] Failed to parse simulator JSON: {exc}", file=sys.stderr)
         return 1
@@ -189,7 +191,7 @@ main() {
   # Show first 200 chars of simctl output for debugging
   echo "[DEBUG] simctl output (first 200 chars): ${simctl_output:0:200}" >&2
 
-  if ! selection_output="$(printf "%s" "${simctl_output}" | select_simulator)"; then
+  if ! selection_output="$(select_simulator "${simctl_output}")"; then
     err "Simulator selection failed."
     exit 1
   fi
