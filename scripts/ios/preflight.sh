@@ -183,13 +183,17 @@ assert_destination_available() {
   query_destinations
 
   if [[ -n ${destination_id} ]]; then
-    if printf "%s\n" "${DESTINATIONS_OUTPUT}" | grep -Eq "id: ?${destination_id}"; then
+    # Validate UDID against simctl output (authoritative source for simulators)
+    # xcodebuild -showdestinations may not list specific UDIDs on CI runners
+    if printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}" | grep -Fq "${destination_id}"; then
+      info "Validated simulator UDID ${destination_id} exists in simctl output"
       return 0
     fi
 
     err "Destination not found for simulator id ${destination_id}"
-    err "Available destinations:"
-    printf "%s\n" "${DESTINATIONS_OUTPUT}" | sed 's/^/  /'
+    err "The UDID was not found in 'xcrun simctl list devices' output."
+    err "Available devices for chosen runtime:"
+    print_devices_for_pinned_runtime >&2
     print_diagnostics
     exit 1
   else
