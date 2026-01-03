@@ -23,22 +23,49 @@ jobs:
       - name: Parse pinned CI environment
         id: read_env
         run: |
-          bash scripts/ci/readiness_env.sh
+          set -euo pipefail
+          source scripts/ci/readiness_env.sh
+
+          if [[ -z "${CI_MACOS_RUNNER:-}" ]]; then
+            echo "CI_MACOS_RUNNER is empty; ensure docs/ci/ci-readiness.md defines it." >&2
+            exit 1
+          fi
+
           echo "macos_runner=${CI_MACOS_RUNNER}" >> "$GITHUB_OUTPUT"
           echo "xcode_version=${CI_XCODE_VERSION}" >> "$GITHUB_OUTPUT"
           echo "sim_device=${CI_SIM_DEVICE}" >> "$GITHUB_OUTPUT"
           echo "sim_os=${CI_SIM_OS}" >> "$GITHUB_OUTPUT"
+
+      - name: Guard pinned runner output
+        run: |
+          if [[ -z "${{ steps.read_env.outputs.macos_runner }}" ]]; then
+            echo "Bootstrap output macos_runner is empty; verify docs/ci/ci-readiness.md" >&2
+            exit 1
+          fi
+
+          echo "Resolved CI_MACOS_RUNNER from bootstrap: ${{ steps.read_env.outputs.macos_runner }}"
 
   build:
     name: Build with pinned environment
     needs: bootstrap
     runs-on: ${{ needs.bootstrap.outputs.macos_runner }}
     steps:
+      - name: Guard resolved runner
+        run: |
+          set -euo pipefail
+          echo "Using CI_MACOS_RUNNER from bootstrap: '${{ needs.bootstrap.outputs.macos_runner }}'"
+          if [[ -z "${{ needs.bootstrap.outputs.macos_runner }}" ]]; then
+            echo "build job cannot proceed without a pinned CI_MACOS_RUNNER from docs/ci/ci-readiness.md" >&2
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Parse pinned CI environment
-        run: bash scripts/ci/readiness_env.sh
+        run: |
+          set -euo pipefail
+          source scripts/ci/readiness_env.sh
 
       - name: Print pinned values
         run: |
