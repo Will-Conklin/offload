@@ -36,7 +36,7 @@ final class HandOffRepository {
     func fetchRequestsByEntry(_ entryId: UUID) throws -> [HandOffRequest] {
         let descriptor = FetchDescriptor<HandOffRequest>(
             predicate: #Predicate { request in
-                request.brainDumpEntry?.id == entryId
+                request.captureEntry?.id == entryId
             },
             sortBy: [SortDescriptor(\.requestedAt, order: .reverse)]
         )

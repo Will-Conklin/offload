@@ -52,17 +52,16 @@ final class SuggestionRepository {
         return try modelContext.fetch(descriptor)
     }
 
-    /// Fetch pending suggestions (no accepted decision) for a brain dump entry
+    /// Fetch pending suggestions (no accepted decision) for a capture entry
     func fetchPendingSuggestionsForEntry(_ entryId: UUID) throws -> [Suggestion] {
-        let descriptor = FetchDescriptor<Suggestion>(
-            predicate: #Predicate { suggestion in
-                suggestion.handOffRun?.handOffRequest?.brainDumpEntry?.id == entryId
-            }
-        )
-        let suggestions = try modelContext.fetch(descriptor)
+        // SwiftData predicates do not support optional chaining across relationships.
+        let suggestions = try fetchAllSuggestions()
+        let entrySuggestions = suggestions.filter { suggestion in
+            suggestion.handOffRun?.handOffRequest?.captureEntry?.id == entryId
+        }
 
         // Filter to only suggestions without an accepted decision
-        return suggestions.filter { suggestion in
+        return entrySuggestions.filter { suggestion in
             guard let decisions = suggestion.decisions else { return true }
             return !decisions.contains { $0.decisionType == .accepted }
         }
