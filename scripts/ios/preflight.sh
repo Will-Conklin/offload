@@ -6,10 +6,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
+source "${REPO_ROOT}/scripts/ci/readiness_env.sh"
+
 PROJECT_PATH="${PROJECT_PATH:-${REPO_ROOT}/ios/Offload.xcodeproj}"
 SCHEME="${SCHEME:-Offload}"
-DEVICE_NAME="${DEVICE_NAME:-iPhone 15}"
-OS_VERSION="${OS_VERSION:-17.5}"
+CONFIGURATION="${CONFIGURATION:-Debug}"
+DEVICE_NAME="${DEVICE_NAME:-${CI_SIM_DEVICE}}"
+OS_VERSION="${OS_VERSION:-${CI_SIM_OS}}"
 DESTINATION="${DESTINATION:-platform=iOS Simulator,name=${DEVICE_NAME},OS=${OS_VERSION}}"
 
 err() {
@@ -80,6 +83,20 @@ main() {
   info "Destination: ${DESTINATION}"
 
   require_command "xcodebuild" "Install Xcode: https://developer.apple.com/xcode/ or run 'xcode-select --install'."
+
+  local xcode_version_output
+  xcode_version_output="$(xcodebuild -version 2>&1 || true)"
+  if [[ -z ${xcode_version_output} ]]; then
+    err "xcodebuild -version returned no output"
+    exit 1
+  fi
+
+  if ! grep -Fq "${CI_XCODE_VERSION}" <<<"${xcode_version_output}"; then
+    err "Pinned CI_XCODE_VERSION in docs/ci/ci-readiness.md does not match runner Xcode"
+    err "Expected: ${CI_XCODE_VERSION}"
+    err "Actual xcodebuild -version: ${xcode_version_output//$'\n'/; }"
+    exit 1
+  fi
 
   assert_scheme_exists
   assert_destination_available

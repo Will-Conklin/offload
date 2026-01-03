@@ -1,0 +1,88 @@
+# Intent: Build-only iOS workflow driven by pinned CI environment values defined solely in docs/ci/ci-readiness.md.
+
+name: iOS Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  bootstrap:
+    name: Read pinned CI environment
+    runs-on: macos-14
+    outputs:
+      macos_runner: ${{ steps.read_env.outputs.macos_runner }}
+      xcode_version: ${{ steps.read_env.outputs.xcode_version }}
+      sim_device: ${{ steps.read_env.outputs.sim_device }}
+      sim_os: ${{ steps.read_env.outputs.sim_os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Parse pinned CI environment
+        id: read_env
+        run: |
+          bash scripts/ci/readiness_env.sh
+          echo "macos_runner=${CI_MACOS_RUNNER}" >> "$GITHUB_OUTPUT"
+          echo "xcode_version=${CI_XCODE_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "sim_device=${CI_SIM_DEVICE}" >> "$GITHUB_OUTPUT"
+          echo "sim_os=${CI_SIM_OS}" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build with pinned environment
+    needs: bootstrap
+    runs-on: ${{ needs.bootstrap.outputs.macos_runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Parse pinned CI environment
+        run: bash scripts/ci/readiness_env.sh
+
+      - name: Print pinned values
+        run: |
+          echo "Pinned values from docs/ci/ci-readiness.md:" \
+            "CI_MACOS_RUNNER=${CI_MACOS_RUNNER}" \
+            "CI_XCODE_VERSION=${CI_XCODE_VERSION}" \
+            "CI_SIM_DEVICE=${CI_SIM_DEVICE}" \
+            "CI_SIM_OS=${CI_SIM_OS}"
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ needs.bootstrap.outputs.xcode_version }}
+
+      - name: Show runner versions
+        run: |
+          sw_vers
+          xcodebuild -version
+
+      - name: Preflight
+        run: scripts/ios/preflight.sh
+
+      - name: Build
+        run: scripts/ios/build.sh
+
+      - name: Write diagnostics report
+        run: |
+          mkdir -p .ci
+          {
+            echo "CI_MACOS_RUNNER=${CI_MACOS_RUNNER}";
+            echo "CI_XCODE_VERSION=${CI_XCODE_VERSION}";
+            echo "CI_SIM_DEVICE=${CI_SIM_DEVICE}";
+            echo "CI_SIM_OS=${CI_SIM_OS}";
+            echo "";
+            echo "sw_vers:";
+            sw_vers;
+            echo "";
+            echo "xcodebuild -version:";
+            xcodebuild -version;
+          } > .ci/env-report.txt
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ci-env-report
+          path: .ci/env-report.txt
