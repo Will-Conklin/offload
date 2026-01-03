@@ -43,9 +43,9 @@ xcodebuild \
 - **Location**: `ios/Offload.xcodeproj/xcshareddata/xcschemes/offload.xcscheme`
 
 ## Targets and deployment settings
-- **offload (app)**: iOS deployment target `26.2`.
-- **offloadTests (unit tests)**: Dependent on the `offload` host app, deployment target `26.2`.
-- **offloadUITests (UI tests)**: Launches `offload`, deployment target `26.2`.
+- **offload (app)**: iOS deployment target `17.0`.
+- **offloadTests (unit tests)**: Dependent on the `offload` host app, deployment target `17.0`.
+- **offloadUITests (UI tests)**: Launches `offload`, deployment target `17.0`.
 
 ## Known CI gaps
 - Build-only GitHub Actions workflow exists at `.github/workflows/ios-build.yml`; add automated tests when ready.
