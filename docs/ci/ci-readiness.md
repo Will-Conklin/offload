@@ -11,12 +11,12 @@
 ## Pinned CI Environment
 CI_MACOS_RUNNER: macos-14
 CI_XCODE_VERSION: 16.2
-CI_SIM_DEVICE: iPhone 15
+CI_SIM_DEVICE: iPhone 16
 CI_SIM_OS: 18.1
 
 > Note: macos-14 GitHub runners no longer provide Xcode 16.0; they ship Xcode 16.2+. Pin CI_XCODE_VERSION to 16.2 to avoid resolution failures.
 
-On macos-14 runners with Xcode 16.2, `xcrun simctl list runtimes` exposes the iOS 18.1 runtime, and `xcrun simctl list devices iOS 18.1` includes an **iPhone 15** simulator. Pinning the destination to that pairing prevents `xcodebuild` from falling back to "latest".
+On macos-14 runners with Xcode 16.2, `xcrun simctl list runtimes` exposes the iOS 18.1 runtime, and `xcrun simctl list devices iOS 18.1` includes an **iPhone 16** simulator. Pinning the destination to that pairing prevents `xcodebuild` from falling back to "latest".
 
 ## Local build and test commands (xcodebuild)
 Use the project file directly with the shared `offload` scheme.
@@ -26,14 +26,14 @@ Use the project file directly with the shared `offload` scheme.
 xcodebuild \
   -project ios/Offload.xcodeproj \
   -scheme offload \
-  -destination "platform=iOS Simulator,name=iPhone 15,OS=18.1" \
+  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.1" \
   clean build
 
 # Run unit and UI tests (code coverage optional)
 xcodebuild \
   -project ios/Offload.xcodeproj \
   -scheme offload \
-  -destination "platform=iOS Simulator,name=iPhone 15,OS=18.1" \
+  -destination "platform=iOS Simulator,name=iPhone 16,OS=18.1" \
   -enableCodeCoverage YES \
   test
 ```
