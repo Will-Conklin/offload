@@ -6,7 +6,13 @@
 - iOS project is under `ios/Offload.xcodeproj` with no separate `.xcworkspace` committed.
 - App target is `offload`; test targets are `offloadTests` (unit) and `offloadUITests` (UI). All share an `IPHONEOS_DEPLOYMENT_TARGET` of `26.2`.
 - Shared scheme **offload** is committed at `ios/Offload.xcodeproj/xcshareddata/xcschemes/offload.xcscheme`.
-- There are no reusable iOS CI scripts under `scripts/ios/`.
+- Reusable iOS CI scripts live under `scripts/ios/` with shared environment parsing in `scripts/ci/readiness_env.sh`.
+
+## Pinned CI Environment
+CI_MACOS_RUNNER: macos-14
+CI_XCODE_VERSION: 15.4
+CI_SIM_DEVICE: iPhone 15
+CI_SIM_OS: 17.5
 
 ## Local build and test commands (xcodebuild)
 Use the project file directly with the shared `offload` scheme.
@@ -38,9 +44,5 @@ xcodebuild \
 - **offloadUITests (UI tests)**: Launches `offload`, deployment target `26.2`.
 
 ## Known CI gaps
-- No CI workflow files exist (e.g., `.github/workflows/` is empty for iOS).
-- No helper scripts for simulator booting or derived data cleanup under `scripts/ios/`.
-
-## Files to add or modify for CI readiness
-- `.github/workflows/ios-ci.yml` (or similar): Define xcodebuild-based build + test job using the shared scheme.
-- `scripts/ios/ci-build.sh` (optional but recommended): Encapsulate the build/test commands above for reuse across local and CI runs.
+- Build-only GitHub Actions workflow exists at `.github/workflows/ios-build.yml`; add automated tests when ready.
+- Simulator boot/install automation remains manual; improve `scripts/ios/` helpers as simulator coverage expands.
