@@ -16,7 +16,10 @@ err() {
 
 parse_values() {
   local in_section=false
-  local -A values=()
+  local ci_macos_runner=""
+  local ci_xcode_version=""
+  local ci_sim_device=""
+  local ci_sim_os=""
 
   while IFS= read -r line; do
     if [[ ${in_section} == false ]]; then
@@ -34,21 +37,37 @@ parse_values() {
       local key="${BASH_REMATCH[1]}"
       local value="${BASH_REMATCH[2]}"
       if [[ -n ${value} ]]; then
-        values["${key}"]="${value}"
+        case "${key}" in
+          CI_MACOS_RUNNER) ci_macos_runner="${value}" ;;
+          CI_XCODE_VERSION) ci_xcode_version="${value}" ;;
+          CI_SIM_DEVICE) ci_sim_device="${value}" ;;
+          CI_SIM_OS) ci_sim_os="${value}" ;;
+        esac
       fi
     fi
   done <"${DOC_PATH}"
 
   for required_key in CI_MACOS_RUNNER CI_XCODE_VERSION CI_SIM_DEVICE CI_SIM_OS; do
-    if [[ -z ${values[${required_key}]:-} ]]; then
-      return 1
-    fi
+    case "${required_key}" in
+      CI_MACOS_RUNNER)
+        [[ -z ${ci_macos_runner} ]] && return 1
+        ;;
+      CI_XCODE_VERSION)
+        [[ -z ${ci_xcode_version} ]] && return 1
+        ;;
+      CI_SIM_DEVICE)
+        [[ -z ${ci_sim_device} ]] && return 1
+        ;;
+      CI_SIM_OS)
+        [[ -z ${ci_sim_os} ]] && return 1
+        ;;
+    esac
   done
 
-  export CI_MACOS_RUNNER="${values[CI_MACOS_RUNNER]}"
-  export CI_XCODE_VERSION="${values[CI_XCODE_VERSION]}"
-  export CI_SIM_DEVICE="${values[CI_SIM_DEVICE]}"
-  export CI_SIM_OS="${values[CI_SIM_OS]}"
+  export CI_MACOS_RUNNER="${ci_macos_runner}"
+  export CI_XCODE_VERSION="${ci_xcode_version}"
+  export CI_SIM_DEVICE="${ci_sim_device}"
+  export CI_SIM_OS="${ci_sim_os}"
 }
 
 main() {
