@@ -10,7 +10,7 @@
 
 ## Pinned CI Environment
 CI_MACOS_RUNNER: macos-14
-CI_XCODE_VERSION: 15.4
+CI_XCODE_VERSION: 16.0
 CI_SIM_DEVICE: iPhone 15
 CI_SIM_OS: 17.5
 
