@@ -6,7 +6,7 @@ This document describes the current Offload iOS app scaffolding and what still n
 
 ## Overview
 
-The app compiles with functional capture + inbox flows. Organization, AI hand-off, and settings remain mostly placeholder.
+The app compiles with functional capture + inbox flows. Organization now supports quick-add for plans, categories, and tags, while AI hand-off and settings remain mostly placeholder.
 
 ## Layer Breakdown
 
@@ -18,7 +18,7 @@ The app compiles with functional capture + inbox flows. Organization, AI hand-of
 ### 2) Features (`Features/`)
 - **Inbox/**: `InboxView` lists `CaptureEntry` items via `CaptureWorkflowService` and supports deletion.
 - **Capture/**: `CaptureSheetView` is the primary experience with text + voice capture through `VoiceRecordingService`; `CaptureView` is a legacy text-only modal kept for reference.
-- **Organize/**: `OrganizeView` shows plans, categories, and tags with TODOs for creation/editing actions.
+- **Organize/**: `OrganizeView` lists plans, categories, and tags with lightweight quick-add sheets; editing flows are still TODO.
 - **ContentView.swift**: Legacy scaffold view retained for reference.
 
 ### 3) Domain Models (`Domain/Models/`)
@@ -44,12 +44,13 @@ The app compiles with functional capture + inbox flows. Organization, AI hand-of
 ### ✅ Working
 - Capture via text or voice, saved as `CaptureEntry` with lifecycle state.
 - Inbox list with delete/archive operations through `CaptureWorkflowService`.
+- Manual creation of plans, categories, and tags through Organize quick-add sheets.
 - SwiftData schema registered for production and preview containers.
 - Repository + workflow tests using in-memory SwiftData.
 
 ### 🔄 In Progress / TODO
 - AI hand-off submission, suggestion presentation, decisions, and placement flows (`CaptureWorkflowService` stubs).
-- Organize tab creation/editing flows for plans, categories, tags, lists, and communication items.
+- Organize tab editing flows for plans, categories, tags, plus creation/editing for lists and communication items.
 - Settings view and decision on using `MainTabView` as the app shell.
 - CloudKit/backup/migration strategy in `SwiftDataManager`.
 
