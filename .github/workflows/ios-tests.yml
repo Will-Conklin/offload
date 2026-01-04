@@ -71,30 +71,14 @@ jobs:
           set -euo pipefail
           source scripts/ci/readiness_env.sh
 
-      - name: Print pinned values
-        run: |
-          echo "Pinned values from docs/ci/ci-readiness.md:" \
-            "CI_MACOS_RUNNER=${CI_MACOS_RUNNER}" \
-            "CI_XCODE_VERSION=${CI_XCODE_VERSION}" \
-            "CI_SIM_DEVICE=${CI_SIM_DEVICE}" \
-            "CI_SIM_OS=${CI_SIM_OS}"
-
       - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ needs.bootstrap.outputs.ci_xcode_version }}
 
-      - name: Show runner versions
-        run: |
-          sw_vers
-          xcodebuild -version
-
       - name: Write diagnostics report
         if: ${{ always() }}
         run: bash scripts/ci/write-env-report.sh
-
-      - name: Preflight
-        run: scripts/ios/preflight.sh
 
       - name: Test
         env:
