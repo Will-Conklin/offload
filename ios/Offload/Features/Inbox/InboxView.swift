@@ -16,7 +16,14 @@ struct InboxView: View {
 
     @State private var showingCapture = false
     @State private var workflowService: CaptureWorkflowService?
-    @State private var entries: [CaptureEntry] = []
+
+    @Query(
+        filter: #Predicate<CaptureEntry> { entry in
+            entry.lifecycleState == LifecycleState.raw.rawValue
+        },
+        sort: [SortDescriptor(\.createdAt, order: .reverse)]
+    )
+    private var entries: [CaptureEntry]
 
     var body: some View {
         List {
@@ -39,9 +46,6 @@ struct InboxView: View {
             }
         }
         .sheet(isPresented: $showingCapture, onDismiss: {
-            _Concurrency.Task {
-                await loadInbox()
-            }
         }) {
             CaptureSheetView()
         }
@@ -49,19 +53,6 @@ struct InboxView: View {
             if workflowService == nil {
                 workflowService = CaptureWorkflowService(modelContext: modelContext)
             }
-            await loadInbox()
-        }
-        .refreshable {
-            await loadInbox()
-        }
-    }
-
-    private func loadInbox() async {
-        guard let workflowService = workflowService else { return }
-        do {
-            entries = try workflowService.fetchInbox()
-        } catch {
-            // Error is already set in workflowService.errorMessage
         }
     }
 
@@ -74,7 +65,6 @@ struct InboxView: View {
                 _Concurrency.Task {
                     do {
                         try await workflowService.deleteEntry(entry)
-                        await loadInbox()
                     } catch {
                         // Error is already set in workflowService.errorMessage
                     }
