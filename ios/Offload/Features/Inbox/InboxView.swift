@@ -19,7 +19,7 @@ struct InboxView: View {
 
     @Query(
         filter: #Predicate<CaptureEntry> { entry in
-            entry.lifecycleState == LifecycleState.raw.rawValue
+            entry.lifecycleState == "raw"
         },
         sort: [SortDescriptor(\.createdAt, order: .reverse)]
     )
