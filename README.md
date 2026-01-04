@@ -8,6 +8,8 @@ An iOS app to quickly capture thoughts and organize them later, optionally with 
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-5.0-green.svg)](https://developer.apple.com/xcode/swiftui/)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
+[![iOS Build](https://github.com/Will-Conklin/offload/actions/workflows/ios-build.yml/badge.svg?branch=main)](https://github.com/Will-Conklin/offload/actions/workflows/ios-build.yml)
+[![iOS Tests](https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml/badge.svg?branch=main)](https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml)
 
 ## Table of Contents
 
