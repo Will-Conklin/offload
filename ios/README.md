@@ -93,7 +93,8 @@ See [../docs/decisions/ADR-0001-stack.md](../docs/decisions/ADR-0001-stack.md) f
 - ✅ SwiftData models for capture workflow and destination entities
 - ✅ Repository pattern for all models plus `CaptureWorkflowService` for inbox/capture orchestration
 - ✅ Voice recording with real-time transcription in `CaptureSheetView`
-- 🔄 Organize tab, Settings view, and AI submission/placement flows remain stubbed
+- ✅ Tab shell default root with quick capture button and basic Settings view
+- 🔄 Organize tab and AI submission/placement flows remain stubbed
 
 ### Key Features
 

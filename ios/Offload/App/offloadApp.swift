@@ -4,6 +4,8 @@
 //
 //  Created by William Conklin on 12/30/25.
 //
+//  Intent: Application entry point injecting the shared model container.
+//
 
 import SwiftUI
 import SwiftData

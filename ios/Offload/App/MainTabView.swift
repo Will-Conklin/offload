@@ -4,6 +4,8 @@
 //
 //  Created by Claude Code on 12/30/25.
 //
+//  Intent: Primary tab shell for inbox, organize, and settings with quick capture access.
+//
 
 import SwiftUI
 import SwiftData
@@ -14,11 +16,13 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            InboxView()
-                .tabItem {
-                    Label("Inbox", systemImage: Icons.inbox)
-                }
-                .tag(Tab.inbox)
+            NavigationStack {
+                InboxView()
+            }
+            .tabItem {
+                Label("Inbox", systemImage: Icons.inbox)
+            }
+            .tag(Tab.inbox)
 
             OrganizeView()
                 .tabItem {
@@ -26,8 +30,7 @@ struct MainTabView: View {
                 }
                 .tag(Tab.organize)
 
-            // TODO: Add Settings view
-            Text("Settings")
+            SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: Icons.settings)
                 }
@@ -50,7 +53,7 @@ struct MainTabView: View {
             .padding(.bottom, Theme.Spacing.xl)
         }
         .sheet(isPresented: $showingCapture) {
-            CaptureView()
+            CaptureSheetView()
         }
     }
 

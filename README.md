@@ -50,12 +50,13 @@ The app follows a simple principle:
 - Repository layer plus `CaptureWorkflowService` for capture, inbox queries, and lifecycle operations
 - SwiftUI inbox and capture sheet with text + voice recording via `VoiceRecordingService`
 - Persistence wired through `PersistenceController` for production and preview containers
+- Tab-based root navigation with quick capture button and a minimal Settings view
 
 ### 🔄 In Progress
 
 - AI hand-off orchestration, suggestion processing, and placement (methods stubbed in `CaptureWorkflowService`)
-- Organize tab and Settings view (UI exists with TODOs; AppRoot currently routes straight to Inbox instead of the tab shell)
-- Consistent capture entry points (MainTabView floating action button vs. direct Inbox navigation)
+- Organize tab placeholders for plans/tags/categories until detailed flows are built
+- Expanding Settings beyond capture and privacy basics
 
 ### 📋 Upcoming
 

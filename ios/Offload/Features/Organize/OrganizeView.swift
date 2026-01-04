@@ -4,6 +4,8 @@
 //
 //  Created by Claude Code on 12/30/25.
 //
+//  Intent: Placeholder organization hub for plans, categories, and tags.
+//
 
 import SwiftUI
 import SwiftData
