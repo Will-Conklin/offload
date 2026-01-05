@@ -103,7 +103,7 @@ struct SettingsView: View {
     // MARK: - Preferences Section
 
     private var preferencesSection: some View {
-        Section("Preferences") {
+        Section {
             Picker("Default Capture Source", selection: $defaultCaptureSource) {
                 Text("App").tag(CaptureSource.app)
                 Text("Shortcut").tag(CaptureSource.shortcut)
@@ -118,6 +118,8 @@ struct SettingsView: View {
             } label: {
                 Label("Voice Recording", systemImage: "waveform")
             }
+        } header: {
+            Text("Preferences")
         } footer: {
             Text("Auto-archive will move completed tasks and placed captures to archive after 7 days.")
         }
@@ -126,7 +128,7 @@ struct SettingsView: View {
     // MARK: - AI & Hand-Off Section
 
     private var aiHandOffSection: some View {
-        Section("AI & Organization") {
+        Section {
             Toggle("Enable AI Suggestions", isOn: $enableAISuggestions)
                 .disabled(true) // Disabled until backend is implemented
 
@@ -150,6 +152,8 @@ struct SettingsView: View {
             } label: {
                 Label("How AI Suggestions Work", systemImage: "info.circle")
             }
+        } header: {
+            Text("AI & Organization")
         } footer: {
             Text("AI suggestions are currently under development. When enabled, Offload will help organize your captures into plans, tasks, and lists.")
         }
@@ -158,7 +162,7 @@ struct SettingsView: View {
     // MARK: - Data Management Section
 
     private var dataManagementSection: some View {
-        Section("Data Management") {
+        Section {
             Button {
                 showingClearCompletedAlert = true
             } label: {
@@ -178,6 +182,8 @@ struct SettingsView: View {
             } label: {
                 Label("Storage Usage", systemImage: "internaldrive")
             }
+        } header: {
+            Text("Data Management")
         } footer: {
             Text("All data is stored locally on your device. No cloud sync is currently enabled.")
         }
@@ -270,7 +276,7 @@ private struct VoiceSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Recording") {
+            Section {
                 Picker("Recording Quality", selection: $recordingQuality) {
                     Text("Low").tag("low")
                     Text("Medium").tag("medium")
@@ -278,6 +284,8 @@ private struct VoiceSettingsView: View {
                 }
 
                 Toggle("Enable Live Transcription", isOn: $enableLiveTranscription)
+            } header: {
+                Text("Recording")
             } footer: {
                 Text("Higher quality recordings use more storage. Live transcription uses the on-device Speech framework.")
             }
@@ -311,11 +319,13 @@ private struct APIConfigurationView: View {
 
     var body: some View {
         Form {
-            Section("API Endpoint") {
+            Section {
                 TextField("URL", text: $tempEndpoint)
                     .keyboardType(.URL)
                     .autocapitalization(.none)
                     .autocorrectionDisabled()
+            } header: {
+                Text("API Endpoint")
             } footer: {
                 Text("Configure the backend API endpoint for AI suggestions. This is for development and testing purposes.")
             }
@@ -477,13 +487,15 @@ private struct StorageInfoView: View {
                 }
             }
 
-            Section("Storage") {
+            Section {
                 HStack {
                     Label("Device Storage", systemImage: "internaldrive")
                     Spacer()
                     Text("Local Only")
                         .foregroundStyle(.secondary)
                 }
+            } header: {
+                Text("Storage")
             } footer: {
                 Text("All data is stored locally using SwiftData. No cloud storage is currently enabled.")
             }
