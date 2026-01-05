@@ -1,15 +1,32 @@
-<!-- Intent: Provide an up-to-date overview of Offload, including current implementation status and remaining work. -->
+<!--
+Intent: Provide an up-to-date overview of Offload, including current
+implementation status and remaining work.
+-->
 
 # Offload
 
-An iOS app to quickly capture thoughts and organize them later, optionally with AI assistance.
+An iOS app to quickly capture thoughts and organize them later, optionally with
+AI assistance.
 
-[![iOS](https://img.shields.io/badge/iOS-17.0+-blue.svg)](https://www.apple.com/ios/)
-[![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
-[![SwiftUI](https://img.shields.io/badge/SwiftUI-5.0-green.svg)](https://developer.apple.com/xcode/swiftui/)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
-[![iOS Build](https://github.com/Will-Conklin/offload/actions/workflows/ios-build.yml/badge.svg?branch=main)](https://github.com/Will-Conklin/offload/actions/workflows/ios-build.yml)
-[![iOS Tests](https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml/badge.svg?branch=main)](https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml)
+[![iOS][badge-ios]][link-ios]
+[![Swift][badge-swift]][link-swift]
+[![SwiftUI][badge-swiftui]][link-swiftui]
+[![License][badge-license]][link-license]
+[![iOS Build][b-ios-build]][l-ios-build]
+[![iOS Tests][b-ios-tests]][l-ios-tests]
+
+[badge-ios]: https://img.shields.io/badge/iOS-17.0+-blue.svg
+[link-ios]: https://www.apple.com/ios/
+[badge-swift]: https://img.shields.io/badge/Swift-5.9-orange.svg
+[link-swift]: https://swift.org
+[badge-swiftui]: https://img.shields.io/badge/SwiftUI-5.0-green.svg
+[link-swiftui]: https://developer.apple.com/xcode/swiftui/
+[badge-license]: https://img.shields.io/badge/license-MIT-lightgrey.svg
+[link-license]: LICENSE
+[b-ios-build]: /Will-Conklin/offload/actions/workflows/ios-build.yml/badge.svg
+[l-ios-build]: /Will-Conklin/offload/actions/workflows/ios-build.yml
+[b-ios-tests]: /Will-Conklin/offload/actions/workflows/ios-tests.yml/badge.svg
+[l-ios-tests]: /Will-Conklin/offload/actions/workflows/ios-tests.yml
 
 ## Table of Contents
 
@@ -27,13 +44,18 @@ An iOS app to quickly capture thoughts and organize them later, optionally with 
 
 ## About
 
-Offload is an iOS-first app that turns quick thought captures (text or voice) into simple, organized **plans** and lists—tasks, shopping, and follow-ups—so you can get mental space back.
+Offload is an iOS-first app that turns quick thought captures (text or voice)
+into simple, organized **plans** and lists—tasks, shopping, and follow-ups—
+so you can get mental space back.
 
-Most productivity tools assume you'll calmly plan everything up front. Offload starts where real life starts: random thoughts, urgency spikes, and "I'll remember" moments. Capture in seconds, then let the app help you sort and clarify what's next—without making everything feel time-sensitive or turning your life into a project management system.
+Most productivity tools assume you'll calmly plan everything up front. Offload
+starts where real life starts: random thoughts, urgency spikes, and "I'll
+remember" moments. Capture in seconds, then let the app help you sort and
+clarify what's next—without making everything feel time-sensitive or turning
+your life into a project management system.
 
-The app follows a simple principle:
-
-**Capture First, Organize Later (Optionally with AI)**
+The app follows a simple principle: capture first, organize later (optionally
+with AI).
 
 ### Core Philosophy
 
@@ -44,25 +66,35 @@ The app follows a simple principle:
 
 ## Current Status
 
-🚧 **Active Development** — Capture and inbox flows are functional; organization and AI flows are still stubbed.
+🚧 **Active Development** — Capture and inbox flows are functional;
+organization and AI flows are still stubbed.
 
-### ✅ Implemented
+### ✅ Implemented (Core)
 
-- SwiftData capture/organization models (CaptureEntry, HandOffRequest/Run, Suggestion, SuggestionDecision, Placement, Plan/Task/Tag/Category, ListEntity/ListItem, CommunicationItem)
-- Repository layer plus `CaptureWorkflowService` for capture, inbox queries, and lifecycle operations
-- SwiftUI inbox and capture sheet with text + voice recording via `VoiceRecordingService`
-- Persistence wired through `PersistenceController` for production and preview containers
+- SwiftData capture/organization models (CaptureEntry, HandOffRequest/Run,
+  Suggestion, SuggestionDecision, Placement, Plan/Task/Tag/Category,
+  ListEntity/ListItem, CommunicationItem)
+- Repository layer plus `CaptureWorkflowService` for capture, inbox queries, and
+  lifecycle operations
+- SwiftUI inbox and capture sheet with text + voice recording via
+  `VoiceRecordingService`
+- Persistence wired through `PersistenceController` for production and preview
+  containers
 
 ### 🔄 In Progress
 
-- AI hand-off orchestration, suggestion processing, and placement (methods stubbed in `CaptureWorkflowService`)
-- Organize tab and Settings view (UI exists with TODOs; AppRoot currently routes straight to Inbox instead of the tab shell)
-- Consistent capture entry points (MainTabView floating action button vs. direct Inbox navigation)
+- AI hand-off orchestration, suggestion processing, and placement (methods
+  stubbed in `CaptureWorkflowService`)
+- Organize tab and Settings view (UI exists with TODOs; AppRoot currently routes
+  straight to Inbox instead of the tab shell)
+- Consistent capture entry points (MainTabView floating action button vs. direct
+  Inbox navigation)
 
 ### 📋 Upcoming
 
 - Present and act on AI suggestions with user approval
-- Build destination management flows (plans, categories, tags, lists, communication items) in Organize
+- Build destination management flows (plans, categories, tags, lists,
+  communication items) in Organize
 - Optional backend sync, widgets, and sharing after validation
 
 ## Architecture
@@ -169,8 +201,10 @@ graph LR
 
 ## Data Model
 
-- **Capture + Workflow**: CaptureEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision → Placement
-- **Destinations**: Plan/Task, Tag, Category, ListEntity/ListItem, CommunicationItem
+- **Capture + Workflow**: CaptureEntry → HandOffRequest → HandOffRun →
+  Suggestion → SuggestionDecision → Placement
+- **Destinations**: Plan/Task, Tag, Category, ListEntity/ListItem,
+  CommunicationItem
 - **Lifecycle States**: raw → handedOff → ready → placed → archived
 
 ```mermaid
@@ -278,20 +312,27 @@ offload/
 
 ### Running Tests
 
-Run tests with ⌘U in Xcode. Unit tests use in-memory SwiftData containers so they are isolated and fast; ensure test files are included in the `OffloadTests` target after adding new ones.
+Run tests with ⌘U in Xcode. Unit tests use in-memory SwiftData containers so
+they are isolated and fast; ensure test files are included in the
+`OffloadTests` target after adding new ones.
 
 ## Features
 
-### ✅ Implemented
+### ✅ Implemented Features
 
-- **Capture**: Text and voice capture with live transcription using the Speech framework (offline-first)
-- **Inbox**: Capture inbox with lifecycle tracking (raw → archived) powered by `CaptureWorkflowService`
-- **Data Layer**: SwiftData models for capture workflow plus destinations (plans, tasks, tags, categories, lists, communication)
-- **Repositories**: CRUD + lifecycle helpers for every model; preview container seeded for SwiftUI previews
+- **Capture**: Text and voice capture with live transcription using the Speech
+  framework (offline-first)
+- **Inbox**: Capture inbox with lifecycle tracking (raw → archived) powered by
+  `CaptureWorkflowService`
+- **Data Layer**: SwiftData models for capture workflow plus destinations
+  (plans, tasks, tags, categories, lists, communication)
+- **Repositories**: CRUD + lifecycle helpers for every model; preview container
+  seeded for SwiftUI previews
 
 ### 🚧 In Development
 
-- Manual organization surfaces for plans, tags, and categories (Organize tab contains placeholders)
+- Manual organization surfaces for plans, tags, and categories (Organize tab
+  contains placeholders)
 - AI hand-off orchestration and suggestion processing (workflow methods stubbed)
 - Settings, deeper navigation, placement flows, and consistent tab-based shell
 
@@ -348,7 +389,8 @@ Run tests with ⌘U in Xcode. Unit tests use in-memory SwiftData containers so t
 - **Testing**: XCTest + SwiftData in-memory containers
 - **CI/CD**: GitHub Actions (planned)
 
-See [ADR-0001](docs/decisions/ADR-0001-stack.md) for detailed technical decisions.
+See [ADR-0001](docs/decisions/ADR-0001-stack.md) for detailed technical
+decisions.
 
 ## Development Principles
 
