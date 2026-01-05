@@ -373,7 +373,7 @@ See [ADR-0001](docs/decisions/ADR-0001-stack.md) for detailed technical decision
 
 ## Contributing
 
-This is currently a personal project. Contributions guidelines to be added.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ## License
 

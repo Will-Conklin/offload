@@ -1,0 +1,10 @@
+# Intent: Configure issue template entry points and support links.
+
+blank_issues_enabled: false
+contact_links:
+  - name: Security issue
+    url: https://github.com/Will-Conklin/offload/security/policy
+    about: Please report security vulnerabilities privately per SECURITY.md.
+  - name: Support
+    url: https://github.com/Will-Conklin/offload/blob/main/SUPPORT.md
+    about: Support requests and questions.
