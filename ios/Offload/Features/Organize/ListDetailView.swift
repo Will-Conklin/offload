@@ -237,7 +237,7 @@ private struct EditListSheet: View {
                     .pickerStyle(.segmented)
                 }
 
-                if let errorMessage {
+                if let errorMessage = errorMessage {
                     Section {
                         Text(errorMessage)
                             .font(.caption)
