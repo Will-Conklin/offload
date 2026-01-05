@@ -78,64 +78,64 @@ struct PersistenceController {
                 configurations: [configuration]
             )
 
-            let context = MainActor.assumeIsolated {
-                container.mainContext
+            MainActor.assumeIsolated {
+                let context = container.mainContext
+
+                // Insert sample thought captures
+                let sampleEntries = [
+                    CaptureEntry(
+                        rawText: "Remember to review the quarterly budget analysis",
+                        inputType: .text,
+                        source: .app
+                    ),
+                    CaptureEntry(
+                        rawText: "Call the dentist to schedule appointment for next week",
+                        inputType: .voice,
+                        source: .app
+                    ),
+                    CaptureEntry(
+                        rawText: "Research SwiftData best practices for production apps",
+                        inputType: .text,
+                        source: .app,
+                        lifecycleState: .handedOff
+                    ),
+                    CaptureEntry(
+                        rawText: "Buy groceries: milk, eggs, bread, coffee",
+                        inputType: .voice,
+                        source: .widget,
+                        lifecycleState: .ready
+                    ),
+                ]
+
+                for entry in sampleEntries {
+                    context.insert(entry)
+                }
+
+                // Insert sample plan
+                let workPlan = Plan(
+                    title: "Work Projects",
+                    detail: "Active work-related projects"
+                )
+                context.insert(workPlan)
+
+                // Insert sample tasks
+                let task1 = Task(
+                    title: "Review Q4 budget",
+                    detail: "Analyze spending patterns and prepare report",
+                    importance: 4,
+                    plan: workPlan
+                )
+                let task2 = Task(
+                    title: "Schedule dentist appointment",
+                    isDone: true,
+                    importance: 3
+                )
+
+                context.insert(task1)
+                context.insert(task2)
+
+                try? context.save()
             }
-
-            // Insert sample thought captures
-            let sampleEntries = [
-                CaptureEntry(
-                    rawText: "Remember to review the quarterly budget analysis",
-                    inputType: .text,
-                    source: .app
-                ),
-                CaptureEntry(
-                    rawText: "Call the dentist to schedule appointment for next week",
-                    inputType: .voice,
-                    source: .app
-                ),
-                CaptureEntry(
-                    rawText: "Research SwiftData best practices for production apps",
-                    inputType: .text,
-                    source: .app,
-                    lifecycleState: .handedOff
-                ),
-                CaptureEntry(
-                    rawText: "Buy groceries: milk, eggs, bread, coffee",
-                    inputType: .voice,
-                    source: .widget,
-                    lifecycleState: .ready
-                ),
-            ]
-
-            for entry in sampleEntries {
-                context.insert(entry)
-            }
-
-            // Insert sample plan
-            let workPlan = Plan(
-                title: "Work Projects",
-                detail: "Active work-related projects"
-            )
-            context.insert(workPlan)
-
-            // Insert sample tasks
-            let task1 = Task(
-                title: "Review Q4 budget",
-                detail: "Analyze spending patterns and prepare report",
-                importance: 4,
-                plan: workPlan
-            )
-            let task2 = Task(
-                title: "Schedule dentist appointment",
-                isDone: true,
-                importance: 3
-            )
-
-            context.insert(task1)
-            context.insert(task2)
-
-            try context.save()
 
             return container
         } catch {
