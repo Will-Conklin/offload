@@ -241,8 +241,8 @@ private struct EditListSheet: View {
                 if let errorMessage {
                     Section {
                         Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                            .font(Theme.Typography.errorText)
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
                     }
                 }
             }

@@ -15,6 +15,7 @@ import UIKit
 struct CaptureSheetView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var rawText: String = ""
     @State private var showingPermissionAlert = false
@@ -34,7 +35,7 @@ struct CaptureSheetView: View {
                             Button(action: handleVoiceButtonTap) {
                                 Image(systemName: voiceService.isRecording ? "stop.circle.fill" : "mic.circle.fill")
                                     .font(.system(size: 28))
-                                    .foregroundStyle(voiceService.isRecording ? .red : .blue)
+                                    .foregroundStyle(voiceService.isRecording ? Theme.Colors.destructive(colorScheme) : Theme.Colors.accentPrimary(colorScheme))
                             }
                             .buttonStyle(.plain)
 
@@ -56,16 +57,16 @@ struct CaptureSheetView: View {
                 if let errorMessage = voiceService.errorMessage {
                     Section {
                         Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                            .font(Theme.Typography.errorText)
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
                     }
                 }
 
                 if let errorMessage = workflowService?.errorMessage {
                     Section {
                         Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                            .font(Theme.Typography.errorText)
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
                     }
                 }
             }

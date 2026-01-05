@@ -13,6 +13,7 @@ import SwiftData
 struct PlanDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
 
     @Bindable var plan: Plan
 
@@ -272,8 +273,8 @@ private struct EditPlanSheet: View {
                 if let errorMessage {
                     Section {
                         Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                            .font(Theme.Typography.errorText)
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
                     }
                 }
             }
@@ -372,8 +373,8 @@ private struct TaskFormSheet: View {
                 if let errorMessage {
                     Section {
                         Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                            .font(Theme.Typography.errorText)
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
                     }
                 }
             }

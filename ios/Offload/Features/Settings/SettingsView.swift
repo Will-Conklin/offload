@@ -298,7 +298,7 @@ private struct VoiceSettingsView: View {
 
                     Text("No audio data is sent to external servers.")
                         .font(.caption)
-                        .foregroundStyle(.green)
+                        .foregroundStyle(Theme.Colors.success(colorScheme))
                         .fontWeight(.medium)
                 }
                 .padding(.vertical, 4)
