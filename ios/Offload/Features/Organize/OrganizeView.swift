@@ -17,6 +17,8 @@ struct OrganizeView: View {
     @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
     @Query(sort: \Category.name) private var categories: [Category]
     @Query(sort: \Tag.name) private var tags: [Tag]
+    @Query(sort: \ListEntity.createdAt, order: .reverse) private var lists: [ListEntity]
+    @Query(sort: \CommunicationItem.createdAt, order: .reverse) private var communications: [CommunicationItem]
 
     @State private var activeSheet: OrganizeSheet?
 
@@ -29,21 +31,34 @@ struct OrganizeView: View {
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(plans) { plan in
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(plan.title)
-                                    .font(.headline)
+                            NavigationLink(destination: PlanDetailView(plan: plan)) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(plan.title)
+                                        .font(.headline)
 
-                                if let detail = plan.detail, !detail.isEmpty {
-                                    Text(detail)
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
+                                    if let detail = plan.detail, !detail.isEmpty {
+                                        Text(detail)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(2)
+                                    }
+
+                                    HStack {
+                                        Text(plan.createdAt, format: .dateTime.month().day().year())
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+
+                                        if let taskCount = plan.tasks?.count, taskCount > 0 {
+                                            Spacer()
+                                            Text("\(taskCount) tasks")
+                                                .font(.caption)
+                                                .foregroundStyle(.tertiary)
+                                        }
+                                    }
                                 }
-
-                                Text(plan.createdAt, format: .dateTime.month().day().year())
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
                             }
                         }
+                        .onDelete(perform: deletePlans)
                     }
 
                     Button {
@@ -68,6 +83,7 @@ struct OrganizeView: View {
                                 }
                             }
                         }
+                        .onDelete(perform: deleteCategories)
                     }
 
                     Button {
@@ -92,12 +108,91 @@ struct OrganizeView: View {
                                 }
                             }
                         }
+                        .onDelete(perform: deleteTags)
                     }
 
                     Button {
                         activeSheet = .tag
                     } label: {
                         Label("New Tag", systemImage: "plus.circle.fill")
+                    }
+                }
+
+                Section("Lists") {
+                    if lists.isEmpty {
+                        Text("No lists yet")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(lists) { list in
+                            NavigationLink(destination: ListDetailView(list: list)) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text(list.title)
+                                            .font(.headline)
+                                        Spacer()
+                                        Text(list.listKind.rawValue.capitalized)
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 2)
+                                            .background(Color.blue.opacity(0.2))
+                                            .cornerRadius(4)
+                                    }
+
+                                    if let itemCount = list.items?.count, itemCount > 0 {
+                                        let checkedCount = list.items?.filter { $0.isChecked }.count ?? 0
+                                        Text("\(checkedCount)/\(itemCount) items")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                        }
+                        .onDelete(perform: deleteLists)
+                    }
+
+                    Button {
+                        activeSheet = .list
+                    } label: {
+                        Label("New List", systemImage: "plus.circle.fill")
+                    }
+                }
+
+                Section("Communications") {
+                    if communications.isEmpty {
+                        Text("No communications yet")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(communications) { comm in
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Image(systemName: iconForChannel(comm.communicationChannel))
+                                        .foregroundStyle(.blue)
+                                    Text(comm.recipient)
+                                        .font(.headline)
+                                    Spacer()
+                                    if comm.communicationStatus == .sent {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(.green)
+                                    }
+                                }
+
+                                Text(comm.content)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+
+                                Text(comm.createdAt, format: .dateTime.month().day().year())
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                        .onDelete(perform: deleteCommunications)
+                    }
+
+                    Button {
+                        activeSheet = .communication
+                    } label: {
+                        Label("New Communication", systemImage: "plus.circle.fill")
                     }
                 }
             }
@@ -108,6 +203,13 @@ struct OrganizeView: View {
                         Button("New Plan") {
                             activeSheet = .plan
                         }
+                        Button("New List") {
+                            activeSheet = .list
+                        }
+                        Button("New Communication") {
+                            activeSheet = .communication
+                        }
+                        Divider()
                         Button("New Category") {
                             activeSheet = .category
                         }
@@ -132,6 +234,14 @@ struct OrganizeView: View {
                 case .tag:
                     TagFormSheet { name, color in
                         try createTag(name: name, color: color)
+                    }
+                case .list:
+                    ListFormSheet { title, kind in
+                        try createList(title: title, kind: kind)
+                    }
+                case .communication:
+                    CommunicationFormSheet { channel, recipient, content in
+                        try createCommunication(channel: channel, recipient: recipient, content: content)
                     }
                 }
             }
@@ -181,12 +291,98 @@ struct OrganizeView: View {
             color: (normalizedColor?.isEmpty ?? true) ? nil : normalizedColor
         )
     }
+
+    private func deletePlans(offsets: IndexSet) {
+        for index in offsets {
+            let plan = plans[index]
+            modelContext.delete(plan)
+        }
+        try? modelContext.save()
+    }
+
+    private func deleteCategories(offsets: IndexSet) {
+        for index in offsets {
+            let category = categories[index]
+            modelContext.delete(category)
+        }
+        try? modelContext.save()
+    }
+
+    private func deleteTags(offsets: IndexSet) {
+        for index in offsets {
+            let tag = tags[index]
+            modelContext.delete(tag)
+        }
+        try? modelContext.save()
+    }
+
+    private func createList(title: String, kind: ListKind) throws {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            throw ValidationError("List title is required.")
+        }
+
+        let list = ListEntity(title: trimmedTitle, kind: kind)
+        modelContext.insert(list)
+        try modelContext.save()
+    }
+
+    private func deleteLists(offsets: IndexSet) {
+        for index in offsets {
+            let list = lists[index]
+            modelContext.delete(list)
+        }
+        try? modelContext.save()
+    }
+
+    private func createCommunication(channel: CommunicationChannel, recipient: String, content: String) throws {
+        let trimmedRecipient = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedRecipient.isEmpty else {
+            throw ValidationError("Recipient is required.")
+        }
+        guard !trimmedContent.isEmpty else {
+            throw ValidationError("Content is required.")
+        }
+
+        let comm = CommunicationItem(
+            channel: channel,
+            recipient: trimmedRecipient,
+            content: trimmedContent
+        )
+        modelContext.insert(comm)
+        try modelContext.save()
+    }
+
+    private func deleteCommunications(offsets: IndexSet) {
+        for index in offsets {
+            let comm = communications[index]
+            modelContext.delete(comm)
+        }
+        try? modelContext.save()
+    }
+
+    private func iconForChannel(_ channel: CommunicationChannel) -> String {
+        switch channel {
+        case .call:
+            return "phone.fill"
+        case .email:
+            return "envelope.fill"
+        case .text:
+            return "message.fill"
+        case .other:
+            return "ellipsis.message.fill"
+        }
+    }
 }
 
 private enum OrganizeSheet: Identifiable {
     case plan
     case category
     case tag
+    case list
+    case communication
 
     var id: String {
         switch self {
@@ -196,6 +392,10 @@ private enum OrganizeSheet: Identifiable {
             return "category"
         case .tag:
             return "tag"
+        case .list:
+            return "list"
+        case .communication:
+            return "communication"
         }
     }
 }
@@ -373,6 +573,148 @@ private struct TagFormSheet: View {
             dismiss()
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+}
+
+private struct ListFormSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let onSave: (String, ListKind) throws -> Void
+
+    @State private var title: String = ""
+    @State private var kind: ListKind = .reference
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Details") {
+                    TextField("List title", text: $title)
+                    Picker("Type", selection: $kind) {
+                        ForEach(ListKind.allCases, id: \.self) { kind in
+                            Text(kind.rawValue.capitalized).tag(kind)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("New List")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        handleSave()
+                    }
+                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func handleSave() {
+        do {
+            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            try onSave(trimmedTitle, kind)
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+private struct CommunicationFormSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let onSave: (CommunicationChannel, String, String) throws -> Void
+
+    @State private var channel: CommunicationChannel = .text
+    @State private var recipient: String = ""
+    @State private var content: String = ""
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Type") {
+                    Picker("Channel", selection: $channel) {
+                        ForEach(CommunicationChannel.allCases, id: \.self) { channel in
+                            Label(channel.rawValue.capitalized, systemImage: iconForChannel(channel))
+                                .tag(channel)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Section("Details") {
+                    TextField("Recipient", text: $recipient)
+                    TextField("Message", text: $content, axis: .vertical)
+                        .lineLimit(3...6)
+                }
+
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("New Communication")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        handleSave()
+                    }
+                    .disabled(
+                        recipient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                        content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    )
+                }
+            }
+        }
+    }
+
+    private func handleSave() {
+        do {
+            let trimmedRecipient = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
+            try onSave(channel, trimmedRecipient, trimmedContent)
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func iconForChannel(_ channel: CommunicationChannel) -> String {
+        switch channel {
+        case .call:
+            return "phone.fill"
+        case .email:
+            return "envelope.fill"
+        case .text:
+            return "message.fill"
+        case .other:
+            return "ellipsis.message.fill"
         }
     }
 }
