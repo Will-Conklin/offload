@@ -1,0 +1,304 @@
+//
+//  ListDetailView.swift
+//  Offload
+//
+//  Created by Claude Code on 1/5/26.
+//
+//  Intent: Detail view for managing a list and its items.
+//
+
+import SwiftUI
+import SwiftData
+
+struct ListDetailView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+
+    @Bindable var list: ListEntity
+
+    @State private var showingEditList = false
+    @State private var showingAddItem = false
+    @State private var showingDeleteConfirmation = false
+    @State private var newItemText = ""
+
+    private var uncheckedItems: [ListItem] {
+        list.items?.filter { !$0.isChecked }.sorted { $0.text < $1.text } ?? []
+    }
+
+    private var checkedItems: [ListItem] {
+        list.items?.filter { $0.isChecked }.sorted { $0.text < $1.text } ?? []
+    }
+
+    var body: some View {
+        List {
+            // List Details Section
+            Section {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text(list.title)
+                            .font(.title2)
+                            .fontWeight(.bold)
+
+                        Spacer()
+
+                        Text(list.listKind.rawValue.capitalized)
+                            .font(.caption)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(6)
+                    }
+
+                    if let itemCount = list.items?.count, itemCount > 0 {
+                        let checkedCount = checkedItems.count
+                        HStack {
+                            Text("\(checkedCount)/\(itemCount) items")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+
+                            Spacer()
+
+                            Text(list.createdAt, format: .dateTime.month().day().year())
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+
+            // Quick Add Section
+            Section {
+                HStack {
+                    TextField("Add item...", text: $newItemText)
+                        .onSubmit {
+                            addQuickItem()
+                        }
+
+                    if !newItemText.isEmpty {
+                        Button("Add") {
+                            addQuickItem()
+                        }
+                    }
+                }
+            }
+
+            // Unchecked Items Section
+            if !uncheckedItems.isEmpty {
+                Section("Items") {
+                    ForEach(uncheckedItems) { item in
+                        ListItemRowView(item: item)
+                    }
+                    .onDelete(perform: deleteUncheckedItems)
+                }
+            }
+
+            // Checked Items Section
+            if !checkedItems.isEmpty {
+                Section("Completed") {
+                    ForEach(checkedItems) { item in
+                        ListItemRowView(item: item)
+                    }
+                    .onDelete(perform: deleteCheckedItems)
+                }
+            }
+        }
+        .navigationTitle("List")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        showingEditList = true
+                    } label: {
+                        Label("Edit List", systemImage: "pencil")
+                    }
+
+                    if let items = list.items, !items.isEmpty {
+                        Button {
+                            clearCompleted()
+                        } label: {
+                            Label("Clear Completed", systemImage: "trash")
+                        }
+                    }
+
+                    Button(role: .destructive) {
+                        showingDeleteConfirmation = true
+                    } label: {
+                        Label("Delete List", systemImage: "trash")
+                    }
+                } label: {
+                    Label("More", systemImage: "ellipsis.circle")
+                }
+            }
+        }
+        .sheet(isPresented: $showingEditList) {
+            EditListSheet(list: list)
+        }
+        .alert("Delete List?", isPresented: $showingDeleteConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                deleteList()
+            }
+        } message: {
+            Text("This will delete the list and all its items. This cannot be undone.")
+        }
+    }
+
+    private func addQuickItem() {
+        let trimmed = newItemText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let item = ListItem(text: trimmed, list: list)
+        modelContext.insert(item)
+        try? modelContext.save()
+
+        newItemText = ""
+    }
+
+    private func deleteUncheckedItems(offsets: IndexSet) {
+        for index in offsets {
+            let item = uncheckedItems[index]
+            modelContext.delete(item)
+        }
+        try? modelContext.save()
+    }
+
+    private func deleteCheckedItems(offsets: IndexSet) {
+        for index in offsets {
+            let item = checkedItems[index]
+            modelContext.delete(item)
+        }
+        try? modelContext.save()
+    }
+
+    private func clearCompleted() {
+        guard let items = list.items else { return }
+        for item in items where item.isChecked {
+            modelContext.delete(item)
+        }
+        try? modelContext.save()
+    }
+
+    private func deleteList() {
+        modelContext.delete(list)
+        try? modelContext.save()
+        dismiss()
+    }
+}
+
+private struct ListItemRowView: View {
+    @Bindable var item: ListItem
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button {
+                item.isChecked.toggle()
+            } label: {
+                Image(systemName: item.isChecked ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(item.isChecked ? .green : .secondary)
+            }
+            .buttonStyle(.plain)
+
+            Text(item.text)
+                .strikethrough(item.isChecked)
+                .foregroundStyle(item.isChecked ? .secondary : .primary)
+        }
+    }
+}
+
+private struct EditListSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    @Bindable var list: ListEntity
+
+    @State private var title: String
+    @State private var kind: ListKind
+    @State private var errorMessage: String?
+
+    init(list: ListEntity) {
+        self.list = list
+        _title = State(initialValue: list.title)
+        _kind = State(initialValue: list.listKind)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Details") {
+                    TextField("List title", text: $title)
+                    Picker("Type", selection: $kind) {
+                        ForEach(ListKind.allCases, id: \.self) { kind in
+                            Text(kind.rawValue.capitalized).tag(kind)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("Edit List")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        handleSave()
+                    }
+                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func handleSave() {
+        do {
+            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmedTitle.isEmpty else {
+                throw ValidationError("List title is required.")
+            }
+
+            list.title = trimmedTitle
+            list.listKind = kind
+
+            try modelContext.save()
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+private struct ValidationError: LocalizedError {
+    let message: String
+
+    init(_ message: String) {
+        self.message = message
+    }
+
+    var errorDescription: String? {
+        message
+    }
+}
+
+#Preview {
+    let list = ListEntity(title: "Sample List", kind: .shopping)
+
+    NavigationStack {
+        ListDetailView(list: list)
+    }
+    .modelContainer(PersistenceController.preview)
+}

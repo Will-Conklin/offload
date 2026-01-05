@@ -10,9 +10,7 @@ import SwiftData
 
 struct AppRootView: View {
     var body: some View {
-        NavigationStack {
-            InboxView()
-        }
+        MainTabView()
     }
 }
 
