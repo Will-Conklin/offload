@@ -36,6 +36,15 @@
 - Deprecated labels present in the iOS scaffolding and docs include "Inbox" (as a destination/view), "Thought", and "BrainDump" variants; align code, tests, and copy with the canonical names.
 - Early in the SDLC—no data migrations required; focus on renaming surfaces, service APIs, and documentation references.
 
+## ADHD-Friendly UX Guardrails (ADR-0003)
+
+- Adopt a capture-first default with immediate save and optional organization; keep a persistent capture control in the tab shell.
+- Prefer undo banners over confirmation modals for destructive/move actions; reserve confirmations for batch deletes.
+- Enforce a calm visual system with a restrained palette (base + primary/secondary accents), consistent spacing tokens, and accessible focus states.
+- Keep navigation shallow (Inbox, Capture, Organize, Settings one tap away); mirror swipe actions with visible controls; use sheets for capture and full screens for editing.
+- Present organization prompts as optional chips/cards with snooze/dismiss; avoid urgency language.
+- Respect Dynamic Type, Reduce Motion, and minimum tap targets; pair focus states with color and stroke weight for clarity.
+
 ## Implementation Status by Phase
 
 - **Phase 1 — Model Definition**: ✅ Complete with enum rawValue storage for SwiftData compatibility.
@@ -63,6 +72,9 @@
 5. **Terminology and configuration hygiene**
    - Execute ADR-0002 terminology cleanup across views, services, repositories, tests, and docs.
    - Introduce centralized configuration for environment-specific values (API endpoints, feature flags, strings) to reduce scattered constants.
+6. **ADHD-friendly UX + design system**
+   - Implement the ADR-0003 guardrails: persistent capture control, undo-first patterns, calm palette/spacing tokens, shallow navigation, and optional organization prompts.
+   - Respect Dynamic Type/Reduce Motion across Capture, Inbox, and Organize screens; audit tap targets and focus states in shared components.
 
 ## Remaining Work
 

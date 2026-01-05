@@ -308,7 +308,9 @@ Run tests with ⌘U in Xcode. Unit tests use in-memory SwiftData containers so t
 - 📱 [iOS Development Guide](ios/README.md)
 - 📋 [Product Requirements Document](docs/prd/v1.md)
 - 🏗️ [Architecture Decision Records](docs/decisions/)
+- 🧭 [ADHD UX/UI Guardrails (ADR-0003)](docs/decisions/ADR-0003-adhd-ux-guardrails.md)
 - 🧠 [Thought Capture Model Plan](docs/plans/brain-dump-model.md)
+- 🎨 [ADHD-First UX/UI Research](docs/research/adhd-ux-ui.md)
 - 📦 [Project Scaffolding Details](ios/SCAFFOLDING.md)
 
 ### Testing & Development
