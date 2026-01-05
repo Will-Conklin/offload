@@ -82,7 +82,7 @@ struct ToastView: View {
 @Observable
 class ToastManager {
     var currentToast: Toast?
-    private var dismissTask: Task<Void, Never>?
+    private var dismissTask: _Concurrency.Task<Void, Never>?
 
     func show(_ message: String, type: ToastType, duration: TimeInterval = 3.0) {
         // Cancel any existing dismiss task
@@ -92,9 +92,9 @@ class ToastManager {
         currentToast = Toast(message: message, type: type)
 
         // Auto-dismiss after duration
-        dismissTask = Task {
-            try? await Task.sleep(for: .seconds(duration))
-            if !Task.isCancelled {
+        dismissTask = _Concurrency.Task {
+            try? await _Concurrency.Task.sleep(for: .seconds(duration))
+            if !_Concurrency.Task.isCancelled {
                 await MainActor.run {
                     currentToast = nil
                 }
