@@ -1,3 +1,4 @@
+// Intent: Provide shallow navigation with a persistent capture entry point aligned to ADHD-friendly guardrails.
 //
 //  MainTabView.swift
 //  Offload
@@ -9,6 +10,7 @@ import SwiftUI
 import SwiftData
 
 struct MainTabView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab: Tab = .inbox
     @State private var showingCapture = false
 
@@ -38,16 +40,36 @@ struct MainTabView: View {
             Button {
                 showingCapture = true
             } label: {
-                Image(systemName: Icons.capture)
-                    .font(.title)
-                    .foregroundStyle(.white)
-                    .frame(width: 60, height: 60)
-                    .background(Color.blue)
-                    .clipShape(Circle())
-                    .shadow(radius: 4)
+                Label {
+                    Text("Capture")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(Color.white)
+                        .padding(.top, 2)
+                } icon: {
+                    Image(systemName: Icons.capture)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(Color.white)
+                }
+                .padding(.vertical, Theme.Spacing.sm)
+                .padding(.horizontal, Theme.Spacing.md)
+                .frame(minWidth: Theme.HitTarget.minimum.width,
+                       minHeight: Theme.HitTarget.minimum.height)
+                .background(
+                    Capsule()
+                        .fill(Theme.Colors.accentPrimary(colorScheme))
+                )
+                .overlay(
+                    Capsule()
+                        .strokeBorder(Theme.Colors.focusRing(colorScheme), lineWidth: 2)
+                )
+                .shadow(color: Theme.Colors.focusRing(colorScheme).opacity(0.35),
+                        radius: Theme.Shadows.elevationMd,
+                        y: 4)
             }
             .padding(.trailing, Theme.Spacing.lg)
             .padding(.bottom, Theme.Spacing.xl)
+            .accessibilityLabel("Capture new entry")
+            .accessibilityHint("Opens quick capture sheet; you can organize later")
         }
         .sheet(isPresented: $showingCapture) {
             CaptureView()
