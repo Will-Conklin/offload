@@ -8,8 +8,8 @@ An iOS app to quickly capture thoughts and organize them later, optionally with 
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-5.0-green.svg)](https://developer.apple.com/xcode/swiftui/)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
-[![iOS Build](https://img.shields.io/github/actions/workflow/status/wc-offload/offload/ios-build.yml?branch=main&label=iOS%20Build)](https://github.com/wc-offload/offload/actions/workflows/ios-build.yml)
-[![iOS Tests](https://img.shields.io/github/actions/workflow/status/wc-offload/offload/ios-tests.yml?branch=main&label=iOS%20Tests)](https://github.com/wc-offload/offload/actions/workflows/ios-tests.yml)
+[![iOS Build](https://img.shields.io/github/actions/workflow/status/wc-offload/offload/ios-build.yml?branch=main&label=iOS%20Build)](https://github.com/Will-Conklin/offload/actions/workflows/ios-build.yml)
+[![iOS Tests](https://img.shields.io/github/actions/workflow/status/wc-offload/offload/ios-tests.yml?branch=main&label=iOS%20Tests)](https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml)
 [![Coverage](https://img.shields.io/badge/coverage-not%20yet%20tracked-lightgrey)](docs/testing/README.md)
 
 ## Table of Contents
