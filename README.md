@@ -14,6 +14,7 @@ AI assistance.
 [![License][badge-license]][link-license]
 [![iOS Build][b-ios-build]][l-ios-build]
 [![iOS Tests][b-ios-tests]][l-ios-tests]
+[![Coverage][b-ios-coverage]][l-ios-coverage]
 
 [badge-ios]: https://img.shields.io/badge/iOS-17.0+-blue.svg
 [link-ios]: https://www.apple.com/ios/
@@ -23,10 +24,12 @@ AI assistance.
 [link-swiftui]: https://developer.apple.com/xcode/swiftui/
 [badge-license]: https://img.shields.io/badge/license-MIT-lightgrey.svg
 [link-license]: LICENSE
-[b-ios-build]: /Will-Conklin/offload/actions/workflows/ios-build.yml/badge.svg
-[l-ios-build]: /Will-Conklin/offload/actions/workflows/ios-build.yml
-[b-ios-tests]: /Will-Conklin/offload/actions/workflows/ios-tests.yml/badge.svg
-[l-ios-tests]: /Will-Conklin/offload/actions/workflows/ios-tests.yml
+[b-ios-build]: https://github.com/Will-Conklin/offload/actions/workflows/ios-build.yml/badge.svg
+[l-ios-build]: https://github.com/Will-Conklin/offload/actions/workflows/ios-build.yml
+[b-ios-tests]: https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml/badge.svg
+[l-ios-tests]: https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml
+[b-ios-coverage]: https://img.shields.io/github/actions/workflow/status/Will-Conklin/offload/ios-tests.yml?branch=main&label=coverage&logo=githubactions
+[l-ios-coverage]: https://github.com/Will-Conklin/offload/actions/workflows/ios-tests.yml
 
 ## Table of Contents
 
