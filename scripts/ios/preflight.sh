@@ -6,7 +6,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-source "${REPO_ROOT}/scripts/ci/readiness_env.sh"
+source "${REPO_ROOT}/scripts/ci/readiness-env.sh"
 
 SIMCTL_RUNTIMES_OUTPUT=""
 SIMCTL_DEVICES_OUTPUT=""

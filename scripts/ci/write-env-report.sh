@@ -8,7 +8,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 CI_DIR="${REPO_ROOT}/.ci"
 REPORT_PATH="${CI_DIR}/env-report.txt"
 
-source "${REPO_ROOT}/scripts/ci/readiness_env.sh"
+source "${REPO_ROOT}/scripts/ci/readiness-env.sh"
 
 mkdir -p "${CI_DIR}"
 
@@ -27,7 +27,7 @@ run_best_effort() {
 }
 
 {
-  echo "Pinned CI values from docs/ci/ci-readiness.md:"
+  echo "Pinned CI values:"
   echo "CI_MACOS_RUNNER=${CI_MACOS_RUNNER}"
   echo "CI_XCODE_VERSION=${CI_XCODE_VERSION}"
   echo "CI_SIM_DEVICE=${CI_SIM_DEVICE}"

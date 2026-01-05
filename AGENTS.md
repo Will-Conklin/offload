@@ -41,6 +41,7 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 - ALWAYS keep documentation up to date.
 - ALWAYS run markdownlint prior to committing documentation changes (no need to rerun after every edit).
 - DO NOT make README a changelog.  While in development, PR history can be used to track changes, release notes will be used after initial v1 release.
+- NEVER use markdown files to drive processes or store configuration that scripts parse. Use appropriate config formats (JSON, YAML, env files, shell scripts with hardcoded values) instead. Markdown is for human-readable documentation only.
 
 ## Implementation Plans
 

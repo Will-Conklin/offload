@@ -1,4 +1,4 @@
-# Intent: Minimal iOS tests-only workflow pinned to documented CI values, running preflight and tests while always collecting diagnostics artifacts.
+# Intent: Minimal iOS tests-only workflow with pinned CI values, running preflight and tests while always collecting diagnostics artifacts.
 
 name: iOS Tests
 
@@ -24,7 +24,7 @@ jobs:
         id: readiness
         run: |
           set -euo pipefail
-          source scripts/ci/readiness_env.sh
+          source scripts/ci/readiness-env.sh
 
           echo "ci_macos_runner=${CI_MACOS_RUNNER}" >> "$GITHUB_OUTPUT"
           echo "ci_xcode_version=${CI_XCODE_VERSION}" >> "$GITHUB_OUTPUT"
@@ -34,11 +34,11 @@ jobs:
       - name: Guard pinned values
         run: |
           if [[ -z "${{ steps.readiness.outputs.ci_macos_runner }}" ]]; then
-            echo "CI_MACOS_RUNNER missing/empty in docs/ci/ci-readiness.md (Pinned CI Environment section)" >&2
+            echo "CI_MACOS_RUNNER missing/empty" >&2
             exit 1
           fi
           if [[ -z "${{ steps.readiness.outputs.ci_xcode_version }}" ]]; then
-            echo "CI_XCODE_VERSION missing/empty in docs/ci/ci-readiness.md (Pinned CI Environment section)" >&2
+            echo "CI_XCODE_VERSION missing/empty" >&2
             exit 1
           fi
 
@@ -69,7 +69,7 @@ jobs:
       - name: Parse pinned CI environment
         run: |
           set -euo pipefail
-          source scripts/ci/readiness_env.sh
+          source scripts/ci/readiness-env.sh
 
       - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
