@@ -56,14 +56,28 @@ final class TaskRepository {
 
     /// Fetch tasks by plan
     func fetchByPlan(_ plan: Plan) throws -> [Task] {
-        let all = try fetchAll()
-        return all.filter { $0.plan?.id == plan.id }
+        let planId = plan.id
+        let predicate = #Predicate<Task> { task in
+            task.plan?.id == planId
+        }
+        let descriptor = FetchDescriptor<Task>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
     }
 
     /// Fetch tasks by category
     func fetchByCategory(_ category: Category) throws -> [Task] {
-        let all = try fetchAll()
-        return all.filter { $0.category?.id == category.id }
+        let categoryId = category.id
+        let predicate = #Predicate<Task> { task in
+            task.category?.id == categoryId
+        }
+        let descriptor = FetchDescriptor<Task>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
     }
 
     /// Fetch task by ID

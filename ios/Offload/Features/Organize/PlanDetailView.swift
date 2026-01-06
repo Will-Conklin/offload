@@ -21,6 +21,7 @@ struct PlanDetailView: View {
     @State private var showingAddTask = false
     @State private var showingDeleteConfirmation = false
     @State private var taskToEdit: Task?
+    @State private var errorMessage: String?
 
     private var activeTasks: [Task] {
         plan.tasks?.filter { !$0.isDone }.sorted { $0.importance > $1.importance } ?? []
@@ -142,6 +143,13 @@ struct PlanDetailView: View {
         } message: {
             Text("This will delete the plan and all its tasks. This cannot be undone.")
         }
+        .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
+            Button("OK") {
+                errorMessage = nil
+            }
+        } message: { message in
+            Text(message)
+        }
     }
 
     private func createTask(title: String, detail: String?, importance: Int, dueDate: Date?) throws {
@@ -167,27 +175,47 @@ struct PlanDetailView: View {
     }
 
     private func deleteTasks(offsets: IndexSet) {
-        for index in offsets {
-            let task = activeTasks[index]
+        // Capture tasks to delete before modifying
+        let tasksToDelete = offsets.map { activeTasks[$0] }
+
+        for task in tasksToDelete {
             modelContext.delete(task)
         }
 
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete tasks: \(error.localizedDescription)"
+        }
     }
 
     private func deleteCompletedTasks(offsets: IndexSet) {
-        for index in offsets {
-            let task = completedTasks[index]
+        // Capture tasks to delete before modifying
+        let tasksToDelete = offsets.map { completedTasks[$0] }
+
+        for task in tasksToDelete {
             modelContext.delete(task)
         }
 
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete tasks: \(error.localizedDescription)"
+        }
     }
 
     private func deletePlan() {
         modelContext.delete(plan)
-        try? modelContext.save()
-        dismiss()
+
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete plan: \(error.localizedDescription)"
+        }
     }
 }
 

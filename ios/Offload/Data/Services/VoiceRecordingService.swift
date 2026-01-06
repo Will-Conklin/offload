@@ -145,7 +145,12 @@ final class VoiceRecordingService: @unchecked Sendable {
         isTranscribing = false
 
         // Deactivate audio session
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            // Log error but don't fail - audio session deactivation is non-critical
+            print("Warning: Failed to deactivate audio session: \(error.localizedDescription)")
+        }
 
         // Cleanup
         audioEngine = nil

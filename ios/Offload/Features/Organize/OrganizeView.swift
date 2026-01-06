@@ -22,6 +22,7 @@ struct OrganizeView: View {
     @Query(sort: \CommunicationItem.createdAt, order: .reverse) private var communications: [CommunicationItem]
 
     @State private var activeSheet: OrganizeSheet?
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -246,6 +247,13 @@ struct OrganizeView: View {
                     }
                 }
             }
+            .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
+                Button("OK") {
+                    errorMessage = nil
+                }
+            } message: { message in
+                Text(message)
+            }
         }
     }
 
@@ -298,7 +306,13 @@ struct OrganizeView: View {
             let plan = plans[index]
             modelContext.delete(plan)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete plans: \(error.localizedDescription)"
+        }
     }
 
     private func deleteCategories(offsets: IndexSet) {
@@ -306,7 +320,13 @@ struct OrganizeView: View {
             let category = categories[index]
             modelContext.delete(category)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete categories: \(error.localizedDescription)"
+        }
     }
 
     private func deleteTags(offsets: IndexSet) {
@@ -314,7 +334,13 @@ struct OrganizeView: View {
             let tag = tags[index]
             modelContext.delete(tag)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete tags: \(error.localizedDescription)"
+        }
     }
 
     private func createList(title: String, kind: ListKind) throws {
@@ -333,7 +359,13 @@ struct OrganizeView: View {
             let list = lists[index]
             modelContext.delete(list)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete lists: \(error.localizedDescription)"
+        }
     }
 
     private func createCommunication(channel: CommunicationChannel, recipient: String, content: String) throws {
@@ -361,7 +393,13 @@ struct OrganizeView: View {
             let comm = communications[index]
             modelContext.delete(comm)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete communications: \(error.localizedDescription)"
+        }
     }
 
     private func iconForChannel(_ channel: CommunicationChannel) -> String {

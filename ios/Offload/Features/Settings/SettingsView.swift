@@ -11,6 +11,13 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Constants
+
+private enum Constants {
+    static let githubURL = URL(string: "https://github.com/Will-Conklin/offload")!
+    static let issuesURL = URL(string: "https://github.com/Will-Conklin/offload/issues")!
+}
+
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
@@ -209,14 +216,12 @@ struct SettingsView: View {
                     .foregroundStyle(.primary)
             }
 
-            Link(destination: URL(string: "https://github.com/Will-Conklin/offload")!) {
+            Link(destination: Constants.githubURL) {
                 Label("View on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
             }
 
             Button {
-                if let url = URL(string: "https://github.com/Will-Conklin/offload/issues") {
-                    openURL(url)
-                }
+                openURL(Constants.issuesURL)
             } label: {
                 Label("Report an Issue", systemImage: "exclamationmark.bubble")
                     .foregroundStyle(.primary)
@@ -310,6 +315,8 @@ private struct VoiceSettingsView: View {
 private struct APIConfigurationView: View {
     @Binding var apiEndpoint: String
     @State private var tempEndpoint: String
+    @State private var errorMessage: String?
+    @Environment(\.dismiss) private var dismiss
 
     init(apiEndpoint: Binding<String>) {
         self._apiEndpoint = apiEndpoint
@@ -326,12 +333,22 @@ private struct APIConfigurationView: View {
             } header: {
                 Text("API Endpoint")
             } footer: {
-                Text("Configure the backend API endpoint for AI suggestions. This is for development and testing purposes.")
+                Text("Must be a valid HTTPS URL")
+                    .font(.caption)
+            }
+
+            if let errorMessage {
+                Section {
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                        .font(.caption)
+                }
             }
 
             Section {
                 Button("Reset to Default") {
                     tempEndpoint = "https://api.offload.app"
+                    errorMessage = nil
                 }
             }
         }
@@ -340,10 +357,46 @@ private struct APIConfigurationView: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    apiEndpoint = tempEndpoint
+                    handleSave()
                 }
             }
         }
+    }
+
+    private func handleSave() {
+        errorMessage = nil
+
+        // Validate URL
+        let trimmed = tempEndpoint.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmed.isEmpty else {
+            errorMessage = "URL cannot be empty"
+            return
+        }
+
+        guard let url = URL(string: trimmed) else {
+            errorMessage = "Invalid URL format"
+            return
+        }
+
+        guard let scheme = url.scheme?.lowercased(), scheme == "https" else {
+            errorMessage = "URL must use HTTPS for security"
+            return
+        }
+
+        guard let host = url.host, !host.isEmpty else {
+            errorMessage = "URL must have a valid hostname"
+            return
+        }
+
+        guard trimmed.count <= 200 else {
+            errorMessage = "URL is too long (max 200 characters)"
+            return
+        }
+
+        // Valid - save and dismiss
+        apiEndpoint = trimmed
+        dismiss()
     }
 }
 
@@ -575,7 +628,7 @@ private struct AboutSheet: View {
                         Text("Offload is open source and available on GitHub. Contributions and feedback are welcome.")
                             .font(.body)
 
-                        Link(destination: URL(string: "https://github.com/Will-Conklin/offload")!) {
+                        Link(destination: Constants.githubURL) {
                             Label("View on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
                         }
                     }
@@ -682,7 +735,7 @@ private struct PrivacyPolicySheet: View {
                         Text("If you have questions about this privacy policy, please open an issue on our GitHub repository.")
                             .font(.body)
 
-                        Link(destination: URL(string: "https://github.com/Will-Conklin/offload/issues")!) {
+                        Link(destination: Constants.issuesURL) {
                             Label("Open an Issue", systemImage: "exclamationmark.bubble")
                         }
                     }

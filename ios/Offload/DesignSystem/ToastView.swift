@@ -92,12 +92,14 @@ class ToastManager {
         currentToast = Toast(message: message, type: type)
 
         // Auto-dismiss after duration
-        dismissTask = _Concurrency.Task {
-            try? await _Concurrency.Task.sleep(for: .seconds(duration))
-            if !_Concurrency.Task.isCancelled {
-                await MainActor.run {
-                    currentToast = nil
-                }
+        dismissTask = _Concurrency.Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            do {
+                try await _Concurrency.Task.sleep(for: .seconds(duration))
+                self.currentToast = nil
+            } catch is CancellationError {
+                // Expected when showing new toast before previous dismisses
             }
         }
     }

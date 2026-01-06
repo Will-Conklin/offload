@@ -43,8 +43,9 @@ final class SuggestionRepository {
     }
 
     func fetchSuggestionsByKind(_ kind: SuggestionKind) throws -> [Suggestion] {
-        let all = try fetchAllSuggestions()
-        return all.filter { $0.suggestionKind == kind }
+        let predicate = #Predicate<Suggestion> { $0.suggestionKind == kind }
+        let descriptor = FetchDescriptor<Suggestion>(predicate: predicate)
+        return try modelContext.fetch(descriptor)
     }
 
     func fetchAllSuggestions() throws -> [Suggestion] {
@@ -97,11 +98,12 @@ final class SuggestionRepository {
     }
 
     func fetchDecisionsByType(_ type: DecisionType) throws -> [SuggestionDecision] {
+        let predicate = #Predicate<SuggestionDecision> { $0.decisionType == type }
         let descriptor = FetchDescriptor<SuggestionDecision>(
+            predicate: predicate,
             sortBy: [SortDescriptor(\.decidedAt, order: .reverse)]
         )
-        let all = try modelContext.fetch(descriptor)
-        return all.filter { $0.decisionType == type }
+        return try modelContext.fetch(descriptor)
     }
 
     func deleteDecision(decision: SuggestionDecision) throws {

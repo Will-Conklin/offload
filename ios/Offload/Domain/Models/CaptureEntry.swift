@@ -20,9 +20,11 @@ final class CaptureEntry {
     var inputType: String  // Stored as String for SwiftData compatibility
     var source: String     // Stored as String for SwiftData compatibility
     var lifecycleState: String  // Stored as String for SwiftData compatibility
-    var acceptedSuggestionId: UUID?
 
     // Relationships
+    @Relationship(deleteRule: .nullify)
+    var acceptedSuggestion: Suggestion?
+
     @Relationship(deleteRule: .cascade, inverse: \HandOffRequest.captureEntry)
     var handOffRequests: [HandOffRequest]?
 
@@ -33,7 +35,7 @@ final class CaptureEntry {
         inputType: InputType,
         source: CaptureSource,
         lifecycleState: LifecycleState = .raw,
-        acceptedSuggestionId: UUID? = nil,
+        acceptedSuggestion: Suggestion? = nil,
         handOffRequests: [HandOffRequest]? = nil
     ) {
         self.id = id
@@ -42,7 +44,7 @@ final class CaptureEntry {
         self.inputType = inputType.rawValue
         self.source = source.rawValue
         self.lifecycleState = lifecycleState.rawValue
-        self.acceptedSuggestionId = acceptedSuggestionId
+        self.acceptedSuggestion = acceptedSuggestion
         self.handOffRequests = handOffRequests
     }
 

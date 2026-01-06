@@ -21,7 +21,10 @@ final class APIClient {
         self.session = URLSession(configuration: configuration)
 
         // TODO: Move to configuration/environment
-        self.baseURL = URL(string: "https://api.offload.app")!
+        guard let baseURL = URL(string: "https://api.offload.app") else {
+            fatalError("Invalid base URL configuration - this is a programmer error")
+        }
+        self.baseURL = baseURL
     }
 
     // TODO: Implement request(_ endpoint: Endpoint) async throws -> Data

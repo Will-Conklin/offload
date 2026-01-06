@@ -17,8 +17,8 @@ import Observation
 final class CaptureWorkflowService {
     // MARK: - Published State
 
-    var isProcessing = false
-    var errorMessage: String?
+    private(set) var isProcessing = false
+    private(set) var errorMessage: String?
 
     // MARK: - Dependencies
 
@@ -52,7 +52,11 @@ final class CaptureWorkflowService {
 
         isProcessing = true
         errorMessage = nil
-        defer { isProcessing = false }
+        defer {
+            _Concurrency.Task { @MainActor in
+                self.isProcessing = false
+            }
+        }
 
         do {
             let entry = CaptureEntry(
@@ -78,7 +82,11 @@ final class CaptureWorkflowService {
 
         isProcessing = true
         errorMessage = nil
-        defer { isProcessing = false }
+        defer {
+            _Concurrency.Task { @MainActor in
+                self.isProcessing = false
+            }
+        }
 
         do {
             try captureRepo.updateLifecycleState(entry: entry, to: .archived)
@@ -96,7 +104,11 @@ final class CaptureWorkflowService {
 
         isProcessing = true
         errorMessage = nil
-        defer { isProcessing = false }
+        defer {
+            _Concurrency.Task { @MainActor in
+                self.isProcessing = false
+            }
+        }
 
         do {
             try captureRepo.delete(entry: entry)

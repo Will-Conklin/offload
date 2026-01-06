@@ -21,6 +21,7 @@ struct ListDetailView: View {
     @State private var showingAddItem = false
     @State private var showingDeleteConfirmation = false
     @State private var newItemText = ""
+    @State private var errorMessage: String?
 
     private var uncheckedItems: [ListItem] {
         list.items?.filter { !$0.isChecked }.sorted { $0.text < $1.text } ?? []
@@ -144,6 +145,13 @@ struct ListDetailView: View {
         } message: {
             Text("This will delete the list and all its items. This cannot be undone.")
         }
+        .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
+            Button("OK") {
+                errorMessage = nil
+            }
+        } message: { message in
+            Text(message)
+        }
     }
 
     private func addQuickItem() {
@@ -152,25 +160,46 @@ struct ListDetailView: View {
 
         let item = ListItem(text: trimmed, list: list)
         modelContext.insert(item)
-        try? modelContext.save()
 
-        newItemText = ""
+        do {
+            try modelContext.save()
+            newItemText = ""
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to add item: \(error.localizedDescription)"
+        }
     }
 
     private func deleteUncheckedItems(offsets: IndexSet) {
-        for index in offsets {
-            let item = uncheckedItems[index]
+        // Capture items to delete before modifying
+        let itemsToDelete = offsets.map { uncheckedItems[$0] }
+
+        for item in itemsToDelete {
             modelContext.delete(item)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete items: \(error.localizedDescription)"
+        }
     }
 
     private func deleteCheckedItems(offsets: IndexSet) {
-        for index in offsets {
-            let item = checkedItems[index]
+        // Capture items to delete before modifying
+        let itemsToDelete = offsets.map { checkedItems[$0] }
+
+        for item in itemsToDelete {
             modelContext.delete(item)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete items: \(error.localizedDescription)"
+        }
     }
 
     private func clearCompleted() {
@@ -178,13 +207,25 @@ struct ListDetailView: View {
         for item in items where item.isChecked {
             modelContext.delete(item)
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to clear completed items: \(error.localizedDescription)"
+        }
     }
 
     private func deleteList() {
         modelContext.delete(list)
-        try? modelContext.save()
-        dismiss()
+
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            modelContext.rollback()
+            errorMessage = "Failed to delete list: \(error.localizedDescription)"
+        }
     }
 }
 

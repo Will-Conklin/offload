@@ -17,6 +17,7 @@ struct InboxView: View {
     @State private var showingCapture = false
     @State private var workflowService: CaptureWorkflowService?
     @State private var entries: [CaptureEntry] = []
+    @State private var errorMessage: String?
 
     var body: some View {
         List {
@@ -54,6 +55,13 @@ struct InboxView: View {
         .refreshable {
             await loadInbox()
         }
+        .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
+            Button("OK") {
+                errorMessage = nil
+            }
+        } message: { message in
+            Text(message)
+        }
     }
 
     private func loadInbox() async {
@@ -68,16 +76,22 @@ struct InboxView: View {
     private func deleteEntries(offsets: IndexSet) {
         guard let workflowService = workflowService else { return }
 
-        withAnimation {
-            for index in offsets {
-                let entry = entries[index]
-                _Concurrency.Task {
-                    do {
-                        try await workflowService.deleteEntry(entry)
-                        await loadInbox()
-                    } catch {
-                        // Error is already set in workflowService.errorMessage
-                    }
+        // Capture entries to delete BEFORE async operation
+        let entriesToDelete = offsets.map { entries[$0] }
+
+        _Concurrency.Task {
+            do {
+                // Serialize deletions
+                for entry in entriesToDelete {
+                    try await workflowService.deleteEntry(entry)
+                }
+
+                // Single reload after all deletions complete
+                await loadInbox()
+            } catch {
+                // Show error to user
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
                 }
             }
         }

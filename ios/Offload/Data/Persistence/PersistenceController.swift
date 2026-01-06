@@ -134,7 +134,7 @@ struct PersistenceController {
                 context.insert(task1)
                 context.insert(task2)
 
-                try? context.save()
+                try context.save()
             }
 
             return container

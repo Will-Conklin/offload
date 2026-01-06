@@ -38,26 +38,42 @@ final class CaptureRepository {
 
     /// Fetch entries in 'raw' state (inbox)
     func fetchInbox() throws -> [CaptureEntry] {
-        let all = try fetchAll()
-        return all.filter { $0.currentLifecycleState == .raw }
+        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == .raw }
+        let descriptor = FetchDescriptor<CaptureEntry>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
     }
 
     /// Fetch entries by lifecycle state
     func fetchByState(_ state: LifecycleState) throws -> [CaptureEntry] {
-        let all = try fetchAll()
-        return all.filter { $0.currentLifecycleState == state }
+        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == state }
+        let descriptor = FetchDescriptor<CaptureEntry>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
     }
 
     /// Fetch entries that have been handed off to AI
     func fetchHandedOff() throws -> [CaptureEntry] {
-        let all = try fetchAll()
-        return all.filter { $0.currentLifecycleState == .handedOff }
+        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == .handedOff }
+        let descriptor = FetchDescriptor<CaptureEntry>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
     }
 
     /// Fetch entries ready for placement
     func fetchReady() throws -> [CaptureEntry] {
-        let all = try fetchAll()
-        return all.filter { $0.currentLifecycleState == .ready }
+        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == .ready }
+        let descriptor = FetchDescriptor<CaptureEntry>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
     }
 
     /// Fetch entry by ID
@@ -90,8 +106,8 @@ final class CaptureRepository {
         try modelContext.save()
     }
 
-    func setAcceptedSuggestion(entry: CaptureEntry, suggestionId: UUID) throws {
-        entry.acceptedSuggestionId = suggestionId
+    func setAcceptedSuggestion(entry: CaptureEntry, suggestion: Suggestion) throws {
+        entry.acceptedSuggestion = suggestion
         entry.currentLifecycleState = .ready
         try modelContext.save()
     }
