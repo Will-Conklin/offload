@@ -38,7 +38,7 @@ final class CaptureRepository {
 
     /// Fetch entries in 'raw' state (inbox)
     func fetchInbox() throws -> [CaptureEntry] {
-        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == .raw }
+        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == LifecycleState.raw }
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
@@ -58,7 +58,7 @@ final class CaptureRepository {
 
     /// Fetch entries that have been handed off to AI
     func fetchHandedOff() throws -> [CaptureEntry] {
-        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == .handedOff }
+        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == LifecycleState.handedOff }
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
@@ -68,7 +68,7 @@ final class CaptureRepository {
 
     /// Fetch entries ready for placement
     func fetchReady() throws -> [CaptureEntry] {
-        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == .ready }
+        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == LifecycleState.ready }
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]

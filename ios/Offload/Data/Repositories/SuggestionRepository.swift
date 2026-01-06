@@ -64,7 +64,7 @@ final class SuggestionRepository {
         // Filter to only suggestions without an accepted decision
         return entrySuggestions.filter { suggestion in
             guard let decisions = suggestion.decisions else { return true }
-            return !decisions.contains { $0.decisionType == .accepted }
+            return !decisions.contains { $0.decisionType == DecisionType.accepted }
         }
     }
 
