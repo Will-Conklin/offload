@@ -248,6 +248,7 @@ private struct TaskRowView: View {
 private struct EditPlanSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
 
     @Bindable var plan: Plan
 
@@ -318,6 +319,7 @@ private struct EditPlanSheet: View {
 
 private struct TaskFormSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
 
     let plan: Plan
     let existingTask: Task?
