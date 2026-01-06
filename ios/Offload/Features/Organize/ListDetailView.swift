@@ -212,6 +212,7 @@ private struct ListItemRowView: View {
 private struct EditListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
 
     @Bindable var list: ListEntity
 
