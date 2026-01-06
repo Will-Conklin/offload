@@ -36,6 +36,7 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 
 - ALWAYS add headers to key files to describe intent to agents. Use a format that's optimized for agent consumption. 
 - ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
+- ALWAYS use explicit type references. SwiftData predicates require explicit type references for enum cases
 - ALWAYS clean up merged branches.
 - ALWAYS label pull requests with appropriate labels (bug, enhancement, documentation, etc.).
 - ALWAYS keep documentation up to date.
