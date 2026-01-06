@@ -269,6 +269,7 @@ struct SettingsView: View {
 // MARK: - Supporting Views
 
 private struct VoiceSettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @AppStorage("voiceRecordingQuality") private var recordingQuality = "high"
     @AppStorage("enableLiveTranscription") private var enableLiveTranscription = true
 
@@ -611,6 +612,7 @@ private struct AboutSheet: View {
 private struct PhilosophyItem: View {
     let icon: String
     let text: String
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
