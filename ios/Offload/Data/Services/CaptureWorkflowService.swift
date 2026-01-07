@@ -17,8 +17,8 @@ import Observation
 final class CaptureWorkflowService {
     // MARK: - Published State
 
-    private(set) var isProcessing = false
-    private(set) var errorMessage: String?
+    internal(set) var isProcessing = false
+    internal(set) var errorMessage: String?
 
     // MARK: - Dependencies
 
