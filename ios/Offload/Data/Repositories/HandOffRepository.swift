@@ -44,7 +44,8 @@ final class HandOffRepository {
     }
 
     func fetchRequestsBySource(_ source: RequestSource) throws -> [HandOffRequest] {
-        let predicate = #Predicate<HandOffRequest> { $0.source == source }
+        let rawValue = source.rawValue
+        let predicate = #Predicate<HandOffRequest> { $0.requestedBy == rawValue }
         let descriptor = FetchDescriptor<HandOffRequest>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.requestedAt, order: .reverse)]
@@ -89,7 +90,8 @@ final class HandOffRepository {
     }
 
     func fetchRunsByStatus(_ status: RunStatus) throws -> [HandOffRun] {
-        let predicate = #Predicate<HandOffRun> { $0.status == status }
+        let rawValue = status.rawValue
+        let predicate = #Predicate<HandOffRun> { $0.runStatus == rawValue }
         let descriptor = FetchDescriptor<HandOffRun>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.startedAt, order: .reverse)]

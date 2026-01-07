@@ -53,9 +53,7 @@ final class CaptureWorkflowService {
         isProcessing = true
         errorMessage = nil
         defer {
-            _Concurrency.Task { @MainActor in
-                self.isProcessing = false
-            }
+            isProcessing = false
         }
 
         do {
@@ -83,9 +81,7 @@ final class CaptureWorkflowService {
         isProcessing = true
         errorMessage = nil
         defer {
-            _Concurrency.Task { @MainActor in
-                self.isProcessing = false
-            }
+            isProcessing = false
         }
 
         do {
@@ -105,9 +101,7 @@ final class CaptureWorkflowService {
         isProcessing = true
         errorMessage = nil
         defer {
-            _Concurrency.Task { @MainActor in
-                self.isProcessing = false
-            }
+            isProcessing = false
         }
 
         do {

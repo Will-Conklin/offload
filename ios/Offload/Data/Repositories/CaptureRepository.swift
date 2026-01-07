@@ -88,11 +88,11 @@ final class CaptureRepository {
         return try modelContext.fetch(descriptor).first
     }
 
-    /// Search entries by raw text (case-sensitive)
+    /// Search entries by raw text (case-insensitive)
     func search(query: String) throws -> [CaptureEntry] {
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: #Predicate { entry in
-                entry.rawText.contains(query)
+                entry.rawText.localizedStandardContains(query)
             },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )

@@ -79,6 +79,7 @@ main() {
     -destination "${DESTINATION}" \
     -derivedDataPath "${DERIVED_DATA_PATH}" \
     -resultBundlePath "${RESULT_BUNDLE_PATH}" \
+    -enableCodeCoverage YES \
     COMPILER_INDEX_STORE_ENABLE=NO \
     test
   status=$?

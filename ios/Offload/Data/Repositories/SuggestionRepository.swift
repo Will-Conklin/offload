@@ -43,7 +43,8 @@ final class SuggestionRepository {
     }
 
     func fetchSuggestionsByKind(_ kind: SuggestionKind) throws -> [Suggestion] {
-        let predicate = #Predicate<Suggestion> { $0.suggestionKind == kind }
+        let rawValue = kind.rawValue
+        let predicate = #Predicate<Suggestion> { $0.kind == rawValue }
         let descriptor = FetchDescriptor<Suggestion>(predicate: predicate)
         return try modelContext.fetch(descriptor)
     }
@@ -98,7 +99,8 @@ final class SuggestionRepository {
     }
 
     func fetchDecisionsByType(_ type: DecisionType) throws -> [SuggestionDecision] {
-        let predicate = #Predicate<SuggestionDecision> { $0.decisionType == type }
+        let rawValue = type.rawValue
+        let predicate = #Predicate<SuggestionDecision> { $0.decision == rawValue }
         let descriptor = FetchDescriptor<SuggestionDecision>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.decidedAt, order: .reverse)]
