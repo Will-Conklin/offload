@@ -38,7 +38,8 @@ final class CaptureRepository {
 
     /// Fetch entries in 'raw' state (inbox)
     func fetchInbox() throws -> [CaptureEntry] {
-        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == LifecycleState.raw }
+        let rawValue = LifecycleState.raw.rawValue
+        let predicate = #Predicate<CaptureEntry> { $0.lifecycleState == rawValue }
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
@@ -48,7 +49,8 @@ final class CaptureRepository {
 
     /// Fetch entries by lifecycle state
     func fetchByState(_ state: LifecycleState) throws -> [CaptureEntry] {
-        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == state }
+        let rawValue = state.rawValue
+        let predicate = #Predicate<CaptureEntry> { $0.lifecycleState == rawValue }
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
@@ -58,7 +60,8 @@ final class CaptureRepository {
 
     /// Fetch entries that have been handed off to AI
     func fetchHandedOff() throws -> [CaptureEntry] {
-        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == LifecycleState.handedOff }
+        let rawValue = LifecycleState.handedOff.rawValue
+        let predicate = #Predicate<CaptureEntry> { $0.lifecycleState == rawValue }
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
@@ -68,7 +71,8 @@ final class CaptureRepository {
 
     /// Fetch entries ready for placement
     func fetchReady() throws -> [CaptureEntry] {
-        let predicate = #Predicate<CaptureEntry> { $0.currentLifecycleState == LifecycleState.ready }
+        let rawValue = LifecycleState.ready.rawValue
+        let predicate = #Predicate<CaptureEntry> { $0.lifecycleState == rawValue }
         let descriptor = FetchDescriptor<CaptureEntry>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
