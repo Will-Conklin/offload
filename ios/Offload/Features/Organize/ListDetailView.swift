@@ -325,17 +325,6 @@ private struct EditListSheet: View {
     }
 }
 
-private struct ValidationError: LocalizedError {
-    let message: String
-
-    init(_ message: String) {
-        self.message = message
-    }
-
-    var errorDescription: String? {
-        message
-    }
-}
 
 #Preview {
     let list = ListEntity(title: "Sample List", kind: .shopping)

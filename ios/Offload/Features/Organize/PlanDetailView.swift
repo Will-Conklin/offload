@@ -448,17 +448,6 @@ private struct TaskFormSheet: View {
     }
 }
 
-private struct ValidationError: LocalizedError {
-    let message: String
-
-    init(_ message: String) {
-        self.message = message
-    }
-
-    var errorDescription: String? {
-        message
-    }
-}
 
 #Preview {
     let plan = Plan(title: "Sample Plan", detail: "A plan for testing")

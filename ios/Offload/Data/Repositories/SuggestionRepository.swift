@@ -113,3 +113,5 @@ final class SuggestionRepository {
         try modelContext.save()
     }
 }
+
+extension SuggestionRepository: SuggestionRepositoryProtocol {}

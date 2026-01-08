@@ -113,3 +113,5 @@ final class HandOffRepository {
         try modelContext.save()
     }
 }
+
+extension HandOffRepository: HandOffRepositoryProtocol {}
