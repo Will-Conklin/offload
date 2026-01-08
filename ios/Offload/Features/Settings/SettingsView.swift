@@ -23,6 +23,9 @@ struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.openURL) private var openURL
 
+    @Query(sort: \Category.name) private var categories: [Category]
+    @Query(sort: \Tag.name) private var tags: [Tag]
+
     @AppStorage("defaultCaptureSource") private var defaultCaptureSource = CaptureSource.app
     @AppStorage("autoArchiveCompleted") private var autoArchiveCompleted = false
     @AppStorage("enableAISuggestions") private var enableAISuggestions = false
@@ -32,6 +35,8 @@ struct SettingsView: View {
     @State private var showingArchiveOldAlert = false
     @State private var showingAbout = false
     @State private var showingPrivacyPolicy = false
+    @State private var activeSheet: SettingsSheet?
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -41,6 +46,9 @@ struct SettingsView: View {
 
                 // Preferences Section
                 preferencesSection
+
+                // Organization Section
+                organizationSection
 
                 // AI & Hand-Off Section
                 aiHandOffSection
@@ -74,6 +82,25 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingPrivacyPolicy) {
             PrivacyPolicySheet()
+        }
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .category:
+                CategoryFormSheet { name, icon in
+                    try createCategory(name: name, icon: icon)
+                }
+            case .tag:
+                TagFormSheet { name, color in
+                    try createTag(name: name, color: color)
+                }
+            }
+        }
+        .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
+            Button("OK") {
+                errorMessage = nil
+            }
+        } message: { message in
+            Text(message)
         }
     }
 
@@ -131,6 +158,86 @@ struct SettingsView: View {
             Text("Preferences")
         } footer: {
             Text("Auto-archive will move completed tasks and placed captures to archive after 7 days.")
+        }
+    }
+
+    // MARK: - Organization Section
+
+    private var organizationSection: some View {
+        Section {
+            // Categories subsection
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Categories")
+                        .font(.headline)
+                    Spacer()
+                    Button {
+                        activeSheet = .category
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                    }
+                }
+
+                if categories.isEmpty {
+                    Text("No categories yet")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(categories) { category in
+                        HStack {
+                            Text(category.name)
+                            Spacer()
+                            if let icon = category.icon, !icon.isEmpty {
+                                Text(icon)
+                                    .font(.title3)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+
+            Divider()
+
+            // Tags subsection
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Tags")
+                        .font(.headline)
+                    Spacer()
+                    Button {
+                        activeSheet = .tag
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                    }
+                }
+
+                if tags.isEmpty {
+                    Text("No tags yet")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(tags) { tag in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(tag.name)
+                            if let color = tag.color, !color.isEmpty {
+                                Text(color)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        } header: {
+            Text("Organization")
+        } footer: {
+            Text("Categories and tags help organize your captures and plans.")
         }
     }
 
@@ -267,6 +374,50 @@ struct SettingsView: View {
             }
         } catch {
             AppLogger.persistence.error("Archive old captures failed: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
+    private func createCategory(name: String, icon: String?) throws {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            throw ValidationError("Category name is required.")
+        }
+
+        let normalizedIcon = icon?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let repository = CategoryRepository(modelContext: modelContext)
+        _ = try repository.findOrCreate(
+            name: trimmedName,
+            icon: (normalizedIcon?.isEmpty ?? true) ? nil : normalizedIcon
+        )
+    }
+
+    private func createTag(name: String, color: String?) throws {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            throw ValidationError("Tag name is required.")
+        }
+
+        let normalizedColor = color?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let repository = TagRepository(modelContext: modelContext)
+        _ = try repository.findOrCreate(
+            name: trimmedName,
+            color: (normalizedColor?.isEmpty ?? true) ? nil : normalizedColor
+        )
+    }
+}
+
+// MARK: - Supporting Enums
+
+private enum SettingsSheet: Identifiable {
+    case category
+    case tag
+
+    var id: String {
+        switch self {
+        case .category:
+            return "category"
+        case .tag:
+            return "tag"
         }
     }
 }
@@ -766,6 +917,126 @@ private struct PolicySection: View {
 
             Text(content)
                 .font(.body)
+        }
+    }
+}
+
+private struct CategoryFormSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+
+    let onSave: (String, String?) throws -> Void
+
+    @State private var name: String = ""
+    @State private var icon: String = ""
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Details") {
+                    TextField("Category name", text: $name)
+                    TextField("Emoji (optional)", text: $icon)
+                }
+
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .font(Theme.Typography.errorText)
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
+                    }
+                }
+            }
+            .navigationTitle("New Category")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        handleSave()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func handleSave() {
+        do {
+            let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmedIcon = icon.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            try onSave(
+                trimmedName,
+                trimmedIcon.isEmpty ? nil : trimmedIcon
+            )
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+private struct TagFormSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+
+    let onSave: (String, String?) throws -> Void
+
+    @State private var name: String = ""
+    @State private var color: String = ""
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Details") {
+                    TextField("Tag name", text: $name)
+                    TextField("Color (optional)", text: $color)
+                }
+
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .font(Theme.Typography.errorText)
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
+                    }
+                }
+            }
+            .navigationTitle("New Tag")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        handleSave()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func handleSave() {
+        do {
+            let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmedColor = color.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            try onSave(
+                trimmedName,
+                trimmedColor.isEmpty ? nil : trimmedColor
+            )
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 }

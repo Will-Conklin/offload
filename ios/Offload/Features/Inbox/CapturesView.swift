@@ -1,17 +1,17 @@
 //
-//  InboxView.swift
+//  CapturesView.swift
 //  Offload
 //
 //  Created by Claude Code on 12/30/25.
 //
-//  Intent: Primary inbox for raw thought captures awaiting organization.
+//  Intent: Primary view for raw thought captures awaiting organization.
 //  Displays lifecycle state and input type with minimal UI friction.
 //
 
 import SwiftUI
 import SwiftData
 
-struct InboxView: View {
+struct CapturesView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var showingCapture = false
@@ -26,7 +26,7 @@ struct InboxView: View {
             }
             .onDelete(perform: deleteEntries)
         }
-        .navigationTitle("Inbox")
+        .navigationTitle("Captures")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -136,7 +136,7 @@ struct CaptureRow: View {
 
 #Preview {
     NavigationStack {
-        InboxView()
+        CapturesView()
     }
     .modelContainer(PersistenceController.preview)
 }

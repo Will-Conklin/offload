@@ -16,8 +16,6 @@ struct OrganizeView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
-    @Query(sort: \Category.name) private var categories: [Category]
-    @Query(sort: \Tag.name) private var tags: [Tag]
     @Query(sort: \ListEntity.createdAt, order: .reverse) private var lists: [ListEntity]
     @Query(sort: \CommunicationItem.createdAt, order: .reverse) private var communications: [CommunicationItem]
 
@@ -67,56 +65,6 @@ struct OrganizeView: View {
                         activeSheet = .plan
                     } label: {
                         Label("New Plan", systemImage: "plus.circle.fill")
-                    }
-                }
-
-                Section("Categories") {
-                    if categories.isEmpty {
-                        Text("No categories yet")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(categories) { category in
-                            HStack {
-                                Text(category.name)
-                                Spacer()
-                                if let icon = category.icon, !icon.isEmpty {
-                                    Text(icon)
-                                        .font(.title3)
-                                }
-                            }
-                        }
-                        .onDelete(perform: deleteCategories)
-                    }
-
-                    Button {
-                        activeSheet = .category
-                    } label: {
-                        Label("New Category", systemImage: "plus.circle.fill")
-                    }
-                }
-
-                Section("Tags") {
-                    if tags.isEmpty {
-                        Text("No tags yet")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(tags) { tag in
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(tag.name)
-                                if let color = tag.color, !color.isEmpty {
-                                    Text(color)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        .onDelete(perform: deleteTags)
-                    }
-
-                    Button {
-                        activeSheet = .tag
-                    } label: {
-                        Label("New Tag", systemImage: "plus.circle.fill")
                     }
                 }
 
@@ -211,13 +159,6 @@ struct OrganizeView: View {
                         Button("New Communication") {
                             activeSheet = .communication
                         }
-                        Divider()
-                        Button("New Category") {
-                            activeSheet = .category
-                        }
-                        Button("New Tag") {
-                            activeSheet = .tag
-                        }
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
@@ -228,14 +169,6 @@ struct OrganizeView: View {
                 case .plan:
                     PlanFormSheet { title, detail in
                         try createPlan(title: title, detail: detail)
-                    }
-                case .category:
-                    CategoryFormSheet { name, icon in
-                        try createCategory(name: name, icon: icon)
-                    }
-                case .tag:
-                    TagFormSheet { name, color in
-                        try createTag(name: name, color: color)
                     }
                 case .list:
                     ListFormSheet { title, kind in
@@ -273,34 +206,6 @@ struct OrganizeView: View {
         try modelContext.save()
     }
 
-    private func createCategory(name: String, icon: String?) throws {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else {
-            throw ValidationError("Category name is required.")
-        }
-
-        let normalizedIcon = icon?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let repository = CategoryRepository(modelContext: modelContext)
-        _ = try repository.findOrCreate(
-            name: trimmedName,
-            icon: (normalizedIcon?.isEmpty ?? true) ? nil : normalizedIcon
-        )
-    }
-
-    private func createTag(name: String, color: String?) throws {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else {
-            throw ValidationError("Tag name is required.")
-        }
-
-        let normalizedColor = color?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let repository = TagRepository(modelContext: modelContext)
-        _ = try repository.findOrCreate(
-            name: trimmedName,
-            color: (normalizedColor?.isEmpty ?? true) ? nil : normalizedColor
-        )
-    }
-
     private func deletePlans(offsets: IndexSet) {
         for index in offsets {
             let plan = plans[index]
@@ -312,34 +217,6 @@ struct OrganizeView: View {
         } catch {
             modelContext.rollback()
             errorMessage = "Failed to delete plans: \(error.localizedDescription)"
-        }
-    }
-
-    private func deleteCategories(offsets: IndexSet) {
-        for index in offsets {
-            let category = categories[index]
-            modelContext.delete(category)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete categories: \(error.localizedDescription)"
-        }
-    }
-
-    private func deleteTags(offsets: IndexSet) {
-        for index in offsets {
-            let tag = tags[index]
-            modelContext.delete(tag)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete tags: \(error.localizedDescription)"
         }
     }
 
@@ -418,8 +295,6 @@ struct OrganizeView: View {
 
 private enum OrganizeSheet: Identifiable {
     case plan
-    case category
-    case tag
     case list
     case communication
 
@@ -427,10 +302,6 @@ private enum OrganizeSheet: Identifiable {
         switch self {
         case .plan:
             return "plan"
-        case .category:
-            return "category"
-        case .tag:
-            return "tag"
         case .list:
             return "list"
         case .communication:
