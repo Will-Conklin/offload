@@ -27,14 +27,38 @@ final class VoiceRecordingService: @unchecked Sendable {
     private var recognitionTask: SFSpeechRecognitionTask?
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
     private var recordingTimer: Timer?
+    private var cachedMicrophonePermission: Bool?
+    private var cachedSpeechPermission: Bool?
 
     // MARK: - Permissions
 
     func requestPermissions() async -> Bool {
+        if checkPermissions() {
+            return true
+        }
+
         let microphoneAuthorized = await requestMicrophonePermission()
         let speechAuthorized = await requestSpeechRecognitionPermission()
 
+        cachedMicrophonePermission = microphoneAuthorized
+        cachedSpeechPermission = speechAuthorized
+
         return microphoneAuthorized && speechAuthorized
+    }
+
+    func checkPermissions() -> Bool {
+        if let microphonePermission = cachedMicrophonePermission,
+           let speechPermission = cachedSpeechPermission {
+            return microphonePermission && speechPermission
+        }
+
+        let microphoneStatus = AVAudioApplication.shared.recordPermission
+        cachedMicrophonePermission = (microphoneStatus == .granted)
+
+        let speechStatus = SFSpeechRecognizer.authorizationStatus()
+        cachedSpeechPermission = (speechStatus == .authorized)
+
+        return (cachedMicrophonePermission ?? false) && (cachedSpeechPermission ?? false)
     }
 
     private func requestMicrophonePermission() async -> Bool {

@@ -123,3 +123,5 @@ final class TaskRepository {
         try modelContext.save()
     }
 }
+
+extension TaskRepository: TaskRepositoryProtocol {}

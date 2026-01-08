@@ -128,3 +128,5 @@ final class CaptureRepository {
         try modelContext.save()
     }
 }
+
+extension CaptureRepository: CaptureRepositoryProtocol {}

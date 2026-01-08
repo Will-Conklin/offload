@@ -22,20 +22,26 @@ final class CaptureWorkflowService {
 
     // MARK: - Dependencies
 
-    private let captureRepo: CaptureRepository
-    private let handOffRepo: HandOffRepository
-    private let suggestionRepo: SuggestionRepository
+    private let captureRepo: CaptureRepositoryProtocol
+    private let handOffRepo: HandOffRepositoryProtocol
+    private let suggestionRepo: SuggestionRepositoryProtocol
     private let placementRepo: PlacementRepository
     private let modelContext: ModelContext
 
     // MARK: - Initialization
 
-    init(modelContext: ModelContext) {
+    init(
+        modelContext: ModelContext,
+        captureRepo: CaptureRepositoryProtocol? = nil,
+        handOffRepo: HandOffRepositoryProtocol? = nil,
+        suggestionRepo: SuggestionRepositoryProtocol? = nil,
+        placementRepo: PlacementRepository? = nil
+    ) {
         self.modelContext = modelContext
-        self.captureRepo = CaptureRepository(modelContext: modelContext)
-        self.handOffRepo = HandOffRepository(modelContext: modelContext)
-        self.suggestionRepo = SuggestionRepository(modelContext: modelContext)
-        self.placementRepo = PlacementRepository(modelContext: modelContext)
+        self.captureRepo = captureRepo ?? CaptureRepository(modelContext: modelContext)
+        self.handOffRepo = handOffRepo ?? HandOffRepository(modelContext: modelContext)
+        self.suggestionRepo = suggestionRepo ?? SuggestionRepository(modelContext: modelContext)
+        self.placementRepo = placementRepo ?? PlacementRepository(modelContext: modelContext)
     }
 
     // MARK: - Capture Operations

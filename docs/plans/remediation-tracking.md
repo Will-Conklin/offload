@@ -1,7 +1,7 @@
 # Remediation Progress Tracking
 **Created:** January 6, 2026
-**Status:** Phase 1 Complete
-**Last Updated:** January 6, 2026
+**Status:** Phase 2 In Progress
+**Last Updated:** January 7, 2026
 
 This document tracks the implementation progress of the [Remediation Plan](./remediation-plan.md).
 
@@ -224,64 +224,64 @@ TBD
 ## PHASE 2: HIGH PRIORITY FIXES (Week 3-4)
 
 ### 2.1 Convert Task.category to Proper Relationship
-**Status:** ❌ Not Started
+**Status:** 🟡 In Progress
 **File:** `ios/Offload/Domain/Models/Task.swift:28`
 
 **Checklist:**
-- [ ] Add @Relationship annotation
-- [ ] Set appropriate deleteRule
+- [x] Add @Relationship annotation
+- [x] Set appropriate deleteRule
 - [ ] Test cascade behavior
 - [ ] Update any queries using category
 
 ---
 
 ### 2.2 Fix Array Index Out of Bounds
-**Status:** ❌ Not Started
+**Status:** 🟡 In Progress
 **Files:** ListDetailView.swift, PlanDetailView.swift
 
 **Checklist:**
-- [ ] Fix deleteUncheckedItems in ListDetailView
-- [ ] Fix deleteCheckedItems in ListDetailView
-- [ ] Fix deleteTasks in PlanDetailView
+- [x] Fix deleteUncheckedItems in ListDetailView
+- [x] Fix deleteCheckedItems in ListDetailView
+- [x] Fix deleteTasks in PlanDetailView
 - [ ] Test delete operations
 - [ ] Verify no index errors
 
 ---
 
 ### 2.3 Standardize Error Handling Pattern
-**Status:** ❌ Not Started
+**Status:** 🟡 In Progress
 
 **Checklist:**
-- [ ] Create ErrorPresenter class
-- [ ] Create PresentableError struct
-- [ ] Define error actions
+- [x] Create ErrorPresenter class
+- [x] Create PresentableError struct
+- [x] Define error actions
 - [ ] Integrate with existing error handling
 - [ ] Update views to use centralized handler
 
 ---
 
 ### 2.4 Add Repository Protocols
-**Status:** ❌ Not Started
+**Status:** 🟡 In Progress
 
 **Checklist:**
-- [ ] Define CaptureRepositoryProtocol
-- [ ] Define SuggestionRepositoryProtocol
-- [ ] Define TaskRepositoryProtocol
-- [ ] Define HandOffRepositoryProtocol
-- [ ] Update services to use protocols
-- [ ] Enable dependency injection
+- [x] Define CaptureRepositoryProtocol
+- [x] Define SuggestionRepositoryProtocol
+- [x] Define TaskRepositoryProtocol
+- [x] Define HandOffRepositoryProtocol
+- [x] Update services to use protocols
+- [x] Enable dependency injection
 - [ ] Write unit tests with mocks
 
 ---
 
 ### 2.5 Fix Permission Request Pattern
-**Status:** ❌ Not Started
+**Status:** 🟡 In Progress
 **File:** VoiceRecordingService.swift
 
 **Checklist:**
-- [ ] Add permission caching
-- [ ] Check cached values before requesting
-- [ ] Update cache on changes
+- [x] Add permission caching
+- [x] Check cached values before requesting
+- [x] Update cache on changes
 - [ ] Test permission flows
 
 ---
@@ -342,12 +342,12 @@ TBD
 - [x] 1.8 Input Validation
 
 ### Phase 2: High Priority
-**Progress:** 0/5 tasks (0%)
-- [ ] 2.1 Task.category Relationship
-- [ ] 2.2 Index Out of Bounds
-- [ ] 2.3 Error Handling Pattern
-- [ ] 2.4 Repository Protocols
-- [ ] 2.5 Permission Caching
+**Progress:** 0/5 tasks (In Progress)
+- [ ] 2.1 Task.category Relationship (In Progress)
+- [ ] 2.2 Index Out of Bounds (In Progress)
+- [ ] 2.3 Error Handling Pattern (In Progress)
+- [ ] 2.4 Repository Protocols (In Progress)
+- [ ] 2.5 Permission Caching (In Progress)
 
 ### Phase 3: Architecture
 **Progress:** 0/3 tasks (0%)

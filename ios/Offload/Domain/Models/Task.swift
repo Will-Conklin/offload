@@ -25,6 +25,7 @@ final class Task {
     @Relationship(deleteRule: .nullify)
     var plan: Plan?
 
+    @Relationship(deleteRule: .nullify)
     var category: Category?
 
     @Relationship(deleteRule: .nullify)
