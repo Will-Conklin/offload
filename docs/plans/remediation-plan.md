@@ -1,5 +1,8 @@
 <!-- Intent: Track critical remediation scope, priorities, and fix guidance for Offload releases. -->
 
+> **⚠️ DEPRECATED:** This document has been superseded by [master-plan.md](./master-plan.md) as of January 9, 2026.
+> Please refer to the master plan for the single source of truth on all implementation planning.
+
 # Critical Issues Remediation Plan
 **Created:** January 6, 2026
 **Status:** Active remediation (Phase 2 in progress)

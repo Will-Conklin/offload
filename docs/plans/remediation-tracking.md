@@ -1,5 +1,8 @@
 <!-- Intent: Track remediation plan execution status, evidence, and remaining gaps. -->
 
+> **⚠️ DEPRECATED:** This document has been superseded by [master-plan.md](./master-plan.md) as of January 9, 2026.
+> Please refer to the master plan for the single source of truth on all implementation planning.
+
 # Remediation Progress Tracking
 **Created:** January 6, 2026
 **Status:** Phase 1 complete (testing pending); Phase 2 in progress

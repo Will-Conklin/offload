@@ -1,3 +1,6 @@
+> **⚠️ DEPRECATED:** This document has been superseded by [master-plan.md](./master-plan.md) as of January 9, 2026.
+> Please refer to the master plan for the single source of truth on all implementation planning.
+
 # Offload Polish Phase Implementation Plan
 
 **Goal:** Ship a polished, production-ready manual organization app with excellent UX, accessibility, and visual design.

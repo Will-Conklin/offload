@@ -1,5 +1,8 @@
 <!-- Intent: Consolidated implementation plan merging critical remediation fixes with UI/UX enhancements for production-ready release. -->
 
+> **⚠️ DEPRECATED:** This document has been superseded by [master-plan.md](./master-plan.md) as of January 9, 2026.
+> Please refer to the master plan for the single source of truth on all implementation planning.
+
 # Consolidated Implementation Plan: Offload iOS App
 **Created:** January 9, 2026
 **Status:** Active Planning
