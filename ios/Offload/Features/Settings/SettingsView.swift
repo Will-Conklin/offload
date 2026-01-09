@@ -250,7 +250,7 @@ struct SettingsView: View {
                 try taskRepo.delete(task: task)
             }
         } catch {
-            print("Error clearing completed tasks: \(error)")
+            AppLogger.persistence.error("Clear completed tasks failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -266,7 +266,7 @@ struct SettingsView: View {
                 try captureRepo.updateLifecycleState(entry: capture, to: .archived)
             }
         } catch {
-            print("Error archiving old captures: \(error)")
+            AppLogger.persistence.error("Archive old captures failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 }
@@ -571,7 +571,7 @@ private struct StorageInfoView: View {
             listCount = try ListRepository(modelContext: modelContext).fetchAllLists().count
             commCount = try CommunicationRepository(modelContext: modelContext).fetchAll().count
         } catch {
-            print("Error loading counts: \(error)")
+            AppLogger.persistence.error("Load storage counts failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 }

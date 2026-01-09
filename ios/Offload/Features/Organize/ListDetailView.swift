@@ -251,15 +251,12 @@ private struct ListItemRowView: View {
 }
 
 private struct EditListSheet: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) private var colorScheme
 
     @Bindable var list: ListEntity
 
     @State private var title: String
     @State private var kind: ListKind
-    @State private var errorMessage: String?
 
     init(list: ListEntity) {
         self.list = list
@@ -268,59 +265,32 @@ private struct EditListSheet: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Details") {
-                    TextField("List title", text: $title)
-                    Picker("Type", selection: $kind) {
-                        ForEach(ListKind.allCases, id: \.self) { kind in
-                            Text(kind.rawValue.capitalized).tag(kind)
-                        }
-                    }
-                    .pickerStyle(.segmented)
+        FormSheet(
+            title: "Edit List",
+            saveButtonTitle: "Save",
+            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedTitle.isEmpty else {
+                    throw ValidationError("List title is required.")
                 }
 
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                list.title = trimmedTitle
+                list.listKind = kind
+
+                try modelContext.save()
             }
-            .navigationTitle("Edit List")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
+        ) {
+            Section("Details") {
+                TextField("List title", text: $title)
+                Picker("Type", selection: $kind) {
+                    ForEach(ListKind.allCases, id: \.self) { kind in
+                        Text(kind.rawValue.capitalized).tag(kind)
                     }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
+                .pickerStyle(.segmented)
             }
-        }
-    }
-
-    private func handleSave() {
-        do {
-            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmedTitle.isEmpty else {
-                throw ValidationError("List title is required.")
-            }
-
-            list.title = trimmedTitle
-            list.listKind = kind
-
-            try modelContext.save()
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }

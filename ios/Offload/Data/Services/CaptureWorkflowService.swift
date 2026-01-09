@@ -63,6 +63,7 @@ final class CaptureWorkflowService {
         }
 
         do {
+            AppLogger.workflow.info("Capturing entry from \(source.rawValue, privacy: .public)")
             let entry = CaptureEntry(
                 rawText: rawText,
                 inputType: inputType,
@@ -71,8 +72,10 @@ final class CaptureWorkflowService {
             )
 
             try captureRepo.create(entry: entry)
+            AppLogger.workflow.debug("Created capture entry \(entry.id, privacy: .public)")
             return entry
         } catch {
+            AppLogger.workflow.error("Capture entry failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
         }
@@ -91,8 +94,10 @@ final class CaptureWorkflowService {
         }
 
         do {
+            AppLogger.workflow.info("Archiving capture entry \(entry.id, privacy: .public)")
             try captureRepo.updateLifecycleState(entry: entry, to: .archived)
         } catch {
+            AppLogger.workflow.error("Archive entry failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
         }
@@ -111,8 +116,10 @@ final class CaptureWorkflowService {
         }
 
         do {
+            AppLogger.workflow.info("Deleting capture entry \(entry.id, privacy: .public)")
             try captureRepo.delete(entry: entry)
         } catch {
+            AppLogger.workflow.error("Delete entry failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
         }
@@ -125,6 +132,7 @@ final class CaptureWorkflowService {
         do {
             return try captureRepo.fetchInbox()
         } catch {
+            AppLogger.workflow.error("Fetch inbox failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
         }
@@ -135,6 +143,7 @@ final class CaptureWorkflowService {
         do {
             return try captureRepo.fetchByState(state)
         } catch {
+            AppLogger.workflow.error("Fetch by state failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
         }
@@ -145,6 +154,7 @@ final class CaptureWorkflowService {
         do {
             return try captureRepo.fetchReady()
         } catch {
+            AppLogger.workflow.error("Fetch awaiting placement failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
         }
@@ -155,6 +165,7 @@ final class CaptureWorkflowService {
         do {
             return try captureRepo.search(query: query)
         } catch {
+            AppLogger.workflow.error("Search entries failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
             throw WorkflowError.unknownError(error.localizedDescription)
         }

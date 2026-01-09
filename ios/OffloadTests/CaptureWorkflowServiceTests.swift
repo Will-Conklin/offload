@@ -4,6 +4,9 @@
 //
 //  Created by Claude Code on 12/31/25.
 //
+//  Intent: Validate capture workflow service behavior for create, archive, delete,
+//  and query operations in an isolated in-memory SwiftData container.
+//
 
 import XCTest
 import SwiftData
@@ -134,6 +137,32 @@ final class CaptureWorkflowServiceTests: XCTestCase {
         }
 
         service.isProcessing = false
+    }
+
+    func testArchiveEntryUpdatesLifecycleState() async throws {
+        let entry = try await service.captureEntry(
+            rawText: "Archive me",
+            inputType: .text,
+            source: .app
+        )
+
+        try await service.archiveEntry(entry)
+
+        let archivedEntries = try service.fetchByState(.archived)
+        XCTAssertEqual(archivedEntries.map(\.id), [entry.id])
+    }
+
+    func testDeleteEntryRemovesFromInbox() async throws {
+        let entry = try await service.captureEntry(
+            rawText: "Delete me",
+            inputType: .text,
+            source: .app
+        )
+
+        try await service.deleteEntry(entry)
+
+        let inboxEntries = try service.fetchInbox()
+        XCTAssertTrue(inboxEntries.isEmpty)
     }
 
     // MARK: - Query Operations Tests

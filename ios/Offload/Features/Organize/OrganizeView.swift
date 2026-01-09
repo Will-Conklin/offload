@@ -440,312 +440,180 @@ private enum OrganizeSheet: Identifiable {
 }
 
 private struct PlanFormSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-
-    let onSave: (String, String?) throws -> Void
+    let onSave: (String, String?) async throws -> Void
 
     @State private var title: String = ""
     @State private var detail: String = ""
-    @State private var errorMessage: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Details") {
-                    TextField("Plan title", text: $title)
-                    TextField("Description (optional)", text: $detail, axis: .vertical)
+        FormSheet(
+            title: "New Plan",
+            saveButtonTitle: "Save",
+            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedTitle.isEmpty else {
+                    throw ValidationError("Plan title is required.")
                 }
 
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                try await onSave(
+                    trimmedTitle,
+                    trimmedDetail.isEmpty ? nil : trimmedDetail
+                )
             }
-            .navigationTitle("New Plan")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
+        ) {
+            Section("Details") {
+                TextField("Plan title", text: $title)
+                TextField("Description (optional)", text: $detail, axis: .vertical)
             }
-        }
-    }
-
-    private func handleSave() {
-        do {
-            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-            let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            try onSave(
-                trimmedTitle,
-                trimmedDetail.isEmpty ? nil : trimmedDetail
-            )
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }
 
 private struct CategoryFormSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-
-    let onSave: (String, String?) throws -> Void
+    let onSave: (String, String?) async throws -> Void
 
     @State private var name: String = ""
     @State private var icon: String = ""
-    @State private var errorMessage: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Details") {
-                    TextField("Category name", text: $name)
-                    TextField("Emoji (optional)", text: $icon)
+        FormSheet(
+            title: "New Category",
+            saveButtonTitle: "Save",
+            isSaveDisabled: name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedIcon = icon.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedName.isEmpty else {
+                    throw ValidationError("Category name is required.")
                 }
 
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                try await onSave(
+                    trimmedName,
+                    trimmedIcon.isEmpty ? nil : trimmedIcon
+                )
             }
-            .navigationTitle("New Category")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
+        ) {
+            Section("Details") {
+                TextField("Category name", text: $name)
+                TextField("Emoji (optional)", text: $icon)
             }
-        }
-    }
-
-    private func handleSave() {
-        do {
-            let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            let trimmedIcon = icon.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            try onSave(
-                trimmedName,
-                trimmedIcon.isEmpty ? nil : trimmedIcon
-            )
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }
 
 private struct TagFormSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-
-    let onSave: (String, String?) throws -> Void
+    let onSave: (String, String?) async throws -> Void
 
     @State private var name: String = ""
     @State private var color: String = ""
-    @State private var errorMessage: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Details") {
-                    TextField("Tag name", text: $name)
-                    TextField("Color (optional)", text: $color)
+        FormSheet(
+            title: "New Tag",
+            saveButtonTitle: "Save",
+            isSaveDisabled: name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedColor = color.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedName.isEmpty else {
+                    throw ValidationError("Tag name is required.")
                 }
 
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                try await onSave(
+                    trimmedName,
+                    trimmedColor.isEmpty ? nil : trimmedColor
+                )
             }
-            .navigationTitle("New Tag")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
+        ) {
+            Section("Details") {
+                TextField("Tag name", text: $name)
+                TextField("Color (optional)", text: $color)
             }
-        }
-    }
-
-    private func handleSave() {
-        do {
-            let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            let trimmedColor = color.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            try onSave(
-                trimmedName,
-                trimmedColor.isEmpty ? nil : trimmedColor
-            )
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }
 
 private struct ListFormSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-
-    let onSave: (String, ListKind) throws -> Void
+    let onSave: (String, ListKind) async throws -> Void
 
     @State private var title: String = ""
     @State private var kind: ListKind = .reference
-    @State private var errorMessage: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Details") {
-                    TextField("List title", text: $title)
-                    Picker("Type", selection: $kind) {
-                        ForEach(ListKind.allCases, id: \.self) { kind in
-                            Text(kind.rawValue.capitalized).tag(kind)
-                        }
-                    }
-                    .pickerStyle(.segmented)
+        FormSheet(
+            title: "New List",
+            saveButtonTitle: "Save",
+            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedTitle.isEmpty else {
+                    throw ValidationError("List title is required.")
                 }
 
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                try await onSave(trimmedTitle, kind)
             }
-            .navigationTitle("New List")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
+        ) {
+            Section("Details") {
+                TextField("List title", text: $title)
+                Picker("Type", selection: $kind) {
+                    ForEach(ListKind.allCases, id: \.self) { kind in
+                        Text(kind.rawValue.capitalized).tag(kind)
                     }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
+                .pickerStyle(.segmented)
             }
-        }
-    }
-
-    private func handleSave() {
-        do {
-            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-            try onSave(trimmedTitle, kind)
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }
 
 private struct CommunicationFormSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-
-    let onSave: (CommunicationChannel, String, String) throws -> Void
+    let onSave: (CommunicationChannel, String, String) async throws -> Void
 
     @State private var channel: CommunicationChannel = .text
     @State private var recipient: String = ""
     @State private var content: String = ""
-    @State private var errorMessage: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Type") {
-                    Picker("Channel", selection: $channel) {
-                        ForEach(CommunicationChannel.allCases, id: \.self) { channel in
-                            Label(channel.rawValue.capitalized, systemImage: iconForChannel(channel))
-                                .tag(channel)
-                        }
-                    }
-                    .pickerStyle(.segmented)
+        FormSheet(
+            title: "New Communication",
+            saveButtonTitle: "Save",
+            isSaveDisabled: recipient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedRecipient = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedRecipient.isEmpty else {
+                    throw ValidationError("Recipient is required.")
+                }
+                guard !trimmedContent.isEmpty else {
+                    throw ValidationError("Content is required.")
                 }
 
-                Section("Details") {
-                    TextField("Recipient", text: $recipient)
-                    TextField("Message", text: $content, axis: .vertical)
-                        .lineLimit(3...6)
-                }
-
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                try await onSave(channel, trimmedRecipient, trimmedContent)
             }
-            .navigationTitle("New Communication")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
+        ) {
+            Section("Type") {
+                Picker("Channel", selection: $channel) {
+                    ForEach(CommunicationChannel.allCases, id: \.self) { channel in
+                        Label(channel.rawValue.capitalized, systemImage: iconForChannel(channel))
+                            .tag(channel)
                     }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(
-                        recipient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                        content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    )
-                }
+                .pickerStyle(.segmented)
             }
-        }
-    }
 
-    private func handleSave() {
-        do {
-            let trimmedRecipient = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
-            let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
-            try onSave(channel, trimmedRecipient, trimmedContent)
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
+            Section("Details") {
+                TextField("Recipient", text: $recipient)
+                TextField("Message", text: $content, axis: .vertical)
+                    .lineLimit(3...6)
+            }
         }
     }
 

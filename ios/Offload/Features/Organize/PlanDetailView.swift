@@ -274,15 +274,12 @@ private struct TaskRowView: View {
 }
 
 private struct EditPlanSheet: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) private var colorScheme
 
     @Bindable var plan: Plan
 
     @State private var title: String
     @State private var detail: String
-    @State private var errorMessage: String?
 
     init(plan: Plan) {
         self.plan = plan
@@ -291,76 +288,45 @@ private struct EditPlanSheet: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Details") {
-                    TextField("Plan title", text: $title)
-                    TextField("Description (optional)", text: $detail, axis: .vertical)
-                        .lineLimit(3...6)
+        FormSheet(
+            title: "Edit Plan",
+            saveButtonTitle: "Save",
+            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedTitle.isEmpty else {
+                    throw ValidationError("Plan title is required.")
                 }
 
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                plan.title = trimmedTitle
+                plan.detail = trimmedDetail.isEmpty ? nil : trimmedDetail
+
+                try modelContext.save()
             }
-            .navigationTitle("Edit Plan")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
+        ) {
+            Section("Details") {
+                TextField("Plan title", text: $title)
+                TextField("Description (optional)", text: $detail, axis: .vertical)
+                    .lineLimit(3...6)
             }
-        }
-    }
-
-    private func handleSave() {
-        do {
-            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-            let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmedTitle.isEmpty else {
-                throw ValidationError("Plan title is required.")
-            }
-
-            plan.title = trimmedTitle
-            plan.detail = trimmedDetail.isEmpty ? nil : trimmedDetail
-
-            try modelContext.save()
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }
 
 private struct TaskFormSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-
     let plan: Plan
     let existingTask: Task?
-    let onSave: (String, String?, Int, Date?) throws -> Void
+    let onSave: (String, String?, Int, Date?) async throws -> Void
 
     @State private var title: String
     @State private var detail: String
     @State private var importance: Int
     @State private var hasDueDate: Bool
     @State private var dueDate: Date
-    @State private var errorMessage: String?
 
-    init(plan: Plan, existingTask: Task? = nil, onSave: @escaping (String, String?, Int, Date?) throws -> Void) {
+    init(plan: Plan, existingTask: Task? = nil, onSave: @escaping (String, String?, Int, Date?) async throws -> Void) {
         self.plan = plan
         self.existingTask = existingTask
         self.onSave = onSave
@@ -373,77 +339,50 @@ private struct TaskFormSheet: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Details") {
-                    TextField("Task title", text: $title)
-                    TextField("Notes (optional)", text: $detail, axis: .vertical)
-                        .lineLimit(2...4)
+        FormSheet(
+            title: existingTask == nil ? "New Task" : "Edit Task",
+            saveButtonTitle: "Save",
+            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            onSave: {
+                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedTitle.isEmpty else {
+                    throw ValidationError("Task title is required.")
                 }
 
-                Section("Importance") {
-                    Picker("Importance", selection: $importance) {
-                        Text("Very Low (1)").tag(1)
-                        Text("Low (2)").tag(2)
-                        Text("Medium (3)").tag(3)
-                        Text("High (4)").tag(4)
-                        Text("Very High (5)").tag(5)
-                    }
-                    .pickerStyle(.menu)
-                }
-
-                Section {
-                    Toggle("Set Due Date", isOn: $hasDueDate)
-
-                    if hasDueDate {
-                        DatePicker("Due Date", selection: $dueDate, displayedComponents: .date)
-                    }
-                }
-
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
-                    }
-                }
+                try await onSave(
+                    trimmedTitle,
+                    trimmedDetail.isEmpty ? nil : trimmedDetail,
+                    importance,
+                    hasDueDate ? dueDate : nil
+                )
             }
-            .navigationTitle(existingTask == nil ? "New Task" : "Edit Task")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSave()
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
-        }
-    }
-
-    private func handleSave() {
-        do {
-            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-            let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmedTitle.isEmpty else {
-                throw ValidationError("Task title is required.")
+        ) {
+            Section("Details") {
+                TextField("Task title", text: $title)
+                TextField("Notes (optional)", text: $detail, axis: .vertical)
+                    .lineLimit(2...4)
             }
 
-            try onSave(
-                trimmedTitle,
-                trimmedDetail.isEmpty ? nil : trimmedDetail,
-                importance,
-                hasDueDate ? dueDate : nil
-            )
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
+            Section("Importance") {
+                Picker("Importance", selection: $importance) {
+                    Text("Very Low (1)").tag(1)
+                    Text("Low (2)").tag(2)
+                    Text("Medium (3)").tag(3)
+                    Text("High (4)").tag(4)
+                    Text("Very High (5)").tag(5)
+                }
+                .pickerStyle(.menu)
+            }
+
+            Section {
+                Toggle("Set Due Date", isOn: $hasDueDate)
+
+                if hasDueDate {
+                    DatePicker("Due Date", selection: $dueDate, displayedComponents: .date)
+                }
+            }
         }
     }
 }
