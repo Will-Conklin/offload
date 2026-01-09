@@ -96,29 +96,36 @@ struct Theme {
         static let footnote = Font.footnote
         static let caption = Font.caption
         static let caption2 = Font.caption2
+        static let monospacedBody = Font.body.monospacedDigit()
 
         // MARK: - Semantic Styles (application-specific)
 
         /// Title for cards, sections, and main content areas
         static let cardTitle = Font.headline
+        static let cardTitleEmphasis = Font.headline.weight(.semibold)
 
         /// Body text for cards and descriptions
         static let cardBody = Font.subheadline
+        static let cardBodyEmphasis = Font.subheadline.weight(.semibold)
 
         /// Button labels across the app
         static let buttonLabel = Font.headline
+        static let buttonLabelEmphasis = Font.headline.weight(.semibold)
 
         /// Input field labels
         static let inputLabel = Font.subheadline
+        static let inputLabelEmphasis = Font.subheadline.weight(.semibold)
 
         /// Error and validation messages
         static let errorText = Font.caption
 
         /// Metadata and timestamps
         static let metadata = Font.caption
+        static let metadataMonospaced = Font.caption.monospacedDigit()
 
         /// Badge text (lifecycle states, categories, etc.)
         static let badge = Font.caption2
+        static let badgeEmphasis = Font.caption2.weight(.semibold)
 
         // MARK: - Line Spacing
 
@@ -126,10 +133,51 @@ struct Theme {
         static let lineSpacingTight: CGFloat = 2
 
         /// Normal line spacing (default)
-        static let lineSpacingNormal: CGFloat = 4
+        static let lineSpacingNormal: CGFloat = 6
 
         /// Relaxed line spacing for readability
-        static let lineSpacingRelaxed: CGFloat = 8
+        static let lineSpacingRelaxed: CGFloat = 10
+    }
+
+    // MARK: - Materials
+
+    struct Materials {
+        static let glass = Material.ultraThin
+        static let glassStrong = Material.thin
+        static let glassOverlayOpacity: Double = 0.6
+
+        static func glassOverlay(_ colorScheme: ColorScheme) -> Color {
+            colorScheme == .dark
+                ? Color.black
+                : Color.white
+        }
+    }
+
+    // MARK: - Gradients
+
+    struct Gradients {
+        static func accentPrimary(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: [
+                    Colors.accentPrimary(colorScheme),
+                    Colors.accentSecondary(colorScheme).opacity(0.8)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        static func surfaceGlow(_ colorScheme: ColorScheme) -> RadialGradient {
+            RadialGradient(
+                colors: [
+                    Colors.accentSecondary(colorScheme).opacity(0.35),
+                    Colors.surface(colorScheme).opacity(0.1)
+                ],
+                center: .topTrailing,
+                startRadius: 0,
+                endRadius: 180
+            )
+        }
     }
 
     // MARK: - Spacing
@@ -148,10 +196,10 @@ struct Theme {
     // MARK: - Corner Radius
 
     struct CornerRadius {
-        static let sm: CGFloat = 4
-        static let md: CGFloat = 8
-        static let lg: CGFloat = 12
-        static let xl: CGFloat = 16
+        static let sm: CGFloat = 6
+        static let md: CGFloat = 10
+        static let lg: CGFloat = 16
+        static let xl: CGFloat = 24
 
         // TODO: Add component-specific radii
     }
@@ -161,6 +209,14 @@ struct Theme {
     struct Shadows {
         static let elevationSm: CGFloat = 2
         static let elevationMd: CGFloat = 6
+    }
+
+    // MARK: - Animations
+
+    struct Animations {
+        static let springDefault = Animation.spring(response: 0.3, dampingFraction: 0.7, blendDuration: 0.1)
+        static let springSnappy = Animation.spring(response: 0.25, dampingFraction: 0.75, blendDuration: 0.1)
+        static let easeInOutShort = Animation.easeInOut(duration: 0.2)
     }
 
     // MARK: - Hit Targets

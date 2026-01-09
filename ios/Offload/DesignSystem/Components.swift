@@ -1,3 +1,4 @@
+// Intent: Provide reusable SwiftUI components (buttons, cards, fields, feedback) wired to theme tokens.
 //
 //  Components.swift
 //  Offload
@@ -18,11 +19,11 @@ struct PrimaryButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(Theme.Typography.buttonLabel)
+                .font(Theme.Typography.buttonLabelEmphasis)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(Theme.Spacing.md)
-                .background(Theme.Colors.accentPrimary(colorScheme))
+                .background(Theme.Gradients.accentPrimary(colorScheme))
                 .cornerRadius(Theme.CornerRadius.md)
         }
     }
@@ -37,7 +38,7 @@ struct SecondaryButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(Theme.Typography.buttonLabel)
+                .font(Theme.Typography.buttonLabelEmphasis)
                 .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
                 .frame(maxWidth: .infinity)
                 .padding(Theme.Spacing.md)
@@ -65,7 +66,12 @@ struct CardView<Content: View>: View {
     var body: some View {
         content
             .padding(Theme.Spacing.md)
-            .background(Theme.Colors.surface(colorScheme))
+            .background(Theme.Materials.glass)
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                    .fill(Theme.Materials.glassOverlay(colorScheme))
+                    .opacity(Theme.Materials.glassOverlayOpacity)
+            )
             .cornerRadius(Theme.CornerRadius.lg)
             .shadow(radius: Theme.Shadows.elevationSm)
     }
