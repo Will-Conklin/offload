@@ -1,7 +1,10 @@
+<!-- Intent: Track critical remediation scope, priorities, and fix guidance for Offload releases. -->
+
 # Critical Issues Remediation Plan
 **Created:** January 6, 2026
-**Status:** Planning Phase
+**Status:** Active remediation (Phase 2 in progress)
 **Priority:** CRITICAL - Production Blockers
+**Last Updated:** January 8, 2026
 
 ## Executive Summary
 
@@ -9,6 +12,26 @@ Based on the comprehensive adversarial security review, this codebase has **8 cr
 
 **Estimated Effort:** 4-6 weeks
 **Risk if Not Fixed:** Data corruption, crashes, silent failures, security vulnerabilities
+
+## Implementation Update (January 8, 2026)
+
+**Completed**
+- Inbox deletion race condition fixed in `CapturesView` (serialized deletes + single refresh).
+- `try?` save suppression removed across capture, organize, settings, and persistence flows with rollback/error messaging.
+- Repository queries converted to predicate-based fetches (Capture, HandOff, Task, Suggestion decision queries).
+- `CaptureEntry.acceptedSuggestion` relationship added to replace orphaned UUID usage.
+- URL handling hardened (API client guards, Settings static URLs, API endpoint validation).
+- Capture workflow synchronization tightened with `@MainActor` state ownership and explicit `internal(set)` access.
+- Repository protocols added for DI.
+- Permission caching added for voice recording.
+- FormSheet component extracted and adopted across organize/settings flows.
+- Logger scaffolding added and integrated across services.
+- Repository + workflow tests added for core data flows.
+
+**Remaining**
+- Toast dismissal cancellation handling (still uses `try? Task.sleep`, cancellation guard missing).
+- Fetch optimization for pending suggestions remains in-memory due to SwiftData relationship limits (denormalization candidate).
+- Additional testing evidence/benchmarks for performance and error-path coverage.
 
 ---
 
@@ -26,9 +49,9 @@ Based on the comprehensive adversarial security review, this codebase has **8 cr
 ## PHASE 1: CRITICAL FIXES (Week 1-2)
 **Goal:** Eliminate production blockers - data corruption and crashes
 
-### 1.1 Fix InboxView Race Condition ⚠️ CRITICAL
+### 1.1 Fix CapturesView (Inbox) Race Condition ⚠️ CRITICAL
 
-**File:** `ios/Offload/Features/Inbox/InboxView.swift:68-84`
+**File:** `ios/Offload/Features/Inbox/CapturesView.swift:70-99`
 **Issue:** Multiple concurrent delete tasks causing data corruption
 **Priority:** P0 - Must fix first
 
@@ -1168,7 +1191,7 @@ func captureEntry(...) async throws -> CaptureEntry {
 ## IMPLEMENTATION TIMELINE
 
 ### Week 1: Critical Data Safety
-- Day 1-2: Fix InboxView race condition
+- Day 1-2: Fix CapturesView (Inbox) race condition
 - Day 3-4: Eliminate error suppression (21 instances)
 - Day 5: Testing and validation
 
