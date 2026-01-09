@@ -69,8 +69,9 @@ with AI).
 
 ## Current Status
 
-🚧 **Active Development** — Capture and inbox flows are functional;
-organization and AI flows are still stubbed.
+✅ **Phase 1-3 Remediation Complete** — All critical bugs fixed, architecture improvements done.
+🚧 **UI/UX Modernization** — Research complete, implementation starting Week 2.
+🚧 **AI Workflows** — Capture flows functional, AI hand-off and organization flows stubbed.
 
 ### ✅ Implemented (Core)
 
@@ -79,26 +80,25 @@ organization and AI flows are still stubbed.
   ListEntity/ListItem, CommunicationItem)
 - Repository layer plus `CaptureWorkflowService` for capture, inbox queries, and
   lifecycle operations
-- SwiftUI inbox and capture sheet with text + voice recording via
+- SwiftUI captures view and capture sheet with text + voice recording via
   `VoiceRecordingService`
 - Persistence wired through `PersistenceController` for production and preview
   containers
 
 ### 🔄 In Progress
 
-- AI hand-off orchestration, suggestion processing, and placement (methods
-  stubbed in `CaptureWorkflowService`)
-- Organize tab and Settings view (UI exists with TODOs; AppRoot currently routes
-  straight to Inbox instead of the tab shell)
-- Consistent capture entry points (MainTabView floating action button vs. direct
-  Inbox navigation)
+- **Critical Remediation:** Phase 1-3 complete (8/8 critical, 5/5 high priority, 3/3 architecture). Testing and validation in progress.
+- **UI/UX Modernization:** Research complete. Week 2-8 implementation planned (glassmorphism, components, ADHD features).
+- **AI Workflows:** Hand-off orchestration, suggestion processing, and placement stubbed in `CaptureWorkflowService`.
+- **Organization UI:** Organize tab and Settings view exist with TODOs. MainTabView with tab-based navigation in place.
 
-### 📋 Upcoming
+### 📋 Upcoming (See [Master Plan](docs/plans/master-plan.md))
 
-- Present and act on AI suggestions with user approval
-- Build destination management flows (plans, categories, tags, lists,
-  communication items) in Organize
-- Optional backend sync, widgets, and sharing after validation
+- **Weeks 1-2:** Testing & validation of Phase 1-3 fixes
+- **Weeks 2-4:** UI foundation (glassmorphism, components, micro-interactions)
+- **Weeks 5-6:** ADHD features (visual timeline, accessibility audit)
+- **Weeks 7-8:** Integration, polish, v1.0 release candidate
+- **Post-v1.0:** AI hand-off workflows, backend sync, widgets
 
 ## Architecture
 
@@ -141,7 +141,7 @@ Feature-based modular architecture with clear separation of concerns:
 ```mermaid
 graph LR
     subgraph "Presentation Layer"
-        INBOX[InboxView]
+        CAPTURES[CapturesView]
         CAPTURE[CaptureSheetView]
         ORGANIZE[OrganizeView]
     end
@@ -172,7 +172,7 @@ graph LR
         SWIFTDATA[(SwiftData)]
     end
 
-    INBOX --> WORKFLOW
+    CAPTURES --> WORKFLOW
     CAPTURE --> WORKFLOW
     CAPTURE --> VOICE
     ORGANIZE --> WORKFLOW
@@ -194,7 +194,7 @@ graph LR
     PLAN --> SWIFTDATA
     TASK --> SWIFTDATA
 
-    style INBOX fill:#4CAF50
+    style CAPTURES fill:#4CAF50
     style CAPTURE fill:#4CAF50
     style ORGANIZE fill:#4CAF50
     style WORKFLOW fill:#9C27B0
@@ -223,7 +223,7 @@ flowchart LR
     Entry --> Request --> Run --> Suggestion --> Decision --> Placement --> Destination
 ```
 
-### Data Flow: Capture to Inbox
+### Data Flow: Capture to Captures View
 
 ```mermaid
 sequenceDiagram
@@ -250,7 +250,7 @@ sequenceDiagram
     Workflow->>SwiftData: Insert CaptureEntry
     SwiftData-->>Workflow: Persisted
     Workflow-->>CaptureSheet: Entry saved
-    CaptureSheet-->>User: Entry appears in Inbox
+    CaptureSheet-->>User: Entry appears in Captures
 ```
 
 ## Project Structure
@@ -264,7 +264,7 @@ offload/
 │   │   ├── App/                  # Application entry point
 │   │   ├── Features/             # Feature modules
 │   │   │   ├── Capture/          # Voice & text capture
-│   │   │   ├── Inbox/            # Thought inbox
+│   │   │   ├── Captures/         # Captures view (inbox)
 │   │   │   └── Organize/         # Task organization
 │   │   ├── Domain/               # Business logic
 │   │   │   └── Models/           # SwiftData models
@@ -325,7 +325,7 @@ they are isolated and fast; ensure test files are included in the
 
 - **Capture**: Text and voice capture with live transcription using the Speech
   framework (offline-first)
-- **Inbox**: Capture inbox with lifecycle tracking (raw → archived) powered by
+- **Captures View**: Capture list with lifecycle tracking (raw → archived) powered by
   `CaptureWorkflowService`
 - **Data Layer**: SwiftData models for capture workflow plus destinations
   (plans, tasks, tags, categories, lists, communication)
@@ -351,9 +351,11 @@ they are isolated and fast; ensure test files are included in the
 
 - 📱 [iOS Development Guide](ios/README.md)
 - 📋 [Product Requirements Document](docs/prd/v1.md)
+- 📍 **[Master Implementation Plan](docs/plans/master-plan.md)** ⭐ Single source of truth for all planning
 - 🏗️ [Architecture Decision Records](docs/decisions/)
 - 🧭 [ADHD UX/UI Guardrails (ADR-0003)](docs/decisions/ADR-0003-adhd-ux-guardrails.md)
-- 🧠 [Thought Capture Model Plan](docs/plans/brain-dump-model.md)
+- 🧠 [Capture Model Plan](docs/plans/brain-dump-model.md)
+- 🎨 [iOS UI Trends Research (2025-2026)](docs/research/ios-ui-trends-2025.md)
 - 🎨 [ADHD-First UX/UI Research](docs/research/adhd-ux-ui.md)
 - 📦 [Project Scaffolding Details](ios/SCAFFOLDING.md)
 
@@ -363,11 +365,16 @@ they are isolated and fast; ensure test files are included in the
 - 📊 [Voice Capture Test Results](docs/testing/voice-capture-results.md)
 - 🧪 SwiftData repositories and workflow tests in `ios/OffloadTests`
 
-### Implementation
+### Implementation Status
 
-- ✅ Thought capture data layer and repositories
-- ✅ Inbox and capture experience with voice/text
-- 🔄 Organization UI, AI hand-off workflows, and placement flows
+- ✅ **Phase 1-3 Remediation:** All critical bugs fixed, architecture improvements complete
+- ✅ **Data Layer:** Capture models, repositories, and workflow service
+- ✅ **Capture UI:** Captures view and capture sheet with voice/text
+- 🚧 **UI/UX Modernization:** Research complete, Weeks 2-8 implementation planned
+- 🚧 **Organization UI:** Organize tab flows, AI hand-off, suggestion processing
+- 📅 **Post-v1.0:** AI workflows, backend sync, widgets
+
+See [Master Plan](docs/plans/master-plan.md) for detailed roadmap.
 
 ## Tech Stack
 

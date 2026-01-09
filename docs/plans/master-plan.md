@@ -37,10 +37,11 @@ This is the **single source of truth** for all Offload implementation planning. 
 
 **Path to Production:**
 1. Complete testing of critical fixes (Week 1-2)
-2. Implement UI foundation (Week 2-4)
-3. Add ADHD-specific enhancements (Week 4-6)
-4. Polish and release prep (Week 7-8)
-5. Feature development for AI flows (Week 9-10+)
+2. Implement UI foundation (Weeks 2-3 - can start during Week 2 while testing completes)
+3. Build component library & micro-interactions (Weeks 3-4)
+4. Add ADHD-specific enhancements & accessibility (Weeks 5-6)
+5. Integration, polish and release prep (Weeks 7-8)
+6. Feature development for AI flows (Week 9-10+ post-v1.0)
 
 ---
 
@@ -202,99 +203,126 @@ All implementation complete, testing pending:
 
 ---
 
-### Weeks 2-4: UI Foundation & Components 🎨
-**Goal:** Modernize visual design, build component library
-**Priority:** P2 (Can overlap with testing)
-
-#### Week 2: Theme System & Glass Effects
+### Week 2: Testing Completion + UI Foundation Start 🎨
+**Goal:** Complete testing validation, begin visual modernization
+**Priority:** P0 (Testing) + P1 (UI can start mid-week)
 
 **Tasks:**
-1. **Add Materials, Gradients, Animations to Theme.swift** (4 hours)
+1. **Complete Testing & Validation** (Days 1-3 if needed from Week 1)
+   - Finalize performance benchmarks
+   - Complete manual test evidence
+   - Regression test verification
+   - **GATE:** No UI merges until testing verified ✅
+
+2. **Theme System Extensions** (4 hours, can start Day 3+)
    ```swift
-   struct Materials { ... }
-   struct Gradients { ... }
-   struct Animations { ... }
+   struct Materials { ... }      // Glassmorphism
+   struct Gradients { ... }      // Accent system
+   struct Animations { ... }     // Spring presets
    ```
 
-2. **Update Corner Radius (Soft Edges Trend)** (1 hour)
-   - sm: 4 → 6
-   - md: 8 → 10
-   - lg: 12 → 16
-   - xl: 16 → 24
+3. **Typography Improvements** (2 hours) ⭐ MOVED FROM WEEK 6
+   - Weight variants (.semibold, .bold)
+   - Monospaced numbers for numeric displays
+   - Increased line height for readability
 
-3. **Apply Glass Effects** (6 hours)
+4. **Update Corner Radius** (1 hour)
+   - sm: 4 → 6, md: 8 → 10, lg: 12 → 16, xl: 16 → 24
+
+5. **Apply Glass Effects** (6 hours)
    - CaptureSheetView modal
    - CardView component
    - OrganizeView cards
    - FAB (Floating Action Button)
+   - **Verify contrast ratios during implementation**
 
-4. **Fix Spacing Inconsistencies** (3 hours)
+6. **Fix Spacing Inconsistencies** (3 hours)
    - Replace 15+ hardcoded padding values
    - Use Theme.Spacing.xs/sm/md/lg/xl throughout
 
-**Deliverable:** Noticeably more modern, polished UI with depth
+**Decision Point:** End of Week 2 - Testing must pass before merging UI work to main
+
+**Deliverable:** Testing complete + modern, polished UI foundation with proper typography
 
 ---
 
-#### Week 3: Component Library Expansion
+### Week 3: Component Library Expansion 🧩
+**Goal:** Build reusable component library
+**Priority:** P1 (Badge, Card) + P2 (Pill, Progress, Skeletons)
 
 **Tasks:**
-1. **Unified Badge Component** (4 hours)
+1. **Unified Badge Component** (4 hours) - **P1**
    - Generic badge with text, color, icon
    - Convenience constructors (category, status)
    - Replace 5+ duplicate implementations
+   - **Add VoiceOver label during implementation**
 
-2. **Expandable Card Component** (4 hours)
+2. **Expandable Card Component** (4 hours) - **P1**
    - Tap to expand/collapse
    - Spring animation
    - Solves lineLimit(2) truncation issues
+   - **Add VoiceOver hint for expandable state**
 
-3. **Pill Selector Component** (3 hours)
+3. **Pill Selector Component** (3 hours) - **P2**
    - Horizontal scrolling pills
    - Selection state
    - Use for filtering/sorting
+   - **Add VoiceOver labels for each pill**
 
-4. **Progress Indicators** (4 hours)
+4. **Progress Indicators** (4 hours) - **P2**
    - ProgressRing (circular with percentage)
    - ProgressBar (linear)
    - Use for plan completion
+   - **Announce percentage changes to VoiceOver**
 
-5. **Loading Skeletons** (3 hours)
+5. **Loading Skeletons** (3 hours) - **P2**
    - Shimmering skeleton component
    - Replace ProgressView spinners
    - More modern UX
+   - **Add "Loading" accessibility label**
 
-**Deliverable:** Consistent, reusable component library
+**Accessibility Checkpoint:** All new components have VoiceOver labels
+
+**Deliverable:** Consistent, accessible component library
 
 ---
 
-#### Week 4: Micro-Interactions & Polish
+### Week 4: Micro-Interactions & Polish ✨
+**Goal:** Add purposeful animations and tactile feedback
+**Priority:** P1 (Animations, Reduce Motion) + P2 (Celebrations, Bottom Sheets)
 
 **Tasks:**
-1. **Spring Animations on Buttons** (4 hours)
+1. **Spring Animations on Buttons** (4 hours) - **P1**
    - Scale effect on press (0.95x)
-   - Spring animation (0.3s response)
-   - Apply to all buttons
+   - Spring animation (0.3s response, 0.7 damping)
+   - Apply to all interactive buttons
 
-2. **Improved Shadows & Depth** (2 hours)
+2. **Reduce Motion Support** (2 hours) - **P1** ⭐ MOVED FROM WEEK 6
+   - Respect @Environment(\.accessibilityReduceMotion)
+   - Disable all animations when enabled
+   - Test with Accessibility Inspector
+
+3. **Improved Shadows & Depth** (2 hours) - **P2**
    - Update CardView shadows
    - Add shadow variants to Theme
 
-3. **Bottom Sheet Patterns** (3 hours)
-   - Apply .presentationDetents()
+4. **Bottom Sheet Patterns** (3 hours) - **P2**
+   - Apply .presentationDetents([.medium, .large])
    - Category picker, tag picker
-   - Improved ergonomics
+   - Improved one-handed ergonomics
 
-4. **Button Press States** (2 hours)
+5. **Button Press States** (2 hours) - **P2**
    - Tactile feedback on all buttons
    - Scale + animation
 
-5. **Completion Celebrations (Optional)** (6 hours)
-   - Confetti/glow effects
-   - Settings toggle
+6. **Completion Celebrations** (6 hours) - **P2 OPTIONAL**
+   - Confetti/glow effects (respects Reduce Motion)
+   - Settings toggle for on/off
    - ADHD dopamine boost
 
-**Deliverable:** Polished, tactile, satisfying interactions
+**Accessibility Checkpoint:** Reduce Motion fully implemented before Week 5
+
+**Deliverable:** Polished, accessible, satisfying interactions
 
 ---
 
@@ -326,30 +354,34 @@ All implementation complete, testing pending:
 
 ---
 
-#### Week 6: Settings & Typography
+### Week 6: Settings & Final Polish 🎯
+**Goal:** User controls for ADHD features, final consistency pass
+**Priority:** P1 (ADHD Settings) + P2 (Polish)
 
 **Tasks:**
-1. **ADHD Settings Section** (3 hours)
-   - Toggle completion animations
-   - Toggle visual timeline
+1. **ADHD Settings Section** (3 hours) - **P1**
+   - Toggle completion animations on/off
+   - Toggle visual timeline display
    - Toggle "next up" indicators
-   - Animation speed preference
+   - Animation speed preference (if celebrations included)
+   - Explanatory text for each feature
 
-2. **Typography Improvements** (2 hours)
-   - Add weight variants (.semibold, .bold)
-   - Monospaced numbers
-   - Increase line height for readability
+2. **Accessibility Fixes from Week 5 Audit** (3-6 hours) - **P1**
+   - Address issues found in comprehensive audit
+   - Fix contrast ratio problems
+   - Add missing VoiceOver labels
+   - Fix Dynamic Type clipping
 
-3. **Reduce Motion Support** (2 hours)
-   - Respect @Environment(\.accessibilityReduceMotion)
-   - Disable animations when enabled
+3. **Final Polish Pass** (8-12 hours) - **P2**
+   - Address visual inconsistencies across screens
+   - Optimize animation performance
+   - Fine-tune glass effects and shadows
+   - Performance tuning (ensure 60fps)
+   - Code cleanup and TODO resolution
 
-4. **Final Polish Pass** (8 hours)
-   - Address visual inconsistencies
-   - Optimize animations
-   - Performance tuning
+**Note:** Typography and Reduce Motion already completed in Weeks 2 & 4
 
-**Deliverable:** Complete ADHD-friendly, accessible app
+**Deliverable:** Complete ADHD-friendly, accessible, polished app
 
 ---
 
@@ -431,10 +463,12 @@ All implementation complete, testing pending:
 - [ ] Basic accessibility compliance
 
 ### P1 - Should Ship for v1.0 (High Value)
-- [ ] UI foundation (glass effects, theme)
-- [ ] Core component library (badges, cards)
-- [ ] Micro-interactions (animations)
+- [ ] UI foundation (glass effects, theme, typography)
+- [ ] Core component library (badges, expandable cards)
+- [ ] Spring animations on buttons
+- [ ] Reduce Motion support (accessibility)
 - [ ] ADHD settings toggles
+- [ ] VoiceOver labels for all interactive elements
 
 ### P2 - Nice-to-Have for v1.0 (Polish)
 - [ ] Visual timeline view
@@ -549,82 +583,89 @@ All implementation complete, testing pending:
 
 ---
 
-### Phase 4: UI Foundation (NOT STARTED ⏳)
-**Duration:** Week 2-3 (3 days estimated)
+### Week 2: UI Foundation (NOT STARTED ⏳)
+**Duration:** Week 2 (3-4 days estimated)
 **Status:** ⏳ Research complete, implementation pending
 
 | Task | Status | Estimated | Priority |
 |------|--------|-----------|----------|
 | Materials, Gradients, Animations | ⏳ | 4 hours | P1 |
+| Typography improvements | ⏳ | 2 hours | P1 |
 | Update corner radius | ⏳ | 1 hour | P1 |
-| Apply glass effects | ⏳ | 6 hours | P1 |
+| Apply glass effects (with contrast checks) | ⏳ | 6 hours | P1 |
 | Fix spacing inconsistencies | ⏳ | 3 hours | P1 |
 
-**Dependencies:** None (can start immediately after testing)
+**Dependencies:** Can start mid-Week 2 while testing completes, but CANNOT MERGE until testing passes
 
 ---
 
-### Phase 5: Component Library (NOT STARTED ⏳)
+### Week 3: Component Library (NOT STARTED ⏳)
 **Duration:** Week 3 (3 days estimated)
 **Status:** ⏳ Designs complete, implementation pending
 
 | Task | Status | Estimated | Priority |
 |------|--------|-----------|----------|
-| Unified Badge component | ⏳ | 4 hours | P1 |
-| Expandable Card | ⏳ | 4 hours | P1 |
-| Pill Selector | ⏳ | 3 hours | P2 |
-| Progress indicators | ⏳ | 4 hours | P2 |
-| Loading skeletons | ⏳ | 3 hours | P2 |
+| Unified Badge component + VoiceOver | ⏳ | 4 hours | P1 |
+| Expandable Card + VoiceOver | ⏳ | 4 hours | P1 |
+| Pill Selector + VoiceOver | ⏳ | 3 hours | P2 |
+| Progress indicators + VoiceOver | ⏳ | 4 hours | P2 |
+| Loading skeletons + VoiceOver | ⏳ | 3 hours | P2 |
 
-**Dependencies:** Phase 4 (Theme system updates)
+**Dependencies:** Week 2 (Theme system updates) must complete first
 
 ---
 
-### Phase 6: Micro-Interactions (NOT STARTED ⏳)
+### Week 4: Micro-Interactions (NOT STARTED ⏳)
 **Duration:** Week 4 (2-3 days estimated)
 **Status:** ⏳ Patterns defined, implementation pending
 
 | Task | Status | Estimated | Priority |
 |------|--------|-----------|----------|
 | Spring animations | ⏳ | 4 hours | P1 |
+| Reduce Motion support | ⏳ | 2 hours | P1 |
 | Improved shadows | ⏳ | 2 hours | P2 |
 | Bottom sheets | ⏳ | 3 hours | P2 |
 | Button press states | ⏳ | 2 hours | P2 |
-| Celebration animations | ⏳ | 6 hours | P2 |
+| Celebration animations (optional) | ⏳ | 6 hours | P2 |
 
-**Dependencies:** Phase 4 (Theme system)
+**Dependencies:** Week 2 (Theme system) must complete first
 
 ---
 
-### Phase 7: ADHD Features (NOT STARTED ⏳)
-**Duration:** Week 5-6 (4 days estimated)
+### Weeks 5-6: ADHD Features & Polish (NOT STARTED ⏳)
+**Duration:** Weeks 5-6 (4-5 days estimated)
 **Status:** ⏳ Research complete, implementation pending
 
 | Task | Status | Estimated | Priority |
 |------|--------|-----------|----------|
 | Visual timeline view | ⏳ | 12 hours | P2 |
 | Gentle transition indicators | ⏳ | 3 hours | P2 |
+| Accessibility audit & fixes | ⏳ | 6 hours | P1 |
 | ADHD settings section | ⏳ | 3 hours | P1 |
-| Typography improvements | ⏳ | 2 hours | P2 |
-| Reduce motion support | ⏳ | 2 hours | P1 |
+| Final polish pass | ⏳ | 8-12 hours | P2 |
 
-**Dependencies:** Phases 4-6 (Components, animations)
+**Note:** Typography (Week 2) and Reduce Motion (Week 4) already complete
+
+**Dependencies:** Weeks 2-4 (Theme, Components, Animations) must complete first
 
 ---
 
-### Phase 8: Integration & Release (NOT STARTED ⏳)
-**Duration:** Week 7-8 (10 days estimated)
-**Status:** ⏳ Pending all previous phases
+### Weeks 7-8: Integration & Release (NOT STARTED ⏳)
+**Duration:** Weeks 7-8 (10 days estimated)
+**Status:** ⏳ Pending all P0-P1 work complete
 
 | Task | Status | Estimated | Priority |
 |------|--------|-----------|----------|
-| Merge all changes | ⏳ | 2 days | P0 |
+| Merge all P0-P1 changes | ⏳ | 2 days | P0 |
 | Comprehensive testing | ⏳ | 3 days | P0 |
 | Final polish | ⏳ | 2 days | P0 |
 | Documentation | ⏳ | 2 days | P0 |
 | Release candidate | ⏳ | 1 day | P0 |
 
-**Dependencies:** All previous phases complete
+**Dependencies:**
+- All P0-P1 items complete (required for v1.0)
+- P2 items either complete or consciously deferred
+- P3 items explicitly deferred to v1.1+
 
 ---
 
@@ -786,10 +827,13 @@ All implementation complete, testing pending:
 - [ ] Resource allocation confirmation
 
 ### Internal Dependencies
-- Testing (Weeks 1-2) blocks UI work from going to production
-- UI Foundation (Phase 4) blocks Component Library (Phase 5)
-- Component Library blocks Micro-Interactions (Phase 6)
-- All phases block Integration & Release (Phase 8)
+- **Testing completion (end of Week 2)** is HARD GATE for merging any UI work to main
+- UI Foundation (Week 2) can START during testing but cannot MERGE until testing passes
+- UI Foundation (Week 2) must complete before Component Library (Week 3) begins
+- Theme system (Week 2) required for components (Week 3) and animations (Week 4)
+- Reduce Motion support (Week 4) required before animations can ship
+- All P0-P1 work (Weeks 1-6) must complete before Integration (Week 7)
+- P2 items can be consciously deferred if timeline slips
 
 ---
 
@@ -1069,7 +1113,19 @@ find ios/Offload -name "*.swift" | xargs wc -l
 
 ## Changelog
 
-### January 9, 2026
+### January 9, 2026 (v1.1 - Revised)
+- 🔧 **CORRECTED:** Resolved continuity issues and sequencing problems
+  - Typography improvements moved to Week 2 (was Week 6)
+  - Reduce Motion support moved to Week 4 (was Week 6)
+  - Clarified Week 2 testing/UI overlap (testing is GATE for UI merge)
+  - Made UI Foundation consistently P1 (was mixed P1/P2)
+  - Consolidated celebration animations in Week 4 (removed duplication)
+  - Added accessibility checkpoints throughout (not just Week 5)
+  - Updated terminology from "Phase" to "Week" in timeline
+  - Clarified P2 items can be deferred if timeline slips
+  - Added VoiceOver requirements to all new components
+
+### January 9, 2026 (v1.0)
 - ✅ Toast cancellation fix merged (commit 688110b)
 - ✅ Phase 1 critical fixes: 8/8 complete
 - ✅ Merged latest changes from main
