@@ -27,11 +27,11 @@ struct CaptureSheetView: View {
         NavigationStack {
             Form {
                 Section("Quick Capture") {
-                    HStack(alignment: .top, spacing: 12) {
+                    HStack(alignment: .top, spacing: Theme.Spacing.md) {
                         TextField("What's on your mind?", text: $rawText, axis: .vertical)
                             .lineLimit(3...10)
 
-                        VStack(spacing: 8) {
+                        VStack(spacing: Theme.Spacing.sm) {
                             Button(action: handleVoiceButtonTap) {
                                 Image(systemName: voiceService.isRecording ? "stop.circle.fill" : "mic.circle.fill")
                                     .font(.system(size: 28))
@@ -72,6 +72,12 @@ struct CaptureSheetView: View {
             }
             .navigationTitle("Capture")
             .navigationBarTitleDisplayMode(.inline)
+            .scrollContentBackground(.hidden)
+            .background(Theme.Materials.glass)
+            .overlay(
+                Theme.Materials.glassOverlay(colorScheme)
+                    .opacity(Theme.Materials.glassOverlayOpacity)
+            )
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
