@@ -298,6 +298,24 @@ iOS App → Backend API → LLM Provider (Claude/GPT)
 
 > See [ADR-0001](../decisions/ADR-0001-stack.md) for implementation details and [ADR-0002](../decisions/ADR-0002-terminology.md) for terminology.
 
+### Model Implementation Status
+
+| Model | v1.0 | Post-v1.0 | Notes |
+|-------|:----:|:---------:|-------|
+| CaptureEntry | ✅ | | Core capture |
+| HandOffRequest | ✅ | | On-device AI request |
+| HandOffRun | ✅ | | Tracks AI attempts |
+| Suggestion | ✅ | | AI output |
+| SuggestionDecision | ✅ | | User response |
+| Placement | ✅ | | Links decision to destination |
+| Plan | ✅ | | Lightweight project |
+| Task | ✅ | | Actionable item |
+| Tag | ✅ | | User labels |
+| Category | ✅ | | Task grouping |
+| ListEntity | ✅ | | Shopping, packing, etc. |
+| ListItem | ✅ | | List entries |
+| CommunicationItem | | ✅ | Deferred (iOS integration) |
+
 ### Capture Workflow Models
 
 #### CaptureEntry
@@ -401,12 +419,13 @@ iOS App → Backend API → LLM Provider (Claude/GPT)
 - **Relationships:**
   - list (→ ListEntity)
 
-#### CommunicationItem
+#### CommunicationItem *(Post-v1.0)*
 - id (UUID)
 - title (String)
 - contactName (String?)
 - communicationType (enum: call, email, message)
 - createdAt, completedAt (Date)
+- *Deferred: iOS Contacts/Mail/Messages integration*
 
 ---
 
