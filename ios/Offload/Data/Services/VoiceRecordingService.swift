@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 import AVFoundation
 import Speech
 import Observation
