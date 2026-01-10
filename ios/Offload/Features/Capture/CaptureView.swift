@@ -15,6 +15,7 @@ struct CaptureView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     @State private var title: String = ""
     @State private var notes: String = ""
@@ -40,7 +41,7 @@ struct CaptureView: View {
                     Label("Captured items can be organized later. Undo is available from the inbox.",
                           systemImage: "checkmark.seal")
                         .font(.footnote)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                         .padding(.vertical, Theme.Spacing.xs)
                 }
 
@@ -93,4 +94,5 @@ struct CaptureView: View {
 #Preview {
     CaptureView()
         .modelContainer(PersistenceController.preview)
+        .environmentObject(ThemeManager.shared)
 }

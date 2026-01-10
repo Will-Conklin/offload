@@ -14,6 +14,7 @@ struct ListDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     @Bindable var list: ListEntity
 
@@ -47,7 +48,7 @@ struct ListDetailView: View {
                             .font(Theme.Typography.badge)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 4)
-                            .background(Theme.Colors.accentPrimary(colorScheme).opacity(0.2))
+                            .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.2))
                             .cornerRadius(Theme.CornerRadius.sm)
                     }
 
@@ -303,4 +304,5 @@ private struct EditListSheet: View {
         ListDetailView(list: list)
     }
     .modelContainer(PersistenceController.preview)
+    .environmentObject(ThemeManager.shared)
 }

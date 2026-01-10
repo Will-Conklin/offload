@@ -13,6 +13,7 @@ import SwiftUI
 struct FormSheet<Content: View>: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     let title: String
     let saveButtonTitle: String
@@ -32,7 +33,7 @@ struct FormSheet<Content: View>: View {
                     Section {
                         Text(errorMessage)
                             .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme, style: themeManager.currentStyle))
                     }
                 }
             }

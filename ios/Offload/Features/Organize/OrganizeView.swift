@@ -14,6 +14,7 @@ import SwiftData
 struct OrganizeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
     @Query(sort: \ListEntity.createdAt, order: .reverse) private var lists: [ListEntity]
@@ -84,7 +85,7 @@ struct OrganizeView: View {
                                             .font(Theme.Typography.badge)
                                             .padding(.horizontal, Theme.Spacing.sm)
                                             .padding(.vertical, 2)
-                                            .background(Theme.Colors.accentPrimary(colorScheme).opacity(0.2))
+                                            .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.2))
                                             .cornerRadius(Theme.CornerRadius.sm)
                                     }
 
@@ -116,24 +117,24 @@ struct OrganizeView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
                                     Image(systemName: iconForChannel(comm.communicationChannel))
-                                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                                     Text(comm.recipient)
                                         .font(Theme.Typography.cardTitle)
                                     Spacer()
                                     if comm.communicationStatus == .sent {
                                         Image(systemName: "checkmark.circle.fill")
-                                            .foregroundStyle(Theme.Colors.success(colorScheme))
+                                            .foregroundStyle(Theme.Colors.success(colorScheme, style: themeManager.currentStyle))
                                     }
                                 }
 
                                 Text(comm.content)
                                     .font(Theme.Typography.cardBody)
-                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                                     .lineLimit(2)
 
                                 Text(comm.createdAt, format: .dateTime.month().day().year())
                                     .font(Theme.Typography.metadata)
-                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                             }
                         }
                         .onDelete(perform: deleteCommunications)
@@ -506,4 +507,5 @@ private struct CommunicationFormSheet: View {
 #Preview {
     OrganizeView()
         .modelContainer(PersistenceController.preview)
+        .environmentObject(ThemeManager.shared)
 }

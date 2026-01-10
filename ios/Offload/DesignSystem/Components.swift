@@ -15,6 +15,7 @@ struct PrimaryButton: View {
     let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         Button(action: action) {
@@ -23,7 +24,7 @@ struct PrimaryButton: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(Theme.Spacing.md)
-                .background(Theme.Gradients.accentPrimary(colorScheme))
+                .background(Theme.Gradients.accentPrimary(colorScheme, style: themeManager.currentStyle))
                 .cornerRadius(Theme.CornerRadius.md)
         }
     }
@@ -34,17 +35,18 @@ struct SecondaryButton: View {
     let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         Button(action: action) {
             Text(title)
                 .font(Theme.Typography.buttonLabelEmphasis)
-                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                 .frame(maxWidth: .infinity)
                 .padding(Theme.Spacing.md)
                 .background(
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                        .stroke(Theme.Colors.accentPrimary(colorScheme), lineWidth: 2)
+                        .stroke(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle), lineWidth: 2)
                 )
         }
     }
@@ -87,23 +89,24 @@ struct ThemedTextField: View {
     var placeholder: String = ""
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
             if !label.isEmpty {
                 Text(label)
                     .font(Theme.Typography.inputLabel)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
             }
 
             TextField(placeholder, text: $text)
                 .font(Theme.Typography.body)
                 .padding(Theme.Spacing.sm)
-                .background(Theme.Colors.surface(colorScheme))
+                .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
                 .cornerRadius(Theme.CornerRadius.md)
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                        .stroke(Theme.Colors.borderMuted(colorScheme), lineWidth: 1)
+                        .stroke(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle), lineWidth: 1)
                 )
         }
     }
@@ -116,20 +119,21 @@ struct ThemedTextEditor: View {
     var minHeight: CGFloat = 100
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
             if !label.isEmpty {
                 Text(label)
                     .font(Theme.Typography.inputLabel)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
             }
 
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
                     Text(placeholder)
                         .font(Theme.Typography.body)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme).opacity(0.5))
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle).opacity(0.5))
                         .padding(Theme.Spacing.sm)
                         .allowsHitTesting(false)
                 }
@@ -139,12 +143,12 @@ struct ThemedTextEditor: View {
                     .frame(minHeight: minHeight)
                     .padding(Theme.Spacing.xs)
                     .scrollContentBackground(.hidden)
-                    .background(Theme.Colors.surface(colorScheme))
+                    .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
             }
             .cornerRadius(Theme.CornerRadius.md)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                    .stroke(Theme.Colors.borderMuted(colorScheme), lineWidth: 1)
+                    .stroke(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle), lineWidth: 1)
             )
         }
     }
@@ -163,19 +167,20 @@ struct LoadingView: View {
     var message: String = "Loading..."
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
             ProgressView()
                 .scaleEffect(1.5)
-                .tint(Theme.Colors.accentPrimary(colorScheme))
+                .tint(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
 
             Text(message)
                 .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Colors.background(colorScheme))
+        .background(Theme.Colors.background(colorScheme, style: themeManager.currentStyle))
     }
 }
 
@@ -187,21 +192,22 @@ struct EmptyStateView: View {
     var actionLabel: String?
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
             Image(systemName: icon)
                 .font(.system(size: 60))
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
 
             VStack(spacing: Theme.Spacing.sm) {
                 Text(title)
                     .font(Theme.Typography.title3)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme))
+                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
 
                 Text(message)
                     .font(Theme.Typography.body)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Theme.Spacing.xl)
             }
@@ -213,13 +219,13 @@ struct EmptyStateView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, Theme.Spacing.lg)
                         .padding(.vertical, Theme.Spacing.sm)
-                        .background(Theme.Colors.accentPrimary(colorScheme))
+                        .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                         .cornerRadius(Theme.CornerRadius.md)
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Colors.background(colorScheme))
+        .background(Theme.Colors.background(colorScheme, style: themeManager.currentStyle))
     }
 }
 
@@ -228,21 +234,22 @@ struct ErrorView: View {
     var retryAction: (() -> Void)?
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 50))
-                .foregroundStyle(Theme.Colors.caution(colorScheme))
+                .foregroundStyle(Theme.Colors.caution(colorScheme, style: themeManager.currentStyle))
 
             VStack(spacing: Theme.Spacing.sm) {
                 Text("Something went wrong")
                     .font(Theme.Typography.headline)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme))
+                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
 
                 Text(error.localizedDescription)
                     .font(Theme.Typography.body)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Theme.Spacing.xl)
             }
@@ -254,12 +261,12 @@ struct ErrorView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, Theme.Spacing.lg)
                         .padding(.vertical, Theme.Spacing.sm)
-                        .background(Theme.Colors.accentPrimary(colorScheme))
+                        .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                         .cornerRadius(Theme.CornerRadius.md)
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Colors.background(colorScheme))
+        .background(Theme.Colors.background(colorScheme, style: themeManager.currentStyle))
     }
 }

@@ -16,6 +16,7 @@ struct CaptureSheetView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     @State private var rawText: String = ""
     @State private var showingPermissionAlert = false
@@ -35,7 +36,7 @@ struct CaptureSheetView: View {
                             Button(action: handleVoiceButtonTap) {
                                 Image(systemName: voiceService.isRecording ? "stop.circle.fill" : "mic.circle.fill")
                                     .font(.system(size: 28))
-                                    .foregroundStyle(voiceService.isRecording ? Theme.Colors.destructive(colorScheme) : Theme.Colors.accentPrimary(colorScheme))
+                                    .foregroundStyle(voiceService.isRecording ? Theme.Colors.destructive(colorScheme, style: themeManager.currentStyle) : Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                             }
                             .buttonStyle(.plain)
 
@@ -58,7 +59,7 @@ struct CaptureSheetView: View {
                     Section {
                         Text(errorMessage)
                             .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme, style: themeManager.currentStyle))
                     }
                 }
 
@@ -66,7 +67,7 @@ struct CaptureSheetView: View {
                     Section {
                         Text(errorMessage)
                             .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme, style: themeManager.currentStyle))
                     }
                 }
             }
@@ -176,4 +177,5 @@ struct CaptureSheetView: View {
 #Preview {
     CaptureSheetView()
         .modelContainer(PersistenceController.preview)
+        .environmentObject(ThemeManager.shared)
 }

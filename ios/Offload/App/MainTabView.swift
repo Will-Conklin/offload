@@ -11,6 +11,7 @@ import SwiftData
 
 struct MainTabView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
     @State private var selectedTab: Tab = .captures
     @State private var showingCapture = false
 
@@ -57,21 +58,22 @@ struct MainTabView: View {
                            minHeight: Theme.HitTarget.minimum.height)
                     .background(
                         Capsule()
-                            .fill(Theme.Colors.accentPrimary(colorScheme))
+                            .fill(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                     )
                     .overlay(
                         Capsule()
-                            .strokeBorder(Theme.Colors.focusRing(colorScheme), lineWidth: 2)
+                            .strokeBorder(Theme.Colors.focusRing(colorScheme, style: themeManager.currentStyle), lineWidth: 2)
                     )
-                    .shadow(color: Theme.Colors.focusRing(colorScheme).opacity(0.35),
+                    .shadow(color: Theme.Colors.focusRing(colorScheme, style: themeManager.currentStyle).opacity(0.35),
                             radius: Theme.Shadows.elevationMd,
                             y: 4)
                 }
                 .accessibilityLabel("Capture new entry")
                 .accessibilityHint("Opens quick capture sheet; you can organize later")
             }
-            .padding(.trailing, Theme.Spacing.lg)
-            .padding(.bottom, Theme.Spacing.xs)
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.top, Theme.Spacing.sm)
+            .padding(.bottom, Theme.Spacing.md)
             .background(Color.clear)
         }
         .sheet(isPresented: $showingCapture) {
@@ -89,4 +91,5 @@ struct MainTabView: View {
 #Preview {
     MainTabView()
         .modelContainer(PersistenceController.preview)
+        .environmentObject(ThemeManager.shared)
 }

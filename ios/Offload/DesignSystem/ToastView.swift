@@ -27,12 +27,12 @@ enum ToastType {
         }
     }
 
-    func color(_ colorScheme: ColorScheme) -> Color {
+    func color(_ colorScheme: ColorScheme, style: ThemeStyle = .blueCool) -> Color {
         switch self {
-        case .success: return Theme.Colors.success(colorScheme)
-        case .error: return Theme.Colors.destructive(colorScheme)
-        case .info: return Theme.Colors.accentPrimary(colorScheme)
-        case .warning: return Theme.Colors.caution(colorScheme)
+        case .success: return Theme.Colors.success(colorScheme, style: style)
+        case .error: return Theme.Colors.destructive(colorScheme, style: style)
+        case .info: return Theme.Colors.accentPrimary(colorScheme, style: style)
+        case .warning: return Theme.Colors.caution(colorScheme, style: style)
         }
     }
 }
@@ -55,22 +55,23 @@ struct ToastView: View {
     let toast: Toast
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
             Image(systemName: toast.type.icon)
-                .foregroundStyle(toast.type.color(colorScheme))
+                .foregroundStyle(toast.type.color(colorScheme, style: themeManager.currentStyle))
                 .font(Theme.Typography.headline)
 
             Text(toast.message)
                 .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textPrimary(colorScheme))
+                .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
                 .lineLimit(3)
 
             Spacer(minLength: 0)
         }
         .padding(Theme.Spacing.md)
-        .background(Theme.Colors.surface(colorScheme))
+        .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
         .cornerRadius(Theme.CornerRadius.lg)
         .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
         .padding(.horizontal, Theme.Spacing.md)
@@ -157,6 +158,7 @@ extension View {
         ToastView(toast: Toast(message: "Item saved successfully!", type: .success))
             .padding(.top, 16)
     }
+    .environmentObject(ThemeManager.shared)
 }
 
 #Preview("Error Toast") {
@@ -169,6 +171,7 @@ extension View {
         ToastView(toast: Toast(message: "Failed to save item. Please try again.", type: .error))
             .padding(.top, 16)
     }
+    .environmentObject(ThemeManager.shared)
 }
 
 #Preview("Warning Toast") {
@@ -181,6 +184,7 @@ extension View {
         ToastView(toast: Toast(message: "Network connection is unstable.", type: .warning))
             .padding(.top, 16)
     }
+    .environmentObject(ThemeManager.shared)
 }
 
 #Preview("Info Toast") {
@@ -193,4 +197,5 @@ extension View {
         ToastView(toast: Toast(message: "AI suggestions are currently disabled.", type: .info))
             .padding(.top, 16)
     }
+    .environmentObject(ThemeManager.shared)
 }

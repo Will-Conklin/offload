@@ -102,6 +102,7 @@ struct CaptureRow: View {
     let entry: CaptureEntry
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -112,12 +113,12 @@ struct CaptureRow: View {
             HStack {
                 Text(entry.createdAt, format: .dateTime)
                     .font(Theme.Typography.metadata)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
 
                 if entry.entryInputType == .voice {
                     Image(systemName: "waveform")
                         .font(Theme.Typography.metadata)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                 }
 
                 if entry.currentLifecycleState != .raw {
@@ -125,7 +126,7 @@ struct CaptureRow: View {
                         .font(Theme.Typography.badge)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Theme.Colors.accentPrimary(colorScheme).opacity(0.2))
+                        .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.2))
                         .cornerRadius(Theme.CornerRadius.sm)
                 }
             }
@@ -139,4 +140,5 @@ struct CaptureRow: View {
         CapturesView()
     }
     .modelContainer(PersistenceController.preview)
+    .environmentObject(ThemeManager.shared)
 }

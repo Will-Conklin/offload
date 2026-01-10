@@ -9,8 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct AppRootView: View {
+    @StateObject private var themeManager = ThemeManager.shared
+
     var body: some View {
         MainTabView()
+            .environmentObject(themeManager)
     }
 }
 

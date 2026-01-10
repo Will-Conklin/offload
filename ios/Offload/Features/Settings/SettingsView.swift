@@ -23,6 +23,7 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var themeManager: ThemeManager
 
     @Query(sort: \Category.name) private var categories: [Category]
     @Query(sort: \Tag.name) private var tags: [Tag]
@@ -112,7 +113,7 @@ struct SettingsView: View {
             VStack(spacing: 12) {
                 Image(systemName: "brain.head.profile")
                     .font(.system(size: 60))
-                    .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                    .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
 
                 Text("Offload")
                     .font(Theme.Typography.title2)
@@ -141,6 +142,18 @@ struct SettingsView: View {
 
     private var preferencesSection: some View {
         Section {
+            Picker("Color Theme", selection: $themeManager.currentStyle) {
+                ForEach(ThemeStyle.allCases) { style in
+                    VStack(alignment: .leading) {
+                        Text(style.rawValue)
+                        Text(style.description)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .tag(style)
+                }
+            }
+
             Picker("Default Capture Source", selection: $defaultCaptureSource) {
                 Text("App").tag(CaptureSource.app)
                 Text("Shortcut").tag(CaptureSource.shortcut)
@@ -158,7 +171,7 @@ struct SettingsView: View {
         } header: {
             Text("Preferences")
         } footer: {
-            Text("Auto-archive will move completed tasks and placed captures to archive after 7 days.")
+            Text("Color themes help personalize your experience. Changes apply immediately to both light and dark modes. Auto-archive will move completed tasks and placed captures to archive after 7 days.")
         }
     }
 
@@ -176,7 +189,7 @@ struct SettingsView: View {
                         activeSheet = .category
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                     }
                 }
 
@@ -212,7 +225,7 @@ struct SettingsView: View {
                         activeSheet = .tag
                     } label: {
                         Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                     }
                 }
 
@@ -427,6 +440,7 @@ private enum SettingsSheet: Identifiable {
 
 private struct VoiceSettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
     @AppStorage("voiceRecordingQuality") private var recordingQuality = "high"
     @AppStorage("enableLiveTranscription") private var enableLiveTranscription = true
 
@@ -453,7 +467,7 @@ private struct VoiceSettingsView: View {
 
                     Text("No audio data is sent to external servers.")
                         .font(.caption)
-                        .foregroundStyle(Theme.Colors.success(colorScheme))
+                        .foregroundStyle(Theme.Colors.success(colorScheme, style: themeManager.currentStyle))
                         .fontWeight(.medium)
                 }
                 .padding(.vertical, 4)
@@ -554,6 +568,7 @@ private struct APIConfigurationView: View {
 
 private struct AIInfoView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         ScrollView {
@@ -604,7 +619,7 @@ private struct AIInfoView: View {
                         .foregroundStyle(.secondary)
                 }
                 .padding()
-                .background(Theme.Colors.accentPrimary(colorScheme).opacity(0.1))
+                .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.1))
                 .cornerRadius(Theme.CornerRadius.md)
             }
             .padding()
@@ -620,12 +635,13 @@ private struct FeatureCard: View {
     let description: String
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -731,6 +747,7 @@ private struct StorageInfoView: View {
 private struct AboutSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         NavigationStack {
@@ -739,7 +756,7 @@ private struct AboutSheet: View {
                     VStack(spacing: 12) {
                         Image(systemName: "brain.head.profile")
                             .font(.system(size: 80))
-                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
 
                         Text("Offload")
                             .font(.largeTitle)
@@ -818,11 +835,12 @@ private struct PhilosophyItem: View {
     let icon: String
     let text: String
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
-                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme))
+                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                 .frame(width: 24)
 
             Text(text)
@@ -925,6 +943,7 @@ private struct PolicySection: View {
 private struct CategoryFormSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     let onSave: (String, String?) throws -> Void
 
@@ -944,7 +963,7 @@ private struct CategoryFormSheet: View {
                     Section {
                         Text(errorMessage)
                             .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme, style: themeManager.currentStyle))
                     }
                 }
             }
@@ -985,6 +1004,7 @@ private struct CategoryFormSheet: View {
 private struct TagFormSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     let onSave: (String, String?) throws -> Void
 
@@ -1004,7 +1024,7 @@ private struct TagFormSheet: View {
                     Section {
                         Text(errorMessage)
                             .font(Theme.Typography.errorText)
-                            .foregroundStyle(Theme.Colors.destructive(colorScheme))
+                            .foregroundStyle(Theme.Colors.destructive(colorScheme, style: themeManager.currentStyle))
                     }
                 }
             }
@@ -1045,4 +1065,5 @@ private struct TagFormSheet: View {
 #Preview {
     SettingsView()
         .modelContainer(PersistenceController.preview)
+        .environmentObject(ThemeManager.shared)
 }
