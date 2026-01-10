@@ -1,4 +1,4 @@
-# Offload — V1 Product Requirements Document (PRD)
+# Offload — v1.0 Product Requirements Document (PRD)
 
 **Version:** 1.3
 **Date:** 2026-01-09
@@ -27,7 +27,7 @@ Users experience stress when ideas, tasks, or plans accumulate faster than they 
 
 ---
 
-## 3. Product goals (V1)
+## 3. Product goals (v1.0)
 
 - Enable instant thought capture with minimal friction
 - Provide optional, trustworthy AI-assisted organization
@@ -201,7 +201,7 @@ Each user action creates a SuggestionDecision record (accepted/rejected/edited).
 **Plan** (lightweight project)
 - Contains Tasks
 - Supports parent/child hierarchy
-- No due dates required in V1
+- No due dates required in v1.0
 
 **ListEntity** (general-purpose lists)
 - Contains ListItems
@@ -211,7 +211,7 @@ Each user action creates a SuggestionDecision record (accepted/rejected/edited).
 - Standalone items for follow-up actions
 - Future: iOS integration (Contacts, Mail, Messages)
 
-No reminders in V1.
+No reminders in v1.0.
 
 ---
 
@@ -294,7 +294,7 @@ iOS App → Backend API → LLM Provider (Claude/GPT)
 
 ---
 
-## 11. Data model (V1)
+## 11. Data model (v1.0)
 
 > See [ADR-0001](../decisions/ADR-0001-stack.md) for implementation details and [ADR-0002](../decisions/ADR-0002-terminology.md) for terminology.
 
@@ -464,7 +464,7 @@ iOS App → Backend API → LLM Provider (Claude/GPT)
 | AI cost spikes | Hard per-user caps |
 | Misclassification | Review screen + confidence |
 | User distrust | Raw text preserved |
-| Overbuilding | Strict V1 scope lock |
+| Overbuilding | Strict v1.0 scope lock |
 
 ---
 
