@@ -171,7 +171,7 @@ private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en
 ### 10. **No Database Migration Strategy** (MEDIUM)
 SwiftData schema will evolve, but there's no migration plan documented.
 
-**Recommendation**: Before v1.0 release:
+**Recommendation**: Before v1 release:
 1. Document migration strategy
 2. Consider CloudKit sync implications
 3. Test schema changes with sample migrations
@@ -302,7 +302,7 @@ Sample data manually created; no data factory pattern.
 
 ## 🎯 Prioritized Recommendations
 
-### Priority 1 (Blocking v1.0)
+### Priority 1 (Blocking v1)
 1. ✅ **Implement AI hand-off orchestration** (`submitForOrganization`, `fetchSuggestions`, etc.)
 2. ✅ **Build backend API** and client implementation
 3. ✅ **Complete Organize tab** UI for destination management
@@ -384,7 +384,7 @@ This is a **professionally structured iOS project in active development** with:
 - Incomplete UI (tabs, settings)
 - Missing design system components
 
-**Next Steps**: Focus on Priority 1 tasks to reach v1.0 feature parity. The technical foundation is solid—now it needs feature completion.
+**Next Steps**: Focus on Priority 1 tasks to reach v1 feature parity. The technical foundation is solid—now it needs feature completion.
 
 ---
 

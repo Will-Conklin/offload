@@ -51,7 +51,7 @@ We will use the following technology stack:
 ### Backend (Planned)
 
 **Decision Deferred:** Backend technology to be determined when needed
-- **Considerations:** May not need backend for v1.0 (local-only)
+- **Considerations:** May not need backend for v1 (local-only)
 - **Future Options:** Vapor (Swift), Node.js, or managed services
 - **Requirements:** Must support CloudKit or custom sync protocol
 
@@ -107,7 +107,7 @@ We will use the following technology stack:
 
 ### Redux/TCA for State Management
 - **Pros:** Predictable state, good for complex apps
-- **Cons:** Significant boilerplate, overkill for v1.0
+- **Cons:** Significant boilerplate, overkill for v1
 - **Decision:** Rejected - @Query sufficient for current needs, can add later
 
 ## Implementation Notes
@@ -155,5 +155,5 @@ We will use the following technology stack:
 
 ## Revision History
 
-- 2025-12-30: Initial decision (v1.0)
+- 2025-12-30: Initial decision (v1)
 - 2025-12-31: Updated with Week 2 implementation findings (SwiftData relationships, repository queries, predicate limitations)

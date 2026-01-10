@@ -4,7 +4,7 @@
 **Created:** January 9, 2026
 **Status:** Active Development
 **Current Phase:** Remediation Phase 1 Complete / UI Planning / Feature Development
-**Timeline:** 8-10 weeks to production-ready v1.0
+**Timeline:** 8-10 weeks to production-ready v1
 **Last Updated:** January 10, 2026
 
 ---
@@ -41,7 +41,7 @@ This is the **single source of truth** for all Offload implementation planning. 
 3. Build component library & micro-interactions (Weeks 3-4)
 4. Add ADHD-specific enhancements & accessibility (Weeks 5-6)
 5. Integration, polish and release prep (Weeks 7-8)
-6. Feature development for AI flows (Week 9-10+ post-v1.0)
+6. Feature development for AI flows (Week 9-10+ post-v1)
 
 ---
 
@@ -435,13 +435,13 @@ All implementation complete, testing pending:
    - TestFlight distribution
    - Sign off for production
 
-**Deliverable:** Production-ready v1.0 release candidate
+**Deliverable:** Production-ready v1 release candidate
 
 ---
 
 ### Weeks 9-10+: Feature Development (POST-MVP) 📈
 **Goal:** Complete AI workflows, advanced features
-**Priority:** P3 (Nice-to-have for v1.0)
+**Priority:** P3 (Nice-to-have for v1)
 
 **Scope:**
 - Backend API implementation
@@ -453,19 +453,19 @@ All implementation complete, testing pending:
 - Batch operations
 - Search and filtering
 
-**Note:** These can be deferred to v1.1+ if timeline requires
+**Note:** These can be deferred to v1+ if timeline requires
 
 ---
 
 ## Implementation Priority Matrix
 
-### P0 - Must Ship for v1.0 (Blockers)
+### P0 - Must Ship for v1 (Blockers)
 - [x] All 8 critical bug fixes
 - [x] Phase 2 high priority fixes
 - [ ] Testing and validation (Weeks 1-2)
 - [ ] Basic accessibility compliance
 
-### P1 - Should Ship for v1.0 (High Value)
+### P1 - Should Ship for v1 (High Value)
 - [ ] UI foundation (glass effects, theme, typography)
 - [ ] Core component library (badges, expandable cards)
 - [ ] Spring animations on buttons
@@ -473,14 +473,14 @@ All implementation complete, testing pending:
 - [ ] ADHD settings toggles
 - [ ] VoiceOver labels for all interactive elements
 
-### P2 - Nice-to-Have for v1.0 (Polish)
+### P2 - Nice-to-Have for v1 (Polish)
 - [ ] Visual timeline view
 - [ ] Completion celebrations
 - [ ] Loading skeletons
 - [ ] Bottom sheets
 - [ ] Advanced typography
 
-### P3 - Can Defer to v1.1+ (Future)
+### P3 - Can Defer to v1+ (Future)
 - [ ] AI hand-off flows
 - [ ] Suggestion UI
 - [ ] Export/import
@@ -499,7 +499,7 @@ All implementation complete, testing pending:
 | Jan 9 | Consolidate all plans into master-plan.md | Single source of truth, reduce confusion | Supersedes 4 separate docs |
 | Jan 9 | Prioritize testing before new UI work | Validate critical fixes, avoid regressions | Weeks 1-2 focused on testing |
 | Jan 9 | Visual timeline as P2 (nice-to-have) | High ADHD value but can defer if needed | Flexible on timeline |
-| Jan 9 | Defer AI features to post-v1.0 | Focus on manual app first, AI as enhancement | MVP scope reduction |
+| Jan 9 | Defer AI features to post-v1 | Focus on manual app first, AI as enhancement | MVP scope reduction |
 
 ### Decisions Needed (By Jan 15, 2026)
 
@@ -509,15 +509,15 @@ All implementation complete, testing pending:
    - [ ] Option C: Minimal (FAB/tabs only)
 
 2. **Timeline Feature Priority**
-   - [ ] Must-have for v1.0
-   - [ ] Nice-to-have for v1.0 - **RECOMMENDED**
-   - [ ] Defer to v1.1
+   - [ ] Must-have for v1
+   - [ ] Nice-to-have for v1 - **RECOMMENDED**
+   - [ ] Defer to v1
 
 3. **Celebration Animations**
-   - [ ] Include in v1.0 - **RECOMMENDED** (low effort, high ADHD value)
-   - [ ] Defer to v1.1
+   - [ ] Include in v1 - **RECOMMENDED** (low effort, high ADHD value)
+   - [ ] Defer to v1
 
-4. **v1.0 Scope**
+4. **v1 Scope**
    - [ ] Manual app only (no AI) - **RECOMMENDED**
    - [ ] Include basic AI hand-off
    - [ ] Full AI workflow required
@@ -666,9 +666,9 @@ All implementation complete, testing pending:
 | Release candidate | ⏳ | 1 day | P0 |
 
 **Dependencies:**
-- All P0-P1 items complete (required for v1.0)
+- All P0-P1 items complete (required for v1)
 - P2 items either complete or consciously deferred
-- P3 items explicitly deferred to v1.1+
+- P3 items explicitly deferred to v1+
 
 ---
 
@@ -750,7 +750,7 @@ All implementation complete, testing pending:
 **Likelihood:** Medium | **Impact:** Medium
 **Mitigation:**
 - Prioritize P0-P1 testing over P2-P3
-- Accept some test evidence gaps for v1.0
+- Accept some test evidence gaps for v1
 - Can defer P3 features if needed
 **Status:** ⏳ Monitor closely
 
@@ -762,7 +762,7 @@ All implementation complete, testing pending:
 - Timebox to 12 hours
 - Create MVP first, iterate
 - Make feature optional (can hide if buggy)
-- Defer to v1.1 if needed (P2 priority)
+- Defer to v1 if needed (P2 priority)
 **Status:** ⏳ Plan in place
 
 ---
@@ -791,7 +791,7 @@ All implementation complete, testing pending:
 
 ## Success Metrics
 
-### Technical Metrics (Must Meet for v1.0)
+### Technical Metrics (Must Meet for v1)
 - ✅ Zero crashes in production
 - ✅ Zero critical bugs remaining
 - [ ] <100ms query performance at 1000 records
@@ -802,7 +802,7 @@ All implementation complete, testing pending:
 
 ---
 
-### User Experience Metrics (Target for v1.0)
+### User Experience Metrics (Target for v1)
 - Visual hierarchy clarity (subjective, user testing)
 - ADHD feature adoption rate >30%
 - App Store rating >4.5
@@ -811,7 +811,7 @@ All implementation complete, testing pending:
 
 ---
 
-### Business Metrics (Target for v1.0)
+### Business Metrics (Target for v1)
 - Increased user retention
 - Positive App Store reviews mentioning design
 - Feature parity with award-winning ADHD apps
@@ -826,7 +826,7 @@ All implementation complete, testing pending:
 
 ### External Dependencies
 - [ ] Design review/approval for glassmorphism level
-- [ ] Stakeholder approval for v1.0 scope (manual vs. AI)
+- [ ] Stakeholder approval for v1 scope (manual vs. AI)
 - [ ] Resource allocation confirmation
 
 ### Internal Dependencies
@@ -1116,7 +1116,7 @@ find ios/Offload -name "*.swift" | xargs wc -l
 
 ## Changelog
 
-### January 9, 2026 (v1.1 - Revised)
+### January 9, 2026 (v1 - Revised)
 - 🔧 **CORRECTED:** Resolved continuity issues and sequencing problems
   - Typography improvements moved to Week 2 (was Week 6)
   - Reduce Motion support moved to Week 4 (was Week 6)
@@ -1128,17 +1128,17 @@ find ios/Offload -name "*.swift" | xargs wc -l
   - Clarified P2 items can be deferred if timeline slips
   - Added VoiceOver requirements to all new components
 
-### January 10, 2026 (v1.2)
+### January 10, 2026 (v1)
 - ✅ Applied glass treatment and Theme spacing updates to CaptureSheetView
 
-### January 9, 2026 (v1.0)
+### January 9, 2026 (v1)
 - ✅ Toast cancellation fix merged (commit 688110b)
 - ✅ Phase 1 critical fixes: 8/8 complete
 - ✅ Merged latest changes from main
 - ✅ Consolidated all planning documents into master-plan.md
 - 📄 Created comprehensive testing checklist
 - 📄 Defined 8-week timeline with exit criteria
-- 📄 Identified P0-P3 priorities for v1.0 scope
+- 📄 Identified P0-P3 priorities for v1 scope
 
 ### January 8, 2026
 - ✅ Phase 2 high priority fixes: 5/5 implementation complete

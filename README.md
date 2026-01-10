@@ -103,8 +103,8 @@ flows stubbed.
 - **Weeks 1-2:** Testing & validation of Phase 1-3 fixes
 - **Weeks 2-4:** UI foundation (glassmorphism, components, micro-interactions)
 - **Weeks 5-6:** ADHD features (visual timeline, accessibility audit)
-- **Weeks 7-8:** Integration, polish, v1.0 release candidate
-- **Post-v1.0:** AI hand-off workflows, backend sync, widgets
+- **Weeks 7-8:** Integration, polish, v1 release candidate
+- **Post-v1:** AI hand-off workflows, backend sync, widgets
 
 ## Architecture
 
@@ -380,7 +380,7 @@ they are isolated and fast; ensure test files are included in the
 - ✅ **Capture UI:** Captures view and capture sheet with voice/text
 - 🚧 **UI/UX Modernization:** Research complete, Weeks 2-8 implementation planned
 - 🚧 **Organization UI:** Organize tab flows, AI hand-off, suggestion processing
-- 📅 **Post-v1.0:** AI workflows, backend sync, widgets
+- 📅 **Post-v1:** AI workflows, backend sync, widgets
 
 See [Master Plan](docs/plans/master-plan.md) for detailed roadmap.
 

@@ -813,7 +813,7 @@ After completing this polish phase, Offload will be ready to ship as a **premium
 - **Polished UX** with empty states, loading indicators, and smooth animations
 
 This positions Offload for:
-1. **App Store submission** as a v1.0 manual app
+1. **App Store submission** as a v1 manual app
 2. **User testing** to validate UX before adding AI
 3. **Premium pricing** ($2.99-$4.99) based on quality
 4. **AI upsell** later as a "Pro" feature

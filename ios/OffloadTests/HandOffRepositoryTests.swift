@@ -104,7 +104,7 @@ final class HandOffRepositoryTests: XCTestCase {
 
         let run = HandOffRun(
             modelId: "claude-3-5-sonnet",
-            promptVersion: "v1.0",
+            promptVersion: "v1",
             inputSnapshot: "Test input",
             handOffRequest: request
         )
@@ -120,7 +120,7 @@ final class HandOffRepositoryTests: XCTestCase {
     func testUpdateRunStatus() throws {
         let run = HandOffRun(
             modelId: "claude-3-5-sonnet",
-            promptVersion: "v1.0",
+            promptVersion: "v1",
             inputSnapshot: "Test"
         )
 
@@ -136,7 +136,7 @@ final class HandOffRepositoryTests: XCTestCase {
     func testUpdateRunStatusWithError() throws {
         let run = HandOffRun(
             modelId: "claude-3-5-sonnet",
-            promptVersion: "v1.0",
+            promptVersion: "v1",
             inputSnapshot: "Test"
         )
 
@@ -176,7 +176,7 @@ final class HandOffRepositoryTests: XCTestCase {
 
         let run = HandOffRun(
             modelId: "claude-3-5-sonnet",
-            promptVersion: "v1.0",
+            promptVersion: "v1",
             inputSnapshot: "Test",
             handOffRequest: request
         )

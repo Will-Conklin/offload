@@ -904,14 +904,14 @@ grep -r "spacing: [0-9]" ios/Offload --include="*.swift"
    - **Recommendation:** Option B (document limitation)
 
 3. **Timeline Feature Priority**
-   - [ ] Must-have for v1.0
-   - [ ] Nice-to-have for v1.0
-   - [ ] Defer to v1.1
+   - [ ] Must-have for v1
+   - [ ] Nice-to-have for v1
+   - [ ] Defer to v1
    - **Recommendation:** Nice-to-have (defer if timeline slips)
 
 4. **Celebration Animations**
-   - [ ] Include in v1.0
-   - [ ] Defer to v1.1
+   - [ ] Include in v1
+   - [ ] Defer to v1
    - **Recommendation:** Include (high ADHD value, low effort)
 
 5. **Resource Allocation**
@@ -965,7 +965,7 @@ main (protected)
 ├── ui/components (component library)
 ├── ui/animations (micro-interactions)
 ├── ui/adhd-features (timeline, celebrations)
-└── integration/v1.0 (merge all)
+└── integration/v1 (merge all)
 ```
 
 **Merge Strategy:**
