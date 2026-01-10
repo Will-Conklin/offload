@@ -23,12 +23,19 @@ class ThemeManager: ObservableObject {
     /// Singleton instance for app-wide access
     static let shared = ThemeManager()
 
-    private init() {
-        // Load saved theme from UserDefaults, default to blueCool
-        if let savedStyleString = UserDefaults.standard.string(forKey: "selectedThemeStyle"),
-           let savedStyle = ThemeStyle(rawValue: savedStyleString) {
-            self.currentStyle = savedStyle
+    /// Creates a new ThemeManager instance
+    /// - Parameter loadFromUserDefaults: Whether to load saved theme from UserDefaults (default: true)
+    init(loadFromUserDefaults: Bool = true) {
+        if loadFromUserDefaults {
+            // Load saved theme from UserDefaults, default to blueCool
+            if let savedStyleString = UserDefaults.standard.string(forKey: "selectedThemeStyle"),
+               let savedStyle = ThemeStyle(rawValue: savedStyleString) {
+                self.currentStyle = savedStyle
+            } else {
+                self.currentStyle = .blueCool
+            }
         } else {
+            // For testing: use default theme without persisting
             self.currentStyle = .blueCool
         }
     }

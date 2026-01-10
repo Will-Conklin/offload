@@ -395,4 +395,5 @@ private struct TaskFormSheet: View {
         PlanDetailView(plan: plan)
     }
     .modelContainer(PersistenceController.preview)
+    .environmentObject(ThemeManager.shared)
 }
