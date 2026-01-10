@@ -21,9 +21,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # Pinned environment values
-XCODE_VERSION="16.2"
+XCODE_VERSION="16.3"
 SIM_DEVICE="iPhone 16"
-SIM_OS="18.1"
+SIM_OS="18.2"
 
 # Parse arguments
 SKIP_SIMULATORS=false
