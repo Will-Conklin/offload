@@ -13,7 +13,7 @@
 
 This is the **single source of truth** for all Offload implementation planning. It consolidates:
 - Critical bug remediation (from remediation-plan.md & remediation-tracking.md)
-- UI/UX modernization (from ios-ui-trends-2025.md & consolidated-implementation-plan.md)
+- UI/UX modernization (from 2025-ios-ui-trends-research.md & consolidated-implementation-plan.md)
 - Design system polish (from polish-phase.md)
 - Feature development (from brain-dump-model.md)
 
@@ -910,7 +910,7 @@ find ios/Offload -name "*.swift" | xargs wc -l
 - [Consolidated Plan](./consolidated-implementation-plan.md) - **SUPERSEDED by this document**
 - [Polish Phase](./polish-phase.md) - **SUPERSEDED by this document**
 - [Brain Dump Model](./brain-dump-model.md) - Reference for feature development
-- [UI Trends Research](../research/ios-ui-trends-2025.md) - Research findings
+- [UI Trends Research](../research/2025-ios-ui-trends-research.md) - Research findings
 - [ADHD UX Guardrails](../decisions/ADR-0003-adhd-ux-guardrails.md) - Design principles
 
 ---

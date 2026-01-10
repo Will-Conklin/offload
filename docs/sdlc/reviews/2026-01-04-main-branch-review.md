@@ -262,7 +262,7 @@ Sample data manually created; no data factory pattern.
 
 ### Documentation
 - **Strong ADRs** (Architecture Decision Records)
-- Good PRD (v1.md) with clear product vision
+- Good PRD (offload-prd-v1.md) with clear product vision
 - AGENTS.md provides clear development guidelines
 - CI documentation (ci-readiness.md) is detailed
 
