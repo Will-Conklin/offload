@@ -44,6 +44,13 @@ main() {
 
   DESTINATION="${DESTINATION}" DEVICE_NAME="${DEVICE_NAME}" OS_VERSION="${OS_VERSION}" "${SCRIPT_DIR}/preflight.sh"
 
+  # Boot the simulator before building to prevent timeout errors
+  info "Booting simulator before building..."
+  if ! "${SCRIPT_DIR}/boot-simulator.sh" "${selected_udid}"; then
+    echo "[ERROR] Failed to boot simulator ${selected_udid}" >&2
+    exit 1
+  fi
+
   mkdir -p "${DERIVED_DATA_PATH}"
 
   info "Building scheme '${SCHEME}' with configuration '${CONFIGURATION}'."
