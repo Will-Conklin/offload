@@ -63,6 +63,13 @@ main() {
 
   DESTINATION="${DESTINATION}" DEVICE_NAME="${DEVICE_NAME}" OS_VERSION="${OS_VERSION}" "${SCRIPT_DIR}/preflight.sh"
 
+  # Boot the simulator before running tests to prevent timeout errors
+  info "Booting simulator before running tests..."
+  if ! "${SCRIPT_DIR}/boot-simulator.sh" "${selected_udid}"; then
+    warn "Failed to boot simulator ${selected_udid}"
+    exit 1
+  fi
+
   mkdir -p "$(dirname "${RESULT_BUNDLE_PATH}")"
   rm -rf "${RESULT_BUNDLE_PATH}"
   mkdir -p "${DERIVED_DATA_PATH}"
