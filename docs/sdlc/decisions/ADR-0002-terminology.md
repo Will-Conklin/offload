@@ -2,7 +2,7 @@
 
 # ADR-0002: Terminology Alignment for Capture and Organization
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-01-03  
 **Deciders:** Will Conklin  
 **Tags:** terminology, product, documentation

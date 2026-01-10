@@ -34,7 +34,7 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 
 ## Critical
 
-- ALWAYS add headers to key files to describe intent to agents. Use a format that's optimized for agent consumption. 
+- ALWAYS add headers to key files for agent navigation. Use a format that's optimized for agent consumption.  Ensure consistency.
 - ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
 - ALWAYS use explicit type references. SwiftData predicates require explicit type references for enum cases
 - ALWAYS clean up merged branches.

@@ -2,7 +2,7 @@
 
 # ADR-0003: ADHD-Focused UX/UI Guardrails
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-01-05  
 **Owners:** Design, iOS
 
