@@ -69,9 +69,11 @@ with AI).
 
 ## Current Status
 
-✅ **Phase 1-3 Remediation Complete** — All critical bugs fixed, architecture improvements done.
+✅ **Phase 1-3 Remediation Complete** — All critical bugs fixed, architecture
+improvements done.
 🚧 **UI/UX Modernization** — Research complete, implementation starting Week 2.
-🚧 **AI Workflows** — Capture flows functional, AI hand-off and organization flows stubbed.
+🚧 **AI Workflows** — Capture flows functional, AI hand-off and organization
+flows stubbed.
 
 ### ✅ Implemented (Core)
 
@@ -87,10 +89,14 @@ with AI).
 
 ### 🔄 In Progress
 
-- **Critical Remediation:** Phase 1-3 complete (8/8 critical, 5/5 high priority, 3/3 architecture). Testing and validation in progress.
-- **UI/UX Modernization:** Research complete. Week 2-8 implementation planned (glassmorphism, components, ADHD features).
-- **AI Workflows:** Hand-off orchestration, suggestion processing, and placement stubbed in `CaptureWorkflowService`.
-- **Organization UI:** Organize tab and Settings view exist with TODOs. MainTabView with tab-based navigation in place.
+- **Critical Remediation:** Phase 1-3 complete (8/8 critical, 5/5 high priority,
+  3/3 architecture). Testing and validation in progress.
+- **UI/UX Modernization:** Research complete. Week 2-8 implementation planned
+  (glassmorphism, components, ADHD features).
+- **AI Workflows:** Hand-off orchestration, suggestion processing, and placement
+  stubbed in `CaptureWorkflowService`.
+- **Organization UI:** Organize tab and Settings view exist with TODOs.
+  MainTabView with tab-based navigation in place.
 
 ### 📋 Upcoming (See [Master Plan](docs/plans/master-plan.md))
 
@@ -212,12 +218,12 @@ graph LR
 
 ```mermaid
 flowchart LR
-    Entry[CaptureEntry\n(raw capture)]
+    Entry["CaptureEntry\n(raw capture)"]
     Request[HandOffRequest]
     Run[HandOffRun]
     Suggestion[Suggestion]
     Decision[SuggestionDecision]
-    Placement[Placement\n(targetType,targetId)]
+    Placement["Placement\n(targetType,targetId")]
     Destination[Plans / Tasks / Lists / Communication]
 
     Entry --> Request --> Run --> Suggestion --> Decision --> Placement --> Destination
@@ -325,8 +331,8 @@ they are isolated and fast; ensure test files are included in the
 
 - **Capture**: Text and voice capture with live transcription using the Speech
   framework (offline-first)
-- **Captures View**: Capture list with lifecycle tracking (raw → archived) powered by
-  `CaptureWorkflowService`
+- **Captures View**: Capture list with lifecycle tracking (raw → archived)
+  powered by `CaptureWorkflowService`
 - **Data Layer**: SwiftData models for capture workflow plus destinations
   (plans, tasks, tags, categories, lists, communication)
 - **Repositories**: CRUD + lifecycle helpers for every model; preview container
@@ -351,7 +357,8 @@ they are isolated and fast; ensure test files are included in the
 
 - 📱 [iOS Development Guide](ios/README.md)
 - 📋 [Product Requirements Document](docs/prd/v1.md)
-- 📍 **[Master Implementation Plan](docs/plans/master-plan.md)** ⭐ Single source of truth for all planning
+- 📍 **[Master Implementation Plan](docs/plans/master-plan.md)** ⭐ Single
+  source of truth for all planning
 - 🏗️ [Architecture Decision Records](docs/decisions/)
 - 🧭 [ADHD UX/UI Guardrails (ADR-0003)](docs/decisions/ADR-0003-adhd-ux-guardrails.md)
 - 🧠 [Capture Model Plan](docs/plans/brain-dump-model.md)
@@ -367,7 +374,8 @@ they are isolated and fast; ensure test files are included in the
 
 ### Implementation Status
 
-- ✅ **Phase 1-3 Remediation:** All critical bugs fixed, architecture improvements complete
+- ✅ **Phase 1-3 Remediation:** All critical bugs fixed, architecture
+  improvements complete
 - ✅ **Data Layer:** Capture models, repositories, and workflow service
 - ✅ **Capture UI:** Captures view and capture sheet with voice/text
 - 🚧 **UI/UX Modernization:** Research complete, Weeks 2-8 implementation planned
@@ -388,7 +396,8 @@ See [Master Plan](docs/plans/master-plan.md) for detailed roadmap.
 
 ### Backend (Phase 3+)
 
-- **Language**: Python (FastAPI)
+- **Language**: TBD (planned)
+- **API**: TBD
 - **AI**: OpenAI/Anthropic API proxy
 - **Infrastructure**: TBD
 
@@ -396,8 +405,8 @@ See [Master Plan](docs/plans/master-plan.md) for detailed roadmap.
 
 - **Language**: Swift 5.9
 - **Min iOS**: 17.0
-- **Testing**: XCTest + SwiftData in-memory containers
-- **CI/CD**: GitHub Actions (planned)
+- **Testing**: Swift Testing + XCTest (legacy), SwiftData in-memory containers
+- **CI/CD**: GitHub Actions
 
 See [ADR-0001](docs/decisions/ADR-0001-stack.md) for detailed technical
 decisions.
