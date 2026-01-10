@@ -4,4 +4,4 @@
 
 ## Todo Tasks
 
-- 
+- [ ] Update CI pipelines to be context aware (skip unnecessary checks for doc-only changes).
