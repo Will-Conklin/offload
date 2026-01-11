@@ -13,13 +13,21 @@ import OSLog
 import SwiftData
 import Observation
 
+// AGENT NAV
+// - State
+// - Dependencies
+// - Capture Operations
+// - Query Operations
+// - Workflow Operations
+// - Errors
+
 @Observable
 @MainActor
 final class CaptureWorkflowService {
     // MARK: - Published State
 
-    internal(set) var isProcessing = false
-    internal(set) var errorMessage: String?
+    var isProcessing = false
+    var errorMessage: String?
 
     // MARK: - Dependencies
 
