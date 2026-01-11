@@ -369,31 +369,44 @@ private struct TagPickerSheet: View {
                 Section {
                     HStack {
                         TextField("New tag name", text: $newTagName)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
                         Button("Add") {
-                            guard !newTagName.isEmpty else { return }
-                            onCreateTag(newTagName)
+                            let trimmed = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
+                            guard !trimmed.isEmpty else { return }
+                            onCreateTag(trimmed)
                             newTagName = ""
                         }
-                        .disabled(newTagName.isEmpty)
+                        .disabled(newTagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
+                } header: {
+                    Text("Create New Tag")
                 }
 
                 // Existing tags
-                Section("Tags") {
-                    ForEach(allTags) { tag in
-                        Button {
-                            onToggleTag(tag)
-                        } label: {
-                            HStack {
-                                Text(tag.name)
-                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                                Spacer()
-                                if entry.tags?.contains(where: { $0.id == tag.id }) == true {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                if !allTags.isEmpty {
+                    Section("Select Tags") {
+                        ForEach(allTags) { tag in
+                            Button {
+                                onToggleTag(tag)
+                            } label: {
+                                HStack {
+                                    Text(tag.name)
+                                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                    Spacer()
+                                    if entry.tags?.contains(where: { $0.id == tag.id }) == true {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                                    }
                                 }
                             }
                         }
+                    }
+                } else {
+                    Section {
+                        Text("No tags yet. Create one above!")
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                            .font(.subheadline)
                     }
                 }
             }
