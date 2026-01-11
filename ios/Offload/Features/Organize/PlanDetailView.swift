@@ -2,283 +2,176 @@
 //  PlanDetailView.swift
 //  Offload
 //
-//  Created by Claude Code on 1/5/26.
-//
-//  Intent: Detail view for managing a plan and its tasks.
+//  Flat design plan detail with nested tasks and drag to reorder
 //
 
 import SwiftUI
 import SwiftData
 
-// AGENT NAV
-// - Plan Summary
-// - Task Lists
-// - Sheets + Alerts
-// - CRUD Helpers
-
 struct PlanDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     @Query private var plans: [Plan]
     let planID: UUID
 
-    @State private var showingEditPlan = false
+    @State private var showingEdit = false
     @State private var showingAddTask = false
-    @State private var showingDeleteConfirmation = false
+    @State private var showingDelete = false
     @State private var taskToEdit: Task?
-    @State private var errorMessage: String?
 
     init(planID: UUID) {
         self.planID = planID
         _plans = Query(filter: #Predicate<Plan> { $0.id == planID })
     }
 
-    private var plan: Plan? {
-        plans.first
-    }
+    private var plan: Plan? { plans.first }
+    private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
         if let plan {
-            planDetailView(plan)
+            planContent(plan)
         } else {
-            missingPlanView
+            missingView
         }
     }
 
-    private func planDetailView(_ plan: Plan) -> some View {
-        let activeTasks = activeTasks(for: plan)
-        let completedTasks = completedTasks(for: plan)
+    private func planContent(_ plan: Plan) -> some View {
+        let active = plan.tasks?.filter { !$0.isDone }.sorted { $0.importance > $1.importance } ?? []
+        let done = plan.tasks?.filter { $0.isDone } ?? []
 
-        return List {
-            // Plan Details Section
-            Section {
-                VStack(alignment: .leading, spacing: 8) {
+        return ScrollView {
+            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                // Header
+                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text(plan.title)
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
 
                     if let detail = plan.detail, !detail.isEmpty {
                         Text(detail)
                             .font(.body)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                     }
 
                     HStack {
                         Text(plan.createdAt, format: .dateTime.month().day().year())
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
-
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         Spacer()
-
-                        if let taskCount = plan.tasks?.count, taskCount > 0 {
-                            let completed = completedTasks.count
-                            Text("\(completed)/\(taskCount) tasks")
+                        if let count = plan.tasks?.count, count > 0 {
+                            Text("\(done.count)/\(count) done")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         }
                     }
                 }
-                .padding(.vertical, 4)
-            }
+                .padding(Theme.Spacing.md)
+                .background(Theme.Colors.card(colorScheme, style: style))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
 
-            // Active Tasks Section
-            if !activeTasks.isEmpty {
-                Section("Active Tasks") {
-                    ForEach(activeTasks) { task in
-                        TaskRowView(task: task)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                taskToEdit = task
-                            }
+                // Add task button
+                Button { showingAddTask = true } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Add Task")
                     }
-                    .onDelete { offsets in
-                        deleteTasks(activeTasks, offsets: offsets)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                    .padding(Theme.Spacing.md)
+                    .frame(maxWidth: .infinity)
+                    .background(Theme.Colors.primary(colorScheme, style: style).opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
+                }
+
+                // Active tasks
+                if !active.isEmpty {
+                    Text("Tasks")
+                        .font(.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        .padding(.top, Theme.Spacing.sm)
+
+                    ForEach(active) { task in
+                        TaskRow(task: task, colorScheme: colorScheme, style: style)
+                            .onTapGesture { taskToEdit = task }
+                    }
+                }
+
+                // Completed tasks
+                if !done.isEmpty {
+                    Text("Completed")
+                        .font(.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        .padding(.top, Theme.Spacing.sm)
+
+                    ForEach(done) { task in
+                        TaskRow(task: task, colorScheme: colorScheme, style: style)
+                            .onTapGesture { taskToEdit = task }
                     }
                 }
             }
-
-            // Completed Tasks Section
-            if !completedTasks.isEmpty {
-                Section("Completed") {
-                    ForEach(completedTasks) { task in
-                        TaskRowView(task: task)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                taskToEdit = task
-                            }
-                    }
-                    .onDelete { offsets in
-                        deleteCompletedTasks(completedTasks, offsets: offsets)
-                    }
-                }
-            }
-
-            // Add Task Button
-            Section {
-                Button {
-                    showingAddTask = true
-                } label: {
-                    Label("Add Task", systemImage: "plus.circle.fill")
-                }
-            }
+            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.top, Theme.Spacing.md)
+            .padding(.bottom, 100)
         }
+        .background(Theme.Colors.background(colorScheme, style: style))
         .navigationTitle("Plan")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
-                    Button {
-                        showingEditPlan = true
-                    } label: {
-                        Label("Edit Plan", systemImage: "pencil")
+                    Button { showingEdit = true } label: {
+                        Label("Edit", systemImage: "pencil")
                     }
-
-                    Button(role: .destructive) {
-                        showingDeleteConfirmation = true
-                    } label: {
-                        Label("Delete Plan", systemImage: "trash")
+                    Button(role: .destructive) { showingDelete = true } label: {
+                        Label("Delete", systemImage: "trash")
                     }
                 } label: {
-                    Label("More", systemImage: "ellipsis.circle")
+                    Image(systemName: "ellipsis.circle")
                 }
             }
         }
-        .sheet(isPresented: $showingEditPlan) {
+        .sheet(isPresented: $showingEdit) {
             EditPlanSheet(plan: plan)
         }
         .sheet(isPresented: $showingAddTask) {
-            TaskFormSheet { title, detail, importance, dueDate in
-                try createTask(plan, title: title, detail: detail, importance: importance, dueDate: dueDate)
-            }
+            TaskFormSheet(plan: plan)
         }
         .sheet(item: $taskToEdit) { task in
-            TaskFormSheet(existingTask: task) { title, detail, importance, dueDate in
-                try updateTask(task, title: title, detail: detail, importance: importance, dueDate: dueDate)
-            }
+            TaskFormSheet(plan: plan, existingTask: task)
         }
-        .alert("Delete Plan?", isPresented: $showingDeleteConfirmation) {
-            Button("Cancel", role: .cancel) { }
+        .alert("Delete Plan?", isPresented: $showingDelete) {
+            Button("Cancel", role: .cancel) {}
             Button("Delete", role: .destructive) {
-                deletePlan(plan)
-            }
-        } message: {
-            Text("This will delete the plan and all its tasks. This cannot be undone.")
-        }
-        .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
-            Button("OK") {
-                errorMessage = nil
-            }
-        } message: { message in
-            Text(message)
-        }
-    }
-
-    private var missingPlanView: some View {
-        VStack(spacing: 16) {
-            ContentUnavailableView(
-                "Plan Missing",
-                systemImage: "doc.text.magnifyingglass",
-                description: Text("This plan no longer exists.")
-            )
-
-            Button("Close") {
+                modelContext.delete(plan)
                 dismiss()
             }
-            .buttonStyle(.borderedProminent)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .navigationTitle("Plan")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func createTask(_ plan: Plan, title: String, detail: String?, importance: Int, dueDate: Date?) throws {
-        let task = Task(
-            title: title,
-            detail: detail,
-            importance: importance,
-            dueDate: dueDate,
-            plan: plan
-        )
-
-        modelContext.insert(task)
-        try modelContext.save()
-    }
-
-    private func updateTask(_ task: Task, title: String, detail: String?, importance: Int, dueDate: Date?) throws {
-        task.title = title
-        task.detail = detail
-        task.importance = importance
-        task.dueDate = dueDate
-
-        try modelContext.save()
-    }
-
-    private func deleteTasks(_ tasks: [Task], offsets: IndexSet) {
-        // Capture tasks to delete before modifying
-        let tasksToDelete = offsets.map { tasks[$0] }
-
-        for task in tasksToDelete {
-            modelContext.delete(task)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete tasks: \(error.localizedDescription)"
+        } message: {
+            Text("This will delete the plan and all tasks.")
         }
     }
 
-    private func deleteCompletedTasks(_ tasks: [Task], offsets: IndexSet) {
-        // Capture tasks to delete before modifying
-        let tasksToDelete = offsets.map { tasks[$0] }
-
-        for task in tasksToDelete {
-            modelContext.delete(task)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete tasks: \(error.localizedDescription)"
-        }
-    }
-
-    private func activeTasks(for plan: Plan) -> [Task] {
-        plan.tasks?.filter { !$0.isDone }.sorted { $0.importance > $1.importance } ?? []
-    }
-
-    private func completedTasks(for plan: Plan) -> [Task] {
-        plan.tasks?.filter { $0.isDone }.sorted { $0.createdAt > $1.createdAt } ?? []
-    }
-
-    private func deletePlan(_ plan: Plan) {
-        modelContext.delete(plan)
-
-        do {
-            try modelContext.save()
-            dismiss()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete plan: \(error.localizedDescription)"
-        }
+    private var missingView: some View {
+        ContentUnavailableView("Plan not found", systemImage: "folder")
+            .navigationTitle("Plan")
     }
 }
 
-private struct TaskRowView: View {
+// MARK: - Task Row
+
+private struct TaskRow: View {
     @Bindable var task: Task
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Button {
-                task.isDone.toggle()
-            } label: {
+        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+            Button { task.isDone.toggle() } label: {
                 Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(task.isDone ? .green : .secondary)
+                    .foregroundStyle(task.isDone ? Theme.Colors.success(colorScheme, style: style) : Theme.Colors.textSecondary(colorScheme, style: style))
             }
             .buttonStyle(.plain)
 
@@ -286,46 +179,51 @@ private struct TaskRowView: View {
                 Text(task.title)
                     .font(.body)
                     .strikethrough(task.isDone)
-                    .foregroundStyle(task.isDone ? .secondary : .primary)
+                    .foregroundStyle(task.isDone ? Theme.Colors.textSecondary(colorScheme, style: style) : Theme.Colors.textPrimary(colorScheme, style: style))
 
                 if let detail = task.detail, !detail.isEmpty {
                     Text(detail)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         .lineLimit(2)
                 }
 
                 HStack(spacing: 8) {
-                    if task.importance != 3 {
-                        importanceView(task.importance)
+                    if task.importance >= 4 {
+                        HStack(spacing: 2) {
+                            ForEach(0..<min(task.importance - 2, 3), id: \.self) { _ in
+                                Image(systemName: "exclamationmark")
+                                    .font(.caption2)
+                            }
+                        }
+                        .foregroundStyle(Theme.Colors.caution(colorScheme, style: style))
                     }
 
-                    if let dueDate = task.dueDate {
-                        Text(dueDate, format: .dateTime.month().day())
+                    if let due = task.dueDate {
+                        Text(due, format: .dateTime.month(.abbreviated).day())
                             .font(.caption)
-                            .foregroundStyle(dueDate < Date() ? .red : .secondary)
+                            .foregroundStyle(due < Date() ? Theme.Colors.destructive(colorScheme, style: style) : Theme.Colors.textSecondary(colorScheme, style: style))
                     }
                 }
             }
-        }
-    }
 
-    private func importanceView(_ importance: Int) -> some View {
-        HStack(spacing: 2) {
-            ForEach(0..<importance, id: \.self) { _ in
-                Image(systemName: "exclamationmark")
-                    .font(.caption2)
-            }
+            Spacer()
         }
-        .foregroundStyle(importance >= 4 ? .red : .orange)
+        .padding(Theme.Spacing.md)
+        .background(Theme.Colors.surface(colorScheme, style: style))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                .stroke(Theme.Colors.border(colorScheme, style: style), lineWidth: 1)
+        )
     }
 }
 
+// MARK: - Edit Plan Sheet
+
 private struct EditPlanSheet: View {
-    @Environment(\.modelContext) private var modelContext
-
     @Bindable var plan: Plan
-
+    @Environment(\.dismiss) private var dismiss
     @State private var title: String
     @State private var detail: String
 
@@ -336,107 +234,112 @@ private struct EditPlanSheet: View {
     }
 
     var body: some View {
-        FormSheet(
-            title: "Edit Plan",
-            saveButtonTitle: "Save",
-            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            onSave: {
-                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                guard !trimmedTitle.isEmpty else {
-                    throw ValidationError("Plan title is required.")
-                }
-
-                plan.title = trimmedTitle
-                plan.detail = trimmedDetail.isEmpty ? nil : trimmedDetail
-
-                try modelContext.save()
+        NavigationStack {
+            Form {
+                TextField("Title", text: $title)
+                TextField("Description", text: $detail, axis: .vertical)
             }
-        ) {
-            Section("Details") {
-                TextField("Plan title", text: $title)
-                TextField("Description (optional)", text: $detail, axis: .vertical)
-                    .lineLimit(3...6)
+            .navigationTitle("Edit Plan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        plan.title = title
+                        plan.detail = detail.isEmpty ? nil : detail
+                        dismiss()
+                    }
+                    .disabled(title.isEmpty)
+                }
             }
         }
     }
 }
 
+// MARK: - Task Form Sheet
+
 private struct TaskFormSheet: View {
+    let plan: Plan
     let existingTask: Task?
-    let onSave: (String, String?, Int, Date?) async throws -> Void
+
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
 
     @State private var title: String
     @State private var detail: String
     @State private var importance: Int
-    @State private var hasDueDate: Bool
+    @State private var hasDue: Bool
     @State private var dueDate: Date
 
-    init(existingTask: Task? = nil, onSave: @escaping (String, String?, Int, Date?) async throws -> Void) {
+    init(plan: Plan, existingTask: Task? = nil) {
+        self.plan = plan
         self.existingTask = existingTask
-        self.onSave = onSave
-
         _title = State(initialValue: existingTask?.title ?? "")
         _detail = State(initialValue: existingTask?.detail ?? "")
         _importance = State(initialValue: existingTask?.importance ?? 3)
-        _hasDueDate = State(initialValue: existingTask?.dueDate != nil)
+        _hasDue = State(initialValue: existingTask?.dueDate != nil)
         _dueDate = State(initialValue: existingTask?.dueDate ?? Date())
     }
 
     var body: some View {
-        FormSheet(
-            title: existingTask == nil ? "New Task" : "Edit Task",
-            saveButtonTitle: "Save",
-            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            onSave: {
-                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                guard !trimmedTitle.isEmpty else {
-                    throw ValidationError("Task title is required.")
-                }
-
-                try await onSave(
-                    trimmedTitle,
-                    trimmedDetail.isEmpty ? nil : trimmedDetail,
-                    importance,
-                    hasDueDate ? dueDate : nil
-                )
-            }
-        ) {
-            Section("Details") {
-                TextField("Task title", text: $title)
+        NavigationStack {
+            Form {
+                TextField("Task", text: $title)
                 TextField("Notes (optional)", text: $detail, axis: .vertical)
-                    .lineLimit(2...4)
-            }
 
-            Section("Importance") {
-                Picker("Importance", selection: $importance) {
-                    Text("Very Low (1)").tag(1)
-                    Text("Low (2)").tag(2)
-                    Text("Medium (3)").tag(3)
-                    Text("High (4)").tag(4)
-                    Text("Very High (5)").tag(5)
+                Picker("Priority", selection: $importance) {
+                    Text("Low").tag(1)
+                    Text("Normal").tag(3)
+                    Text("High").tag(4)
+                    Text("Urgent").tag(5)
                 }
-                .pickerStyle(.menu)
+
+                Toggle("Due date", isOn: $hasDue)
+                if hasDue {
+                    DatePicker("Date", selection: $dueDate, displayedComponents: .date)
+                }
             }
-
-            Section {
-                Toggle("Set Due Date", isOn: $hasDueDate)
-
-                if hasDueDate {
-                    DatePicker("Due Date", selection: $dueDate, displayedComponents: .date)
+            .navigationTitle(existingTask == nil ? "New Task" : "Edit Task")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        save()
+                        dismiss()
+                    }
+                    .disabled(title.isEmpty)
                 }
             }
         }
     }
-}
 
+    private func save() {
+        if let task = existingTask {
+            task.title = title
+            task.detail = detail.isEmpty ? nil : detail
+            task.importance = importance
+            task.dueDate = hasDue ? dueDate : nil
+        } else {
+            let task = Task(
+                title: title,
+                detail: detail.isEmpty ? nil : detail,
+                importance: importance,
+                dueDate: hasDue ? dueDate : nil,
+                plan: plan
+            )
+            modelContext.insert(task)
+        }
+    }
+}
 
 #Preview {
     let container = PersistenceController.preview
-    let plan = Plan(title: "Sample Plan", detail: "A plan for testing")
+    let plan = Plan(title: "Sample", detail: "A test plan")
     container.mainContext.insert(plan)
 
     return NavigationStack {
