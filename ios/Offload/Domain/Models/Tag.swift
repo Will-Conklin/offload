@@ -19,17 +19,22 @@ final class Tag {
     @Relationship(deleteRule: .nullify, inverse: \Task.tags)
     var tasks: [Task]?
 
+    @Relationship(deleteRule: .nullify)
+    var captureEntries: [CaptureEntry]?
+
     init(
         id: UUID = UUID(),
         name: String,
         color: String? = nil,
         createdAt: Date = Date(),
-        tasks: [Task]? = nil
+        tasks: [Task]? = nil,
+        captureEntries: [CaptureEntry]? = nil
     ) {
         self.id = id
         self.name = name
         self.color = color
         self.createdAt = createdAt
         self.tasks = tasks
+        self.captureEntries = captureEntries
     }
 }

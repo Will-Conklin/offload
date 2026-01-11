@@ -28,6 +28,9 @@ final class CaptureEntry {
     @Relationship(deleteRule: .cascade, inverse: \HandOffRequest.captureEntry)
     var handOffRequests: [HandOffRequest]?
 
+    @Relationship(deleteRule: .nullify, inverse: \Tag.captureEntries)
+    var tags: [Tag]?
+
     init(
         id: UUID = UUID(),
         createdAt: Date = Date(),
@@ -36,7 +39,8 @@ final class CaptureEntry {
         source: CaptureSource,
         lifecycleState: LifecycleState = .raw,
         acceptedSuggestion: Suggestion? = nil,
-        handOffRequests: [HandOffRequest]? = nil
+        handOffRequests: [HandOffRequest]? = nil,
+        tags: [Tag]? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -46,6 +50,7 @@ final class CaptureEntry {
         self.lifecycleState = lifecycleState.rawValue
         self.acceptedSuggestion = acceptedSuggestion
         self.handOffRequests = handOffRequests
+        self.tags = tags
     }
 
     // Computed properties for type-safe access to enums
