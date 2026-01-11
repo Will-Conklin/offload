@@ -19,7 +19,6 @@ struct CapturesView: View {
     @State private var allTags: [Tag] = []
     @State private var errorMessage: String?
     @State private var selectedEntry: CaptureEntry?
-    @State private var showingTagPicker = false
     @State private var tagPickerEntry: CaptureEntry?
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -41,7 +40,6 @@ struct CapturesView: View {
                                 onTap: { selectedEntry = entry },
                                 onAddTag: {
                                     tagPickerEntry = entry
-                                    showingTagPicker = true
                                 },
                                 onDelete: { deleteEntry(entry) },
                                 onComplete: { completeEntry(entry) },
@@ -74,22 +72,20 @@ struct CapturesView: View {
             .sheet(item: $selectedEntry) { entry in
                 CaptureEditView(entry: entry)
             }
-            .sheet(isPresented: $showingTagPicker) {
-                if let entry = tagPickerEntry {
-                    TagPickerSheet(
-                        entry: entry,
-                        allTags: allTags,
-                        colorScheme: colorScheme,
-                        style: style,
-                        onCreateTag: { name in
-                            createTag(name: name, for: entry)
-                        },
-                        onToggleTag: { tag in
-                            toggleTag(tag, for: entry)
-                        }
-                    )
-                    .presentationDetents([.medium])
-                }
+            .sheet(item: $tagPickerEntry) { entry in
+                TagPickerSheet(
+                    entry: entry,
+                    allTags: allTags,
+                    colorScheme: colorScheme,
+                    style: style,
+                    onCreateTag: { name in
+                        createTag(name: name, for: entry)
+                    },
+                    onToggleTag: { tag in
+                        toggleTag(tag, for: entry)
+                    }
+                )
+                .presentationDetents([.medium, .large])
             }
             .task {
                 if workflowService == nil {
