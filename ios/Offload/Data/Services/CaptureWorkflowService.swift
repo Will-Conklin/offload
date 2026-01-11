@@ -9,9 +9,9 @@
 //
 
 import Foundation
+import Observation
 import OSLog
 import SwiftData
-import Observation
 
 @Observable
 @MainActor
@@ -176,29 +176,29 @@ final class CaptureWorkflowService {
 
     /// Submit an entry for AI organization (not yet implemented)
     func submitForOrganization(
-        _ entry: CaptureEntry,
-        mode: HandOffMode = .manual
+        _: CaptureEntry,
+        mode _: HandOffMode = .manual
     ) async throws {
         throw WorkflowError.notImplemented
     }
 
     /// Fetch suggestions for an entry (not yet implemented)
-    func fetchSuggestions(for entry: CaptureEntry) throws -> [Suggestion] {
+    func fetchSuggestions(for _: CaptureEntry) throws -> [Suggestion] {
         throw WorkflowError.notImplemented
     }
 
     /// Accept a suggestion and place it (not yet implemented)
     func acceptSuggestion(
-        _ suggestion: Suggestion,
-        for entry: CaptureEntry
+        _: Suggestion,
+        for _: CaptureEntry
     ) async throws {
         throw WorkflowError.notImplemented
     }
 
     /// Reject a suggestion (not yet implemented)
     func rejectSuggestion(
-        _ suggestion: Suggestion,
-        reason: DecisionType = .notNow
+        _: Suggestion,
+        reason _: DecisionType = .notNow
     ) async throws {
         throw WorkflowError.notImplemented
     }
@@ -214,14 +214,14 @@ enum WorkflowError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidState(let msg):
-            return "Invalid state: \(msg)"
+        case let .invalidState(msg):
+            "Invalid state: \(msg)"
         case .alreadyProcessing:
-            return "Another operation is already in progress"
+            "Another operation is already in progress"
         case .notImplemented:
-            return "This feature is not yet implemented"
-        case .unknownError(let msg):
-            return msg
+            "This feature is not yet implemented"
+        case let .unknownError(msg):
+            msg
         }
     }
 }

@@ -18,7 +18,7 @@ final class APIClient {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
         configuration.timeoutIntervalForResource = 300
-        self.session = URLSession(configuration: configuration)
+        session = URLSession(configuration: configuration)
 
         // TODO: Move to configuration/environment
         guard let baseURL = URL(string: "https://api.offload.app") else {

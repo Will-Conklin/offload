@@ -14,8 +14,8 @@ import SwiftData
 @Model
 final class Suggestion {
     var id: UUID
-    var kind: String  // Stored as String for SwiftData compatibility
-    var payloadJSON: String  // Versioned JSON blob
+    var kind: String // Stored as String for SwiftData compatibility
+    var payloadJSON: String // Versioned JSON blob
     var confidence: Double?
 
     // Relationships
@@ -51,9 +51,9 @@ final class Suggestion {
 // MARK: - SuggestionKind Enum
 
 enum SuggestionKind: String, Codable, CaseIterable {
-    case plan = "plan"
-    case task = "task"
-    case list = "list"
-    case communication = "communication"
-    case mixed = "mixed"
+    case plan
+    case task
+    case list
+    case communication
+    case mixed
 }

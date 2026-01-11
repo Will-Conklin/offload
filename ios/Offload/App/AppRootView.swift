@@ -5,8 +5,8 @@
 //  Created by Claude Code on 12/30/25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct AppRootView: View {
     @StateObject private var themeManager = ThemeManager.shared

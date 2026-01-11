@@ -93,7 +93,7 @@ final class TaskRepository {
         let descriptor = FetchDescriptor<Task>(
             predicate: #Predicate { task in
                 task.title.contains(query) ||
-                (task.detail?.contains(query) ?? false)
+                    (task.detail?.contains(query) ?? false)
             },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
@@ -102,7 +102,7 @@ final class TaskRepository {
 
     // MARK: - Update
 
-    func update(task: Task) throws {
+    func update(task _: Task) throws {
         try modelContext.save()
     }
 

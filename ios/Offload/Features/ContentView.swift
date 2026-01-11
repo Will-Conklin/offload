@@ -5,8 +5,8 @@
 //  Created by William Conklin on 12/30/25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// Legacy demo view - kept for reference
 /// Use InboxView for the actual app
@@ -23,6 +23,7 @@ struct ContentView: View {
                     } label: {
                         Text(entry.createdAt, format: Date.FormatStyle(date: .numeric, time: .standard))
                     }
+                    .accessibilityHint("Opens capture details")
                 }
                 .onDelete(perform: deleteEntries)
             }

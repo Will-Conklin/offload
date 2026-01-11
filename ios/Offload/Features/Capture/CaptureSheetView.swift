@@ -8,8 +8,8 @@
 //  Minimizes friction - saves to inbox immediately, no forced organization.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 import UIKit
 
 struct CaptureSheetView: View {
@@ -30,7 +30,9 @@ struct CaptureSheetView: View {
                 Section("Quick Capture") {
                     HStack(alignment: .top, spacing: Theme.Spacing.md) {
                         TextField("What's on your mind?", text: $rawText, axis: .vertical)
-                            .lineLimit(3...10)
+                            .lineLimit(3 ... 10)
+                            .accessibilityLabel("Capture text")
+                            .accessibilityHint("Enter your thought to save it to captures")
 
                         VStack(spacing: Theme.Spacing.sm) {
                             Button(action: handleVoiceButtonTap) {
@@ -39,19 +41,21 @@ struct CaptureSheetView: View {
                                     .foregroundStyle(voiceService.isRecording ? Theme.Colors.destructive(colorScheme, style: themeManager.currentStyle) : Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel(voiceService.isRecording ? "Stop recording" : "Start recording")
+                            .accessibilityHint("Double-tap to toggle voice recording")
 
                             if voiceService.isRecording {
                                 Text(formatDuration(voiceService.recordingDuration))
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
+                                    .font(Theme.Typography.caption2)
+                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                             }
                         }
                     }
 
-                    if voiceService.isTranscribing && !voiceService.transcribedText.isEmpty {
+                    if voiceService.isTranscribing, !voiceService.transcribedText.isEmpty {
                         Text("Transcribing...")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                     }
                 }
 
@@ -87,21 +91,25 @@ struct CaptureSheetView: View {
                         }
                         dismiss()
                     }
+                    .accessibilityHint("Closes the capture sheet without saving")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         saveThought()
                     }
                     .disabled(rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || workflowService?.isProcessing == true)
+                    .accessibilityHint("Saves this capture to your inbox")
                 }
             }
             .alert("Permissions Required", isPresented: $showingPermissionAlert) {
                 Button("OK", role: .cancel) {}
+                    .accessibilityLabel("Dismiss permissions alert")
                 Button("Open Settings") {
                     if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                         UIApplication.shared.open(settingsURL)
                     }
                 }
+                .accessibilityLabel("Open Settings")
             } message: {
                 Text("Please enable microphone and speech recognition permissions in Settings to use voice capture.")
             }
@@ -145,7 +153,7 @@ struct CaptureSheetView: View {
             voiceService.stopRecording()
         }
 
-        guard let workflowService = workflowService else {
+        guard let workflowService else {
             // Fallback: if service not initialized, create entry directly
             let entry = CaptureEntry(
                 rawText: rawText.trimmingCharacters(in: .whitespacesAndNewlines),

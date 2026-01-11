@@ -8,13 +8,14 @@
 import SwiftUI
 
 /// Centralized icon definitions using SF Symbols
-struct Icons {
+enum Icons {
     // MARK: - Navigation
 
     static let inbox = "tray"
     static let capture = "plus.circle.fill"
     static let organize = "folder"
     static let settings = "gearshape"
+    static let timeline = "clock"
 
     // MARK: - Actions
 

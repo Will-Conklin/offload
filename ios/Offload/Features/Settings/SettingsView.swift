@@ -7,10 +7,16 @@
 //  Intent: Comprehensive settings interface for app configuration, preferences,
 //  and information. Provides foundation for future AI/backend configuration.
 //
+//  Agent Navigation:
+//  - Preferences: Capture defaults + voice settings
+//  - ADHD Support: Timeline/animation toggles
+//  - Organization: Categories + tags
+//  - Data Management: Storage + cleanup
+//
 
-import SwiftUI
-import SwiftData
 import OSLog
+import SwiftData
+import SwiftUI
 
 // MARK: - Constants
 
@@ -32,6 +38,9 @@ struct SettingsView: View {
     @AppStorage("autoArchiveCompleted") private var autoArchiveCompleted = false
     @AppStorage("enableAISuggestions") private var enableAISuggestions = false
     @AppStorage("apiEndpoint") private var apiEndpoint = "https://api.offload.app"
+    @AppStorage("showTimelineTab") private var showTimelineTab = true
+    @AppStorage("showNextUpIndicators") private var showNextUpIndicators = true
+    @AppStorage("enableCelebrationAnimations") private var enableCelebrationAnimations = true
 
     @State private var showingClearCompletedAlert = false
     @State private var showingArchiveOldAlert = false
@@ -49,6 +58,9 @@ struct SettingsView: View {
                 // Preferences Section
                 preferencesSection
 
+                // ADHD Support Section
+                adhdSupportSection
+
                 // Organization Section
                 organizationSection
 
@@ -64,7 +76,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
         }
         .alert("Clear Completed Tasks?", isPresented: $showingClearCompletedAlert) {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Clear", role: .destructive) {
                 clearCompletedTasks()
             }
@@ -72,7 +84,7 @@ struct SettingsView: View {
             Text("This will permanently delete all completed tasks. This cannot be undone.")
         }
         .alert("Archive Old Captures?", isPresented: $showingArchiveOldAlert) {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Archive", role: .destructive) {
                 archiveOldCaptures()
             }
@@ -81,9 +93,13 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingAbout) {
             AboutSheet()
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingPrivacyPolicy) {
             PrivacyPolicySheet()
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
@@ -91,18 +107,42 @@ struct SettingsView: View {
                 CategoryFormSheet { name, icon in
                     try createCategory(name: name, icon: icon)
                 }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
             case .tag:
                 TagFormSheet { name, color in
                     try createTag(name: name, color: color)
                 }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
             }
         }
         .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
             Button("OK") {
                 errorMessage = nil
             }
+            .accessibilityLabel("Dismiss error")
         } message: { message in
             Text(message)
+        }
+    }
+
+    // MARK: - ADHD Support Section
+
+    private var adhdSupportSection: some View {
+        Section {
+            Toggle("Show Timeline Tab", isOn: $showTimelineTab)
+                .accessibilityHint("Shows the Timeline tab in the tab bar")
+
+            Toggle("Show Next Up Indicators", isOn: $showNextUpIndicators)
+                .accessibilityHint("Highlights the next hour with upcoming captures")
+
+            Toggle("Celebration Animations", isOn: $enableCelebrationAnimations)
+                .accessibilityHint("Shows a sparkle effect when tasks are completed")
+        } header: {
+            Text("ADHD Support")
+        } footer: {
+            Text("Customize gentle cues and visual supports. Turn off animations if they feel distracting.")
         }
     }
 
@@ -120,18 +160,18 @@ struct SettingsView: View {
                     .fontWeight(.bold)
 
                 Text("Capture First, Organize Later")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(Theme.Typography.subheadline)
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
 
                 HStack(spacing: 4) {
                     Text("Version")
                     Text(appVersion)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                     Text("(\(buildNumber))")
-                        .foregroundStyle(.tertiary)
-                        .font(.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                        .font(Theme.Typography.caption)
                 }
-                .font(.caption)
+                .font(Theme.Typography.caption)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, Theme.Spacing.md)
@@ -168,6 +208,7 @@ struct SettingsView: View {
             } label: {
                 Label("Voice Recording", systemImage: "waveform")
             }
+            .accessibilityHint("Opens voice recording settings")
         } header: {
             Text("Preferences")
         } footer: {
@@ -183,7 +224,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text("Categories")
-                        .font(.headline)
+                        .font(Theme.Typography.headline)
                     Spacer()
                     Button {
                         activeSheet = .category
@@ -191,12 +232,14 @@ struct SettingsView: View {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                     }
+                    .accessibilityLabel("Add category")
+                    .accessibilityHint("Opens a form to create a new category")
                 }
 
                 if categories.isEmpty {
                     Text("No categories yet")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.subheadline)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 } else {
                     ForEach(categories) { category in
                         HStack {
@@ -207,11 +250,11 @@ struct SettingsView: View {
                                     .font(.title3)
                             }
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, Theme.Spacing.xs)
                     }
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, Theme.Spacing.xs)
 
             Divider()
 
@@ -219,7 +262,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text("Tags")
-                        .font(.headline)
+                        .font(Theme.Typography.headline)
                     Spacer()
                     Button {
                         activeSheet = .tag
@@ -227,27 +270,29 @@ struct SettingsView: View {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                     }
+                    .accessibilityLabel("Add tag")
+                    .accessibilityHint("Opens a form to create a new tag")
                 }
 
                 if tags.isEmpty {
                     Text("No tags yet")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.subheadline)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 } else {
                     ForEach(tags) { tag in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(tag.name)
                             if let color = tag.color, !color.isEmpty {
                                 Text(color)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .font(Theme.Typography.caption)
+                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                             }
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, Theme.Spacing.xs)
                     }
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, Theme.Spacing.xs)
         } header: {
             Text("Organization")
         } footer: {
@@ -261,6 +306,7 @@ struct SettingsView: View {
         Section {
             Toggle("Enable AI Suggestions", isOn: $enableAISuggestions)
                 .disabled(true) // Disabled until backend is implemented
+                .accessibilityHint("AI suggestions are not yet available")
 
             if enableAISuggestions {
                 NavigationLink {
@@ -269,12 +315,13 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("API Configuration")
                         Text(apiEndpoint)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                             .lineLimit(1)
                     }
                 }
                 .disabled(true)
+                .accessibilityHint("API configuration is coming soon")
             }
 
             NavigationLink {
@@ -282,6 +329,7 @@ struct SettingsView: View {
             } label: {
                 Label("How AI Suggestions Work", systemImage: "info.circle")
             }
+            .accessibilityHint("Explains how AI suggestions will work")
         } header: {
             Text("AI & Organization")
         } footer: {
@@ -299,6 +347,7 @@ struct SettingsView: View {
                 Label("Clear Completed Tasks", systemImage: "checkmark.circle")
                     .foregroundStyle(.primary)
             }
+            .accessibilityHint("Permanently deletes all completed tasks")
 
             Button {
                 showingArchiveOldAlert = true
@@ -306,12 +355,14 @@ struct SettingsView: View {
                 Label("Archive Old Captures", systemImage: "archivebox")
                     .foregroundStyle(.primary)
             }
+            .accessibilityHint("Archives captures older than 30 days")
 
             NavigationLink {
                 StorageInfoView()
             } label: {
                 Label("Storage Usage", systemImage: "internaldrive")
             }
+            .accessibilityHint("Shows local storage usage for captures and lists")
         } header: {
             Text("Data Management")
         } footer: {
@@ -329,6 +380,7 @@ struct SettingsView: View {
                 Label("About Offload", systemImage: "info.circle")
                     .foregroundStyle(.primary)
             }
+            .accessibilityHint("Shows app version and acknowledgements")
 
             Button {
                 showingPrivacyPolicy = true
@@ -336,10 +388,12 @@ struct SettingsView: View {
                 Label("Privacy Policy", systemImage: "hand.raised")
                     .foregroundStyle(.primary)
             }
+            .accessibilityHint("Shows Offload privacy policy")
 
             Link(destination: Constants.githubURL) {
                 Label("View on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
             }
+            .accessibilityHint("Opens the Offload repository in your browser")
 
             Button {
                 openURL(Constants.issuesURL)
@@ -347,6 +401,7 @@ struct SettingsView: View {
                 Label("Report an Issue", systemImage: "exclamationmark.bubble")
                     .foregroundStyle(.primary)
             }
+            .accessibilityHint("Opens the issue tracker in your browser")
         }
     }
 
@@ -365,7 +420,7 @@ struct SettingsView: View {
 
         do {
             let allTasks = try taskRepo.fetchAll()
-            let completedTasks = allTasks.filter { $0.isDone }
+            let completedTasks = allTasks.filter(\.isDone)
 
             for task in completedTasks {
                 try taskRepo.delete(task: task)
@@ -429,9 +484,9 @@ private enum SettingsSheet: Identifiable {
     var id: String {
         switch self {
         case .category:
-            return "category"
+            "category"
         case .tag:
-            return "tag"
+            "tag"
         }
     }
 }
@@ -454,6 +509,7 @@ private struct VoiceSettingsView: View {
                 }
 
                 Toggle("Enable Live Transcription", isOn: $enableLiveTranscription)
+                    .accessibilityHint("Uses on-device speech recognition while recording")
             } header: {
                 Text("Recording")
             } footer: {
@@ -463,14 +519,14 @@ private struct VoiceSettingsView: View {
             Section("Privacy") {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Voice recordings are processed entirely on your device using Apple's Speech Recognition framework.")
-                        .font(.caption)
+                        .font(Theme.Typography.caption)
 
                     Text("No audio data is sent to external servers.")
-                        .font(.caption)
+                        .font(Theme.Typography.caption)
                         .foregroundStyle(Theme.Colors.success(colorScheme, style: themeManager.currentStyle))
                         .fontWeight(.medium)
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, Theme.Spacing.xs)
             }
         }
         .navigationTitle("Voice Recording")
@@ -485,8 +541,8 @@ private struct APIConfigurationView: View {
     @Environment(\.dismiss) private var dismiss
 
     init(apiEndpoint: Binding<String>) {
-        self._apiEndpoint = apiEndpoint
-        self._tempEndpoint = State(initialValue: apiEndpoint.wrappedValue)
+        _apiEndpoint = apiEndpoint
+        _tempEndpoint = State(initialValue: apiEndpoint.wrappedValue)
     }
 
     var body: some View {
@@ -496,18 +552,19 @@ private struct APIConfigurationView: View {
                     .keyboardType(.URL)
                     .autocapitalization(.none)
                     .autocorrectionDisabled()
+                    .accessibilityLabel("API endpoint URL")
             } header: {
                 Text("API Endpoint")
             } footer: {
                 Text("Must be a valid HTTPS URL")
-                    .font(.caption)
+                    .font(Theme.Typography.caption)
             }
 
             if let errorMessage {
                 Section {
                     Text(errorMessage)
                         .foregroundStyle(.red)
-                        .font(.caption)
+                        .font(Theme.Typography.caption)
                 }
             }
 
@@ -516,6 +573,7 @@ private struct APIConfigurationView: View {
                     tempEndpoint = "https://api.offload.app"
                     errorMessage = nil
                 }
+                .accessibilityHint("Restores the default API endpoint")
             }
         }
         .navigationTitle("API Configuration")
@@ -525,6 +583,7 @@ private struct APIConfigurationView: View {
                 Button("Save") {
                     handleSave()
                 }
+                .accessibilityHint("Saves the API endpoint")
             }
         }
     }
@@ -575,11 +634,11 @@ private struct AIInfoView: View {
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("How AI Suggestions Work")
-                        .font(.title2)
+                        .font(Theme.Typography.title2)
                         .fontWeight(.bold)
 
                     Text("Offload uses AI to help organize your captures into actionable items.")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
 
                 Divider()
@@ -612,11 +671,11 @@ private struct AIInfoView: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Coming Soon")
-                        .font(.headline)
+                        .font(Theme.Typography.headline)
 
                     Text("AI suggestions are currently under development. When available, you'll be able to enable this feature in Settings.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.subheadline)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
                 .padding()
                 .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.1))
@@ -640,31 +699,32 @@ private struct FeatureCard: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(Theme.Typography.title2)
                 .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.headline)
+                    .font(Theme.Typography.headline)
 
                 Text(description)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(Theme.Typography.subheadline)
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(Theme.Colors.surface(colorScheme))
         .cornerRadius(Theme.CornerRadius.md)
         .overlay(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                .stroke(Color(.systemGray5), lineWidth: 1)
+                .stroke(Theme.Colors.borderMuted(colorScheme), lineWidth: 1)
         )
     }
 }
 
 private struct StorageInfoView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var captureCount = 0
     @State private var planCount = 0
@@ -679,35 +739,35 @@ private struct StorageInfoView: View {
                     Label("Captures", systemImage: "tray")
                     Spacer()
                     Text("\(captureCount)")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
 
                 HStack {
                     Label("Plans", systemImage: "folder")
                     Spacer()
                     Text("\(planCount)")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
 
                 HStack {
                     Label("Tasks", systemImage: "checklist")
                     Spacer()
                     Text("\(taskCount)")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
 
                 HStack {
                     Label("Lists", systemImage: "list.bullet")
                     Spacer()
                     Text("\(listCount)")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
 
                 HStack {
                     Label("Communications", systemImage: "message")
                     Spacer()
                     Text("\(commCount)")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
             }
 
@@ -716,7 +776,7 @@ private struct StorageInfoView: View {
                     Label("Device Storage", systemImage: "internaldrive")
                     Spacer()
                     Text("Local Only")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                 }
             } header: {
                 Text("Storage")
@@ -759,7 +819,7 @@ private struct AboutSheet: View {
                             .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
 
                         Text("Offload")
-                            .font(.largeTitle)
+                            .font(Theme.Typography.largeTitle)
                             .fontWeight(.bold)
                     }
                     .frame(maxWidth: .infinity)
@@ -767,20 +827,20 @@ private struct AboutSheet: View {
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("About")
-                            .font(.headline)
+                            .font(Theme.Typography.headline)
 
                         Text("Offload is an iOS-first app that turns quick thought captures (text or voice) into simple, organized plans and lists—tasks, shopping, and follow-ups—so you can get mental space back.")
-                            .font(.body)
+                            .font(Theme.Typography.body)
 
                         Text("Most productivity tools assume you'll calmly plan everything up front. Offload starts where real life starts: random thoughts, urgency spikes, and \"I'll remember\" moments.")
-                            .font(.body)
+                            .font(Theme.Typography.body)
                     }
 
                     Divider()
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Core Philosophy")
-                            .font(.headline)
+                            .font(Theme.Typography.headline)
 
                         PhilosophyItem(icon: "shield.checkered", text: "Psychological Safety: No guilt, no shame, no forced structure")
                         PhilosophyItem(icon: "wifi.slash", text: "Offline-First: Works completely offline, on-device processing")
@@ -792,10 +852,10 @@ private struct AboutSheet: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Open Source")
-                            .font(.headline)
+                            .font(Theme.Typography.headline)
 
                         Text("Offload is open source and available on GitHub. Contributions and feedback are welcome.")
-                            .font(.body)
+                            .font(Theme.Typography.body)
 
                         Link(destination: Constants.githubURL) {
                             Label("View on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
@@ -806,14 +866,14 @@ private struct AboutSheet: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("License")
-                            .font(.headline)
+                            .font(Theme.Typography.headline)
 
                         Text("MIT License")
-                            .font(.body)
+                            .font(Theme.Typography.body)
 
                         Text("Copyright © 2026 William Conklin")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                     }
                 }
                 .padding()
@@ -844,25 +904,26 @@ private struct PhilosophyItem: View {
                 .frame(width: 24)
 
             Text(text)
-                .font(.body)
+                .font(Theme.Typography.body)
         }
     }
 }
 
 private struct PrivacyPolicySheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     Text("Privacy Policy")
-                        .font(.largeTitle)
+                        .font(Theme.Typography.largeTitle)
                         .fontWeight(.bold)
 
                     Text("Last Updated: January 5, 2026")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
 
                     Divider()
 
@@ -900,10 +961,10 @@ private struct PrivacyPolicySheet: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Questions?")
-                            .font(.headline)
+                            .font(Theme.Typography.headline)
 
                         Text("If you have questions about this privacy policy, please open an issue on our GitHub repository.")
-                            .font(.body)
+                            .font(Theme.Typography.body)
 
                         Link(destination: Constants.issuesURL) {
                             Label("Open an Issue", systemImage: "exclamationmark.bubble")
@@ -932,10 +993,10 @@ private struct PolicySection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.headline)
+                .font(Theme.Typography.headline)
 
             Text(content)
-                .font(.body)
+                .font(Theme.Typography.body)
         }
     }
 }
@@ -956,7 +1017,9 @@ private struct CategoryFormSheet: View {
             Form {
                 Section("Details") {
                     TextField("Category name", text: $name)
+                        .accessibilityLabel("Category name")
                     TextField("Emoji (optional)", text: $icon)
+                        .accessibilityLabel("Category emoji")
                 }
 
                 if let errorMessage {
@@ -974,12 +1037,14 @@ private struct CategoryFormSheet: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .accessibilityHint("Closes without saving")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         handleSave()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityHint("Saves the category")
                 }
             }
         }
@@ -1017,7 +1082,9 @@ private struct TagFormSheet: View {
             Form {
                 Section("Details") {
                     TextField("Tag name", text: $name)
+                        .accessibilityLabel("Tag name")
                     TextField("Color (optional)", text: $color)
+                        .accessibilityLabel("Tag color")
                 }
 
                 if let errorMessage {
@@ -1035,12 +1102,14 @@ private struct TagFormSheet: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .accessibilityHint("Closes without saving")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         handleSave()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityHint("Saves the tag")
                 }
             }
         }

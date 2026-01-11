@@ -7,15 +7,14 @@
 //  Intent: Detail view for managing a list and its items.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ListDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
-
     @Bindable var list: ListEntity
 
     @State private var showingEditList = false
@@ -29,7 +28,7 @@ struct ListDetailView: View {
     }
 
     private var checkedItems: [ListItem] {
-        list.items?.filter { $0.isChecked }.sorted { $0.text < $1.text } ?? []
+        list.items?.filter(\.isChecked).sorted { $0.text < $1.text } ?? []
     }
 
     var body: some View {
@@ -39,35 +38,30 @@ struct ListDetailView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text(list.title)
-                            .font(.title2)
+                            .font(Theme.Typography.title2)
                             .fontWeight(.bold)
 
                         Spacer()
 
-                        Text(list.listKind.rawValue.capitalized)
-                            .font(Theme.Typography.badge)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 4)
-                            .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.2))
-                            .cornerRadius(Theme.CornerRadius.sm)
+                        Badge(text: list.listKind.rawValue.capitalized, style: .accent)
                     }
 
                     if let itemCount = list.items?.count, itemCount > 0 {
                         let checkedCount = checkedItems.count
                         HStack {
                             Text("\(checkedCount)/\(itemCount) items")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(Theme.Typography.metadata)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
 
                             Spacer()
 
                             Text(list.createdAt, format: .dateTime.month().day().year())
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
+                                .font(Theme.Typography.metadata)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                         }
                     }
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, Theme.Spacing.xs)
             }
 
             // Quick Add Section
@@ -77,11 +71,13 @@ struct ListDetailView: View {
                         .onSubmit {
                             addQuickItem()
                         }
+                        .accessibilityLabel("Add list item")
 
                     if !newItemText.isEmpty {
                         Button("Add") {
                             addQuickItem()
                         }
+                        .accessibilityHint("Adds the item to this list")
                     }
                 }
             }
@@ -133,13 +129,17 @@ struct ListDetailView: View {
                 } label: {
                     Label("More", systemImage: "ellipsis.circle")
                 }
+                .accessibilityLabel("List actions")
+                .accessibilityHint("Shows options to edit, clear completed items, or delete the list")
             }
         }
         .sheet(isPresented: $showingEditList) {
             EditListSheet(list: list)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
         .alert("Delete List?", isPresented: $showingDeleteConfirmation) {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Delete", role: .destructive) {
                 deleteList()
             }
@@ -150,6 +150,7 @@ struct ListDetailView: View {
             Button("OK") {
                 errorMessage = nil
             }
+            .accessibilityLabel("Dismiss error")
         } message: { message in
             Text(message)
         }
@@ -243,11 +244,19 @@ private struct ListItemRowView: View {
                     .foregroundStyle(item.isChecked ? .green : .secondary)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(item.isChecked ? "Mark \(item.text) as not completed" : "Mark \(item.text) as completed")
+            .accessibilityHint("Double-tap to toggle completion")
 
             Text(item.text)
                 .strikethrough(item.isChecked)
                 .foregroundStyle(item.isChecked ? .secondary : .primary)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var accessibilityLabel: String {
+        "\(item.text), \(item.isChecked ? "completed" : "not completed")"
     }
 }
 
@@ -295,7 +304,6 @@ private struct EditListSheet: View {
         }
     }
 }
-
 
 #Preview {
     let list = ListEntity(title: "Sample List", kind: .shopping)

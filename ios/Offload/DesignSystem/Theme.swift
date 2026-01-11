@@ -32,7 +32,7 @@ enum ThemeStyle: String, CaseIterable, Identifiable {
 }
 
 /// App-wide theme configuration
-struct Theme {
+enum Theme {
     // MARK: - Colors
 
     struct Colors {
@@ -255,7 +255,7 @@ struct Theme {
 
     // MARK: - Typography
 
-    struct Typography {
+    enum Typography {
         // MARK: - Standard Text Styles (with Dynamic Type support)
 
         static let largeTitle = Font.largeTitle
@@ -314,7 +314,7 @@ struct Theme {
 
     // MARK: - Materials
 
-    struct Materials {
+    enum Materials {
         static let glass = Material.ultraThin
         static let glassStrong = Material.thin
         static let glassOverlayOpacity: Double = 0.6
@@ -355,7 +355,7 @@ struct Theme {
 
     // MARK: - Spacing
 
-    struct Spacing {
+    enum Spacing {
         static let xs: CGFloat = 4
         static let sm: CGFloat = 8
         static let md: CGFloat = 16
@@ -368,7 +368,7 @@ struct Theme {
 
     // MARK: - Corner Radius
 
-    struct CornerRadius {
+    enum CornerRadius {
         static let sm: CGFloat = 6
         static let md: CGFloat = 10
         static let lg: CGFloat = 16
@@ -379,14 +379,27 @@ struct Theme {
 
     // MARK: - Shadows
 
-    struct Shadows {
+    enum Shadows {
         static let elevationSm: CGFloat = 2
         static let elevationMd: CGFloat = 6
+        static let elevationLg: CGFloat = 12
+
+        static func cardShadow(_ colorScheme: ColorScheme) -> Color {
+            colorScheme == .dark
+                ? Color.black.opacity(0.45)
+                : Color.black.opacity(0.12)
+        }
+
+        static func floatingShadow(_ colorScheme: ColorScheme) -> Color {
+            colorScheme == .dark
+                ? Color.black.opacity(0.6)
+                : Color.black.opacity(0.2)
+        }
     }
 
     // MARK: - Animations
 
-    struct Animations {
+    enum Animations {
         static let springDefault = Animation.spring(response: 0.3, dampingFraction: 0.7, blendDuration: 0.1)
         static let springSnappy = Animation.spring(response: 0.25, dampingFraction: 0.75, blendDuration: 0.1)
         static let easeInOutShort = Animation.easeInOut(duration: 0.2)
@@ -394,7 +407,7 @@ struct Theme {
 
     // MARK: - Hit Targets
 
-    struct HitTarget {
+    enum HitTarget {
         static let minimum = CGSize(width: 44, height: 44)
     }
 }

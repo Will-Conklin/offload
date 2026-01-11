@@ -101,7 +101,7 @@ final class CaptureRepository {
 
     // MARK: - Update
 
-    func update(entry: CaptureEntry) throws {
+    func update(entry _: CaptureEntry) throws {
         try modelContext.save()
     }
 

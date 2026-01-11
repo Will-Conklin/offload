@@ -79,7 +79,7 @@ final class PlacementRepository {
 
     // MARK: - Update
 
-    func update(placement: Placement) throws {
+    func update(placement _: Placement) throws {
         try modelContext.save()
     }
 

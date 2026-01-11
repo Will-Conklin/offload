@@ -45,7 +45,7 @@ final class ListRepository {
         return all.filter { $0.listKind == kind }
     }
 
-    func updateList(list: ListEntity) throws {
+    func updateList(list _: ListEntity) throws {
         try modelContext.save()
     }
 
@@ -82,7 +82,7 @@ final class ListRepository {
         try modelContext.save()
     }
 
-    func updateItem(item: ListItem) throws {
+    func updateItem(item _: ListItem) throws {
         try modelContext.save()
     }
 
@@ -99,7 +99,7 @@ final class ListRepository {
             return (0, 0)
         }
         let total = items.count
-        let checked = items.filter { $0.isChecked }.count
+        let checked = items.filter(\.isChecked).count
         return (total, checked)
     }
 
@@ -107,7 +107,7 @@ final class ListRepository {
     func clearCheckedItems(list: ListEntity) throws {
         guard let items = list.items else { return }
 
-        let checkedItems = items.filter { $0.isChecked }
+        let checkedItems = items.filter(\.isChecked)
         for item in checkedItems {
             modelContext.delete(item)
         }

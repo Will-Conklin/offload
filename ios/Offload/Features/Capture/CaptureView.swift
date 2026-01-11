@@ -6,8 +6,8 @@
 //  Created by Claude Code on 12/30/25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// Legacy placeholder capture view
 /// Use CaptureSheetView for the actual app (supports voice + text)
@@ -29,12 +29,14 @@ struct CaptureView: View {
                         .focused($isFocused)
                         .textInputAutocapitalization(.sentences)
                         .disableAutocorrection(false)
-                        .font(.headline)
+                        .font(Theme.Typography.headline)
+                        .accessibilityLabel("Capture title")
 
                     TextField("Notes (optional)", text: $notes, axis: .vertical)
-                        .lineLimit(3...6)
+                        .lineLimit(3 ... 6)
                         .textInputAutocapitalization(.sentences)
                         .disableAutocorrection(false)
+                        .accessibilityLabel("Capture notes")
                 }
 
                 Section {

@@ -19,7 +19,7 @@ final class HandOffRun {
     var modelId: String
     var promptVersion: String
     var inputSnapshot: String
-    var runStatus: String  // Stored as String for SwiftData compatibility
+    var runStatus: String // Stored as String for SwiftData compatibility
     var errorMessage: String?
 
     // Relationships
@@ -63,8 +63,8 @@ final class HandOffRun {
 // MARK: - RunStatus Enum
 
 enum RunStatus: String, Codable, CaseIterable {
-    case running = "running"
-    case completed = "completed"
-    case failed = "failed"
-    case cancelled = "cancelled"
+    case running
+    case completed
+    case failed
+    case cancelled
 }

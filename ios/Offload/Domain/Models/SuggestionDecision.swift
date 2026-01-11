@@ -14,9 +14,9 @@ import SwiftData
 @Model
 final class SuggestionDecision {
     var id: UUID
-    var decision: String  // Stored as String for SwiftData compatibility
+    var decision: String // Stored as String for SwiftData compatibility
     var decidedAt: Date
-    var decidedBy: String  // Stored as String for SwiftData compatibility
+    var decidedBy: String // Stored as String for SwiftData compatibility
     var undoOfDecisionId: UUID?
 
     // Relationships
@@ -54,14 +54,14 @@ final class SuggestionDecision {
 // MARK: - DecisionType Enum
 
 enum DecisionType: String, Codable, CaseIterable {
-    case accepted = "accepted"
-    case notNow = "notNow"
-    case rejected = "rejected"
+    case accepted
+    case notNow
+    case rejected
 }
 
 // MARK: - DecisionSource Enum
 
 enum DecisionSource: String, Codable, CaseIterable {
-    case user = "user"
-    case system = "system"
+    case user
+    case system
 }

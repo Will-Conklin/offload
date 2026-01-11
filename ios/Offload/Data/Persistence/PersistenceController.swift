@@ -12,8 +12,7 @@ import Foundation
 import SwiftData
 
 /// Simplified persistence controller for all SwiftData models
-struct PersistenceController {
-
+enum PersistenceController {
     /// Shared persistent container for production use
     static let shared: ModelContainer = {
         let schema = Schema([

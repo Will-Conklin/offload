@@ -72,7 +72,7 @@ final class CategoryRepository {
 
     // MARK: - Update
 
-    func update(category: Category) throws {
+    func update(category _: Category) throws {
         try modelContext.save()
     }
 
@@ -87,11 +87,11 @@ final class CategoryRepository {
 
     /// Get count of tasks in this category
     func getTaskCount(category: Category) -> Int {
-        return category.tasks?.count ?? 0
+        category.tasks?.count ?? 0
     }
 
     /// Check if category is used by any tasks
     func isCategoryInUse(category: Category) -> Bool {
-        return getTaskCount(category: category) > 0
+        getTaskCount(category: category) > 0
     }
 }

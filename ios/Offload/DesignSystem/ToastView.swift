@@ -20,10 +20,10 @@ enum ToastType {
 
     var icon: String {
         switch self {
-        case .success: return "checkmark.circle.fill"
-        case .error: return "xmark.circle.fill"
-        case .info: return "info.circle.fill"
-        case .warning: return "exclamationmark.triangle.fill"
+        case .success: "checkmark.circle.fill"
+        case .error: "xmark.circle.fill"
+        case .info: "info.circle.fill"
+        case .warning: "exclamationmark.triangle.fill"
         }
     }
 
@@ -100,11 +100,11 @@ class ToastManager {
             do {
                 try await _Concurrency.Task.sleep(for: .seconds(duration))
                 try _Concurrency.Task.checkCancellation()
-                self.currentToast = nil
+                currentToast = nil
             } catch is CancellationError {
                 return
             } catch {
-                self.currentToast = nil
+                currentToast = nil
             }
         }
     }
@@ -156,7 +156,7 @@ extension View {
     .background(Color(.systemBackground))
     .overlay(alignment: .top) {
         ToastView(toast: Toast(message: "Item saved successfully!", type: .success))
-            .padding(.top, 16)
+            .padding(.top, Theme.Spacing.md)
     }
     .environmentObject(ThemeManager.shared)
 }
@@ -169,7 +169,7 @@ extension View {
     .background(Color(.systemBackground))
     .overlay(alignment: .top) {
         ToastView(toast: Toast(message: "Failed to save item. Please try again.", type: .error))
-            .padding(.top, 16)
+            .padding(.top, Theme.Spacing.md)
     }
     .environmentObject(ThemeManager.shared)
 }
@@ -182,7 +182,7 @@ extension View {
     .background(Color(.systemBackground))
     .overlay(alignment: .top) {
         ToastView(toast: Toast(message: "Network connection is unstable.", type: .warning))
-            .padding(.top, 16)
+            .padding(.top, Theme.Spacing.md)
     }
     .environmentObject(ThemeManager.shared)
 }
@@ -195,7 +195,7 @@ extension View {
     .background(Color(.systemBackground))
     .overlay(alignment: .top) {
         ToastView(toast: Toast(message: "AI suggestions are currently disabled.", type: .info))
-            .padding(.top, 16)
+            .padding(.top, Theme.Spacing.md)
     }
     .environmentObject(ThemeManager.shared)
 }

@@ -72,7 +72,7 @@ final class TagRepository {
 
     // MARK: - Update
 
-    func update(tag: Tag) throws {
+    func update(tag _: Tag) throws {
         try modelContext.save()
     }
 
@@ -87,11 +87,11 @@ final class TagRepository {
 
     /// Get count of tasks using this tag
     func getTaskCount(tag: Tag) -> Int {
-        return tag.tasks?.count ?? 0
+        tag.tasks?.count ?? 0
     }
 
     /// Check if tag is used by any tasks
     func isTagInUse(tag: Tag) -> Bool {
-        return getTaskCount(tag: tag) > 0
+        getTaskCount(tag: tag) > 0
     }
 }

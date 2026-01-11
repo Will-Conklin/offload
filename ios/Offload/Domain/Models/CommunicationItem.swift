@@ -14,11 +14,11 @@ import SwiftData
 @Model
 final class CommunicationItem {
     var id: UUID
-    var channel: String  // Stored as String for SwiftData compatibility
+    var channel: String // Stored as String for SwiftData compatibility
     var recipient: String
     var content: String
     var createdAt: Date
-    var status: String  // Stored as String for SwiftData compatibility
+    var status: String // Stored as String for SwiftData compatibility
 
     // No relationships - standalone entity
 
@@ -53,16 +53,16 @@ final class CommunicationItem {
 // MARK: - CommunicationChannel Enum
 
 enum CommunicationChannel: String, Codable, CaseIterable {
-    case call = "call"
-    case email = "email"
-    case text = "text"
-    case other = "other"
+    case call
+    case email
+    case text
+    case other
 }
 
 // MARK: - CommunicationStatus Enum
 
 enum CommunicationStatus: String, Codable, CaseIterable {
-    case draft = "draft"
-    case sent = "sent"
-    case deferred = "deferred"
+    case draft
+    case sent
+    case deferred
 }

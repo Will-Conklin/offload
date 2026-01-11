@@ -8,8 +8,8 @@
 //  Keeps quick-add flows lightweight to match capture-first philosophy.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct OrganizeView: View {
     @Environment(\.modelContext) private var modelContext
@@ -29,35 +29,41 @@ struct OrganizeView: View {
                 Section("Plans") {
                     if plans.isEmpty {
                         Text("No plans yet")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                     } else {
                         ForEach(plans) { plan in
                             NavigationLink(destination: PlanDetailView(plan: plan)) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(plan.title)
-                                        .font(.headline)
+                                CardView {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(plan.title)
+                                            .font(Theme.Typography.cardTitle)
 
-                                    if let detail = plan.detail, !detail.isEmpty {
-                                        Text(detail)
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                            .lineLimit(2)
-                                    }
+                                        if let detail = plan.detail, !detail.isEmpty {
+                                            Text(detail)
+                                                .font(Theme.Typography.cardBody)
+                                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                                                .lineLimit(2)
+                                        }
 
-                                    HStack {
-                                        Text(plan.createdAt, format: .dateTime.month().day().year())
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                        HStack {
+                                            Text(plan.createdAt, format: .dateTime.month().day().year())
+                                                .font(Theme.Typography.metadata)
+                                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
 
-                                        if let taskCount = plan.tasks?.count, taskCount > 0 {
-                                            Spacer()
-                                            Text("\(taskCount) tasks")
-                                                .font(.caption)
-                                                .foregroundStyle(.tertiary)
+                                            if let taskCount = plan.tasks?.count, taskCount > 0 {
+                                                Spacer()
+                                                Text("\(taskCount) tasks")
+                                                    .font(Theme.Typography.metadata)
+                                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
+                                            }
                                         }
                                     }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             }
+                            .accessibilityHint("Opens plan details")
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                         }
                         .onDelete(perform: deletePlans)
                     }
@@ -72,31 +78,32 @@ struct OrganizeView: View {
                 Section("Lists") {
                     if lists.isEmpty {
                         Text("No lists yet")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                     } else {
                         ForEach(lists) { list in
                             NavigationLink(destination: ListDetailView(list: list)) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack {
-                                        Text(list.title)
-                                            .font(Theme.Typography.cardTitle)
-                                        Spacer()
-                                        Text(list.listKind.rawValue.capitalized)
-                                            .font(Theme.Typography.badge)
-                                            .padding(.horizontal, Theme.Spacing.sm)
-                                            .padding(.vertical, 2)
-                                            .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.2))
-                                            .cornerRadius(Theme.CornerRadius.sm)
-                                    }
+                                CardView {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Text(list.title)
+                                                .font(Theme.Typography.cardTitle)
+                                            Spacer()
+                                            Badge(text: list.listKind.rawValue.capitalized, style: .accent)
+                                        }
 
-                                    if let itemCount = list.items?.count, itemCount > 0 {
-                                        let checkedCount = list.items?.filter { $0.isChecked }.count ?? 0
-                                        Text("\(checkedCount)/\(itemCount) items")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                        if let itemCount = list.items?.count, itemCount > 0 {
+                                            let checkedCount = list.items?.filter(\.isChecked).count ?? 0
+                                            Text("\(checkedCount)/\(itemCount) items")
+                                                .font(Theme.Typography.metadata)
+                                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
+                                        }
                                     }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             }
+                            .accessibilityHint("Opens list details")
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                         }
                         .onDelete(perform: deleteLists)
                     }
@@ -111,31 +118,33 @@ struct OrganizeView: View {
                 Section("Communications") {
                     if communications.isEmpty {
                         Text("No communications yet")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                     } else {
                         ForEach(communications) { comm in
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Image(systemName: iconForChannel(comm.communicationChannel))
-                                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
-                                    Text(comm.recipient)
-                                        .font(Theme.Typography.cardTitle)
-                                    Spacer()
-                                    if comm.communicationStatus == .sent {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundStyle(Theme.Colors.success(colorScheme, style: themeManager.currentStyle))
+                            ExpandableCard(
+                                bodyText: comm.content,
+                                accessibilityLabel: "Communication from \(comm.recipient)"
+                            ) {
+                                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                                    HStack {
+                                        Image(systemName: iconForChannel(comm.communicationChannel))
+                                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
+                                        Text(comm.recipient)
+                                            .font(Theme.Typography.cardTitle)
+                                        Spacer()
+                                        if comm.communicationStatus == .sent {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundStyle(Theme.Colors.success(colorScheme, style: themeManager.currentStyle))
+                                        }
                                     }
+
+                                    Text(comm.createdAt, format: .dateTime.month().day().year())
+                                        .font(Theme.Typography.metadata)
+                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                                 }
-
-                                Text(comm.content)
-                                    .font(Theme.Typography.cardBody)
-                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                                    .lineLimit(2)
-
-                                Text(comm.createdAt, format: .dateTime.month().day().year())
-                                    .font(Theme.Typography.metadata)
-                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
                             }
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                         }
                         .onDelete(perform: deleteCommunications)
                     }
@@ -163,6 +172,8 @@ struct OrganizeView: View {
                     } label: {
                         Label("Add", systemImage: "plus")
                     }
+                    .accessibilityLabel("Add item")
+                    .accessibilityHint("Opens options to create a plan, list, or communication")
                 }
             }
             .sheet(item: $activeSheet) { sheet in
@@ -171,20 +182,27 @@ struct OrganizeView: View {
                     PlanFormSheet { title, detail in
                         try createPlan(title: title, detail: detail)
                     }
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
                 case .list:
                     ListFormSheet { title, kind in
                         try createList(title: title, kind: kind)
                     }
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
                 case .communication:
                     CommunicationFormSheet { channel, recipient, content in
                         try createCommunication(channel: channel, recipient: recipient, content: content)
                     }
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
                 }
             }
             .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
                 Button("OK") {
                     errorMessage = nil
                 }
+                .accessibilityLabel("Dismiss error")
             } message: { message in
                 Text(message)
             }
@@ -283,13 +301,13 @@ struct OrganizeView: View {
     private func iconForChannel(_ channel: CommunicationChannel) -> String {
         switch channel {
         case .call:
-            return "phone.fill"
+            "phone.fill"
         case .email:
-            return "envelope.fill"
+            "envelope.fill"
         case .text:
-            return "message.fill"
+            "message.fill"
         case .other:
-            return "ellipsis.message.fill"
+            "ellipsis.message.fill"
         }
     }
 }
@@ -302,11 +320,11 @@ private enum OrganizeSheet: Identifiable {
     var id: String {
         switch self {
         case .plan:
-            return "plan"
+            "plan"
         case .list:
-            return "list"
+            "list"
         case .communication:
-            return "communication"
+            "communication"
         }
     }
 }
@@ -338,7 +356,9 @@ private struct PlanFormSheet: View {
         ) {
             Section("Details") {
                 TextField("Plan title", text: $title)
+                    .accessibilityLabel("Plan title")
                 TextField("Description (optional)", text: $detail, axis: .vertical)
+                    .accessibilityLabel("Plan description")
             }
         }
     }
@@ -371,7 +391,9 @@ private struct CategoryFormSheet: View {
         ) {
             Section("Details") {
                 TextField("Category name", text: $name)
+                    .accessibilityLabel("Category name")
                 TextField("Emoji (optional)", text: $icon)
+                    .accessibilityLabel("Category emoji")
             }
         }
     }
@@ -404,7 +426,9 @@ private struct TagFormSheet: View {
         ) {
             Section("Details") {
                 TextField("Tag name", text: $name)
+                    .accessibilityLabel("Tag name")
                 TextField("Color (optional)", text: $color)
+                    .accessibilityLabel("Tag color")
             }
         }
     }
@@ -433,12 +457,14 @@ private struct ListFormSheet: View {
         ) {
             Section("Details") {
                 TextField("List title", text: $title)
+                    .accessibilityLabel("List title")
                 Picker("Type", selection: $kind) {
                     ForEach(ListKind.allCases, id: \.self) { kind in
                         Text(kind.rawValue.capitalized).tag(kind)
                     }
                 }
                 .pickerStyle(.segmented)
+                .accessibilityHint("Select the list type")
             }
         }
     }
@@ -479,12 +505,15 @@ private struct CommunicationFormSheet: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .accessibilityHint("Select how you plan to communicate")
             }
 
             Section("Details") {
                 TextField("Recipient", text: $recipient)
+                    .accessibilityLabel("Recipient")
                 TextField("Message", text: $content, axis: .vertical)
-                    .lineLimit(3...6)
+                    .lineLimit(3 ... 6)
+                    .accessibilityLabel("Message")
             }
         }
     }
@@ -492,17 +521,16 @@ private struct CommunicationFormSheet: View {
     private func iconForChannel(_ channel: CommunicationChannel) -> String {
         switch channel {
         case .call:
-            return "phone.fill"
+            "phone.fill"
         case .email:
-            return "envelope.fill"
+            "envelope.fill"
         case .text:
-            return "message.fill"
+            "message.fill"
         case .other:
-            return "ellipsis.message.fill"
+            "ellipsis.message.fill"
         }
     }
 }
-
 
 #Preview {
     OrganizeView()

@@ -15,7 +15,7 @@ import SwiftData
 final class ListEntity {
     var id: UUID
     var title: String
-    var kind: String  // Stored as String for SwiftData compatibility
+    var kind: String // Stored as String for SwiftData compatibility
     var createdAt: Date
 
     // Relationships
@@ -46,7 +46,7 @@ final class ListEntity {
 // MARK: - ListKind Enum
 
 enum ListKind: String, Codable, CaseIterable {
-    case shopping = "shopping"
-    case packing = "packing"
-    case reference = "reference"
+    case shopping
+    case packing
+    case reference
 }

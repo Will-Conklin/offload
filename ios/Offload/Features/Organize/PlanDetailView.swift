@@ -7,8 +7,8 @@
 //  Intent: Detail view for managing a plan and its tasks.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct PlanDetailView: View {
     @Environment(\.modelContext) private var modelContext
@@ -28,7 +28,7 @@ struct PlanDetailView: View {
     }
 
     private var completedTasks: [Task] {
-        plan.tasks?.filter { $0.isDone }.sorted { $0.createdAt > $1.createdAt } ?? []
+        plan.tasks?.filter(\.isDone).sorted { $0.createdAt > $1.createdAt } ?? []
     }
 
     var body: some View {
@@ -37,31 +37,31 @@ struct PlanDetailView: View {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(plan.title)
-                        .font(.title2)
+                        .font(Theme.Typography.title2)
                         .fontWeight(.bold)
 
                     if let detail = plan.detail, !detail.isEmpty {
                         Text(detail)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
+                            .font(Theme.Typography.body)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                     }
 
                     HStack {
                         Text(plan.createdAt, format: .dateTime.month().day().year())
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .font(Theme.Typography.metadata)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
 
                         Spacer()
 
                         if let taskCount = plan.tasks?.count, taskCount > 0 {
                             let completed = completedTasks.count
                             Text("\(completed)/\(taskCount) tasks")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(Theme.Typography.metadata)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                         }
                     }
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, Theme.Spacing.xs)
             }
 
             // Active Tasks Section
@@ -99,6 +99,7 @@ struct PlanDetailView: View {
                 } label: {
                     Label("Add Task", systemImage: "plus.circle.fill")
                 }
+                .accessibilityHint("Opens a form to add a new task to this plan")
             }
         }
         .navigationTitle("Plan")
@@ -120,23 +121,31 @@ struct PlanDetailView: View {
                 } label: {
                     Label("More", systemImage: "ellipsis.circle")
                 }
+                .accessibilityLabel("Plan actions")
+                .accessibilityHint("Shows options to edit or delete the plan")
             }
         }
         .sheet(isPresented: $showingEditPlan) {
             EditPlanSheet(plan: plan)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingAddTask) {
             TaskFormSheet(plan: plan) { title, detail, importance, dueDate in
                 try createTask(title: title, detail: detail, importance: importance, dueDate: dueDate)
             }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(item: $taskToEdit) { task in
             TaskFormSheet(plan: plan, existingTask: task) { title, detail, importance, dueDate in
                 try updateTask(task, title: title, detail: detail, importance: importance, dueDate: dueDate)
             }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .alert("Delete Plan?", isPresented: $showingDeleteConfirmation) {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Delete", role: .destructive) {
                 deletePlan()
             }
@@ -147,6 +156,7 @@ struct PlanDetailView: View {
             Button("OK") {
                 errorMessage = nil
             }
+            .accessibilityLabel("Dismiss error")
         } message: { message in
             Text(message)
         }
@@ -223,27 +233,52 @@ private struct TaskRowView: View {
     @Bindable var task: Task
     let plan: Plan
 
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("enableCelebrationAnimations") private var enableCelebrationAnimations = true
+    @State private var showCelebration = false
+    @State private var celebrationScale: CGFloat = 0.6
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Button {
+                let wasDone = task.isDone
                 task.isDone.toggle()
+                if !wasDone {
+                    triggerCelebration()
+                }
             } label: {
-                Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(task.isDone ? .green : .secondary)
+                ZStack {
+                    Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(task.isDone
+                            ? Theme.Colors.success(colorScheme)
+                            : Theme.Colors.textSecondary(colorScheme))
+
+                    if showCelebration {
+                        Image(systemName: "sparkles")
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.caution(colorScheme))
+                            .scaleEffect(celebrationScale)
+                            .offset(y: -14)
+                            .transition(.opacity)
+                    }
+                }
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(task.isDone ? "Mark \(task.title) as not completed" : "Mark \(task.title) as completed")
+            .accessibilityHint("Double-tap to toggle completion")
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(task.title)
-                    .font(.body)
+                    .font(Theme.Typography.body)
                     .strikethrough(task.isDone)
-                    .foregroundStyle(task.isDone ? .secondary : .primary)
+                    .foregroundStyle(task.isDone ? Theme.Colors.textSecondary(colorScheme) : Theme.Colors.textPrimary(colorScheme))
 
                 if let detail = task.detail, !detail.isEmpty {
                     Text(detail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme))
                         .lineLimit(2)
                 }
 
@@ -254,22 +289,52 @@ private struct TaskRowView: View {
 
                     if let dueDate = task.dueDate {
                         Text(dueDate, format: .dateTime.month().day())
-                            .font(.caption)
-                            .foregroundStyle(dueDate < Date() ? .red : .secondary)
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(dueDate < Date()
+                                ? Theme.Colors.destructive(colorScheme)
+                                : Theme.Colors.textSecondary(colorScheme))
                     }
                 }
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabel)
     }
 
     private func importanceView(_ importance: Int) -> some View {
         HStack(spacing: 2) {
-            ForEach(0..<importance, id: \.self) { _ in
+            ForEach(0 ..< importance, id: \.self) { _ in
                 Image(systemName: "exclamationmark")
                     .font(.caption2)
             }
         }
         .foregroundStyle(importance >= 4 ? .red : .orange)
+    }
+
+    private func triggerCelebration() {
+        guard enableCelebrationAnimations, !reduceMotion else { return }
+        showCelebration = true
+        celebrationScale = 0.6
+
+        withAnimation(Theme.Animations.springDefault) {
+            celebrationScale = 1.1
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(.easeOut(duration: 0.2)) {
+                showCelebration = false
+            }
+        }
+    }
+
+    private var accessibilityLabel: String {
+        var components = [task.title]
+        components.append(task.isDone ? "completed" : "not completed")
+        if let dueDate = task.dueDate {
+            let dateString = dueDate.formatted(date: .abbreviated, time: .omitted)
+            components.append("due \(dateString)")
+        }
+        return components.joined(separator: ", ")
     }
 }
 
@@ -309,7 +374,7 @@ private struct EditPlanSheet: View {
             Section("Details") {
                 TextField("Plan title", text: $title)
                 TextField("Description (optional)", text: $detail, axis: .vertical)
-                    .lineLimit(3...6)
+                    .lineLimit(3 ... 6)
             }
         }
     }
@@ -361,8 +426,10 @@ private struct TaskFormSheet: View {
         ) {
             Section("Details") {
                 TextField("Task title", text: $title)
+                    .accessibilityLabel("Task title")
                 TextField("Notes (optional)", text: $detail, axis: .vertical)
-                    .lineLimit(2...4)
+                    .lineLimit(2 ... 4)
+                    .accessibilityLabel("Task notes")
             }
 
             Section("Importance") {
@@ -378,6 +445,7 @@ private struct TaskFormSheet: View {
 
             Section {
                 Toggle("Set Due Date", isOn: $hasDueDate)
+                    .accessibilityHint("Enable to set a due date")
 
                 if hasDueDate {
                     DatePicker("Due Date", selection: $dueDate, displayedComponents: .date)
@@ -386,7 +454,6 @@ private struct TaskFormSheet: View {
         }
     }
 }
-
 
 #Preview {
     let plan = Plan(title: "Sample Plan", detail: "A plan for testing")
