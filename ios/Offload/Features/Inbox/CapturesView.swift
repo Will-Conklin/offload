@@ -253,6 +253,7 @@ private struct CaptureCard: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .highPriorityGesture(TapGesture().onEnded { onAddTag() })
 
                     Spacer()
 
