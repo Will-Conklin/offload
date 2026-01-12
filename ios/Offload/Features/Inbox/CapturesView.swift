@@ -578,7 +578,7 @@ private struct MoveToListSheet: View {
         guard let collection = selectedCollection else { return }
 
         // Update item type
-        item.type = "note"
+        item.type = "task"
 
         // Link to collection (no position for unstructured lists)
         let collectionItem = CollectionItem(
@@ -601,7 +601,7 @@ private struct MoveToListSheet: View {
         modelContext.insert(collection)
 
         // Update item type
-        item.type = "note"
+        item.type = "task"
 
         // Link to collection
         let collectionItem = CollectionItem(

@@ -98,7 +98,7 @@ struct PersistenceController {
                     completedAt: Date()
                 )
                 let item3 = Item(
-                    type: "note",
+                    type: "task",
                     content: "Remember to backup important files weekly"
                 )
 

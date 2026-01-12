@@ -77,13 +77,11 @@ final class Item {
 
 enum ItemType: String, Codable, CaseIterable {
     case task
-    case note
     case link
 
     var displayName: String {
         switch self {
         case .task: return "Task"
-        case .note: return "Note"
         case .link: return "Link"
         }
     }
