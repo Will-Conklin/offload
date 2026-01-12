@@ -89,6 +89,39 @@ final class ItemRepository {
         return allItems.filter { $0.content.lowercased().contains(lowercaseQuery) }
     }
 
+    func fetchUncategorized() throws -> [Item] {
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { $0.type == nil },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    func fetchCompleted() throws -> [Item] {
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { $0.completedAt != nil },
+            sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    func fetchIncomplete() throws -> [Item] {
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { $0.completedAt == nil },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    func fetchInbox() throws -> [Item] {
+        // Inbox is items that are not in any collection and not completed
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { $0.type == nil && $0.completedAt == nil },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
     // MARK: - Update
     func update(_ item: Item) throws {
         try modelContext.save()
@@ -123,6 +156,25 @@ final class ItemRepository {
 
     func updateFollowUpDate(_ item: Item, date: Date?) throws {
         item.followUpDate = date
+        try modelContext.save()
+    }
+
+    func complete(_ item: Item) throws {
+        item.completedAt = Date()
+        try modelContext.save()
+    }
+
+    func uncomplete(_ item: Item) throws {
+        item.completedAt = nil
+        try modelContext.save()
+    }
+
+    func toggleCompletion(_ item: Item) throws {
+        if item.completedAt != nil {
+            item.completedAt = nil
+        } else {
+            item.completedAt = Date()
+        }
         try modelContext.save()
     }
 

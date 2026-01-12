@@ -4,13 +4,14 @@ import SwiftData
 @Model
 final class Item {
     var id: UUID
-    var type: String? // "task", "note", "link" - nullable during capture
+    var type: String? // "task", "note", "link" - nullable for uncategorized captures
     var content: String
     var metadata: String // JSON string for flexible future features
     var linkedCollectionId: UUID? // for type="link" items pointing to collections
     var tags: [String] // array of tag names
     var isStarred: Bool
     var followUpDate: Date?
+    var completedAt: Date? // nullable timestamp for completion status
     var createdAt: Date
 
     // Relationship to collections through CollectionItem
@@ -26,6 +27,7 @@ final class Item {
         tags: [String] = [],
         isStarred: Bool = false,
         followUpDate: Date? = nil,
+        completedAt: Date? = nil,
         createdAt: Date = Date()
     ) {
         self.id = id
@@ -36,6 +38,7 @@ final class Item {
         self.tags = tags
         self.isStarred = isStarred
         self.followUpDate = followUpDate
+        self.completedAt = completedAt
         self.createdAt = createdAt
     }
 
@@ -48,6 +51,10 @@ final class Item {
         set {
             type = newValue?.rawValue
         }
+    }
+
+    var isCompleted: Bool {
+        return completedAt != nil
     }
 
     // Computed property to decode metadata

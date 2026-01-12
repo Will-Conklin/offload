@@ -237,14 +237,14 @@ struct CaptureView: View {
     private func save() {
         if voiceService.isRecording { voiceService.stopRecording() }
 
-        let entry = CaptureEntry(
-            rawText: text.trimmingCharacters(in: .whitespacesAndNewlines),
-            inputType: voiceService.transcribedText.isEmpty ? .text : .voice,
-            source: .app,
-            tags: selectedTags.isEmpty ? nil : selectedTags
+        let item = Item(
+            type: nil, // Uncategorized capture
+            content: text.trimmingCharacters(in: .whitespacesAndNewlines),
+            tags: selectedTags.map { $0.name },
+            isStarred: isPriority
         )
-        // TODO: Store photoData and isPriority when model supports it
-        modelContext.insert(entry)
+        // TODO: Store photoData in metadata when needed
+        modelContext.insert(item)
         dismiss()
     }
 }

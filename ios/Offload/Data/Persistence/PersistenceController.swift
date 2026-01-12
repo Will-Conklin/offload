@@ -17,14 +17,6 @@ struct PersistenceController {
     /// Shared persistent container for production use
     static let shared: ModelContainer = {
         let schema = Schema([
-            // Core workflow models
-            CaptureEntry.self,
-            HandOffRequest.self,
-            HandOffRun.self,
-            Suggestion.self,
-            SuggestionDecision.self,
-            Placement.self,
-            // Simplified data models
             Item.self,
             Collection.self,
             CollectionItem.self,
@@ -49,14 +41,6 @@ struct PersistenceController {
     /// Preview container with sample data for SwiftUI previews
     static let preview: ModelContainer = {
         let schema = Schema([
-            // Core workflow models
-            CaptureEntry.self,
-            HandOffRequest.self,
-            HandOffRun.self,
-            Suggestion.self,
-            SuggestionDecision.self,
-            Placement.self,
-            // Simplified data models
             Item.self,
             Collection.self,
             CollectionItem.self,
@@ -77,35 +61,23 @@ struct PersistenceController {
             try MainActor.assumeIsolated {
                 let context = container.mainContext
 
-                // Insert sample thought captures
-                let sampleEntries = [
-                    CaptureEntry(
-                        rawText: "Remember to review the quarterly budget analysis",
-                        inputType: .text,
-                        source: .app
-                    ),
-                    CaptureEntry(
-                        rawText: "Call the dentist to schedule appointment for next week",
-                        inputType: .voice,
-                        source: .app
-                    ),
-                    CaptureEntry(
-                        rawText: "Research SwiftData best practices for production apps",
-                        inputType: .text,
-                        source: .app,
-                        lifecycleState: .handedOff
-                    ),
-                    CaptureEntry(
-                        rawText: "Buy groceries: milk, eggs, bread, coffee",
-                        inputType: .voice,
-                        source: .widget,
-                        lifecycleState: .ready
-                    ),
-                ]
+                // Insert sample uncategorized items (captures)
+                let capture1 = Item(
+                    type: nil,
+                    content: "Remember to review the quarterly budget analysis"
+                )
+                let capture2 = Item(
+                    type: nil,
+                    content: "Call the dentist to schedule appointment for next week"
+                )
+                let capture3 = Item(
+                    type: nil,
+                    content: "Buy groceries: milk, eggs, bread, coffee"
+                )
 
-                for entry in sampleEntries {
-                    context.insert(entry)
-                }
+                context.insert(capture1)
+                context.insert(capture2)
+                context.insert(capture3)
 
                 // Insert sample collection (plan)
                 let workCollection = Collection(
@@ -114,7 +86,7 @@ struct PersistenceController {
                 )
                 context.insert(workCollection)
 
-                // Insert sample items
+                // Insert sample categorized items
                 let item1 = Item(
                     type: "task",
                     content: "Review Q4 budget - Analyze spending patterns and prepare report",
@@ -122,7 +94,8 @@ struct PersistenceController {
                 )
                 let item2 = Item(
                     type: "task",
-                    content: "Schedule dentist appointment"
+                    content: "Schedule dentist appointment",
+                    completedAt: Date()
                 )
                 let item3 = Item(
                     type: "note",
