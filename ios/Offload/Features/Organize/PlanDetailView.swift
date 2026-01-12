@@ -248,14 +248,10 @@ private struct TaskRow: View {
                 }
 
                 HStack(spacing: 8) {
-                    if task.importance >= 4 {
-                        HStack(spacing: 2) {
-                            ForEach(0..<min(task.importance - 2, 3), id: \.self) { _ in
-                                Image(systemName: "exclamationmark")
-                                    .font(.caption2)
-                            }
-                        }
-                        .foregroundStyle(Theme.Colors.caution(colorScheme, style: style))
+                    if task.importance > 3 {
+                        Image(systemName: "exclamationmark")
+                            .font(.caption2)
+                            .foregroundStyle(Theme.Colors.caution(colorScheme, style: style))
                     }
 
                     if let due = task.dueDate {
