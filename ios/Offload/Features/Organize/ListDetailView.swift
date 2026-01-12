@@ -19,6 +19,7 @@ struct ListDetailView: View {
     @State private var showingEdit = false
     @State private var showingDelete = false
     @State private var newItemText = ""
+    @State private var itemConversion: ItemConversion?
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
@@ -93,6 +94,27 @@ struct ListDetailView: View {
 
                         ForEach(unchecked) { item in
                             ItemRow(item: item, colorScheme: colorScheme, style: style)
+                                .contextMenu {
+                                    Button {
+                                        itemConversion = .toTask(item)
+                                    } label: {
+                                        Label("Convert to Task", systemImage: Icons.plans)
+                                    }
+
+                                    Button {
+                                        itemConversion = .toComm(item)
+                                    } label: {
+                                        Label("Convert to Communication", systemImage: Icons.communications)
+                                    }
+
+                                    Divider()
+
+                                    Button(role: .destructive) {
+                                        modelContext.delete(item)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
                     }
 
@@ -104,6 +126,27 @@ struct ListDetailView: View {
 
                         ForEach(checked) { item in
                             ItemRow(item: item, colorScheme: colorScheme, style: style)
+                                .contextMenu {
+                                    Button {
+                                        itemConversion = .toTask(item)
+                                    } label: {
+                                        Label("Convert to Task", systemImage: Icons.plans)
+                                    }
+
+                                    Button {
+                                        itemConversion = .toComm(item)
+                                    } label: {
+                                        Label("Convert to Communication", systemImage: Icons.communications)
+                                    }
+
+                                    Divider()
+
+                                    Button(role: .destructive) {
+                                        modelContext.delete(item)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
                     }
                 }
@@ -136,6 +179,18 @@ struct ListDetailView: View {
         }
         .sheet(isPresented: $showingEdit) {
             EditListSheet(list: list)
+        }
+        .sheet(item: $itemConversion) { conversion in
+            switch conversion {
+            case .toTask(let item):
+                ItemToTaskSheet(item: item, modelContext: modelContext) {
+                    itemConversion = nil
+                }
+            case .toComm(let item):
+                ItemToCommSheet(item: item, modelContext: modelContext) {
+                    itemConversion = nil
+                }
+            }
         }
         .alert("Delete List?", isPresented: $showingDelete) {
             Button("Cancel", role: .cancel) {}
@@ -239,6 +294,213 @@ private struct EditListSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Item Conversion
+
+enum ItemConversion: Identifiable {
+    case toTask(ListItem)
+    case toComm(ListItem)
+
+    var id: String {
+        switch self {
+        case .toTask(let item): return "task-\(item.id)"
+        case .toComm(let item): return "comm-\(item.id)"
+        }
+    }
+}
+
+// MARK: - Item to Task Sheet
+
+private struct ItemToTaskSheet: View {
+    let item: ListItem
+    let modelContext: ModelContext
+    let onComplete: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
+    @State private var selectedPlan: Plan?
+    @State private var createNew = false
+    @State private var newPlanTitle = ""
+    @State private var newPlanDetail = ""
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if !plans.isEmpty {
+                    Section("Select Plan") {
+                        ForEach(plans) { plan in
+                            Button {
+                                selectedPlan = plan
+                                convertToSelectedPlan()
+                            } label: {
+                                HStack {
+                                    Text(plan.title)
+                                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                    Spacer()
+                                    if let count = plan.tasks?.count {
+                                        Text("\(count) tasks")
+                                            .font(.caption)
+                                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section {
+                    Button {
+                        createNew = true
+                    } label: {
+                        Label("Create New Plan", systemImage: "plus.circle.fill")
+                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                    }
+                }
+            }
+            .navigationTitle("Convert to Task")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .sheet(isPresented: $createNew) {
+                NavigationStack {
+                    Form {
+                        TextField("Plan title", text: $newPlanTitle)
+                        TextField("Description (optional)", text: $newPlanDetail, axis: .vertical)
+                            .lineLimit(3...6)
+                    }
+                    .navigationTitle("New Plan")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { createNew = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Create") {
+                                createNewPlanAndConvert()
+                            }
+                            .disabled(newPlanTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func convertToSelectedPlan() {
+        guard let plan = selectedPlan else { return }
+        let task = Task(
+            title: item.text,
+            detail: nil,
+            importance: 3,
+            dueDate: nil,
+            plan: plan
+        )
+        modelContext.insert(task)
+        modelContext.delete(item)
+        dismiss()
+        onComplete()
+    }
+
+    private func createNewPlanAndConvert() {
+        let trimmed = newPlanTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let plan = Plan(
+            title: trimmed,
+            detail: newPlanDetail.isEmpty ? nil : newPlanDetail
+        )
+        modelContext.insert(plan)
+
+        let task = Task(
+            title: item.text,
+            detail: nil,
+            importance: 3,
+            dueDate: nil,
+            plan: plan
+        )
+        modelContext.insert(task)
+        modelContext.delete(item)
+        createNew = false
+        dismiss()
+        onComplete()
+    }
+}
+
+// MARK: - Item to Comm Sheet
+
+private struct ItemToCommSheet: View {
+    let item: ListItem
+    let modelContext: ModelContext
+    let onComplete: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @State private var channel: CommunicationChannel = .text
+    @State private var recipient = ""
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Communication Details") {
+                    Picker("Type", selection: $channel) {
+                        ForEach(CommunicationChannel.allCases, id: \.self) { c in
+                            Text(c.rawValue.capitalized).tag(c)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    TextField("Recipient", text: $recipient)
+                }
+
+                Section("Message") {
+                    Text(item.text)
+                        .font(.body)
+                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                }
+            }
+            .navigationTitle("Convert to Comm")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Create") {
+                        createComm()
+                    }
+                    .disabled(recipient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func createComm() {
+        let trimmed = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let comm = CommunicationItem(
+            channel: channel,
+            recipient: trimmed,
+            content: item.text
+        )
+        modelContext.insert(comm)
+        modelContext.delete(item)
+        dismiss()
+        onComplete()
     }
 }
 
