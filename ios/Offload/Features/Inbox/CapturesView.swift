@@ -417,31 +417,83 @@ private struct TagPickerSheet: View {
     }
 }
 
-// MARK: - Capture Edit View (placeholder)
+// MARK: - Capture Edit View
 
 struct CaptureEditView: View {
-    let entry: CaptureEntry
+    @Bindable var entry: CaptureEntry
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var themeManager: ThemeManager
+
     @State private var editedText: String = ""
+    @State private var showingTagPicker = false
+    @State private var allTags: [Tag] = []
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: Theme.Spacing.md) {
-                TextEditor(text: $editedText)
-                    .font(.body)
-                    .padding(Theme.Spacing.md)
-                    .background(Theme.Colors.card(colorScheme, style: style))
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
-                    .padding(.horizontal, Theme.Spacing.md)
+            ScrollView {
+                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    // Text editor
+                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                        Text("Content")
+                            .font(.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
 
-                Spacer()
+                        TextEditor(text: $editedText)
+                            .font(.body)
+                            .frame(minHeight: 150)
+                            .padding(Theme.Spacing.sm)
+                            .background(Theme.Colors.surface(colorScheme, style: style))
+                            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                                    .stroke(Theme.Colors.border(colorScheme, style: style), lineWidth: 1)
+                            )
+                    }
+
+                    // Tags section
+                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                        HStack {
+                            Text("Tags")
+                                .font(.caption)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+
+                            Spacer()
+
+                            Button {
+                                showingTagPicker = true
+                            } label: {
+                                Label("Add Tag", systemImage: "plus.circle.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                            }
+                        }
+
+                        if let tags = entry.tags, !tags.isEmpty {
+                            FlowLayout(spacing: Theme.Spacing.xs) {
+                                ForEach(tags) { tag in
+                                    TagChipRemovable(
+                                        tag: tag,
+                                        colorScheme: colorScheme,
+                                        style: style,
+                                        onRemove: { removeTag(tag) }
+                                    )
+                                }
+                            }
+                        } else {
+                            Text("No tags")
+                                .font(.subheadline)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                .padding(.vertical, Theme.Spacing.sm)
+                        }
+                    }
+                }
+                .padding(Theme.Spacing.md)
             }
-            .padding(.top, Theme.Spacing.md)
             .background(Theme.Colors.background(colorScheme, style: style))
             .navigationTitle("Edit Capture")
             .navigationBarTitleDisplayMode(.inline)
@@ -456,9 +508,136 @@ struct CaptureEditView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingTagPicker) {
+                TagPickerSheet(
+                    entry: entry,
+                    allTags: allTags,
+                    colorScheme: colorScheme,
+                    style: style,
+                    onCreateTag: { name in
+                        let tag = Tag(name: name)
+                        modelContext.insert(tag)
+                        if entry.tags == nil {
+                            entry.tags = []
+                        }
+                        entry.tags?.append(tag)
+                        loadTags()
+                    },
+                    onToggleTag: { tag in
+                        if let tags = entry.tags, tags.contains(where: { $0.id == tag.id }) {
+                            entry.tags?.removeAll(where: { $0.id == tag.id })
+                        } else {
+                            if entry.tags == nil {
+                                entry.tags = []
+                            }
+                            entry.tags?.append(tag)
+                        }
+                    }
+                )
+                .presentationDetents([.medium, .large])
+            }
             .onAppear {
                 editedText = entry.rawText
+                loadTags()
             }
+        }
+    }
+
+    private func loadTags() {
+        let descriptor = FetchDescriptor<Tag>(sortBy: [SortDescriptor(\.name)])
+        allTags = (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    private func removeTag(_ tag: Tag) {
+        entry.tags?.removeAll(where: { $0.id == tag.id })
+    }
+}
+
+// MARK: - Tag Chip with Remove Button
+
+private struct TagChipRemovable: View {
+    let tag: Tag
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
+    let onRemove: () -> Void
+
+    var chipColor: Color {
+        if let colorHex = tag.color {
+            return Color(hex: colorHex)
+        }
+        return Theme.Colors.primary(colorScheme, style: style)
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(tag.name)
+            Button {
+                onRemove()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.caption2)
+            }
+        }
+        .font(.caption.weight(.medium))
+        .foregroundStyle(chipColor)
+        .padding(.horizontal, Theme.Spacing.sm)
+        .padding(.vertical, Theme.Spacing.xs)
+        .background(chipColor.opacity(0.15))
+        .clipShape(Capsule())
+    }
+}
+
+// MARK: - Flow Layout for Tags
+
+private struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = FlowResult(
+            in: proposal.replacingUnspecifiedDimensions().width,
+            subviews: subviews,
+            spacing: spacing
+        )
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = FlowResult(
+            in: bounds.width,
+            subviews: subviews,
+            spacing: spacing
+        )
+        for (index, subview) in subviews.enumerated() {
+            subview.place(at: CGPoint(x: bounds.minX + result.frames[index].minX,
+                                      y: bounds.minY + result.frames[index].minY),
+                         proposal: .unspecified)
+        }
+    }
+
+    struct FlowResult {
+        var frames: [CGRect] = []
+        var size: CGSize = .zero
+
+        init(in maxWidth: CGFloat, subviews: Subviews, spacing: CGFloat) {
+            var currentX: CGFloat = 0
+            var currentY: CGFloat = 0
+            var lineHeight: CGFloat = 0
+
+            for subview in subviews {
+                let size = subview.sizeThatFits(.unspecified)
+
+                if currentX + size.width > maxWidth && currentX > 0 {
+                    currentX = 0
+                    currentY += lineHeight + spacing
+                    lineHeight = 0
+                }
+
+                frames.append(CGRect(origin: CGPoint(x: currentX, y: currentY), size: size))
+                currentX += size.width + spacing
+                lineHeight = max(lineHeight, size.height)
+            }
+
+            self.size = CGSize(width: maxWidth, height: currentY + lineHeight)
         }
     }
 }
