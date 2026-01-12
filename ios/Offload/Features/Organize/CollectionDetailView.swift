@@ -168,6 +168,7 @@ private struct ItemRow: View {
     let style: ThemeStyle
     let onDelete: () -> Void
 
+    @Environment(\.modelContext) private var modelContext
     @State private var showingMenu = false
 
     var body: some View {
@@ -198,13 +199,6 @@ private struct ItemRow: View {
                             .clipShape(Capsule())
                     }
 
-                    // Star indicator
-                    if item.isStarred {
-                        Image(systemName: "star.fill")
-                            .font(.caption2)
-                            .foregroundStyle(Theme.Colors.warning(colorScheme, style: style))
-                    }
-
                     // Tags
                     ForEach(item.tags, id: \.self) { tag in
                         Text(tag)
@@ -220,22 +214,52 @@ private struct ItemRow: View {
 
             Spacer()
 
-            // Actions menu
-            Button {
-                showingMenu = true
-            } label: {
-                Image(systemName: "ellipsis")
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            }
-            .confirmationDialog("Item Actions", isPresented: $showingMenu) {
-                Button("Remove from Collection", role: .destructive) {
-                    onDelete()
+            // Action buttons
+            HStack(spacing: Theme.Spacing.xs) {
+                // Add tag button
+                Button {
+                    // TODO: Show tag picker
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        .frame(width: 28, height: 28)
+                }
+
+                // Star button
+                Button {
+                    toggleStar()
+                } label: {
+                    Image(systemName: item.isStarred ? "star.fill" : "star")
+                        .font(.caption)
+                        .foregroundStyle(item.isStarred ? Theme.Colors.warning(colorScheme, style: style) : Theme.Colors.textSecondary(colorScheme, style: style))
+                        .frame(width: 28, height: 28)
+                }
+
+                // Actions menu
+                Button {
+                    showingMenu = true
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        .frame(width: 28, height: 28)
+                }
+                .confirmationDialog("Item Actions", isPresented: $showingMenu) {
+                    Button("Remove from Collection", role: .destructive) {
+                        onDelete()
+                    }
                 }
             }
         }
         .padding(Theme.Spacing.md)
         .background(Theme.Colors.card(colorScheme, style: style))
         .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
+    }
+
+    private func toggleStar() {
+        item.isStarred.toggle()
+        try? modelContext.save()
     }
 }
 
