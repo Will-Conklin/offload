@@ -2,7 +2,7 @@
 //  OrganizeView.swift
 //  Offload
 //
-//  Flat design for Plans, Lists, and Communications tabs
+//  Simplified design for Plans and Lists tabs using Collections
 //
 
 import SwiftUI
@@ -10,13 +10,19 @@ import SwiftData
 
 struct OrganizeView: View {
     enum Scope {
-        case plans, lists, communications
+        case plans, lists
 
         var title: String {
             switch self {
             case .plans: return "Plans"
             case .lists: return "Lists"
-            case .communications: return "Comms"
+            }
+        }
+
+        var isStructured: Bool {
+            switch self {
+            case .plans: return true
+            case .lists: return false
             }
         }
     }
@@ -25,18 +31,18 @@ struct OrganizeView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
-    @Query(sort: \ListEntity.createdAt, order: .reverse) private var lists: [ListEntity]
-    @Query(sort: \CommunicationItem.createdAt, order: .reverse) private var communications: [CommunicationItem]
+    @Query(sort: \Collection.createdAt, order: .reverse) private var allCollections: [Collection]
 
     let scope: Scope
     @State private var showingCreate = false
     @State private var showingSettings = false
-    @State private var selectedPlan: Plan?
-    @State private var selectedList: ListEntity?
-    @State private var selectedComm: CommunicationItem?
+    @State private var selectedCollection: Collection?
 
     private var style: ThemeStyle { themeManager.currentStyle }
+
+    private var filteredCollections: [Collection] {
+        allCollections.filter { $0.isStructured == scope.isStructured }
+    }
 
     var body: some View {
         NavigationStack {
@@ -46,14 +52,7 @@ struct OrganizeView: View {
 
                 ScrollView {
                     LazyVStack(spacing: Theme.Spacing.sm) {
-                        switch scope {
-                        case .plans:
-                            plansContent
-                        case .lists:
-                            listsContent
-                        case .communications:
-                            commsContent
-                        }
+                        collectionsContent
                     }
                     .padding(.horizontal, Theme.Spacing.md)
                     .padding(.top, Theme.Spacing.sm)
@@ -80,71 +79,37 @@ struct OrganizeView: View {
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
             }
-            .navigationDestination(item: $selectedPlan) { plan in
-                PlanDetailView(planID: plan.id)
-            }
-            .navigationDestination(item: $selectedList) { list in
-                ListDetailView(list: list)
-            }
-            .navigationDestination(item: $selectedComm) { comm in
-                CommDetailView(comm: comm)
+            .navigationDestination(item: $selectedCollection) { collection in
+                CollectionDetailView(collectionID: collection.id)
             }
         }
     }
 
-    // MARK: - Plans
+    // MARK: - Collections Content
 
     @ViewBuilder
-    private var plansContent: some View {
-        if plans.isEmpty {
-            emptyState(icon: Icons.plans, message: "No plans yet", action: "Create Plan")
+    private var collectionsContent: some View {
+        if filteredCollections.isEmpty {
+            emptyState
         } else {
-            ForEach(plans) { plan in
-                PlanCard(plan: plan, colorScheme: colorScheme, style: style)
-                    .onTapGesture { selectedPlan = plan }
-            }
-        }
-    }
-
-    // MARK: - Lists
-
-    @ViewBuilder
-    private var listsContent: some View {
-        if lists.isEmpty {
-            emptyState(icon: Icons.lists, message: "No lists yet", action: "Create List")
-        } else {
-            ForEach(lists) { list in
-                ListCard(list: list, colorScheme: colorScheme, style: style)
-                    .onTapGesture { selectedList = list }
-            }
-        }
-    }
-
-    // MARK: - Communications
-
-    @ViewBuilder
-    private var commsContent: some View {
-        if communications.isEmpty {
-            emptyState(icon: Icons.communications, message: "No communications yet", action: "Create Comm")
-        } else {
-            ForEach(communications) { comm in
-                CommCard(comm: comm, colorScheme: colorScheme, style: style)
-                    .onTapGesture { selectedComm = comm }
+            ForEach(filteredCollections) { collection in
+                CollectionCard(collection: collection, colorScheme: colorScheme, style: style)
+                    .onTapGesture { selectedCollection = collection }
             }
         }
     }
 
     // MARK: - Empty State
 
-    private func emptyState(icon: String, message: String, action: String) -> some View {
+    private var emptyState: some View {
         VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: icon)
+            Image(systemName: scope == .plans ? Icons.plans : Icons.lists)
                 .font(.largeTitle)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Text(message)
+            Text("No \(scope.title.lowercased()) yet")
                 .font(.body)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Button(action) { showingCreate = true }
+            Button("Create \(scope == .plans ? "Plan" : "List")") { showingCreate = true }
                 .font(.headline)
                 .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
         }
@@ -156,56 +121,49 @@ struct OrganizeView: View {
 
     @ViewBuilder
     private var createSheet: some View {
-        switch scope {
-        case .plans:
-            PlanFormSheet { title, detail in
-                let plan = Plan(title: title, detail: detail)
-                modelContext.insert(plan)
-            }
-        case .lists:
-            ListFormSheet { title, kind in
-                let list = ListEntity(title: title, kind: kind)
-                modelContext.insert(list)
-            }
-        case .communications:
-            CommFormSheet { channel, recipient, content in
-                let comm = CommunicationItem(channel: channel, recipient: recipient, content: content)
-                modelContext.insert(comm)
-            }
+        CollectionFormSheet(isStructured: scope.isStructured) { name in
+            let collection = Collection(name: name, isStructured: scope.isStructured)
+            modelContext.insert(collection)
         }
     }
 }
 
-// MARK: - Plan Card
+// MARK: - Collection Card
 
-private struct PlanCard: View {
-    let plan: Plan
+private struct CollectionCard: View {
+    let collection: Collection
     let colorScheme: ColorScheme
     let style: ThemeStyle
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text(plan.title)
-                .font(.headline)
-                .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+            HStack {
+                Text(collection.name)
+                    .font(.headline)
+                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
 
-            if let detail = plan.detail, !detail.isEmpty {
-                Text(detail)
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                    .lineLimit(2)
+                Spacer()
+
+                if collection.isStructured {
+                    Image(systemName: "list.number")
+                        .font(.caption)
+                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
+                        .clipShape(Capsule())
+                }
             }
 
             HStack {
-                Text(plan.createdAt, format: .dateTime.month(.abbreviated).day())
+                Text(collection.createdAt, format: .dateTime.month(.abbreviated).day())
                     .font(.caption)
                     .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
 
                 Spacer()
 
-                if let count = plan.tasks?.count, count > 0 {
-                    let done = plan.tasks?.filter { $0.isDone }.count ?? 0
-                    Text("\(done)/\(count)")
+                if let count = collection.collectionItems?.count, count > 0 {
+                    Text("\(count) item\(count == 1 ? "" : "s")")
                         .font(.caption)
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                 }
@@ -218,109 +176,20 @@ private struct PlanCard: View {
     }
 }
 
-// MARK: - List Card
+// MARK: - Form Sheet
 
-private struct ListCard: View {
-    let list: ListEntity
-    let colorScheme: ColorScheme
-    let style: ThemeStyle
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            HStack {
-                Text(list.title)
-                    .font(.headline)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-
-                Spacer()
-
-                Text(list.listKind.rawValue.capitalized)
-                    .font(.caption)
-                    .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
-                    .clipShape(Capsule())
-            }
-
-            if let count = list.items?.count, count > 0 {
-                let checked = list.items?.filter { $0.isChecked }.count ?? 0
-                Text("\(checked)/\(count) items")
-                    .font(.caption)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            }
-        }
-        .padding(Theme.Spacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.Colors.card(colorScheme, style: style))
-        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
-    }
-}
-
-// MARK: - Comm Card
-
-private struct CommCard: View {
-    let comm: CommunicationItem
-    let colorScheme: ColorScheme
-    let style: ThemeStyle
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            HStack {
-                Image(systemName: iconForChannel(comm.communicationChannel))
-                    .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                Text(comm.recipient)
-                    .font(.headline)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-
-                Spacer()
-
-                if comm.communicationStatus == .sent {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Theme.Colors.success(colorScheme, style: style))
-                }
-            }
-
-            Text(comm.content)
-                .font(.subheadline)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                .lineLimit(2)
-
-            Text(comm.createdAt, format: .dateTime.month(.abbreviated).day())
-                .font(.caption)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-        }
-        .padding(Theme.Spacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.Colors.card(colorScheme, style: style))
-        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md))
-    }
-
-    private func iconForChannel(_ channel: CommunicationChannel) -> String {
-        switch channel {
-        case .call: return "phone.fill"
-        case .email: return "envelope.fill"
-        case .text: return "message.fill"
-        case .other: return "ellipsis.message.fill"
-        }
-    }
-}
-
-// MARK: - Form Sheets
-
-private struct PlanFormSheet: View {
-    let onSave: (String, String?) -> Void
+private struct CollectionFormSheet: View {
+    let isStructured: Bool
+    let onSave: (String) -> Void
     @Environment(\.dismiss) private var dismiss
-    @State private var title = ""
-    @State private var detail = ""
+    @State private var name = ""
 
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Title", text: $title)
-                TextField("Description (optional)", text: $detail, axis: .vertical)
+                TextField(isStructured ? "Plan name" : "List name", text: $name)
             }
-            .navigationTitle("New Plan")
+            .navigationTitle(isStructured ? "New Plan" : "New List")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -328,83 +197,10 @@ private struct PlanFormSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        onSave(title, detail.isEmpty ? nil : detail)
+                        onSave(name)
                         dismiss()
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-        }
-    }
-}
-
-private struct ListFormSheet: View {
-    let onSave: (String, ListKind) -> Void
-    @Environment(\.dismiss) private var dismiss
-    @State private var title = ""
-    @State private var kind: ListKind = .reference
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                TextField("Title", text: $title)
-                Picker("Type", selection: $kind) {
-                    ForEach(ListKind.allCases, id: \.self) { k in
-                        Text(k.rawValue.capitalized).tag(k)
-                    }
-                }
-            }
-            .navigationTitle("New List")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        onSave(title, kind)
-                        dismiss()
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-        }
-    }
-}
-
-private struct CommFormSheet: View {
-    let onSave: (CommunicationChannel, String, String) -> Void
-    @Environment(\.dismiss) private var dismiss
-    @State private var channel: CommunicationChannel = .text
-    @State private var recipient = ""
-    @State private var content = ""
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Picker("Type", selection: $channel) {
-                    ForEach(CommunicationChannel.allCases, id: \.self) { c in
-                        Text(c.rawValue.capitalized).tag(c)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                TextField("Recipient", text: $recipient)
-                TextField("Message", text: $content, axis: .vertical)
-                    .lineLimit(3...6)
-            }
-            .navigationTitle("New Comm")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        onSave(channel, recipient, content)
-                        dismiss()
-                    }
-                    .disabled(recipient.isEmpty || content.isEmpty)
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
         }

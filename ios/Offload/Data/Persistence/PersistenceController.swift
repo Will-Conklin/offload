@@ -24,14 +24,12 @@ struct PersistenceController {
             Suggestion.self,
             SuggestionDecision.self,
             Placement.self,
-            // Destination models
-            Plan.self,
-            Task.self,
+            // Simplified data models
+            Item.self,
+            Collection.self,
+            CollectionItem.self,
             Tag.self,
             Category.self,
-            ListEntity.self,
-            ListItem.self,
-            CommunicationItem.self,
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -58,14 +56,12 @@ struct PersistenceController {
             Suggestion.self,
             SuggestionDecision.self,
             Placement.self,
-            // Destination models
-            Plan.self,
-            Task.self,
+            // Simplified data models
+            Item.self,
+            Collection.self,
+            CollectionItem.self,
             Tag.self,
             Category.self,
-            ListEntity.self,
-            ListItem.self,
-            CommunicationItem.self,
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -111,28 +107,46 @@ struct PersistenceController {
                     context.insert(entry)
                 }
 
-                // Insert sample plan
-                let workPlan = Plan(
-                    title: "Work Projects",
-                    detail: "Active work-related projects"
+                // Insert sample collection (plan)
+                let workCollection = Collection(
+                    name: "Work Projects",
+                    isStructured: true
                 )
-                context.insert(workPlan)
+                context.insert(workCollection)
 
-                // Insert sample tasks
-                let task1 = Task(
-                    title: "Review Q4 budget",
-                    detail: "Analyze spending patterns and prepare report",
-                    importance: 4,
-                    plan: workPlan
+                // Insert sample items
+                let item1 = Item(
+                    type: "task",
+                    content: "Review Q4 budget - Analyze spending patterns and prepare report",
+                    isStarred: true
                 )
-                let task2 = Task(
-                    title: "Schedule dentist appointment",
-                    isDone: true,
-                    importance: 3
+                let item2 = Item(
+                    type: "task",
+                    content: "Schedule dentist appointment"
+                )
+                let item3 = Item(
+                    type: "note",
+                    content: "Remember to backup important files weekly"
                 )
 
-                context.insert(task1)
-                context.insert(task2)
+                context.insert(item1)
+                context.insert(item2)
+                context.insert(item3)
+
+                // Link items to collection
+                let collectionItem1 = CollectionItem(
+                    collectionId: workCollection.id,
+                    itemId: item1.id,
+                    position: 0
+                )
+                let collectionItem2 = CollectionItem(
+                    collectionId: workCollection.id,
+                    itemId: item2.id,
+                    position: 1
+                )
+
+                context.insert(collectionItem1)
+                context.insert(collectionItem2)
 
                 try context.save()
             }

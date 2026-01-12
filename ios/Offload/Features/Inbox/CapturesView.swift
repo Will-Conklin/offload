@@ -107,15 +107,6 @@ struct CapturesView: View {
                     }
                 }
             }
-            .sheet(isPresented: .constant(moveEntry != nil && moveDestination == .communication)) {
-                if let entry = moveEntry {
-                    MoveToCommSheet(entry: entry, modelContext: modelContext) {
-                        moveEntry = nil
-                        moveDestination = nil
-                        _Concurrency.Task { await loadData() }
-                    }
-                }
-            }
             .task {
                 if workflowService == nil {
                     workflowService = CaptureWorkflowService(modelContext: modelContext)
@@ -203,7 +194,6 @@ struct CapturesView: View {
 enum MoveDestination {
     case plan
     case list
-    case communication
 }
 
 // MARK: - Capture Card
@@ -329,12 +319,6 @@ private struct CaptureCard: View {
                     onMoveTo(.list)
                 } label: {
                     Label("Move to List", systemImage: Icons.lists)
-                }
-
-                Button {
-                    onMoveTo(.communication)
-                } label: {
-                    Label("Move to Comm", systemImage: Icons.communications)
                 }
 
                 Divider()
@@ -682,33 +666,25 @@ private struct MoveToPlanSheet: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
-    @State private var selectedPlan: Plan?
+    @State private var collections: [Collection] = []
+    @State private var selectedCollection: Collection?
     @State private var createNew = false
-    @State private var newPlanTitle = ""
+    @State private var newPlanName = ""
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
         NavigationStack {
             List {
-                if !plans.isEmpty {
+                if !collections.isEmpty {
                     Section("Select Plan") {
-                        ForEach(plans) { plan in
+                        ForEach(collections) { collection in
                             Button {
-                                selectedPlan = plan
+                                selectedCollection = collection
                                 moveToSelectedPlan()
                             } label: {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(plan.title)
-                                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                                    if let detail = plan.detail, !detail.isEmpty {
-                                        Text(detail)
-                                            .font(.caption)
-                                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                                            .lineLimit(1)
-                                    }
-                                }
+                                Text(collection.name)
+                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                             }
                         }
                     }
@@ -731,47 +707,69 @@ private struct MoveToPlanSheet: View {
                 }
             }
             .alert("New Plan", isPresented: $createNew) {
-                TextField("Plan title", text: $newPlanTitle)
+                TextField("Plan name", text: $newPlanName)
                 Button("Cancel", role: .cancel) {}
                 Button("Create") {
                     createNewPlanAndMove()
                 }
             } message: {
-                Text("Enter a title for the new plan")
+                Text("Enter a name for the new plan")
+            }
+            .onAppear {
+                loadCollections()
             }
         }
     }
 
-    private func moveToSelectedPlan() {
-        guard let plan = selectedPlan else { return }
-        let task = Task(
-            title: entry.rawText,
-            detail: nil,
-            importance: 3,
-            dueDate: nil,
-            plan: plan
+    private func loadCollections() {
+        let descriptor = FetchDescriptor<Collection>(
+            predicate: #Predicate { $0.isStructured == true },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
-        modelContext.insert(task)
+        collections = (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    private func moveToSelectedPlan() {
+        guard let collection = selectedCollection else { return }
+
+        // Create item
+        let item = Item(type: "task", content: entry.rawText)
+        modelContext.insert(item)
+
+        // Link to collection
+        let position = collection.collectionItems?.count ?? 0
+        let collectionItem = CollectionItem(
+            collectionId: collection.id,
+            itemId: item.id,
+            position: position
+        )
+        modelContext.insert(collectionItem)
+
         entry.currentLifecycleState = .placed
         dismiss()
         onComplete()
     }
 
     private func createNewPlanAndMove() {
-        let trimmed = newPlanTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = newPlanName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        let plan = Plan(title: trimmed, detail: nil)
-        modelContext.insert(plan)
+        // Create collection
+        let collection = Collection(name: trimmed, isStructured: true)
+        modelContext.insert(collection)
 
-        let task = Task(
-            title: entry.rawText,
-            detail: nil,
-            importance: 3,
-            dueDate: nil,
-            plan: plan
+        // Create item
+        let item = Item(type: "task", content: entry.rawText)
+        modelContext.insert(item)
+
+        // Link to collection
+        let collectionItem = CollectionItem(
+            collectionId: collection.id,
+            itemId: item.id,
+            position: 0
         )
-        modelContext.insert(task)
+        modelContext.insert(collectionItem)
+
         entry.currentLifecycleState = .placed
         dismiss()
         onComplete()
@@ -789,32 +787,25 @@ private struct MoveToListSheet: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    @Query(sort: \ListEntity.createdAt, order: .reverse) private var lists: [ListEntity]
-    @State private var selectedList: ListEntity?
+    @State private var collections: [Collection] = []
+    @State private var selectedCollection: Collection?
     @State private var createNew = false
-    @State private var newListTitle = ""
-    @State private var newListKind: ListKind = .reference
+    @State private var newListName = ""
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
         NavigationStack {
             List {
-                if !lists.isEmpty {
+                if !collections.isEmpty {
                     Section("Select List") {
-                        ForEach(lists) { list in
+                        ForEach(collections) { collection in
                             Button {
-                                selectedList = list
+                                selectedCollection = collection
                                 moveToSelectedList()
                             } label: {
-                                HStack {
-                                    Text(list.title)
-                                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                                    Spacer()
-                                    Text(list.listKind.rawValue.capitalized)
-                                        .font(.caption)
-                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                                }
+                                Text(collection.name)
+                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                             }
                         }
                     }
@@ -836,121 +827,69 @@ private struct MoveToListSheet: View {
                     Button("Cancel") { dismiss() }
                 }
             }
-            .sheet(isPresented: $createNew) {
-                NavigationStack {
-                    Form {
-                        TextField("List title", text: $newListTitle)
-                        Picker("Type", selection: $newListKind) {
-                            ForEach(ListKind.allCases, id: \.self) { kind in
-                                Text(kind.rawValue.capitalized).tag(kind)
-                            }
-                        }
-                    }
-                    .navigationTitle("New List")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") { createNew = false }
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Create") {
-                                createNewListAndMove()
-                            }
-                            .disabled(newListTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                        }
-                    }
+            .alert("New List", isPresented: $createNew) {
+                TextField("List name", text: $newListName)
+                Button("Cancel", role: .cancel) {}
+                Button("Create") {
+                    createNewListAndMove()
                 }
+            } message: {
+                Text("Enter a name for the new list")
+            }
+            .onAppear {
+                loadCollections()
             }
         }
     }
 
+    private func loadCollections() {
+        let descriptor = FetchDescriptor<Collection>(
+            predicate: #Predicate { $0.isStructured == false },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        collections = (try? modelContext.fetch(descriptor)) ?? []
+    }
+
     private func moveToSelectedList() {
-        guard let list = selectedList else { return }
-        let item = ListItem(text: entry.rawText, list: list)
+        guard let collection = selectedCollection else { return }
+
+        // Create item
+        let item = Item(type: "note", content: entry.rawText)
         modelContext.insert(item)
+
+        // Link to collection (no position for unstructured lists)
+        let collectionItem = CollectionItem(
+            collectionId: collection.id,
+            itemId: item.id,
+            position: nil
+        )
+        modelContext.insert(collectionItem)
+
         entry.currentLifecycleState = .placed
         dismiss()
         onComplete()
     }
 
     private func createNewListAndMove() {
-        let trimmed = newListTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = newListName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        let list = ListEntity(title: trimmed, kind: newListKind)
-        modelContext.insert(list)
+        // Create collection
+        let collection = Collection(name: trimmed, isStructured: false)
+        modelContext.insert(collection)
 
-        let item = ListItem(text: entry.rawText, list: list)
+        // Create item
+        let item = Item(type: "note", content: entry.rawText)
         modelContext.insert(item)
-        entry.currentLifecycleState = .placed
-        createNew = false
-        dismiss()
-        onComplete()
-    }
-}
 
-// MARK: - Move to Comm Sheet
-
-private struct MoveToCommSheet: View {
-    let entry: CaptureEntry
-    let modelContext: ModelContext
-    let onComplete: () -> Void
-
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    @State private var channel: CommunicationChannel = .text
-    @State private var recipient = ""
-
-    private var style: ThemeStyle { themeManager.currentStyle }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("Communication Details") {
-                    Picker("Type", selection: $channel) {
-                        ForEach(CommunicationChannel.allCases, id: \.self) { c in
-                            Text(c.rawValue.capitalized).tag(c)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
-                    TextField("Recipient", text: $recipient)
-                }
-
-                Section("Message") {
-                    Text(entry.rawText)
-                        .font(.body)
-                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                }
-            }
-            .navigationTitle("Move to Comm")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Create") {
-                        createComm()
-                    }
-                    .disabled(recipient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
-        }
-    }
-
-    private func createComm() {
-        let trimmed = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-
-        let comm = CommunicationItem(
-            channel: channel,
-            recipient: trimmed,
-            content: entry.rawText
+        // Link to collection
+        let collectionItem = CollectionItem(
+            collectionId: collection.id,
+            itemId: item.id,
+            position: nil
         )
-        modelContext.insert(comm)
+        modelContext.insert(collectionItem)
+
         entry.currentLifecycleState = .placed
         dismiss()
         onComplete()

@@ -41,14 +41,12 @@ struct MainTabView: View {
         case captures
         case plans
         case lists
-        case communications
 
         var icon: String {
             switch self {
             case .captures: return Icons.inbox
             case .plans: return Icons.plans
             case .lists: return Icons.lists
-            case .communications: return Icons.communications
             }
         }
 
@@ -57,7 +55,6 @@ struct MainTabView: View {
             case .captures: return "Captures"
             case .plans: return "Plans"
             case .lists: return "Lists"
-            case .communications: return "Comms"
             }
         }
     }
@@ -76,8 +73,6 @@ private struct TabContent: View {
             OrganizeView(scope: .plans)
         case .lists:
             OrganizeView(scope: .lists)
-        case .communications:
-            OrganizeView(scope: .communications)
         }
     }
 }
@@ -122,13 +117,6 @@ private struct FloatingTabBar: View {
                 colorScheme: colorScheme,
                 style: style
             ) { selectedTab = .lists }
-
-            TabButton(
-                tab: .communications,
-                isSelected: selectedTab == .communications,
-                colorScheme: colorScheme,
-                style: style
-            ) { selectedTab = .communications }
         }
         .padding(.horizontal, Theme.Spacing.sm)
         .padding(.vertical, Theme.Spacing.sm)

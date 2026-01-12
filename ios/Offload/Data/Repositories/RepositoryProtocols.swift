@@ -37,21 +37,6 @@ protocol SuggestionRepositoryProtocol {
     func deleteDecision(decision: SuggestionDecision) throws
 }
 
-protocol TaskRepositoryProtocol {
-    func create(task: Task) throws
-    func fetchAll() throws -> [Task]
-    func fetchIncomplete() throws -> [Task]
-    func fetchCompleted() throws -> [Task]
-    func fetchByPlan(_ plan: Plan) throws -> [Task]
-    func fetchByCategory(_ category: Category) throws -> [Task]
-    func fetchById(_ id: UUID) throws -> Task?
-    func search(query: String) throws -> [Task]
-    func update(task: Task) throws
-    func complete(task: Task) throws
-    func uncomplete(task: Task) throws
-    func delete(task: Task) throws
-}
-
 protocol HandOffRepositoryProtocol {
     func createRequest(request: HandOffRequest) throws
     func fetchRequestById(_ id: UUID) throws -> HandOffRequest?
