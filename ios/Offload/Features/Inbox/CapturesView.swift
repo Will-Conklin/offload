@@ -320,14 +320,6 @@ private struct CaptureCard: View {
                 } label: {
                     Label("Move to List", systemImage: Icons.lists)
                 }
-
-                Divider()
-
-                Button(role: .destructive) {
-                    onDelete()
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
             }
         }
     }
