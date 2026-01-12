@@ -20,6 +20,8 @@ struct CapturesView: View {
     @State private var errorMessage: String?
     @State private var selectedEntry: CaptureEntry?
     @State private var tagPickerEntry: CaptureEntry?
+    @State private var moveEntry: CaptureEntry?
+    @State private var moveDestination: MoveDestination?
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
@@ -87,6 +89,33 @@ struct CapturesView: View {
                 )
                 .presentationDetents([.medium, .large])
             }
+            .sheet(isPresented: .constant(moveEntry != nil && moveDestination == .plan)) {
+                if let entry = moveEntry {
+                    MoveToPlanSheet(entry: entry, modelContext: modelContext) {
+                        moveEntry = nil
+                        moveDestination = nil
+                        _Concurrency.Task { await loadData() }
+                    }
+                }
+            }
+            .sheet(isPresented: .constant(moveEntry != nil && moveDestination == .list)) {
+                if let entry = moveEntry {
+                    MoveToListSheet(entry: entry, modelContext: modelContext) {
+                        moveEntry = nil
+                        moveDestination = nil
+                        _Concurrency.Task { await loadData() }
+                    }
+                }
+            }
+            .sheet(isPresented: .constant(moveEntry != nil && moveDestination == .communication)) {
+                if let entry = moveEntry {
+                    MoveToCommSheet(entry: entry, modelContext: modelContext) {
+                        moveEntry = nil
+                        moveDestination = nil
+                        _Concurrency.Task { await loadData() }
+                    }
+                }
+            }
             .task {
                 if workflowService == nil {
                     workflowService = CaptureWorkflowService(modelContext: modelContext)
@@ -141,8 +170,8 @@ struct CapturesView: View {
     }
 
     private func moveEntry(_ entry: CaptureEntry, to destination: MoveDestination) {
-        // TODO: Implement move to Plan/List/Comm
-        print("Move \(entry.rawText) to \(destination)")
+        moveEntry = entry
+        moveDestination = destination
     }
 
     private func createTag(name: String, for entry: CaptureEntry) {
@@ -639,6 +668,292 @@ private struct FlowLayout: Layout {
 
             self.size = CGSize(width: maxWidth, height: currentY + lineHeight)
         }
+    }
+}
+
+// MARK: - Move to Plan Sheet
+
+private struct MoveToPlanSheet: View {
+    let entry: CaptureEntry
+    let modelContext: ModelContext
+    let onComplete: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
+    @State private var selectedPlan: Plan?
+    @State private var createNew = false
+    @State private var newPlanTitle = ""
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if !plans.isEmpty {
+                    Section("Select Plan") {
+                        ForEach(plans) { plan in
+                            Button {
+                                selectedPlan = plan
+                                moveToSelectedPlan()
+                            } label: {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(plan.title)
+                                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                    if let detail = plan.detail, !detail.isEmpty {
+                                        Text(detail)
+                                            .font(.caption)
+                                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                            .lineLimit(1)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section {
+                    Button {
+                        createNew = true
+                    } label: {
+                        Label("Create New Plan", systemImage: "plus.circle.fill")
+                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                    }
+                }
+            }
+            .navigationTitle("Move to Plan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .alert("New Plan", isPresented: $createNew) {
+                TextField("Plan title", text: $newPlanTitle)
+                Button("Cancel", role: .cancel) {}
+                Button("Create") {
+                    createNewPlanAndMove()
+                }
+            } message: {
+                Text("Enter a title for the new plan")
+            }
+        }
+    }
+
+    private func moveToSelectedPlan() {
+        guard let plan = selectedPlan else { return }
+        let task = Task(
+            title: entry.rawText,
+            detail: nil,
+            importance: 3,
+            dueDate: nil,
+            plan: plan
+        )
+        modelContext.insert(task)
+        entry.currentLifecycleState = .placed
+        dismiss()
+        onComplete()
+    }
+
+    private func createNewPlanAndMove() {
+        let trimmed = newPlanTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let plan = Plan(title: trimmed, detail: nil)
+        modelContext.insert(plan)
+
+        let task = Task(
+            title: entry.rawText,
+            detail: nil,
+            importance: 3,
+            dueDate: nil,
+            plan: plan
+        )
+        modelContext.insert(task)
+        entry.currentLifecycleState = .placed
+        dismiss()
+        onComplete()
+    }
+}
+
+// MARK: - Move to List Sheet
+
+private struct MoveToListSheet: View {
+    let entry: CaptureEntry
+    let modelContext: ModelContext
+    let onComplete: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @Query(sort: \ListEntity.createdAt, order: .reverse) private var lists: [ListEntity]
+    @State private var selectedList: ListEntity?
+    @State private var createNew = false
+    @State private var newListTitle = ""
+    @State private var newListKind: ListKind = .reference
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if !lists.isEmpty {
+                    Section("Select List") {
+                        ForEach(lists) { list in
+                            Button {
+                                selectedList = list
+                                moveToSelectedList()
+                            } label: {
+                                HStack {
+                                    Text(list.title)
+                                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                    Spacer()
+                                    Text(list.listKind.rawValue.capitalized)
+                                        .font(.caption)
+                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section {
+                    Button {
+                        createNew = true
+                    } label: {
+                        Label("Create New List", systemImage: "plus.circle.fill")
+                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                    }
+                }
+            }
+            .navigationTitle("Move to List")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+            .sheet(isPresented: $createNew) {
+                NavigationStack {
+                    Form {
+                        TextField("List title", text: $newListTitle)
+                        Picker("Type", selection: $newListKind) {
+                            ForEach(ListKind.allCases, id: \.self) { kind in
+                                Text(kind.rawValue.capitalized).tag(kind)
+                            }
+                        }
+                    }
+                    .navigationTitle("New List")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { createNew = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Create") {
+                                createNewListAndMove()
+                            }
+                            .disabled(newListTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func moveToSelectedList() {
+        guard let list = selectedList else { return }
+        let item = ListItem(text: entry.rawText, list: list)
+        modelContext.insert(item)
+        entry.currentLifecycleState = .placed
+        dismiss()
+        onComplete()
+    }
+
+    private func createNewListAndMove() {
+        let trimmed = newListTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let list = ListEntity(title: trimmed, kind: newListKind)
+        modelContext.insert(list)
+
+        let item = ListItem(text: entry.rawText, list: list)
+        modelContext.insert(item)
+        entry.currentLifecycleState = .placed
+        createNew = false
+        dismiss()
+        onComplete()
+    }
+}
+
+// MARK: - Move to Comm Sheet
+
+private struct MoveToCommSheet: View {
+    let entry: CaptureEntry
+    let modelContext: ModelContext
+    let onComplete: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @State private var channel: CommunicationChannel = .text
+    @State private var recipient = ""
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Communication Details") {
+                    Picker("Type", selection: $channel) {
+                        ForEach(CommunicationChannel.allCases, id: \.self) { c in
+                            Text(c.rawValue.capitalized).tag(c)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    TextField("Recipient", text: $recipient)
+                }
+
+                Section("Message") {
+                    Text(entry.rawText)
+                        .font(.body)
+                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                }
+            }
+            .navigationTitle("Move to Comm")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Create") {
+                        createComm()
+                    }
+                    .disabled(recipient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func createComm() {
+        let trimmed = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let comm = CommunicationItem(
+            channel: channel,
+            recipient: trimmed,
+            content: entry.rawText
+        )
+        modelContext.insert(comm)
+        entry.currentLifecycleState = .placed
+        dismiss()
+        onComplete()
     }
 }
 
