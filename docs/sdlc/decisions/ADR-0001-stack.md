@@ -116,13 +116,14 @@ We will use the following technology stack:
 - Use `PersistenceController` for the app-wide container.
 - Separate `preview` container for SwiftUI previews with sample data.
 - Keep `SwiftDataManager` for configurable containers (CloudKit, migrations, backup/restore TODOs).
-- Schema registers capture workflow models (`CaptureEntry`, `HandOffRequest`, `HandOffRun`, `Suggestion`, `SuggestionDecision`, `Placement`) plus destinations (`Plan`, `Task`, `Tag`, `Category`, `ListEntity`, `ListItem`, `CommunicationItem`).
+- Schema registers core models (`Item`, `Collection`, `CollectionItem`, `Tag`).
 
 ### SwiftData Relationships
 
 - **@Relationship** annotations with delete rules tuned per entity:
-  - Cascade: CaptureEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision; Plan → Task; ListEntity → ListItem
-  - Nullify: Task → Category; Tag ↔ Task (many-to-many)
+  - Cascade: Collection → CollectionItem; Item → CollectionItem
+  - CollectionItem links Item ↔ Collection for many-to-many membership
+- Tag is a standalone model; item tag values are stored on `Item.tags`.
 - Enum properties stored as strings with computed wrappers for type safety.
 
 ### Feature Organization
@@ -132,8 +133,8 @@ We will use the following technology stack:
 
 ### Repository Pattern (Current)
 
-- Repositories wrap SwiftData operations for capture workflow and destination entities (Capture, HandOff, Suggestion, Placement, Plan, Task, Tag, Category, List, Communication).
-- `CaptureWorkflowService` orchestrates capture/inbox behaviors; AI submission/placement methods are stubbed for future implementation.
+- Repositories wrap SwiftData operations for core entities (Item, Collection, CollectionItem, Tag).
+- Views use `@Query` or repositories depending on complexity.
 - Pattern keeps views lightweight and enables future persistence swaps if needed.
 
 ### SwiftData Predicate Limitations (Week 2 Findings)

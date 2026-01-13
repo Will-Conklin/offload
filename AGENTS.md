@@ -146,19 +146,20 @@ Code is organized by feature and layer:
 
 - **App/**: App lifecycle, configuration, dependency injection
 - **Features/**: UI screens and flows grouped by feature (Inbox, Capture, Organize)
-- **Domain/**: Business logic, models (event-sourced capture architecture)
+- **Domain/**: Business logic, models (simplified Item/Collection schema)
 - **Data/**: Persistence, repositories, services, networking
 - **DesignSystem/**: Reusable UI components, themes, design tokens
 
 ### iOS - Current Model Implementation
 
-Event-sourced capture architecture with 13 SwiftData models:
+Unified capture + organization model with 4 SwiftData models:
 
-**Workflow Models**: CaptureEntry, HandOffRequest, HandOffRun, Suggestion, SuggestionDecision, Placement
+- **Item**: Core content entity (uncategorized capture when `type` is nil; `task`/`link` when organized).
+- **Collection**: Container for items (isStructured=true for plans, false for lists).
+- **CollectionItem**: Join model for many-to-many relationships, with ordering + hierarchy.
+- **Tag**: Tag metadata; item tag values live on `Item.tags`.
 
-**Destination Models**: Plan, Task, Tag, Category, ListEntity, ListItem, CommunicationItem
-
-See [Thought Capture Model Plan](docs/plans/brain-dump-model.md) for architecture details.
+Legacy capture workflow models are tracked in [Thought Capture Model Plan](docs/plans/brain-dump-model.md) as future reference.
 
 ### iOS - SwiftData Setup
 

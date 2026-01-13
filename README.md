@@ -72,17 +72,14 @@ with AI).
 ✅ **Phase 1-3 Remediation Complete** — All critical bugs fixed, architecture
 improvements done.
 🚧 **UI/UX Modernization** — Research complete, implementation starting Week 2.
-🚧 **AI Workflows** — Capture flows functional, AI hand-off and organization
-flows stubbed.
+🚧 **AI Workflows** — Deferred to post-v1; manual capture and organization in
+progress.
 
 ### ✅ Implemented (Core)
 
-- SwiftData capture/organization models (CaptureEntry, HandOffRequest/Run,
-  Suggestion, SuggestionDecision, Placement, Plan/Task/Tag/Category,
-  ListEntity/ListItem, CommunicationItem)
-- Repository layer plus `CaptureWorkflowService` for capture, inbox queries, and
-  lifecycle operations
-- SwiftUI captures view and capture sheet with text + voice recording via
+- SwiftData core models (Item, Collection, CollectionItem, Tag)
+- Repository layer for items, collections, collection items, and tags
+- SwiftUI capture + inbox views with text and voice recording via
   `VoiceRecordingService`
 - Persistence wired through `PersistenceController` for production and preview
   containers
@@ -93,8 +90,7 @@ flows stubbed.
   3/3 architecture). Testing and validation in progress.
 - **UI/UX Modernization:** Research complete. Week 2-8 implementation planned
   (glassmorphism, components, ADHD features).
-- **AI Workflows:** Hand-off orchestration, suggestion processing, and placement
-  stubbed in `CaptureWorkflowService`.
+- **AI Workflows:** Organization flows deferred to post-v1.
 - **Organization UI:** Organize tab and Settings view exist with TODOs.
   MainTabView with tab-based navigation in place.
 
@@ -148,85 +144,74 @@ Feature-based modular architecture with clear separation of concerns:
 graph LR
     subgraph "Presentation Layer"
         CAPTURES[CapturesView]
-        CAPTURE[CaptureSheetView]
+        CAPTURE[CaptureView]
         ORGANIZE[OrganizeView]
+        COLLECTION[CollectionDetailView]
     end
 
     subgraph "Service Layer"
-        WORKFLOW[CaptureWorkflowService]
         VOICE[VoiceRecordingService]
     end
 
     subgraph "Repository Layer"
-        CREPO[CaptureRepository]
-        HOREPO[HandOffRepository]
-        SUGREPO[SuggestionRepository]
-        PREPO[PlacementRepository]
-        PLANREPO[PlanRepository]
-        TREPO[TaskRepository]
+        IREPO[ItemRepository]
+        CREPO[CollectionRepository]
+        CIREPO[CollectionItemRepository]
+        TREPO[TagRepository]
     end
 
     subgraph "Domain Models"
-        CAP[CaptureEntry]
-        HO[HandOffRequest/Run]
-        SUG[Suggestion]
-        PLAN[Plan]
-        TASK[Task]
+        ITEM[Item]
+        COLLECTIONM[Collection]
+        COLITEM[CollectionItem]
+        TAG[Tag]
     end
 
     subgraph "Data Layer"
         SWIFTDATA[(SwiftData)]
     end
 
-    CAPTURES --> WORKFLOW
-    CAPTURE --> WORKFLOW
+    CAPTURES --> IREPO
+    CAPTURE --> IREPO
+    ORGANIZE --> CREPO
+    ORGANIZE --> CIREPO
+    COLLECTION --> CIREPO
     CAPTURE --> VOICE
-    ORGANIZE --> WORKFLOW
 
-    WORKFLOW --> CREPO
-    WORKFLOW --> HOREPO
-    WORKFLOW --> SUGREPO
-    WORKFLOW --> PREPO
+    IREPO --> ITEM
+    CREPO --> COLLECTIONM
+    CIREPO --> COLITEM
+    TREPO --> TAG
 
-    CREPO --> CAP
-    HOREPO --> HO
-    SUGREPO --> SUG
-    PLANREPO --> PLAN
-    TREPO --> TASK
-
-    CAP --> SWIFTDATA
-    HO --> SWIFTDATA
-    SUG --> SWIFTDATA
-    PLAN --> SWIFTDATA
-    TASK --> SWIFTDATA
+    ITEM --> SWIFTDATA
+    COLLECTIONM --> SWIFTDATA
+    COLITEM --> SWIFTDATA
+    TAG --> SWIFTDATA
 
     style CAPTURES fill:#4CAF50
     style CAPTURE fill:#4CAF50
     style ORGANIZE fill:#4CAF50
-    style WORKFLOW fill:#9C27B0
+    style COLLECTION fill:#4CAF50
     style VOICE fill:#9C27B0
     style SWIFTDATA fill:#2196F3
 ```
 
 ## Data Model
 
-- **Capture + Workflow**: CaptureEntry → HandOffRequest → HandOffRun →
-  Suggestion → SuggestionDecision → Placement
-- **Destinations**: Plan/Task, Tag, Category, ListEntity/ListItem,
-  CommunicationItem
-- **Lifecycle States**: raw → handedOff → ready → placed → archived
+- **Item**: Core content entity (uncategorized capture when `type` is nil)
+- **Collection**: Container for items (plan when `isStructured` is true, list when false)
+- **CollectionItem**: Join model for many-to-many relationships, with ordering and hierarchy
+- **Tag**: Tag metadata; items store tag names in `Item.tags`
 
 ```mermaid
 flowchart LR
-    Entry["CaptureEntry\n(raw capture)"]
-    Request[HandOffRequest]
-    Run[HandOffRun]
-    Suggestion[Suggestion]
-    Decision[SuggestionDecision]
-    Placement["Placement\n(targetType,targetId")]
-    Destination[Plans / Tasks / Lists / Communication]
+    ITEM[Item]
+    COLITEM[CollectionItem]
+    COLLECTION[Collection]
+    TAG[Tag]
 
-    Entry --> Request --> Run --> Suggestion --> Decision --> Placement --> Destination
+    ITEM --> COLITEM --> COLLECTION
+    TAG -.-> ITEM
 ```
 
 ### Data Flow: Capture to Captures View
@@ -234,29 +219,26 @@ flowchart LR
 ```mermaid
 sequenceDiagram
     participant User
-    participant CaptureSheet as CaptureSheetView
+    participant CaptureView
     participant VoiceService
-    participant Workflow as CaptureWorkflowService
     participant SwiftData
 
-    User->>CaptureSheet: Tap microphone
-    CaptureSheet->>VoiceService: startRecording()
+    User->>CaptureView: Tap microphone
+    CaptureView->>VoiceService: startRecording()
     VoiceService->>User: Request mic + speech permissions
-    VoiceService-->>CaptureSheet: Partial transcription
-    CaptureSheet->>User: Show live text
+    VoiceService-->>CaptureView: Partial transcription
+    CaptureView->>User: Show live text
 
     loop Real-time transcription
         User->>VoiceService: Speak
-        VoiceService->>CaptureSheet: Update transcribedText
-        CaptureSheet->>User: Display text
+        VoiceService->>CaptureView: Update transcribedText
+        CaptureView->>User: Display text
     end
 
-    User->>CaptureSheet: Tap save
-    CaptureSheet->>Workflow: captureEntry(rawText,inputType,source)
-    Workflow->>SwiftData: Insert CaptureEntry
-    SwiftData-->>Workflow: Persisted
-    Workflow-->>CaptureSheet: Entry saved
-    CaptureSheet-->>User: Entry appears in Captures
+    User->>CaptureView: Tap save
+    CaptureView->>SwiftData: Insert Item (type=nil)
+    SwiftData-->>CaptureView: Persisted
+    CaptureView-->>User: Item appears in Captures
 ```
 
 ## Project Structure
@@ -270,8 +252,8 @@ offload/
 │   │   ├── App/                  # Application entry point
 │   │   ├── Features/             # Feature modules
 │   │   │   ├── Capture/          # Voice & text capture
-│   │   │   ├── Captures/         # Captures view (inbox)
-│   │   │   └── Organize/         # Task organization
+│   │   │   ├── Inbox/            # Captures view (inbox)
+│   │   │   └── Organize/         # Plan/list organization
 │   │   ├── Domain/               # Business logic
 │   │   │   └── Models/           # SwiftData models
 │   │   ├── Data/                 # Data layer
@@ -331,19 +313,17 @@ they are isolated and fast; ensure test files are included in the
 
 - **Capture**: Text and voice capture with live transcription using the Speech
   framework (offline-first)
-- **Captures View**: Capture list with lifecycle tracking (raw → archived)
-  powered by `CaptureWorkflowService`
-- **Data Layer**: SwiftData models for capture workflow plus destinations
-  (plans, tasks, tags, categories, lists, communication)
-- **Repositories**: CRUD + lifecycle helpers for every model; preview container
-  seeded for SwiftUI previews
+- **Captures View**: Inbox list of uncategorized items (type=nil) with completion
+  and deletion
+- **Data Layer**: SwiftData models for items, collections, collection items, and tags
+- **Repositories**: CRUD helpers for core models; preview container seeded for
+  SwiftUI previews
 
 ### 🚧 In Development
 
-- Manual organization surfaces for plans, tags, and categories (Organize tab
-  contains placeholders)
-- AI hand-off orchestration and suggestion processing (workflow methods stubbed)
-- Settings, deeper navigation, placement flows, and consistent tab-based shell
+- Manual organization surfaces for plans and lists (Organize tab + detail views)
+- Tag management and cleanup flows
+- Settings, deeper navigation, and consistent tab-based shell
 
 ### 📅 Planned
 
@@ -361,7 +341,7 @@ they are isolated and fast; ensure test files are included in the
   source of truth for all planning
 - 🏗️ [Architecture Decision Records](docs/decisions/)
 - 🧭 [ADHD UX/UI Guardrails (ADR-0003)](docs/decisions/ADR-0003-adhd-ux-guardrails.md)
-- 🧠 [Capture Model Plan](docs/plans/brain-dump-model.md)
+- 🧠 [Capture Model Plan (Legacy)](docs/plans/brain-dump-model.md)
 - 🎨 [iOS UI Trends Research (2025-2026)](docs/research/ios-ui-trends-2025.md)
 - 🎨 [ADHD-First UX/UI Research](docs/research/adhd-ux-ui.md)
 - 📦 [Project Scaffolding Details](ios/SCAFFOLDING.md)
@@ -370,16 +350,16 @@ they are isolated and fast; ensure test files are included in the
 
 - 🎤 [Voice Capture Testing Guide](docs/testing/voice-capture.md)
 - 📊 [Voice Capture Test Results](docs/testing/voice-capture-results.md)
-- 🧪 SwiftData repositories and workflow tests in `ios/OffloadTests`
+- 🧪 SwiftData repositories and model tests in `ios/OffloadTests`
 
 ### Implementation Status
 
 - ✅ **Phase 1-3 Remediation:** All critical bugs fixed, architecture
   improvements complete
-- ✅ **Data Layer:** Capture models, repositories, and workflow service
-- ✅ **Capture UI:** Captures view and capture sheet with voice/text
+- ✅ **Data Layer:** Item/Collection/CollectionItem/Tag models and repositories
+- ✅ **Capture UI:** Capture view and Captures view with voice/text
 - 🚧 **UI/UX Modernization:** Research complete, Weeks 2-8 implementation planned
-- 🚧 **Organization UI:** Organize tab flows, AI hand-off, suggestion processing
+- 🚧 **Organization UI:** Organize tab flows and collection detail surfaces
 - 📅 **Post-v1:** AI workflows, backend sync, widgets
 
 See [Master Plan](docs/plans/master-plan.md) for detailed roadmap.
