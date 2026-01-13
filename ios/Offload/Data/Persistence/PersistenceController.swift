@@ -21,7 +21,6 @@ struct PersistenceController {
             Collection.self,
             CollectionItem.self,
             Tag.self,
-            Category.self,
         ])
         let configuration = ModelConfiguration(
             schema: schema,
@@ -45,7 +44,6 @@ struct PersistenceController {
             Collection.self,
             CollectionItem.self,
             Tag.self,
-            Category.self,
         ])
         let configuration = ModelConfiguration(
             schema: schema,

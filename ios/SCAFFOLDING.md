@@ -26,12 +26,11 @@ The app compiles with functional capture and organization flows using a simplifi
 - **Collection**: Container with isStructured flag (true=Plan with ordering, false=List without).
 - **CollectionItem**: Junction table enabling many-to-many relationships with position and parentId for hierarchy.
 - **Tag**: Simple categorization (name, color).
-- **Category**: Additional categorization (name, icon).
 - All models use SwiftData `@Model` macro with appropriate delete rules for relationships.
 
 ### 4) Data Layer (`Data/`)
-- **Persistence/**: `PersistenceController` and `SwiftDataManager` register the 5-model schema for production/preview; TODOs remain for migrations/CloudKit.
-- **Repositories/**: CRUD operations for Item, Collection, CollectionItem, Tag, and Category with SwiftData integration.
+- **Persistence/**: `PersistenceController` and `SwiftDataManager` register the 4-model schema for production/preview; TODOs remain for migrations/CloudKit.
+- **Repositories/**: CRUD operations for Item, Collection, CollectionItem, and Tag with SwiftData integration.
 - **Services/**: `VoiceRecordingService` provides recording + on-device transcription.
 
 ### 5) Design System (`DesignSystem/`)
@@ -49,12 +48,12 @@ The app compiles with functional capture and organization flows using a simplifi
 - CapturesView lists uncategorized Items with completion and deletion.
 - Organization views for Plans and Lists with create/edit/delete operations.
 - CollectionDetailView with inline item editing, starring, tagging, and move operations.
-- Simplified 5-model SwiftData schema registered for production and preview.
+- Simplified 4-model SwiftData schema registered for production and preview.
 - Theme system with 4 color schemes (Ocean Teal, Violet Pop, Sunset Coral, Slate).
 
 ### 🔄 In Progress / TODO
 - Settings view for app preferences and theme selection.
-- Enhanced tag and category management flows.
+- Enhanced tag management flows.
 - AI-assisted organization features (future enhancement).
 - CloudKit/backup/migration strategy in `SwiftDataManager`.
 - Comprehensive test suite for new model and repositories.
