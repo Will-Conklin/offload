@@ -821,8 +821,10 @@ private struct AddItemSheet: View {
         modelContext.insert(item)
 
         var position: Int? = nil
-        if let collection = collection, collection.isStructured {
-            position = collection.collectionItems?.count ?? 0
+        if let collection = collection {
+            if collection.isStructured {
+                position = collection.collectionItems?.count ?? 0
+            }
         }
 
         let collectionItem = CollectionItem(
@@ -830,6 +832,10 @@ private struct AddItemSheet: View {
             itemId: item.id,
             position: position
         )
+        if let collection = collection {
+            collectionItem.collection = collection
+            collectionItem.item = item
+        }
         modelContext.insert(collectionItem)
 
         try? modelContext.save()
