@@ -98,11 +98,6 @@ struct CollectionDetailView: View {
                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
 
                 Spacer()
-
-                if collection.isStructured {
-                    Image(systemName: "list.number")
-                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                }
             }
 
             Text("\(items.count) item\(items.count == 1 ? "" : "s")")

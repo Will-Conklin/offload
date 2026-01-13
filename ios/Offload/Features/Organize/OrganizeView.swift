@@ -143,16 +143,6 @@ private struct CollectionCard: View {
                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
 
                 Spacer()
-
-                if collection.isStructured {
-                    Image(systemName: "list.number")
-                        .font(.caption)
-                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
-                        .clipShape(Capsule())
-                }
             }
 
             HStack {
