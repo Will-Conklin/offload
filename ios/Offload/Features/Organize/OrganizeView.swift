@@ -8,9 +8,18 @@
 import SwiftUI
 import SwiftData
 
+// AGENT NAV
+// - Scope
+// - Layout
+// - Collections
+// - Picker
+// - Sheets
+
 struct OrganizeView: View {
-    enum Scope {
+    enum Scope: String, CaseIterable, Identifiable {
         case plans, lists
+
+        var id: String { rawValue }
 
         var title: String {
             switch self {
@@ -33,15 +42,19 @@ struct OrganizeView: View {
 
     @Query(sort: \Collection.createdAt, order: .reverse) private var allCollections: [Collection]
 
-    let scope: Scope
+    @AppStorage("organize.scope") private var selectedScopeRaw = Scope.plans.rawValue
     @State private var showingCreate = false
     @State private var showingSettings = false
     @State private var selectedCollection: Collection?
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
+    private var selectedScope: Scope {
+        Scope(rawValue: selectedScopeRaw) ?? .plans
+    }
+
     private var filteredCollections: [Collection] {
-        allCollections.filter { $0.isStructured == scope.isStructured }
+        allCollections.filter { $0.isStructured == selectedScope.isStructured }
     }
 
     var body: some View {
@@ -50,16 +63,20 @@ struct OrganizeView: View {
                 Theme.Colors.background(colorScheme, style: style)
                     .ignoresSafeArea()
 
-                ScrollView {
-                    LazyVStack(spacing: Theme.Spacing.sm) {
-                        collectionsContent
+                VStack(spacing: Theme.Spacing.sm) {
+                    scopePicker
+
+                    ScrollView {
+                        LazyVStack(spacing: Theme.Spacing.sm) {
+                            collectionsContent
+                        }
+                        .padding(.horizontal, Theme.Spacing.md)
+                        .padding(.top, Theme.Spacing.sm)
+                        .padding(.bottom, 100)
                     }
-                    .padding(.horizontal, Theme.Spacing.md)
-                    .padding(.top, Theme.Spacing.sm)
-                    .padding(.bottom, 100)
                 }
             }
-            .navigationTitle(scope.title)
+            .navigationTitle("Organize")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button { showingCreate = true } label: {
@@ -103,13 +120,13 @@ struct OrganizeView: View {
 
     private var emptyState: some View {
         VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: scope == .plans ? Icons.plans : Icons.lists)
+            Image(systemName: selectedScope == .plans ? Icons.plans : Icons.lists)
                 .font(.largeTitle)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Text("No \(scope.title.lowercased()) yet")
+            Text("No \(selectedScope.title.lowercased()) yet")
                 .font(.body)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Button("Create \(scope == .plans ? "Plan" : "List")") { showingCreate = true }
+            Button("Create \(selectedScope == .plans ? "Plan" : "List")") { showingCreate = true }
                 .font(.headline)
                 .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
         }
@@ -117,12 +134,53 @@ struct OrganizeView: View {
         .padding(.vertical, Theme.Spacing.xxl)
     }
 
+    // MARK: - Scope Picker
+
+    private var scopePicker: some View {
+        HStack(spacing: Theme.Spacing.xs) {
+            scopeButton(.plans)
+            scopeButton(.lists)
+        }
+        .padding(Theme.Spacing.xs)
+        .background(Theme.Colors.surface(colorScheme, style: style))
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(Theme.Colors.border(colorScheme, style: style), lineWidth: 1)
+        )
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.top, Theme.Spacing.sm)
+    }
+
+    private func scopeButton(_ scope: Scope) -> some View {
+        Button {
+            selectedScopeRaw = scope.rawValue
+        } label: {
+            Text(scope.title)
+                .font(.subheadline.weight(selectedScope == scope ? .semibold : .regular))
+                .foregroundStyle(
+                    selectedScope == scope
+                        ? Theme.Colors.textPrimary(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style)
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Theme.Spacing.xs)
+                .background(
+                    selectedScope == scope
+                        ? Theme.Colors.card(colorScheme, style: style)
+                        : Color.clear
+                )
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
     // MARK: - Create Sheet
 
     @ViewBuilder
     private var createSheet: some View {
-        CollectionFormSheet(isStructured: scope.isStructured) { name in
-            let collection = Collection(name: name, isStructured: scope.isStructured)
+        CollectionFormSheet(isStructured: selectedScope.isStructured) { name in
+            let collection = Collection(name: name, isStructured: selectedScope.isStructured)
             modelContext.insert(collection)
         }
     }
@@ -198,7 +256,7 @@ private struct CollectionFormSheet: View {
 }
 
 #Preview {
-    OrganizeView(scope: .plans)
+    OrganizeView()
         .modelContainer(PersistenceController.preview)
         .environmentObject(ThemeManager.shared)
 }

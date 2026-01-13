@@ -8,6 +8,13 @@
 import SwiftUI
 import SwiftData
 
+// AGENT NAV
+// - Tabs
+// - Content
+// - Floating Tab Bar
+// - Tab Buttons
+// - Capture Button
+
 struct MainTabView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
@@ -39,22 +46,19 @@ struct MainTabView: View {
 
     enum Tab: CaseIterable {
         case captures
-        case plans
-        case lists
+        case organize
 
         var icon: String {
             switch self {
             case .captures: return Icons.captures
-            case .plans: return Icons.plans
-            case .lists: return Icons.lists
+            case .organize: return Icons.organize
             }
         }
 
         var label: String {
             switch self {
             case .captures: return "Captures"
-            case .plans: return "Plans"
-            case .lists: return "Lists"
+            case .organize: return "Organize"
             }
         }
     }
@@ -69,10 +73,8 @@ private struct TabContent: View {
         switch selectedTab {
         case .captures:
             CapturesView()
-        case .plans:
-            OrganizeView(scope: .plans)
-        case .lists:
-            OrganizeView(scope: .lists)
+        case .organize:
+            OrganizeView()
         }
     }
 }
@@ -87,20 +89,13 @@ private struct FloatingTabBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // Left tabs
+            // Left tab
             TabButton(
                 tab: .captures,
                 isSelected: selectedTab == .captures,
                 colorScheme: colorScheme,
                 style: style
             ) { selectedTab = .captures }
-
-            TabButton(
-                tab: .plans,
-                isSelected: selectedTab == .plans,
-                colorScheme: colorScheme,
-                style: style
-            ) { selectedTab = .plans }
 
             // Center capture button
             CaptureButton(
@@ -110,13 +105,13 @@ private struct FloatingTabBar: View {
             )
             .padding(.horizontal, Theme.Spacing.sm)
 
-            // Right tabs
+            // Right tab
             TabButton(
-                tab: .lists,
-                isSelected: selectedTab == .lists,
+                tab: .organize,
+                isSelected: selectedTab == .organize,
                 colorScheme: colorScheme,
                 style: style
-            ) { selectedTab = .lists }
+            ) { selectedTab = .organize }
         }
         .padding(.horizontal, Theme.Spacing.sm)
         .padding(.vertical, Theme.Spacing.sm)

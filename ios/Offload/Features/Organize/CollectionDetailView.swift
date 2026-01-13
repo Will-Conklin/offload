@@ -32,7 +32,7 @@ struct CollectionDetailView: View {
     @State private var newItemContent = ""
 
     private var style: ThemeStyle { themeManager.currentStyle }
-    private var quickAddBottomPadding: CGFloat { Theme.Spacing.xxl + Theme.Spacing.lg }
+    private var quickAddBottomPadding: CGFloat { Theme.Spacing.xxl + Theme.Spacing.xl }
 
     var body: some View {
         ZStack {
@@ -63,7 +63,7 @@ struct CollectionDetailView: View {
                         .padding(.horizontal, Theme.Spacing.md)
                     }
                     .padding(.top, Theme.Spacing.sm)
-                    .padding(.bottom, quickAddBottomPadding + Theme.Spacing.lg)
+                    .padding(.bottom, quickAddBottomPadding + Theme.Spacing.xl)
                 }
 
                 // Quick add button
@@ -266,6 +266,7 @@ private struct AddItemSheet: View {
     let collectionID: UUID
     let collection: Collection?
 
+    @Query(sort: \Collection.name) private var collections: [Collection]
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
@@ -273,6 +274,11 @@ private struct AddItemSheet: View {
     @State private var type: ItemType = .task
     @State private var isStarred = false
     @State private var tags: [String] = []
+    @State private var linkedCollectionId: UUID?
+
+    private var linkableCollections: [Collection] {
+        collections.filter { $0.id != collectionID }
+    }
 
     var body: some View {
         NavigationStack {
@@ -291,6 +297,21 @@ private struct AddItemSheet: View {
                     .pickerStyle(.segmented)
                 }
 
+                if type == .link {
+                    Section("Linked Collection") {
+                        if linkableCollections.isEmpty {
+                            Text("No other collections available.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Picker("Collection", selection: $linkedCollectionId) {
+                                ForEach(linkableCollections) { collection in
+                                    Text(collection.name).tag(Optional(collection.id))
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Section("Options") {
                     Toggle("Starred", isOn: $isStarred)
                 }
@@ -306,17 +327,39 @@ private struct AddItemSheet: View {
                         addItem()
                         dismiss()
                     }
-                    .disabled(content.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(isAddDisabled)
+                }
+            }
+            .onAppear {
+                if type == .link && linkedCollectionId == nil {
+                    linkedCollectionId = linkableCollections.first?.id
+                }
+            }
+            .onChange(of: type) { _, newValue in
+                if newValue == .link {
+                    linkedCollectionId = linkableCollections.first?.id
+                } else {
+                    linkedCollectionId = nil
                 }
             }
         }
     }
 
+    private var isAddDisabled: Bool {
+        let isContentEmpty = content.trimmingCharacters(in: .whitespaces).isEmpty
+        if type == .link {
+            return isContentEmpty || linkedCollectionId == nil
+        }
+        return isContentEmpty
+    }
+
     private func addItem() {
+        let linkedId = type == .link ? linkedCollectionId : nil
         // Create item
         let item = Item(
             type: type.rawValue,
             content: content,
+            linkedCollectionId: linkedId,
             tags: tags,
             isStarred: isStarred
         )
