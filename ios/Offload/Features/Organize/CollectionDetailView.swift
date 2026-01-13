@@ -8,6 +8,15 @@
 import SwiftUI
 import SwiftData
 
+// AGENT NAV
+// - State
+// - Layout
+// - Header
+// - Quick Add
+// - Data Loading
+// - Item Row
+// - Sheets
+
 struct CollectionDetailView: View {
     let collectionID: UUID
 
@@ -23,6 +32,7 @@ struct CollectionDetailView: View {
     @State private var newItemContent = ""
 
     private var style: ThemeStyle { themeManager.currentStyle }
+    private var quickAddBottomPadding: CGFloat { Theme.Spacing.xxl + Theme.Spacing.lg }
 
     var body: some View {
         ZStack {
@@ -53,7 +63,7 @@ struct CollectionDetailView: View {
                         .padding(.horizontal, Theme.Spacing.md)
                     }
                     .padding(.top, Theme.Spacing.sm)
-                    .padding(.bottom, 100)
+                    .padding(.bottom, quickAddBottomPadding + Theme.Spacing.lg)
                 }
 
                 // Quick add button
@@ -126,7 +136,7 @@ struct CollectionDetailView: View {
             .clipShape(Capsule())
             .shadow(radius: 4)
         }
-        .padding(.bottom, Theme.Spacing.lg)
+        .padding(.bottom, quickAddBottomPadding)
     }
 
     // MARK: - Data Loading
