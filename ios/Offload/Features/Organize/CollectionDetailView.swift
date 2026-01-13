@@ -116,6 +116,11 @@ struct CollectionDetailView: View {
         .navigationDestination(item: $linkedCollection) { collection in
             CollectionDetailView(collectionID: collection.id)
         }
+        .onChange(of: showingAddItem) { _, isPresented in
+            if !isPresented {
+                loadItems()
+            }
+        }
         .onAppear {
             loadCollection()
         }

@@ -278,6 +278,7 @@ struct CaptureView: View {
             isStarred: isStarred
         )
         modelContext.insert(item)
+        try? modelContext.save()
         dismiss()
     }
 }
