@@ -4,7 +4,7 @@ import SwiftData
 @Model
 final class Item {
     var id: UUID
-    var type: String? // "task", "note", "link" - nullable for uncategorized captures
+    var type: String? // "task", "link" - nullable for uncategorized captures
     var content: String
     var metadata: String // JSON string for flexible future features
     var linkedCollectionId: UUID? // for type="link" items pointing to collections

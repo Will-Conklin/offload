@@ -15,21 +15,15 @@ final class Category {
     var icon: String?
     var createdAt: Date
 
-    // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \Task.category)
-    var tasks: [Task]?
-
     init(
         id: UUID = UUID(),
         name: String,
         icon: String? = nil,
-        createdAt: Date = Date(),
-        tasks: [Task]? = nil
+        createdAt: Date = Date()
     ) {
         self.id = id
         self.name = name
         self.icon = icon
         self.createdAt = createdAt
-        self.tasks = tasks
     }
 }
