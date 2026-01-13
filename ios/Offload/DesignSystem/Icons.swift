@@ -16,7 +16,7 @@ import SwiftUI
 struct Icons {
     // MARK: - Navigation
 
-    static let inbox = "lightbulb"
+    static let captures = "lightbulb"
     static let capture = "plus.circle.fill"
     static let organize = "folder"
     static let settings = "gearshape"

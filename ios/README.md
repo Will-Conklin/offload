@@ -22,15 +22,14 @@ SwiftUI iOS application for Offload — a friction-free thought capture and orga
 Offload/
 ├── App/                    # Application entry point & root navigation
 ├── Features/               # Feature modules organized by screen/flow
-│   ├── Inbox/             # Inbox view & related components (uses CaptureWorkflowService)
 │   ├── Capture/           # Quick capture flow (text + voice)
-│   └── Organize/          # Organization views (plans, tags, categories; TODO actions)
+│   └── Organize/          # Organization views (plans and lists, collections, items)
 ├── Domain/                 # Business logic & models (SwiftData)
-│   └── Models/            # CaptureEntry, HandOff*, Suggestion*, Placement, Plan/Task/Tag/Category/List/Communication
+│   └── Models/            # Item, Collection, CollectionItem, Tag, Category
 ├── Data/                   # Data layer
 │   ├── Persistence/       # SwiftData configuration via PersistenceController + SwiftDataManager
-│   ├── Repositories/      # Data access patterns for capture, hand-off, suggestions, placements, and destinations
-│   └── Services/          # VoiceRecordingService, CaptureWorkflowService stubs for AI orchestration
+│   ├── Repositories/      # Data access patterns for items, collections, tags, and categories
+│   └── Services/          # VoiceRecordingService for on-device speech recognition
 ├── DesignSystem/          # UI components, theme, design tokens
 ├── Resources/             # Assets, fonts, etc.
 └── SupportingFiles/       # Info.plist, entitlements
@@ -77,30 +76,35 @@ graph LR
 
 ### SwiftData Models
 
-All models use the `@Model` macro with enum raw-value storage for SwiftData compatibility:
+All models use the `@Model` macro for SwiftData persistence:
 
-- **Capture workflow**: CaptureEntry → HandOffRequest/Run → Suggestion → SuggestionDecision → Placement
-- **Destinations**: Plan, Task, Tag, Category, ListEntity/ListItem, CommunicationItem
+- **Item**: Core content entity (type: nil/"task"/"link", completedAt timestamp, isStarred, tags array)
+- **Collection**: Container for items (isStructured flag determines plan vs list behavior)
+- **CollectionItem**: Junction table enabling many-to-many relationships with position and hierarchy
+- **Tag**: Simple categorization (name, color)
+- **Category**: Additional categorization (name, icon)
 
 See [../docs/decisions/ADR-0001-stack.md](../docs/decisions/ADR-0001-stack.md) for detailed architecture decisions.
 
 ## Development Status
 
-🚧 **Active Development** — Capture and inbox flows are in place; AI hand-off and most organization UI are still TODO.
+🚧 **Active Development** — Core data model and UI simplified; capture and organization flows are in place.
 
 ### Architecture Implementation
 
-- ✅ SwiftData models for capture workflow and destination entities
-- ✅ Repository pattern for all models plus `CaptureWorkflowService` for inbox/capture orchestration
-- ✅ Voice recording with real-time transcription in `CaptureSheetView`
-- 🔄 Organize tab, Settings view, and AI submission/placement flows remain stubbed
+- ✅ Simplified SwiftData models: Item, Collection, CollectionItem, Tag, Category
+- ✅ Repository pattern for all models with reactive @Query support
+- ✅ Voice recording with real-time transcription
+- ✅ Capture view creates Items (type=nil for uncategorized captures)
+- ✅ Organization views for Plans (isStructured=true) and Lists (isStructured=false)
+- 🔄 Settings view and AI-assisted organization features are future enhancements
 
 ### Key Features
 
 - **Offline-First**: All data stored locally with SwiftData
 - **Voice Capture**: On-device speech recognition (iOS 17+)
-- **Lifecycle Helpers**: Repositories wrap state transitions for captures, suggestions, and placements
-- **Testing**: In-memory SwiftData containers exercised through XCTest
+- **Flexible Organization**: Items can belong to multiple collections with position and hierarchy support
+- **Unified Model**: Simplified from 13+ entities to 5 core models
 
 ## Building & Running
 
@@ -116,9 +120,9 @@ Run tests with ⌘U in Xcode.
 
 ### Test Coverage
 
-- Repository tests for capture, hand-off, suggestions, placements, plans, tasks, tags, categories, lists, and communication items
-- Workflow tests for capture + inbox behaviors (AI submission/placement tests not yet written)
-- In-memory `ModelContainer` setup in each test case for isolation
+- Tests use in-memory `ModelContainer` setup for isolation
+- Core model tests to be implemented for Item, Collection, CollectionItem, Tag, and Category repositories
+- UI tests to be added for capture and organization flows
 
 ### Test Framework
 

@@ -44,7 +44,7 @@ struct MainTabView: View {
 
         var icon: String {
             switch self {
-            case .captures: return Icons.inbox
+            case .captures: return Icons.captures
             case .plans: return Icons.plans
             case .lists: return Icons.lists
             }

@@ -113,8 +113,8 @@ final class ItemRepository {
         return try modelContext.fetch(descriptor)
     }
 
-    func fetchInbox() throws -> [Item] {
-        // Inbox is items that are not in any collection and not completed
+    func fetchCaptures() throws -> [Item] {
+        // Captures are uncategorized items (type=nil) that are not completed
         let descriptor = FetchDescriptor<Item>(
             predicate: #Predicate { $0.type == nil && $0.completedAt == nil },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
