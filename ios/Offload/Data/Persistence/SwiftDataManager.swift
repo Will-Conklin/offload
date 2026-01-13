@@ -25,7 +25,6 @@ final class SwiftDataManager {
             Collection.self,
             CollectionItem.self,
             Tag.self,
-            Category.self,
         ])
 
         let modelConfiguration = ModelConfiguration(

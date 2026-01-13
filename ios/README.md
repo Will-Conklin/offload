@@ -25,10 +25,10 @@ Offload/
 │   ├── Capture/           # Quick capture flow (text + voice)
 │   └── Organize/          # Organization views (plans and lists, collections, items)
 ├── Domain/                 # Business logic & models (SwiftData)
-│   └── Models/            # Item, Collection, CollectionItem, Tag, Category
+│   └── Models/            # Item, Collection, CollectionItem, Tag
 ├── Data/                   # Data layer
 │   ├── Persistence/       # SwiftData configuration via PersistenceController + SwiftDataManager
-│   ├── Repositories/      # Data access patterns for items, collections, tags, and categories
+│   ├── Repositories/      # Data access patterns for items, collections, and tags
 │   └── Services/          # VoiceRecordingService for on-device speech recognition
 ├── DesignSystem/          # UI components, theme, design tokens
 ├── Resources/             # Assets, fonts, etc.
@@ -82,7 +82,6 @@ All models use the `@Model` macro for SwiftData persistence:
 - **Collection**: Container for items (isStructured flag determines plan vs list behavior)
 - **CollectionItem**: Junction table enabling many-to-many relationships with position and hierarchy
 - **Tag**: Simple categorization (name, color)
-- **Category**: Additional categorization (name, icon)
 
 See [../docs/decisions/ADR-0001-stack.md](../docs/decisions/ADR-0001-stack.md) for detailed architecture decisions.
 
@@ -92,7 +91,7 @@ See [../docs/decisions/ADR-0001-stack.md](../docs/decisions/ADR-0001-stack.md) f
 
 ### Architecture Implementation
 
-- ✅ Simplified SwiftData models: Item, Collection, CollectionItem, Tag, Category
+- ✅ Simplified SwiftData models: Item, Collection, CollectionItem, Tag
 - ✅ Repository pattern for all models with reactive @Query support
 - ✅ Voice recording with real-time transcription
 - ✅ Capture view creates Items (type=nil for uncategorized captures)
@@ -104,7 +103,7 @@ See [../docs/decisions/ADR-0001-stack.md](../docs/decisions/ADR-0001-stack.md) f
 - **Offline-First**: All data stored locally with SwiftData
 - **Voice Capture**: On-device speech recognition (iOS 17+)
 - **Flexible Organization**: Items can belong to multiple collections with position and hierarchy support
-- **Unified Model**: Simplified from 13+ entities to 5 core models
+- **Unified Model**: Simplified from 13+ entities to 4 core models
 
 ## Building & Running
 
@@ -121,7 +120,7 @@ Run tests with ⌘U in Xcode.
 ### Test Coverage
 
 - Tests use in-memory `ModelContainer` setup for isolation
-- Core model tests to be implemented for Item, Collection, CollectionItem, Tag, and Category repositories
+- Core model tests to be implemented for Item, Collection, CollectionItem, and Tag repositories
 - UI tests to be added for capture and organization flows
 
 ### Test Framework
