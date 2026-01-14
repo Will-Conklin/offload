@@ -36,7 +36,7 @@ struct MainTabView: View {
                 colorScheme: colorScheme,
                 style: style
             )
-            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.xl)
             .padding(.bottom, Theme.Spacing.sm)
         }
         .sheet(isPresented: $showingCapture) {
@@ -52,6 +52,13 @@ struct MainTabView: View {
             switch self {
             case .captures: return Icons.captures
             case .organize: return Icons.organize
+            }
+        }
+
+        var selectedIcon: String {
+            switch self {
+            case .captures: return Icons.capturesSelected
+            case .organize: return Icons.organizeSelected
             }
         }
 
@@ -113,14 +120,14 @@ private struct FloatingTabBar: View {
                 style: style
             ) { selectedTab = .organize }
         }
-        .padding(.horizontal, Theme.Spacing.sm)
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.vertical, Theme.Spacing.md)
         .background(
             Capsule()
                 .fill(Theme.Colors.surface(colorScheme, style: style))
                 .overlay(
                     Capsule()
-                        .stroke(Theme.Colors.border(colorScheme, style: style), lineWidth: 1)
+                        .stroke(Theme.Colors.border(colorScheme, style: style), lineWidth: 2)
                 )
         )
     }
@@ -138,17 +145,16 @@ private struct TabButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 2) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                AppIcon(name: isSelected ? tab.selectedIcon : tab.icon, size: 36)
                 Text(tab.label)
-                    .font(.system(size: 10, weight: isSelected ? .medium : .regular))
+                    .font(.system(size: 12, weight: isSelected ? .medium : .regular))
             }
             .foregroundStyle(
                 isSelected
                     ? Theme.Colors.primary(colorScheme, style: style)
                     : Theme.Colors.textSecondary(colorScheme, style: style)
             )
-            .frame(minWidth: 56, minHeight: 44)
+            .frame(minWidth: 80, minHeight: 64)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -165,8 +171,7 @@ private struct CaptureButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: Icons.capture)
-                .font(.system(size: 22, weight: .semibold))
+            AppIcon(name: Icons.capture, size: 22)
                 .foregroundStyle(Color.white)
                 .frame(width: 52, height: 52)
                 .background(

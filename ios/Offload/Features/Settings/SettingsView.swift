@@ -8,6 +8,12 @@
 import SwiftUI
 import SwiftData
 
+// AGENT NAV
+// - Layout
+// - Tags
+// - About
+// - Add Tag Sheet
+
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
@@ -56,7 +62,11 @@ struct SettingsView: View {
                     Button {
                         showingAddTag = true
                     } label: {
-                        Label("Add Tag", systemImage: "plus.circle")
+                        Label {
+                            Text("Add Tag")
+                        } icon: {
+                            AppIcon(name: Icons.addCircle, size: 16)
+                        }
                             .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                     }
                 } header: {
@@ -78,8 +88,7 @@ struct SettingsView: View {
                         HStack {
                             Text("GitHub")
                             Spacer()
-                            Image(systemName: "arrow.up.right")
-                                .font(.caption)
+                            AppIcon(name: Icons.externalLink, size: 12)
                                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         }
                     }

@@ -48,6 +48,9 @@ struct OrganizeView: View {
     @State private var selectedCollection: Collection?
 
     private var style: ThemeStyle { themeManager.currentStyle }
+    private var floatingTabBarClearance: CGFloat {
+        Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
+    }
 
     private var selectedScope: Scope {
         Scope(rawValue: selectedScopeRaw) ?? .plans
@@ -72,22 +75,29 @@ struct OrganizeView: View {
                         }
                         .padding(.horizontal, Theme.Spacing.md)
                         .padding(.top, Theme.Spacing.sm)
-                        .padding(.bottom, 100)
+                        .padding(.bottom, Theme.Spacing.lg)
+                    }
+                    .safeAreaInset(edge: .bottom) {
+                        Color.clear
+                            .frame(height: floatingTabBarClearance)
                     }
                 }
             }
             .navigationTitle("Organize")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { showingCreate = true } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showingSettings = true } label: {
-                        Image(systemName: Icons.settings)
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {} label: {
+                        AppIcon(name: Icons.account, size: 22)
                             .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                     }
+                    .accessibilityLabel("Account")
+
+                    Button { showingSettings = true } label: {
+                        AppIcon(name: Icons.settings, size: 22)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    }
+                    .accessibilityLabel("Settings")
                 }
             }
             .sheet(isPresented: $showingCreate) {
@@ -113,6 +123,9 @@ struct OrganizeView: View {
                 CollectionCard(collection: collection, colorScheme: colorScheme, style: style)
                     .onTapGesture { selectedCollection = collection }
             }
+
+            addCollectionButton
+                .padding(.top, Theme.Spacing.sm)
         }
     }
 
@@ -120,18 +133,34 @@ struct OrganizeView: View {
 
     private var emptyState: some View {
         VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: selectedScope == .plans ? Icons.plans : Icons.lists)
-                .font(.largeTitle)
+            AppIcon(name: selectedScope == .plans ? Icons.plans : Icons.lists, size: 34)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
             Text("No \(selectedScope.title.lowercased()) yet")
                 .font(.body)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Button("Create \(selectedScope == .plans ? "Plan" : "List")") { showingCreate = true }
-                .font(.headline)
-                .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+            addCollectionButton
+                .padding(.top, Theme.Spacing.sm)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Theme.Spacing.xxl)
+    }
+
+    private var addCollectionButton: some View {
+        Button { showingCreate = true } label: {
+            HStack(spacing: Theme.Spacing.xs) {
+                AppIcon(name: Icons.addCircleFilled, size: 18)
+                Text("Add \(selectedScope == .plans ? "Plan" : "List")")
+            }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.vertical, Theme.Spacing.md)
+            .background(Theme.Colors.primary(colorScheme, style: style))
+            .clipShape(Capsule())
+            .shadow(radius: 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Add \(selectedScope.title)")
     }
 
     // MARK: - Scope Picker
@@ -160,7 +189,7 @@ struct OrganizeView: View {
                 .font(.subheadline.weight(selectedScope == scope ? .semibold : .regular))
                 .foregroundStyle(
                     selectedScope == scope
-                        ? Theme.Colors.textPrimary(colorScheme, style: style)
+                        ? Theme.Colors.cardTextPrimary(colorScheme, style: style)
                         : Theme.Colors.textSecondary(colorScheme, style: style)
                 )
                 .frame(maxWidth: .infinity)
@@ -198,7 +227,7 @@ private struct CollectionCard: View {
             HStack {
                 Text(collection.name)
                     .font(.headline)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                    .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
 
                 Spacer()
             }
@@ -206,14 +235,14 @@ private struct CollectionCard: View {
             HStack {
                 Text(collection.createdAt, format: .dateTime.month(.abbreviated).day())
                     .font(.caption)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
 
                 Spacer()
 
                 if let count = collection.collectionItems?.count, count > 0 {
                     Text("\(count) item\(count == 1 ? "" : "s")")
                         .font(.caption)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                 }
             }
         }

@@ -37,7 +37,9 @@ struct CollectionDetailView: View {
     @State private var tagPickerItem: Item?
 
     private var style: ThemeStyle { themeManager.currentStyle }
-    private var quickAddBottomPadding: CGFloat { Theme.Spacing.xxl + Theme.Spacing.xl }
+    private var floatingTabBarClearance: CGFloat {
+        Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
+    }
     private var tagLookup: [String: Tag] {
         Dictionary(uniqueKeysWithValues: allTags.map { ($0.name, $0) })
     }
@@ -73,15 +75,17 @@ struct CollectionDetailView: View {
                             }
                         }
                         .padding(.horizontal, Theme.Spacing.md)
+
+                        quickAddButton
+                            .padding(.top, Theme.Spacing.sm)
+                            .padding(.bottom, Theme.Spacing.sm)
                     }
                     .padding(.top, Theme.Spacing.sm)
-                    .padding(.bottom, quickAddBottomPadding + Theme.Spacing.xl)
+                    .padding(.bottom, Theme.Spacing.lg)
                 }
-
-                // Quick add button
-                VStack {
-                    Spacer()
-                    quickAddButton
+                .safeAreaInset(edge: .bottom) {
+                    Color.clear
+                        .frame(height: floatingTabBarClearance)
                 }
             } else {
                 ProgressView()
@@ -163,7 +167,7 @@ struct CollectionDetailView: View {
             showingAddItem = true
         } label: {
             HStack {
-                Image(systemName: "plus.circle.fill")
+                AppIcon(name: Icons.addCircleFilled, size: 18)
                 Text("Add Item")
             }
             .font(.headline)
@@ -174,7 +178,6 @@ struct CollectionDetailView: View {
             .clipShape(Capsule())
             .shadow(radius: 4)
         }
-        .padding(.bottom, quickAddBottomPadding)
     }
 
     // MARK: - Data Loading
@@ -257,7 +260,7 @@ private struct ItemRow: View {
                 VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                     Text(displayTitle)
                         .font(.body)
-                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                        .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
 
                     if let attachmentData = item.attachmentData,
                        let uiImage = UIImage(data: attachmentData) {
@@ -284,9 +287,8 @@ private struct ItemRow: View {
                 Button {
                     showingMenu = true
                 } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.caption)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    AppIcon(name: Icons.more, size: 12)
+                        .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                         .frame(width: 28, height: 28)
                 }
                 .confirmationDialog("Item Actions", isPresented: $showingMenu) {
@@ -298,7 +300,7 @@ private struct ItemRow: View {
 
             HStack(spacing: Theme.Spacing.sm) {
                 ItemActionButton(
-                    systemName: "plus",
+                    iconName: Icons.add,
                     tint: Theme.Colors.primary(colorScheme, style: style),
                     action: onAddTag
                 )
@@ -314,7 +316,9 @@ private struct ItemRow: View {
                                     color: tagLookup[tagName]
                                         .flatMap { $0.color }
                                         .map { Color(hex: $0) }
-                                        ?? Theme.Colors.primary(colorScheme, style: style)
+                                        ?? Theme.Colors.primary(colorScheme, style: style),
+                                    colorScheme: colorScheme,
+                                    style: style
                                 )
                             }
                         }
@@ -322,10 +326,10 @@ private struct ItemRow: View {
                 }
 
                 ItemActionButton(
-                    systemName: item.isStarred ? "star.fill" : "star",
+                    iconName: item.isStarred ? Icons.starFilled : Icons.star,
                     tint: item.isStarred
                         ? Theme.Colors.caution(colorScheme, style: style)
-                        : Theme.Colors.textSecondary(colorScheme, style: style),
+                        : Theme.Colors.cardTextSecondary(colorScheme, style: style),
                     action: toggleStar
                 )
             }
@@ -418,7 +422,7 @@ private struct TagPickerSheet: View {
                                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                                 Spacer()
                                 if item.tags.contains(tag.name) {
-                                    Image(systemName: "checkmark")
+                                    AppIcon(name: Icons.check, size: 12)
                                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                                 }
                             }
@@ -482,7 +486,7 @@ private struct TagSelectionSheet: View {
                                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                                 Spacer()
                                 if selectedTags.contains(where: { $0.id == tag.id }) {
-                                    Image(systemName: "checkmark")
+                                    AppIcon(name: Icons.check, size: 12)
                                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                                 }
                             }
@@ -510,29 +514,36 @@ private struct TagSelectionSheet: View {
 private struct TagPill: View {
     let name: String
     let color: Color
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
 
     var body: some View {
         Text(name)
             .font(.caption)
-            .foregroundStyle(color)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(color.opacity(0.18))
-            .clipShape(Capsule())
+            .background(
+                Capsule()
+                    .fill(Theme.Colors.cardTextPrimary(colorScheme, style: style).opacity(0.14))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(color.opacity(0.6), lineWidth: 1)
+            )
     }
 }
 
 // MARK: - Item Action Button
 
 private struct ItemActionButton: View {
-    let systemName: String
+    let iconName: String
     let tint: Color
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 12, weight: .semibold))
+            AppIcon(name: iconName, size: 12)
                 .foregroundStyle(tint)
                 .frame(width: 24, height: 24)
                 .background(tint.opacity(0.16))
@@ -724,6 +735,7 @@ private struct AddItemSheet: View {
             } else {
                 TextEditor(text: $content)
                     .font(.body)
+                    .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
                     .frame(minHeight: 100)
                     .focused($isFocused)
                     .scrollContentBackground(.hidden)
@@ -731,7 +743,7 @@ private struct AddItemSheet: View {
                         if content.isEmpty && !isFocused {
                             Text("Add details...")
                                 .font(.body)
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                                 .padding(.top, 8)
                                 .padding(.leading, 5)
                                 .allowsHitTesting(false)
@@ -745,7 +757,7 @@ private struct AddItemSheet: View {
                             .frame(width: 8, height: 8)
                         Text(formatDuration(voiceService.recordingDuration))
                             .font(.caption)
-                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                            .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                     }
                 }
 
@@ -760,7 +772,7 @@ private struct AddItemSheet: View {
                         Button {
                             self.attachmentData = nil
                         } label: {
-                            Image(systemName: "xmark.circle.fill")
+                            AppIcon(name: Icons.closeCircleFilled, size: 18)
                                 .foregroundStyle(.white)
                                 .shadow(radius: 2)
                         }
@@ -794,11 +806,11 @@ private struct AddItemSheet: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
             Text("Linked Collection")
                 .font(.caption)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
 
             if linkableCollections.isEmpty {
                 Text("No other collections available.")
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
             } else {
                 Picker("Collection", selection: $linkedCollectionId) {
                     ForEach(linkableCollections) { collection in
@@ -806,6 +818,7 @@ private struct AddItemSheet: View {
                     }
                 }
                 .pickerStyle(.menu)
+                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
             }
         }
     }
@@ -814,8 +827,10 @@ private struct AddItemSheet: View {
         HStack(spacing: Theme.Spacing.md) {
             if type != .link {
                 Button(action: handleVoice) {
-                    Image(systemName: voiceService.isRecording ? "stop.fill" : "mic")
-                        .font(.title3)
+                    AppIcon(
+                        name: voiceService.isRecording ? Icons.stopFilled : Icons.microphone,
+                        size: 20
+                    )
                         .foregroundStyle(
                             voiceService.isRecording
                                 ? Theme.Colors.destructive(colorScheme, style: style)
@@ -825,8 +840,10 @@ private struct AddItemSheet: View {
                 }
 
                 Button { showingAttachmentSource = true } label: {
-                    Image(systemName: attachmentData != nil ? "camera.fill" : "camera")
-                        .font(.title3)
+                    AppIcon(
+                        name: attachmentData != nil ? Icons.cameraFilled : Icons.camera,
+                        size: 20
+                    )
                         .foregroundStyle(
                             attachmentData != nil
                                 ? Theme.Colors.primary(colorScheme, style: style)
@@ -837,8 +854,10 @@ private struct AddItemSheet: View {
             }
 
             Button { showingTags = true } label: {
-                Image(systemName: selectedTags.isEmpty ? "tag" : "tag.fill")
-                    .font(.title3)
+                AppIcon(
+                    name: selectedTags.isEmpty ? Icons.tag : Icons.tagFilled,
+                    size: 20
+                )
                     .foregroundStyle(
                         selectedTags.isEmpty
                             ? Theme.Colors.textSecondary(colorScheme, style: style)
@@ -848,8 +867,10 @@ private struct AddItemSheet: View {
             }
 
             Button { isStarred.toggle() } label: {
-                Image(systemName: isStarred ? "star.fill" : "star")
-                    .font(.title3)
+                AppIcon(
+                    name: isStarred ? Icons.starFilled : Icons.star,
+                    size: 20
+                )
                     .foregroundStyle(
                         isStarred
                             ? Theme.Colors.caution(colorScheme, style: style)

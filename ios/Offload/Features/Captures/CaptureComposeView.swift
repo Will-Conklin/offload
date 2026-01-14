@@ -114,6 +114,7 @@ struct CaptureComposeView: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             TextEditor(text: $text)
                 .font(.body)
+                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
                 .frame(minHeight: 100)
                 .focused($isFocused)
                 .scrollContentBackground(.hidden)
@@ -121,7 +122,7 @@ struct CaptureComposeView: View {
                     if text.isEmpty && !isFocused {
                         Text("What's on your mind?")
                             .font(.body)
-                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                            .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                             .padding(.top, 8)
                             .padding(.leading, 5)
                             .allowsHitTesting(false)
@@ -136,7 +137,7 @@ struct CaptureComposeView: View {
                         .frame(width: 8, height: 8)
                     Text(formatDuration(voiceService.recordingDuration))
                         .font(.caption)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                 }
             }
 
@@ -152,7 +153,7 @@ struct CaptureComposeView: View {
                     Button {
                         self.attachmentData = nil
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
+                        AppIcon(name: Icons.closeCircleFilled, size: 18)
                             .foregroundStyle(.white)
                             .shadow(radius: 2)
                     }
@@ -185,8 +186,10 @@ struct CaptureComposeView: View {
         HStack(spacing: Theme.Spacing.md) {
             // Mic
             Button(action: handleVoice) {
-                Image(systemName: voiceService.isRecording ? "stop.fill" : "mic")
-                    .font(.title3)
+                AppIcon(
+                    name: voiceService.isRecording ? Icons.stopFilled : Icons.microphone,
+                    size: 20
+                )
                     .foregroundStyle(
                         voiceService.isRecording
                             ? Theme.Colors.destructive(colorScheme, style: style)
@@ -197,8 +200,10 @@ struct CaptureComposeView: View {
 
             // Attachment
             Button { showingAttachmentSource = true } label: {
-                Image(systemName: attachmentData != nil ? "camera.fill" : "camera")
-                    .font(.title3)
+                AppIcon(
+                    name: attachmentData != nil ? Icons.cameraFilled : Icons.camera,
+                    size: 20
+                )
                     .foregroundStyle(
                         attachmentData != nil
                             ? Theme.Colors.primary(colorScheme, style: style)
@@ -209,8 +214,10 @@ struct CaptureComposeView: View {
 
             // Tags
             Button { showingTags = true } label: {
-                Image(systemName: selectedTags.isEmpty ? "tag" : "tag.fill")
-                    .font(.title3)
+                AppIcon(
+                    name: selectedTags.isEmpty ? Icons.tag : Icons.tagFilled,
+                    size: 20
+                )
                     .foregroundStyle(
                         selectedTags.isEmpty
                             ? Theme.Colors.textSecondary(colorScheme, style: style)
@@ -221,8 +228,10 @@ struct CaptureComposeView: View {
 
             // Star
             Button { isStarred.toggle() } label: {
-                Image(systemName: isStarred ? "star.fill" : "star")
-                    .font(.title3)
+                AppIcon(
+                    name: isStarred ? Icons.starFilled : Icons.star,
+                    size: 20
+                )
                     .foregroundStyle(
                         isStarred
                             ? Theme.Colors.caution(colorScheme, style: style)
@@ -326,7 +335,7 @@ private struct TagSheet: View {
                                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                                 Spacer()
                                 if selectedTags.contains(where: { $0.id == tag.id }) {
-                                    Image(systemName: "checkmark")
+                                    AppIcon(name: Icons.check, size: 12)
                                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                                 }
                             }

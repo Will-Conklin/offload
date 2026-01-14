@@ -36,6 +36,9 @@ struct CapturesListView: View {
     @State private var moveDestination: MoveDestination?
 
     private var style: ThemeStyle { themeManager.currentStyle }
+    private var floatingTabBarClearance: CGFloat {
+        Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
+    }
     private var tagLookup: [String: Tag] {
         Dictionary(uniqueKeysWithValues: allTags.map { ($0.name, $0) })
     }
@@ -69,16 +72,27 @@ struct CapturesListView: View {
                     }
                     .padding(.horizontal, Theme.Spacing.md)
                     .padding(.top, Theme.Spacing.sm)
-                    .padding(.bottom, 100) // Space for tab bar
+                    .padding(.bottom, Theme.Spacing.lg)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    Color.clear
+                        .frame(height: floatingTabBarClearance)
                 }
             }
             .navigationTitle("Captures")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {} label: {
+                        AppIcon(name: Icons.account, size: 22)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    }
+                    .accessibilityLabel("Account")
+
                     Button {
                         showingSettings = true
                     } label: {
-                        Image(systemName: Icons.settings)
+                        AppIcon(name: Icons.settings, size: 22)
                             .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                     }
                     .accessibilityLabel("Settings")
@@ -183,7 +197,7 @@ private struct ItemCard: View {
             // Content
             Text(item.content)
                 .font(.body)
-                .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
 
             if let attachmentData = item.attachmentData,
                let uiImage = UIImage(data: attachmentData) {
@@ -197,12 +211,12 @@ private struct ItemCard: View {
             // Creation date
             Text(item.createdAt, format: .relative(presentation: .named))
                 .font(.caption2)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
 
             // Bottom actions + tags
             HStack(spacing: Theme.Spacing.sm) {
                 ItemActionButton(
-                    systemName: "plus",
+                    iconName: Icons.add,
                     tint: Theme.Colors.primary(colorScheme, style: style),
                     action: onAddTag
                 )
@@ -218,7 +232,9 @@ private struct ItemCard: View {
                                     color: tagLookup[tagName]
                                         .flatMap { $0.color }
                                         .map { Color(hex: $0) }
-                                        ?? Theme.Colors.primary(colorScheme, style: style)
+                                        ?? Theme.Colors.primary(colorScheme, style: style),
+                                    colorScheme: colorScheme,
+                                    style: style
                                 )
                             }
                         }
@@ -226,10 +242,10 @@ private struct ItemCard: View {
                 }
 
                 ItemActionButton(
-                    systemName: item.isStarred ? "star.fill" : "star",
+                    iconName: item.isStarred ? Icons.starFilled : Icons.star,
                     tint: item.isStarred
                         ? Theme.Colors.caution(colorScheme, style: style)
-                        : Theme.Colors.textSecondary(colorScheme, style: style),
+                        : Theme.Colors.cardTextSecondary(colorScheme, style: style),
                     action: onToggleStar
                 )
             }
@@ -242,7 +258,7 @@ private struct ItemCard: View {
             // Swipe indicators
             HStack {
                 if offset > 0 {
-                    Image(systemName: "checkmark.circle.fill")
+                    AppIcon(name: Icons.checkCircleFilled, size: 18)
                         .foregroundStyle(Theme.Colors.success(colorScheme, style: style))
                         .padding(.leading, Theme.Spacing.md)
                 }
@@ -250,7 +266,7 @@ private struct ItemCard: View {
                 Spacer()
 
                 if offset < 0 {
-                    Image(systemName: "trash.fill")
+                    AppIcon(name: Icons.deleteFilled, size: 18)
                         .foregroundStyle(Theme.Colors.destructive(colorScheme, style: style))
                         .padding(.trailing, Theme.Spacing.md)
                 }
@@ -281,13 +297,21 @@ private struct ItemCard: View {
             Button {
                 onMoveTo(.plan)
             } label: {
-                Label("Move to Plan", systemImage: Icons.plans)
+                Label {
+                    Text("Move to Plan")
+                } icon: {
+                    AppIcon(name: Icons.plans, size: 14)
+                }
             }
 
             Button {
                 onMoveTo(.list)
             } label: {
-                Label("Move to List", systemImage: Icons.lists)
+                Label {
+                    Text("Move to List")
+                } icon: {
+                    AppIcon(name: Icons.lists, size: 14)
+                }
             }
         }
     }
@@ -298,29 +322,36 @@ private struct ItemCard: View {
 private struct TagPill: View {
     let name: String
     let color: Color
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
 
     var body: some View {
         Text(name)
             .font(.caption)
-            .foregroundStyle(color)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(color.opacity(0.18))
-            .clipShape(Capsule())
+            .background(
+                Capsule()
+                    .fill(Theme.Colors.cardTextPrimary(colorScheme, style: style).opacity(0.14))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(color.opacity(0.6), lineWidth: 1)
+            )
     }
 }
 
 // MARK: - Item Action Button
 
 private struct ItemActionButton: View {
-    let systemName: String
+    let iconName: String
     let tint: Color
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 12, weight: .semibold))
+            AppIcon(name: iconName, size: 12)
                 .foregroundStyle(tint)
                 .frame(width: 24, height: 24)
                 .background(tint.opacity(0.16))
@@ -373,7 +404,7 @@ private struct TagPickerSheet: View {
                                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                                 Spacer()
                                 if item.tags.contains(tag.name) {
-                                    Image(systemName: "checkmark")
+                                    AppIcon(name: Icons.check, size: 12)
                                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                                 }
                             }
@@ -471,7 +502,11 @@ private struct MoveToPlanSheet: View {
                     Button {
                         createNew = true
                     } label: {
-                        Label("Create New Plan", systemImage: "plus.circle.fill")
+                        Label {
+                            Text("Create New Plan")
+                        } icon: {
+                            AppIcon(name: Icons.addCircleFilled, size: 16)
+                        }
                             .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                     }
                 }
@@ -588,7 +623,11 @@ private struct MoveToListSheet: View {
                     Button {
                         createNew = true
                     } label: {
-                        Label("Create New List", systemImage: "plus.circle.fill")
+                        Label {
+                            Text("Create New List")
+                        } icon: {
+                            AppIcon(name: Icons.addCircleFilled, size: 16)
+                        }
                             .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                     }
                 }

@@ -85,7 +85,7 @@ struct IconButton: View {
         case outline
     }
 
-    let systemName: String
+    let iconName: String
     let accessibilityLabel: String
     let style: Style
     let action: () -> Void
@@ -95,8 +95,7 @@ struct IconButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
+            AppIcon(name: iconName, size: 16)
                 .foregroundStyle(iconForeground)
                 .frame(width: Theme.HitTarget.minimum.width, height: Theme.HitTarget.minimum.height)
                 .background(iconBackground)
@@ -140,7 +139,7 @@ struct IconButton: View {
 
 struct FloatingActionButton: View {
     let title: String
-    let systemName: String
+    let iconName: String
     let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
@@ -148,7 +147,11 @@ struct FloatingActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Label(title, systemImage: systemName)
+            Label {
+                Text(title)
+            } icon: {
+                AppIcon(name: iconName, size: 14)
+            }
                 .font(.system(.footnote, design: .rounded).weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(.vertical, Theme.Spacing.sm)
@@ -192,6 +195,7 @@ struct CardView<Content: View>: View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(Theme.Spacing.md)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: themeManager.currentStyle))
             .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
@@ -216,6 +220,7 @@ struct ElevatedCardView<Content: View>: View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(Theme.Spacing.lg)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: themeManager.currentStyle))
             .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
             .cornerRadius(Theme.CornerRadius.xl)
             .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationMd, y: 6)
@@ -236,6 +241,7 @@ struct OutlineCardView<Content: View>: View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(Theme.Spacing.md)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: themeManager.currentStyle))
             .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
@@ -263,6 +269,7 @@ struct SelectableCardView<Content: View>: View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(Theme.Spacing.md)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: themeManager.currentStyle))
             .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
@@ -411,7 +418,7 @@ struct ThemedNavigationBar<Leading: View, Trailing: View>: View {
 struct TabBarItem: Identifiable, Equatable {
     let id = UUID()
     let title: String
-    let systemImage: String
+    let iconName: String
 }
 
 struct ThemedTabBar: View {
@@ -428,8 +435,7 @@ struct ThemedTabBar: View {
                     selectedIndex = index
                 } label: {
                     VStack(spacing: 4) {
-                        Image(systemName: item.systemImage)
-                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        AppIcon(name: item.iconName, size: 16)
                         Text(item.title)
                             .font(.caption)
                     }
@@ -599,8 +605,7 @@ struct EmptyStateView: View {
 
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
-            Image(systemName: icon)
-                .font(.system(size: 60))
+            AppIcon(name: icon, size: 60)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
 
             VStack(spacing: Theme.Spacing.sm) {
@@ -641,8 +646,7 @@ struct ErrorView: View {
 
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 50))
+            AppIcon(name: Icons.warningFilled, size: 50)
                 .foregroundStyle(Theme.Colors.caution(colorScheme, style: themeManager.currentStyle))
 
             VStack(spacing: Theme.Spacing.sm) {
@@ -659,7 +663,11 @@ struct ErrorView: View {
 
             if let retry = retryAction {
                 Button(action: retry) {
-                    Label("Try Again", systemImage: "arrow.clockwise")
+                    Label {
+                        Text("Try Again")
+                    } icon: {
+                        AppIcon(name: Icons.refresh, size: 14)
+                    }
                         .font(Theme.Typography.buttonLabel)
                         .foregroundStyle(.white)
                         .padding(.horizontal, Theme.Spacing.lg)
@@ -682,11 +690,11 @@ struct ErrorView: View {
         SecondaryButton(title: "Secondary") {}
         TextButton(title: "Text Button") {}
         HStack(spacing: Theme.Spacing.md) {
-            IconButton(systemName: "plus", accessibilityLabel: "Add", style: .plain) {}
-            IconButton(systemName: "heart.fill", accessibilityLabel: "Favorite", style: .filled) {}
-            IconButton(systemName: "gearshape", accessibilityLabel: "Settings", style: .outline) {}
+            IconButton(iconName: Icons.add, accessibilityLabel: "Add", style: .plain) {}
+            IconButton(iconName: Icons.heartFilled, accessibilityLabel: "Favorite", style: .filled) {}
+            IconButton(iconName: Icons.settings, accessibilityLabel: "Settings", style: .outline) {}
         }
-        FloatingActionButton(title: "Capture", systemName: "mic.fill") {}
+        FloatingActionButton(title: "Capture", iconName: Icons.microphoneFilled) {}
     }
     .padding(Theme.Spacing.lg)
     .background(Theme.Colors.background(.light, style: .violetPop))
@@ -701,7 +709,7 @@ struct ErrorView: View {
                     .font(Theme.Typography.cardTitle)
                 Text("A quick summary of the content inside this card.")
                     .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .oceanTeal))
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(.light, style: .oceanTeal))
             }
         }
 
@@ -711,7 +719,7 @@ struct ErrorView: View {
                     .font(Theme.Typography.cardTitle)
                 Text("Softer shadows and more generous padding.")
                     .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .oceanTeal))
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(.light, style: .oceanTeal))
             }
         }
 
@@ -721,7 +729,7 @@ struct ErrorView: View {
                     .font(Theme.Typography.cardTitle)
                 Text("Minimal border, flat surface.")
                     .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .oceanTeal))
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(.light, style: .oceanTeal))
             }
         }
 
@@ -731,7 +739,7 @@ struct ErrorView: View {
                     .font(Theme.Typography.cardTitle)
                 Text("Selected state uses accent border.")
                     .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .oceanTeal))
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(.light, style: .oceanTeal))
             }
         }
     }
@@ -746,10 +754,10 @@ struct ErrorView: View {
             title: "Captures",
             subtitle: "Today",
             leading: {
-                IconButton(systemName: "chevron.left", accessibilityLabel: "Back", style: .plain) {}
+                IconButton(iconName: Icons.back, accessibilityLabel: "Back", style: .plain) {}
             },
             trailing: {
-                IconButton(systemName: "plus", accessibilityLabel: "Add", style: .filled) {}
+                IconButton(iconName: Icons.add, accessibilityLabel: "Add", style: .filled) {}
             }
         )
 
@@ -757,9 +765,9 @@ struct ErrorView: View {
 
         ThemedTabBar(
             items: [
-                TabBarItem(title: "Captures", systemImage: "tray.full"),
-                TabBarItem(title: "Organize", systemImage: "square.grid.2x2"),
-                TabBarItem(title: "Settings", systemImage: "gearshape")
+                TabBarItem(title: "Captures", iconName: Icons.inbox),
+                TabBarItem(title: "Organize", iconName: Icons.category),
+                TabBarItem(title: "Settings", iconName: Icons.settings)
             ],
             selectedIndex: .constant(0)
         )
@@ -778,7 +786,7 @@ struct ErrorView: View {
             VStack(spacing: Theme.Spacing.sm) {
                 Text("Add a capture, plan, or list.")
                     .font(Theme.Typography.body)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .violetPop))
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(.light, style: .violetPop))
                 PrimaryButton(title: "New Capture") {}
             }
         }
@@ -786,7 +794,7 @@ struct ErrorView: View {
         ModalCard(isPresented: .constant(true), title: "Focus Mode") {
             Text("Reduce distractions and capture fast.")
                 .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textSecondary(.light, style: .violetPop))
+                .foregroundStyle(Theme.Colors.cardTextSecondary(.light, style: .violetPop))
         }
     }
     .environmentObject(ThemeManager.shared)

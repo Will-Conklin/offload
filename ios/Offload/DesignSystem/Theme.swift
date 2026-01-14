@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+// AGENT NAV
+// - Theme Style
+// - Colors
+// - Typography
+// - Spacing
+// - Corner Radius
+// - Cards
+// - Shadows
+// - Animations
+
 // MARK: - Theme Style
 
 /// Available color themes for the app
@@ -104,19 +114,19 @@ struct Theme {
             case .oceanTeal:
                 return colorScheme == .dark
                     ? Color(hex: "0C4A5E") // Deep teal
-                    : Color(hex: "ECFEFF") // Pale cyan
+                    : Color(hex: "0E7490") // Deep teal
             case .violetPop:
                 return colorScheme == .dark
                     ? Color(hex: "3B2D63") // Deep purple
-                    : Color(hex: "F5F3FF") // Pale lavender
+                    : Color(hex: "6D28D9") // Deep violet
             case .sunsetCoral:
                 return colorScheme == .dark
                     ? Color(hex: "5C2E0E") // Deep amber
-                    : Color(hex: "FFF7ED") // Pale peach
+                    : Color(hex: "C2410C") // Deep orange
             case .slate:
                 return colorScheme == .dark
                     ? Color(hex: "1E293B") // Deep slate
-                    : Color(hex: "F8FAFC") // Pale gray
+                    : Color(hex: "334155") // Deep slate
             }
         }
 
@@ -128,10 +138,22 @@ struct Theme {
                 : Color(hex: "171717") // Near black
         }
 
+        static func cardTextPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .oceanTeal) -> Color {
+            colorScheme == .dark
+                ? textPrimary(colorScheme, style: style)
+                : Color.white
+        }
+
         static func textSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .oceanTeal) -> Color {
             colorScheme == .dark
                 ? Color(hex: "A3A3A3") // Gray
                 : Color(hex: "525252") // Dark gray
+        }
+
+        static func cardTextSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .oceanTeal) -> Color {
+            colorScheme == .dark
+                ? textSecondary(colorScheme, style: style)
+                : Color.white.opacity(0.75)
         }
 
         // MARK: Borders
