@@ -36,6 +36,9 @@ struct CapturesView: View {
     @State private var moveDestination: MoveDestination?
 
     private var style: ThemeStyle { themeManager.currentStyle }
+    private var tagLookup: [String: Tag] {
+        Dictionary(uniqueKeysWithValues: allTags.map { ($0.name, $0) })
+    }
 
     var body: some View {
         NavigationStack {
@@ -51,6 +54,7 @@ struct CapturesView: View {
                                 item: item,
                                 colorScheme: colorScheme,
                                 style: style,
+                                tagLookup: tagLookup,
                                 onTap: { selectedItem = item },
                                 onAddTag: { tagPickerItem = item },
                                 onToggleStar: { toggleStar(item) },
@@ -164,6 +168,7 @@ private struct ItemCard: View {
     let item: Item
     let colorScheme: ColorScheme
     let style: ThemeStyle
+    let tagLookup: [String: Tag]
     let onTap: () -> Void
     let onAddTag: () -> Void
     let onToggleStar: () -> Void
@@ -189,44 +194,45 @@ private struct ItemCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm))
             }
 
-            // Tags and metadata
-            HStack(spacing: Theme.Spacing.sm) {
-                // Star toggle
-                Button(action: onToggleStar) {
-                    Image(systemName: item.isStarred ? "star.fill" : "star")
-                        .font(.caption2)
-                        .foregroundStyle(item.isStarred
-                            ? Theme.Colors.caution(colorScheme, style: style)
-                            : Theme.Colors.textSecondary(colorScheme, style: style))
-                        .frame(width: 24, height: 24)
-                }
-
-                // Tags
-                ForEach(item.tags, id: \.self) { tag in
-                    Text(tag)
-                        .font(.caption2)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Theme.Colors.border(colorScheme, style: style))
-                        .clipShape(Capsule())
-                }
-
-                Spacer()
-
-                // Add tag button
-                Button(action: onAddTag) {
-                    Image(systemName: "plus")
-                        .font(.caption)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                        .frame(width: 24, height: 24)
-                }
-            }
-
             // Creation date
             Text(item.createdAt, format: .relative(presentation: .named))
                 .font(.caption2)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+
+            // Bottom actions + tags
+            HStack(spacing: Theme.Spacing.sm) {
+                ItemActionButton(
+                    systemName: "plus",
+                    tint: Theme.Colors.primary(colorScheme, style: style),
+                    action: onAddTag
+                )
+
+                if item.tags.isEmpty {
+                    Spacer()
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: Theme.Spacing.xs) {
+                            ForEach(item.tags, id: \.self) { tagName in
+                                TagPill(
+                                    name: tagName,
+                                    color: tagLookup[tagName]
+                                        .flatMap { $0.color }
+                                        .map { Color(hex: $0) }
+                                        ?? Theme.Colors.primary(colorScheme, style: style)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                ItemActionButton(
+                    systemName: item.isStarred ? "star.fill" : "star",
+                    tint: item.isStarred
+                        ? Theme.Colors.caution(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style),
+                    action: onToggleStar
+                )
+            }
         }
         .padding(Theme.Spacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -289,26 +295,42 @@ private struct ItemCard: View {
 
 // MARK: - Tag Chip
 
-private struct TagChip: View {
-    let tag: Tag
-    let colorScheme: ColorScheme
-    let style: ThemeStyle
-
-    var chipColor: Color {
-        if let colorHex = tag.color {
-            return Color(hex: colorHex)
-        }
-        return Theme.Colors.primary(colorScheme, style: style)
-    }
+private struct TagPill: View {
+    let name: String
+    let color: Color
 
     var body: some View {
-        Text(tag.name)
+        Text(name)
             .font(.caption2)
-            .foregroundStyle(chipColor)
+            .foregroundStyle(color)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(chipColor.opacity(0.15))
+            .background(color.opacity(0.18))
             .clipShape(Capsule())
+    }
+}
+
+// MARK: - Item Action Button
+
+private struct ItemActionButton: View {
+    let systemName: String
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 30, height: 30)
+                .background(tint.opacity(0.16))
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(tint.opacity(0.35), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 

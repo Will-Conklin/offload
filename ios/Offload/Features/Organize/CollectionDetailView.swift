@@ -38,6 +38,9 @@ struct CollectionDetailView: View {
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var quickAddBottomPadding: CGFloat { Theme.Spacing.xxl + Theme.Spacing.xl }
+    private var tagLookup: [String: Tag] {
+        Dictionary(uniqueKeysWithValues: allTags.map { ($0.name, $0) })
+    }
 
     var body: some View {
         ZStack {
@@ -60,6 +63,7 @@ struct CollectionDetailView: View {
                                         isStructured: collection.isStructured,
                                         colorScheme: colorScheme,
                                         style: style,
+                                        tagLookup: tagLookup,
                                         onAddTag: { tagPickerItem = item },
                                         onDelete: { deleteItem(collectionItem) },
                                         onEdit: { editingItem = item },
@@ -233,6 +237,7 @@ private struct ItemRow: View {
     let isStructured: Bool
     let colorScheme: ColorScheme
     let style: ThemeStyle
+    let tagLookup: [String: Tag]
     let onAddTag: () -> Void
     let onDelete: () -> Void
     let onEdit: () -> Void
@@ -247,24 +252,22 @@ private struct ItemRow: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
-            // Content
-            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                Text(displayTitle)
-                    .font(.body)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    Text(displayTitle)
+                        .font(.body)
+                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
 
-                if let attachmentData = item.attachmentData,
-                   let uiImage = UIImage(data: attachmentData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxHeight: 140)
-                        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm))
-                }
+                    if let attachmentData = item.attachmentData,
+                       let uiImage = UIImage(data: attachmentData) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 140)
+                            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm))
+                    }
 
-                HStack(spacing: Theme.Spacing.sm) {
-                    // Type indicator
                     if let type = item.type {
                         Text(type.capitalized)
                             .font(.caption2)
@@ -274,56 +277,10 @@ private struct ItemRow: View {
                             .background(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
                             .clipShape(Capsule())
                     }
-
-                    // Tags
-                    ForEach(item.tags, id: \.self) { tag in
-                        Text(tag)
-                            .font(.caption2)
-                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Theme.Colors.border(colorScheme, style: style))
-                            .clipShape(Capsule())
-                    }
-                }
-            }
-
-            Spacer()
-
-            // Action buttons
-            HStack(spacing: Theme.Spacing.xs) {
-                // Add tag button
-                Button {
-                    onAddTag()
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.caption)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                        .frame(width: 28, height: 28)
                 }
 
-                // Star button
-                Button {
-                    toggleStar()
-                } label: {
-                    Image(systemName: item.isStarred ? "star.fill" : "star")
-                        .font(.caption)
-                        .foregroundStyle(item.isStarred ? Theme.Colors.caution(colorScheme, style: style) : Theme.Colors.textSecondary(colorScheme, style: style))
-                        .frame(width: 28, height: 28)
-                }
+                Spacer()
 
-                if isLink, let linkedId = item.linkedCollectionId {
-                    Button {
-                        onOpenLink(linkedId)
-                    } label: {
-                        Image(systemName: "arrow.up.right.square")
-                            .font(.caption)
-                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                            .frame(width: 28, height: 28)
-                    }
-                }
-
-                // Actions menu
                 Button {
                     showingMenu = true
                 } label: {
@@ -337,6 +294,40 @@ private struct ItemRow: View {
                         onDelete()
                     }
                 }
+            }
+
+            HStack(spacing: Theme.Spacing.sm) {
+                ItemActionButton(
+                    systemName: "plus",
+                    tint: Theme.Colors.primary(colorScheme, style: style),
+                    action: onAddTag
+                )
+
+                if item.tags.isEmpty {
+                    Spacer()
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: Theme.Spacing.xs) {
+                            ForEach(item.tags, id: \.self) { tagName in
+                                TagPill(
+                                    name: tagName,
+                                    color: tagLookup[tagName]
+                                        .flatMap { $0.color }
+                                        .map { Color(hex: $0) }
+                                        ?? Theme.Colors.primary(colorScheme, style: style)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                ItemActionButton(
+                    systemName: item.isStarred ? "star.fill" : "star",
+                    tint: item.isStarred
+                        ? Theme.Colors.caution(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style),
+                    action: toggleStar
+                )
             }
         }
         .padding(Theme.Spacing.md)
@@ -511,6 +502,47 @@ private struct TagSelectionSheet: View {
                 allTags = (try? modelContext.fetch(desc)) ?? []
             }
         }
+    }
+}
+
+// MARK: - Tag Pill
+
+private struct TagPill: View {
+    let name: String
+    let color: Color
+
+    var body: some View {
+        Text(name)
+            .font(.caption2)
+            .foregroundStyle(color)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(color.opacity(0.18))
+            .clipShape(Capsule())
+    }
+}
+
+// MARK: - Item Action Button
+
+private struct ItemActionButton: View {
+    let systemName: String
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 30, height: 30)
+                .background(tint.opacity(0.16))
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(tint.opacity(0.35), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 
