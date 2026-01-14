@@ -301,10 +301,10 @@ private struct TagPill: View {
 
     var body: some View {
         Text(name)
-            .font(.caption2)
+            .font(.caption)
             .foregroundStyle(color)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
             .background(color.opacity(0.18))
             .clipShape(Capsule())
     }
@@ -320,9 +320,9 @@ private struct ItemActionButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(tint)
-                .frame(width: 30, height: 30)
+                .frame(width: 24, height: 24)
                 .background(tint.opacity(0.16))
                 .clipShape(Circle())
                 .overlay(
