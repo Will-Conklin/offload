@@ -248,7 +248,7 @@ final class ItemRepositoryTests: XCTestCase {
 
         try repository.create(type: "task", content: "Task")
 
-        let captures = try repository.fetchCaptures()
+        let captures = try repository.fetchCaptureItems()
         XCTAssertEqual(captures.count, 1)
         XCTAssertEqual(captures[0].content, "Active capture")
     }
