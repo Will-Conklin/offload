@@ -11,6 +11,12 @@
 import Foundation
 import Observation
 
+// AGENT NAV
+// - Presenter
+// - Presentable Error
+// - Actions
+// - Validation Errors
+
 @Observable
 @MainActor
 final class ErrorPresenter {
@@ -32,11 +38,7 @@ struct PresentableError: Identifiable {
     let actions: [ErrorAction]
 
     init(error: Error) {
-        if let workflowError = error as? WorkflowError {
-            title = "Operation Failed"
-            message = workflowError.localizedDescription
-            actions = [.dismiss]
-        } else if let validationError = error as? ValidationError {
+        if let validationError = error as? ValidationError {
             title = "Validation Error"
             message = validationError.message
             actions = [.dismiss]

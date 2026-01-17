@@ -10,6 +10,13 @@
 
 import SwiftUI
 
+// AGENT NAV
+// - Toast Type
+// - Toast Model
+// - Toast View
+// - Toast Manager
+// - View Modifier
+
 // MARK: - Toast Type
 
 enum ToastType {
@@ -18,16 +25,16 @@ enum ToastType {
     case info
     case warning
 
-    var icon: String {
+    var iconName: String {
         switch self {
-        case .success: return "checkmark.circle.fill"
-        case .error: return "xmark.circle.fill"
-        case .info: return "info.circle.fill"
-        case .warning: return "exclamationmark.triangle.fill"
+        case .success: return Icons.checkCircleFilled
+        case .error: return Icons.closeCircleFilled
+        case .info: return Icons.infoCircleFilled
+        case .warning: return Icons.warningFilled
         }
     }
 
-    func color(_ colorScheme: ColorScheme, style: ThemeStyle = .blueCool) -> Color {
+    func color(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
         switch self {
         case .success: return Theme.Colors.success(colorScheme, style: style)
         case .error: return Theme.Colors.destructive(colorScheme, style: style)
@@ -59,9 +66,8 @@ struct ToastView: View {
 
     var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
-            Image(systemName: toast.type.icon)
+            AppIcon(name: toast.type.iconName, size: 18)
                 .foregroundStyle(toast.type.color(colorScheme, style: themeManager.currentStyle))
-                .font(Theme.Typography.headline)
 
             Text(toast.message)
                 .font(Theme.Typography.body)
@@ -71,9 +77,13 @@ struct ToastView: View {
             Spacer(minLength: 0)
         }
         .padding(Theme.Spacing.md)
-        .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
-        .cornerRadius(Theme.CornerRadius.lg)
-        .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+        .background(Theme.Surface.card(colorScheme, style: themeManager.currentStyle))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous))
+        .shadow(
+            color: Theme.Shadows.ultraLight(colorScheme),
+            radius: Theme.Shadows.elevationUltraLight,
+            y: Theme.Shadows.offsetYUltraLight
+        )
         .padding(.horizontal, Theme.Spacing.md)
     }
 }

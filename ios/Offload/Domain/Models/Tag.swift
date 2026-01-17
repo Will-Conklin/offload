@@ -15,21 +15,15 @@ final class Tag {
     var color: String?
     var createdAt: Date
 
-    // Relationships
-    @Relationship(deleteRule: .nullify, inverse: \Task.tags)
-    var tasks: [Task]?
-
     init(
         id: UUID = UUID(),
         name: String,
         color: String? = nil,
-        createdAt: Date = Date(),
-        tasks: [Task]? = nil
+        createdAt: Date = Date()
     ) {
         self.id = id
         self.name = name
         self.color = color
         self.createdAt = createdAt
-        self.tasks = tasks
     }
 }

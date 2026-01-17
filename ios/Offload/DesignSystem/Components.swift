@@ -1,4 +1,4 @@
-// Intent: Provide reusable SwiftUI components (buttons, cards, fields, feedback) wired to theme tokens.
+// Intent: Provide reusable SwiftUI components (buttons, cards, tags) wired to theme tokens.
 //
 //  Components.swift
 //  Offload
@@ -7,140 +7,22 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // AGENT NAV
 // - Buttons
+// - Icon Tiles
 // - Cards
-// - Input Fields
-// - Feedback
+// - Row Styles
+// - Tags
+// - Item Actions
+// - Tag Sheets
 
 // MARK: - Buttons
 
-struct PrimaryButton: View {
-    let title: String
-    let action: () -> Void
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(Theme.Typography.buttonLabelEmphasis)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(Theme.Spacing.md)
-                .background(Theme.Gradients.accentPrimary(colorScheme, style: themeManager.currentStyle))
-                .cornerRadius(Theme.CornerRadius.md)
-                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationSm, y: 2)
-        }
-    }
-}
-
-struct SecondaryButton: View {
-    let title: String
-    let action: () -> Void
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(Theme.Typography.buttonLabelEmphasis)
-                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
-                .frame(maxWidth: .infinity)
-                .padding(Theme.Spacing.md)
-                .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                        .stroke(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.7), lineWidth: 1.5)
-                )
-        }
-    }
-}
-
-struct TextButton: View {
-    let title: String
-    let action: () -> Void
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(Theme.Typography.buttonLabelEmphasis)
-                .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
-                .padding(.vertical, Theme.Spacing.sm)
-                .padding(.horizontal, Theme.Spacing.sm)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-struct IconButton: View {
-    enum Style {
-        case plain
-        case filled
-        case outline
-    }
-
-    let systemName: String
-    let accessibilityLabel: String
-    let style: Style
-    let action: () -> Void
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(iconForeground)
-                .frame(width: Theme.HitTarget.minimum.width, height: Theme.HitTarget.minimum.height)
-                .background(iconBackground)
-                .overlay(iconBorder)
-                .clipShape(Circle())
-        }
-        .accessibilityLabel(accessibilityLabel)
-        .buttonStyle(.plain)
-    }
-
-    private var iconForeground: Color {
-        switch style {
-        case .plain, .outline:
-            return Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle)
-        case .filled:
-            return .white
-        }
-    }
-
-    @ViewBuilder
-    private var iconBackground: some View {
-        switch style {
-        case .plain, .outline:
-            Color.clear
-        case .filled:
-            Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle)
-        }
-    }
-
-    @ViewBuilder
-    private var iconBorder: some View {
-        switch style {
-        case .outline:
-            Circle()
-                .stroke(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle), lineWidth: 1)
-        default:
-            EmptyView()
-        }
-    }
-}
-
 struct FloatingActionButton: View {
     let title: String
-    let systemName: String
+    let iconName: String
     let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
@@ -148,21 +30,79 @@ struct FloatingActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Label(title, systemImage: systemName)
+            Label {
+                Text(title)
+            } icon: {
+                AppIcon(name: iconName, size: 14)
+            }
                 .font(.system(.footnote, design: .rounded).weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(.vertical, Theme.Spacing.sm)
                 .padding(.horizontal, Theme.Spacing.md)
                 .background(
                     Capsule()
-                        .fill(Theme.Gradients.accentPrimary(colorScheme, style: themeManager.currentStyle))
+                        .fill(Theme.Colors.buttonDark(colorScheme))
                 )
-                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationMd, y: 4)
+                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationSm, y: Theme.Shadows.offsetYSm)
         }
     }
 }
 
+// MARK: - Icon Tiles
+
+enum IconContainerStyle {
+    case primaryFilled(Color)
+    case secondaryOutlined(Color)
+    case none(Color)
+}
+
+struct IconTile: View {
+    let iconName: String
+    var iconSize: CGFloat = 16
+    var tileSize: CGFloat = 36
+    let style: IconContainerStyle
+
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    var body: some View {
+        AppIcon(name: iconName, size: iconSize)
+            .foregroundStyle(iconColor)
+            .frame(width: tileSize, height: tileSize)
+            .background(tileBackground)
+            .overlay(tileBorder)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.iconTile, style: .continuous))
+    }
+
+    private var iconColor: Color {
+        Theme.Colors.icon(colorScheme, style: themeManager.currentStyle)
+    }
+
+    private var tileBackground: Color {
+        .clear
+    }
+
+    @ViewBuilder
+    private var tileBorder: some View {
+        EmptyView()
+    }
+}
+
 // MARK: - Cards
+
+struct AnyShape: Shape, @unchecked Sendable {
+    private let pathBuilder: (CGRect) -> Path
+
+    init<S: Shape>(_ shape: S) {
+        self.pathBuilder = { rect in
+            shape.path(in: rect)
+        }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        pathBuilder(rect)
+    }
+}
 
 struct CardButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -172,622 +112,525 @@ struct CardButtonStyle: ButtonStyle {
     }
 }
 
+enum CardVariant {
+    case floatingSoft
+}
+
+struct CardSurface<Content: View>: View {
+    let shape: AnyShape
+    let fill: Color?
+    let showsEdge: Bool
+    let showsBorder: Bool
+    let contentPadding: EdgeInsets
+    let content: Content
+
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    init(
+        shape: AnyShape = AnyShape(Theme.Shapes.card()),
+        fill: Color? = nil,
+        showsEdge: Bool = true,
+        showsBorder: Bool = true,
+        contentPadding: EdgeInsets = EdgeInsets(
+            top: Theme.Cards.contentPadding,
+            leading: Theme.Cards.contentPadding,
+            bottom: Theme.Cards.contentPadding,
+            trailing: Theme.Cards.contentPadding
+        ),
+        @ViewBuilder content: () -> Content
+    ) {
+        self.shape = shape
+        self.fill = fill
+        self.showsEdge = showsEdge
+        self.showsBorder = showsBorder
+        self.contentPadding = contentPadding
+        self.content = content()
+    }
+
+    var body: some View {
+        let style = themeManager.currentStyle
+        let cardFill = fill ?? Theme.Colors.surface(colorScheme, style: style)
+
+        content
+            .padding(contentPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                shape
+                    .fill(cardFill)
+                    .overlay(edgeOverlay, alignment: .leading)
+                    .overlay(borderOverlay)
+            )
+            .shadow(
+                color: Theme.Shadows.ultraLight(colorScheme),
+                radius: Theme.Shadows.elevationUltraLight,
+                y: Theme.Shadows.offsetYUltraLight
+            )
+    }
+
+    @ViewBuilder
+    private var edgeOverlay: some View {
+        if showsEdge {
+            Rectangle()
+                .fill(Color.black.opacity(Theme.Opacity.cardEdge(colorScheme)))
+                .frame(width: Theme.Cards.edgeWidth)
+                .blendMode(.multiply)
+                .clipShape(shape)
+        }
+    }
+
+    @ViewBuilder
+    private var borderOverlay: some View {
+        if showsBorder {
+            shape.stroke(
+                Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle)
+                    .opacity(Theme.Opacity.borderMuted(colorScheme)),
+                lineWidth: Theme.Cards.borderWidth
+            )
+        }
+    }
+}
+
+struct InputCard<Content: View>: View {
+    let fill: Color?
+    let content: Content
+
+    init(fill: Color? = nil, @ViewBuilder content: () -> Content) {
+        self.fill = fill
+        self.content = content()
+    }
+
+    var body: some View {
+        CardSurface(
+            shape: AnyShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)),
+            fill: fill,
+            showsEdge: true,
+            showsBorder: true
+        ) {
+            content
+        }
+    }
+}
+
+struct ActionBarContainer<Content: View>: View {
+    let fill: Color?
+    let showsBorder: Bool
+    let content: Content
+
+    init(fill: Color? = nil, showsBorder: Bool = true, @ViewBuilder content: () -> Content) {
+        self.fill = fill
+        self.showsBorder = showsBorder
+        self.content = content()
+    }
+
+    var body: some View {
+        CardSurface(
+            shape: AnyShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)),
+            fill: fill,
+            showsEdge: false,
+            showsBorder: showsBorder,
+            contentPadding: EdgeInsets()
+        ) {
+            content
+        }
+    }
+}
+
+struct CardContainer<Content: View>: View {
+    let variant: CardVariant
+    let content: Content
+
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    init(variant: CardVariant = .floatingSoft, @ViewBuilder content: () -> Content) {
+        self.variant = variant
+        self.content = content()
+    }
+
+    var body: some View {
+        content
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(Theme.Spacing.md)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: themeManager.currentStyle))
+            .background(Theme.Surface.card(colorScheme, style: themeManager.currentStyle))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous))
+            .shadow(color: Theme.Shadows.ultraLight(colorScheme), radius: Theme.Shadows.elevationUltraLight, y: Theme.Shadows.offsetYUltraLight)
+    }
+}
+
 extension View {
     func cardButtonStyle() -> some View {
         buttonStyle(CardButtonStyle())
     }
 }
 
-struct CardView<Content: View>: View {
-    let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    var body: some View {
-        content
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.Spacing.md)
-            .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
-                    .stroke(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle).opacity(0.5), lineWidth: 1)
-            )
-            .cornerRadius(Theme.CornerRadius.lg)
-            .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationSm, y: 2)
-    }
+enum RowStyle {
+    case card
 }
 
-struct ElevatedCardView<Content: View>: View {
-    let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    var body: some View {
-        content
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.Spacing.lg)
-            .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
-            .cornerRadius(Theme.CornerRadius.xl)
-            .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationMd, y: 6)
-    }
-}
-
-struct OutlineCardView<Content: View>: View {
-    let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    var body: some View {
-        content
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.Spacing.md)
-            .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
-                    .stroke(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle).opacity(0.6), lineWidth: 1)
-            )
-            .cornerRadius(Theme.CornerRadius.lg)
-    }
-}
-
-struct SelectableCardView<Content: View>: View {
-    let isSelected: Bool
-    let onTap: (() -> Void)?
-    let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    init(isSelected: Bool, onTap: (() -> Void)? = nil, @ViewBuilder content: () -> Content) {
-        self.isSelected = isSelected
-        self.onTap = onTap
-        self.content = content()
-    }
-
-    var body: some View {
-        content
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.Spacing.md)
-            .background(Theme.Colors.cardBackground(colorScheme, style: themeManager.currentStyle))
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
-                    .stroke(borderColor, lineWidth: isSelected ? 2 : 1)
-            )
-            .cornerRadius(Theme.CornerRadius.lg)
-            .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationSm, y: 2)
-            .onTapGesture {
-                onTap?()
+extension View {
+    @ViewBuilder
+    func rowStyle(_ style: RowStyle) -> some View {
+        switch style {
+        case .card:
+            CardContainer(variant: .floatingSoft) {
+                self
             }
-    }
-
-    private var borderColor: Color {
-        isSelected
-            ? Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle)
-            : Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle).opacity(0.6)
-    }
-}
-
-// MARK: - Input Fields
-
-struct ThemedTextField: View {
-    let label: String
-    @Binding var text: String
-    var placeholder: String = ""
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-            if !label.isEmpty {
-                Text(label)
-                    .font(Theme.Typography.inputLabel)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-            }
-
-            TextField(placeholder, text: $text)
-                .font(Theme.Typography.body)
-                .padding(Theme.Spacing.sm)
-                .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
-                .cornerRadius(Theme.CornerRadius.md)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                        .stroke(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle).opacity(0.6), lineWidth: 0.8)
+            .listRowSeparator(.hidden)
+            .listRowInsets(
+                EdgeInsets(
+                    top: Theme.Spacing.xs,
+                    leading: Theme.Spacing.md,
+                    bottom: Theme.Spacing.xs,
+                    trailing: Theme.Spacing.md
                 )
-                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationXs, y: 1)
-        }
-    }
-}
-
-struct ThemedTextEditor: View {
-    let label: String
-    @Binding var text: String
-    var placeholder: String = ""
-    var minHeight: CGFloat = 100
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-            if !label.isEmpty {
-                Text(label)
-                    .font(Theme.Typography.inputLabel)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-            }
-
-            ZStack(alignment: .topLeading) {
-                if text.isEmpty {
-                    Text(placeholder)
-                        .font(Theme.Typography.body)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle).opacity(0.5))
-                        .padding(Theme.Spacing.sm)
-                        .allowsHitTesting(false)
-                }
-
-                TextEditor(text: $text)
-                    .font(Theme.Typography.body)
-                    .frame(minHeight: minHeight)
-                    .padding(Theme.Spacing.xs)
-                    .scrollContentBackground(.hidden)
-                    .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
-            }
-            .cornerRadius(Theme.CornerRadius.md)
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                    .stroke(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle).opacity(0.6), lineWidth: 0.8)
             )
-            .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationXs, y: 1)
+            .listRowBackground(Color.clear)
         }
     }
 }
 
-// MARK: - Navigation
+// MARK: - Tags
 
-struct ThemedNavigationBar<Leading: View, Trailing: View>: View {
-    let title: String
-    let subtitle: String?
-    let leading: Leading
-    let trailing: Trailing
+/// Displays a tag as a pill-shaped badge with theme-aware colors
+struct TagPill: View {
+    let name: String
+    let color: Color
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Text(name)
+            .font(Theme.Typography.caption)
+            .foregroundStyle(color)
+            .padding(.horizontal, Theme.Spacing.pillHorizontal)
+            .padding(.vertical, Theme.Spacing.pillVertical)
+            .background(
+                Capsule()
+                    .fill(color.opacity(Theme.Opacity.tagFill(colorScheme)))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(color.opacity(Theme.Opacity.tagStroke(colorScheme)), lineWidth: 1)
+            )
+    }
+}
+
+/// Displays an item type as a small chip badge
+struct TypeChip: View {
+    let type: String
 
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    init(
-        title: String,
-        subtitle: String? = nil,
-        @ViewBuilder leading: () -> Leading = { EmptyView() },
-        @ViewBuilder trailing: () -> Trailing = { EmptyView() }
-    ) {
-        self.title = title
-        self.subtitle = subtitle
-        self.leading = leading()
-        self.trailing = trailing()
-    }
+    private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
-        HStack(alignment: .center, spacing: Theme.Spacing.md) {
-            leading
-                .frame(minWidth: Theme.HitTarget.minimum.width, minHeight: Theme.HitTarget.minimum.height, alignment: .leading)
+        let chipColor = Theme.Colors.tagColor(for: type, colorScheme, style: style)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(Theme.Typography.title3)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
-
-                if let subtitle {
-                    Text(subtitle)
-                        .font(Theme.Typography.subheadline)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                }
-            }
-
-            Spacer()
-
-            trailing
-                .frame(minWidth: Theme.HitTarget.minimum.width, minHeight: Theme.HitTarget.minimum.height, alignment: .trailing)
-        }
-        .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.sm)
-        .background(Theme.Colors.background(colorScheme, style: themeManager.currentStyle))
+        Text(type.capitalized)
+            .font(Theme.Typography.metadata)
+            .foregroundStyle(chipColor)
+            .padding(.horizontal, Theme.Spacing.chipHorizontal)
+            .padding(.vertical, Theme.Spacing.chipVertical)
+            .background(
+                chipColor.opacity(Theme.Opacity.chipBackground(colorScheme))
+            )
+            .clipShape(Capsule())
     }
 }
 
-struct TabBarItem: Identifiable, Equatable {
-    let id = UUID()
-    let title: String
-    let systemImage: String
-}
+/// Action button for item cards (add tag, star, etc.)
+struct ItemActionButton: View {
+    enum Variant {
+        case primaryFilled
+        case secondaryOutlined
+        case plain
+    }
 
-struct ThemedTabBar: View {
-    let items: [TabBarItem]
-    @Binding var selectedIndex: Int
+    let iconName: String
+    let tint: Color
+    var variant: Variant = .plain
+    let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.sm) {
-            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
-                Button {
-                    selectedIndex = index
-                } label: {
-                    VStack(spacing: 4) {
-                        Image(systemName: item.systemImage)
-                            .font(.system(size: 16, weight: .semibold, design: .rounded))
-                        Text(item.title)
-                            .font(.caption)
-                    }
-                    .foregroundStyle(foregroundColor(for: index))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, Theme.Spacing.sm)
-                    .background(background(for: index))
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.lg))
-                }
-                .buttonStyle(.plain)
-            }
+        Button(action: action) {
+            AppIcon(name: iconName, size: 14)
+                .foregroundStyle(foreground)
+                .frame(width: Theme.Spacing.actionButtonSize, height: Theme.Spacing.actionButtonSize)
+                .background(background)
+                .clipShape(Circle())
         }
-        .padding(Theme.Spacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.xl)
-                .fill(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
-                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationSm, y: 2)
-        )
-        .padding(.horizontal, Theme.Spacing.lg)
+        .buttonStyle(.plain)
     }
 
-    private func foregroundColor(for index: Int) -> Color {
-        selectedIndex == index
-            ? Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle)
-            : Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle)
+    private var foreground: Color {
+        Theme.Colors.icon(colorScheme, style: themeManager.currentStyle)
     }
 
     @ViewBuilder
-    private func background(for index: Int) -> some View {
-        if selectedIndex == index {
-            Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle)
-                .opacity(colorScheme == .dark ? 0.18 : 0.12)
+    private var background: some View {
+        Color.clear
+    }
+}
+
+// MARK: - Item Actions
+
+struct ItemActionRow: View {
+    let tags: [String]
+    let tagLookup: [String: Tag]
+    let isStarred: Bool
+    let onAddTag: () -> Void
+    let onToggleStar: () -> Void
+
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.sm) {
+            ItemActionButton(
+                iconName: Icons.add,
+                tint: Theme.Colors.accentPrimary(colorScheme, style: style),
+                variant: .primaryFilled,
+                action: onAddTag
+            )
+
+            if tags.isEmpty {
+                Spacer()
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Theme.Spacing.xs) {
+                        ForEach(tags, id: \.self) { tagName in
+                            TagPill(
+                                name: tagName,
+                                color: tagLookup[tagName]
+                                    .flatMap { $0.color }
+                                    .map { Color(hex: $0) }
+                                    ?? Theme.Colors.tagColor(for: tagName, colorScheme, style: style)
+                            )
+                        }
+                    }
+                }
+            }
+
+            ItemActionButton(
+                iconName: isStarred ? Icons.starFilled : Icons.star,
+                tint: isStarred
+                    ? Theme.Colors.caution(colorScheme, style: style)
+                    : Theme.Colors.cardTextSecondary(colorScheme, style: style),
+                variant: isStarred ? .primaryFilled : .secondaryOutlined,
+                action: onToggleStar
+            )
+        }
+    }
+}
+
+// MARK: - Tag Sheets
+
+struct ItemTagPickerSheet: View {
+    let item: Item
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @Query(sort: \Tag.name) private var allTags: [Tag]
+
+    @State private var newTagName = ""
+    @FocusState private var focused: Bool
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Create New Tag") {
+                    HStack {
+                        TextField("Tag name", text: $newTagName)
+                            .focused($focused)
+                        Button("Add") {
+                            createTag()
+                        }
+                        .disabled(newTagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+
+                Section("Select Tags") {
+                    ForEach(allTags) { tag in
+                        Button {
+                            toggleTag(tag)
+                        } label: {
+                            HStack {
+                                Text(tag.name)
+                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                Spacer()
+                                if item.tags.contains(tag.name) {
+                                    AppIcon(name: Icons.check, size: 12)
+                                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Tags")
+            .navigationBarTitleDisplayMode(.large)
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.Colors.background(colorScheme, style: style))
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+    }
+
+    private func createTag() {
+        let trimmed = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let tag = Tag(name: trimmed)
+        modelContext.insert(tag)
+        if !item.tags.contains(trimmed) {
+            item.tags.append(trimmed)
+        }
+        newTagName = ""
+    }
+
+    private func toggleTag(_ tag: Tag) {
+        if let index = item.tags.firstIndex(of: tag.name) {
+            item.tags.remove(at: index)
         } else {
-            Color.clear
+            item.tags.append(tag.name)
         }
     }
 }
 
-struct BottomSheet<Content: View>: View {
-    @Binding var isPresented: Bool
-    let title: String?
-    let content: Content
+struct TagSelectionSheet: View {
+    @Binding var selectedTags: [Tag]
 
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    init(isPresented: Binding<Bool>, title: String? = nil, @ViewBuilder content: () -> Content) {
-        self._isPresented = isPresented
-        self.title = title
-        self.content = content()
-    }
+    @Query(sort: \Tag.name) private var allTags: [Tag]
+
+    @State private var newName = ""
+    @FocusState private var focused: Bool
+
+    private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
-        if isPresented {
-            ZStack(alignment: .bottom) {
-                Color.black.opacity(colorScheme == .dark ? 0.45 : 0.25)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        isPresented = false
+        NavigationStack {
+            List {
+                Section {
+                    HStack {
+                        TextField("New tag", text: $newName)
+                            .focused($focused)
+                            .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                            .tint(Theme.Colors.primary(colorScheme, style: style))
+                        Button("Add") {
+                            addTag()
+                        }
+                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                        .disabled(newName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
-
-                VStack(spacing: Theme.Spacing.md) {
-                    Capsule()
-                        .fill(Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle))
-                        .frame(width: 40, height: 5)
-
-                    if let title {
-                        Text(title)
-                            .font(Theme.Typography.headline)
-                            .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
-                    }
-
-                    content
+                    .rowStyle(.card)
                 }
-                .padding(Theme.Spacing.lg)
-                .frame(maxWidth: .infinity)
-                .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
-                .cornerRadius(Theme.CornerRadius.xl)
-                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationMd, y: 8)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-            .animation(Theme.Animations.easeInOutShort, value: isPresented)
-        }
-    }
-}
 
-struct ModalCard<Content: View>: View {
-    @Binding var isPresented: Bool
-    let title: String
-    let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    init(isPresented: Binding<Bool>, title: String, @ViewBuilder content: () -> Content) {
-        self._isPresented = isPresented
-        self.title = title
-        self.content = content()
-    }
-
-    var body: some View {
-        if isPresented {
-            ZStack {
-                Color.black.opacity(colorScheme == .dark ? 0.45 : 0.25)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        isPresented = false
+                Section("Tags") {
+                    ForEach(allTags) { tag in
+                        Button {
+                            toggleSelection(for: tag)
+                        } label: {
+                            HStack {
+                                Text(tag.name)
+                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                Spacer()
+                                if selectedTags.contains(where: { $0.id == tag.id }) {
+                                    AppIcon(name: Icons.check, size: 12)
+                                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                }
+                            }
+                        }
+                        .rowStyle(.card)
                     }
-
-                VStack(spacing: Theme.Spacing.md) {
-                    Text(title)
-                        .font(Theme.Typography.headline)
-                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
-
-                    content
-
-                    Button("Close") {
-                        isPresented = false
-                    }
-                    .font(Theme.Typography.buttonLabelEmphasis)
-                    .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
                 }
-                .padding(Theme.Spacing.lg)
-                .frame(maxWidth: 360)
-                .background(Theme.Colors.surface(colorScheme, style: themeManager.currentStyle))
-                .cornerRadius(Theme.CornerRadius.xl)
-                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationMd, y: 8)
-                .transition(.scale.combined(with: .opacity))
             }
-            .animation(Theme.Animations.easeInOutShort, value: isPresented)
-        }
-    }
-}
-
-// MARK: - Feedback
-
-struct LoadingView: View {
-    var message: String = "Loading..."
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            ProgressView()
-                .scaleEffect(1.5)
-                .tint(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
-
-            Text(message)
-                .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Colors.background(colorScheme, style: themeManager.currentStyle))
-    }
-}
-
-struct EmptyStateView: View {
-    let icon: String
-    let title: String
-    let message: String
-    var action: (() -> Void)?
-    var actionLabel: String?
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
-            Image(systemName: icon)
-                .font(.system(size: 60))
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-
-            VStack(spacing: Theme.Spacing.sm) {
-                Text(title)
-                    .font(Theme.Typography.title3)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
-
-                Text(message)
-                    .font(Theme.Typography.body)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, Theme.Spacing.xl)
-            }
-
-            if let action, let label = actionLabel {
-                Button(action: action) {
-                    Text(label)
-                        .font(Theme.Typography.buttonLabel)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, Theme.Spacing.lg)
-                        .padding(.vertical, Theme.Spacing.sm)
-                        .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
-                        .cornerRadius(Theme.CornerRadius.md)
+            .navigationTitle("Tags")
+            .navigationBarTitleDisplayMode(.large)
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.Colors.background(colorScheme, style: style))
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Colors.background(colorScheme, style: themeManager.currentStyle))
     }
-}
 
-struct ErrorView: View {
-    let error: Error
-    var retryAction: (() -> Void)?
+    private func addTag() {
+        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
 
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 50))
-                .foregroundStyle(Theme.Colors.caution(colorScheme, style: themeManager.currentStyle))
-
-            VStack(spacing: Theme.Spacing.sm) {
-                Text("Something went wrong")
-                    .font(Theme.Typography.headline)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: themeManager.currentStyle))
-
-                Text(error.localizedDescription)
-                    .font(Theme.Typography.body)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, Theme.Spacing.xl)
-            }
-
-            if let retry = retryAction {
-                Button(action: retry) {
-                    Label("Try Again", systemImage: "arrow.clockwise")
-                        .font(Theme.Typography.buttonLabel)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, Theme.Spacing.lg)
-                        .padding(.vertical, Theme.Spacing.sm)
-                        .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
-                        .cornerRadius(Theme.CornerRadius.md)
-                }
-            }
+        let tag = Tag(name: trimmed)
+        modelContext.insert(tag)
+        if !selectedTags.contains(where: { $0.id == tag.id }) {
+            selectedTags.append(tag)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Colors.background(colorScheme, style: themeManager.currentStyle))
+        newName = ""
+    }
+
+    private func toggleSelection(for tag: Tag) {
+        if let index = selectedTags.firstIndex(where: { $0.id == tag.id }) {
+            selectedTags.remove(at: index)
+        } else {
+            selectedTags.append(tag)
+        }
     }
 }
 
 // MARK: - Previews
 
-#Preview("Buttons") {
-    VStack(spacing: Theme.Spacing.md) {
-        PrimaryButton(title: "Primary") {}
-        SecondaryButton(title: "Secondary") {}
-        TextButton(title: "Text Button") {}
+#Preview("Components") {
+    let previewScheme: ColorScheme = .light
+    return VStack(spacing: Theme.Spacing.md) {
+        FloatingActionButton(title: "Add Capture", iconName: Icons.addCircleFilled) {}
+
         HStack(spacing: Theme.Spacing.md) {
-            IconButton(systemName: "plus", accessibilityLabel: "Add", style: .plain) {}
-            IconButton(systemName: "heart.fill", accessibilityLabel: "Favorite", style: .filled) {}
-            IconButton(systemName: "gearshape", accessibilityLabel: "Settings", style: .outline) {}
+            IconTile(
+                iconName: Icons.settings,
+                iconSize: 18,
+                tileSize: 36,
+                style: .secondaryOutlined(Theme.Colors.primary(previewScheme, style: .elijah))
+            )
+
+            TagPill(
+                name: "Personal",
+                color: Theme.Colors.tagColor(for: "Personal", previewScheme, style: .elijah)
+            )
+
+            TypeChip(type: "task")
         }
-        FloatingActionButton(title: "Capture", systemName: "mic.fill") {}
+
+        ItemActionButton(
+            iconName: Icons.starFilled,
+            tint: Theme.Colors.primary(previewScheme, style: .elijah),
+            variant: .primaryFilled
+        ) {}
     }
     .padding(Theme.Spacing.lg)
-    .background(Theme.Colors.background(.light, style: .lavenderCalm))
-    .environmentObject(ThemeManager.shared)
-}
-
-#Preview("Cards") {
-    VStack(spacing: Theme.Spacing.lg) {
-        CardView {
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                Text("Card Title")
-                    .font(Theme.Typography.cardTitle)
-                Text("A quick summary of the content inside this card.")
-                    .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .blueCool))
-            }
-        }
-
-        ElevatedCardView {
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                Text("Elevated Card")
-                    .font(Theme.Typography.cardTitle)
-                Text("Softer shadows and more generous padding.")
-                    .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .blueCool))
-            }
-        }
-
-        OutlineCardView {
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                Text("Outline Card")
-                    .font(Theme.Typography.cardTitle)
-                Text("Minimal border, flat surface.")
-                    .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .blueCool))
-            }
-        }
-
-        SelectableCardView(isSelected: true) {
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                Text("Selectable Card")
-                    .font(Theme.Typography.cardTitle)
-                Text("Selected state uses accent border.")
-                    .font(Theme.Typography.cardBody)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .blueCool))
-            }
-        }
-    }
-    .padding(Theme.Spacing.lg)
-    .background(Theme.Colors.background(.light, style: .blueCool))
-    .environmentObject(ThemeManager.shared)
-}
-
-#Preview("Navigation") {
-    VStack(spacing: Theme.Spacing.lg) {
-        ThemedNavigationBar(
-            title: "Captures",
-            subtitle: "Today",
-            leading: {
-                IconButton(systemName: "chevron.left", accessibilityLabel: "Back", style: .plain) {}
-            },
-            trailing: {
-                IconButton(systemName: "plus", accessibilityLabel: "Add", style: .filled) {}
-            }
-        )
-
-        Spacer()
-
-        ThemedTabBar(
-            items: [
-                TabBarItem(title: "Captures", systemImage: "tray.full"),
-                TabBarItem(title: "Organize", systemImage: "square.grid.2x2"),
-                TabBarItem(title: "Settings", systemImage: "gearshape")
-            ],
-            selectedIndex: .constant(0)
-        )
-    }
-    .padding(.vertical, Theme.Spacing.lg)
-    .background(Theme.Colors.background(.light, style: .oceanMinimal))
-    .environmentObject(ThemeManager.shared)
-}
-
-#Preview("Overlays") {
-    ZStack {
-        Theme.Gradients.appBackground(.light, style: .lavenderCalm)
-            .ignoresSafeArea()
-
-        BottomSheet(isPresented: .constant(true), title: "Quick Actions") {
-            VStack(spacing: Theme.Spacing.sm) {
-                Text("Add a capture, plan, or list.")
-                    .font(Theme.Typography.body)
-                    .foregroundStyle(Theme.Colors.textSecondary(.light, style: .lavenderCalm))
-                PrimaryButton(title: "New Capture") {}
-            }
-        }
-
-        ModalCard(isPresented: .constant(true), title: "Focus Mode") {
-            Text("Reduce distractions and capture fast.")
-                .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textSecondary(.light, style: .lavenderCalm))
-        }
-    }
+    .background(Theme.Colors.background(previewScheme, style: .elijah))
+    .environment(\.colorScheme, previewScheme)
     .environmentObject(ThemeManager.shared)
 }

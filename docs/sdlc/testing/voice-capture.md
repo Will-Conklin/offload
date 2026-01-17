@@ -27,9 +27,9 @@ Voice capture has been implemented for Offload (Week 1 of implementation plan). 
 - `errorMessage`: Optional error message for display
 - `recordingDuration`: TimeInterval tracking recording length
 
-### 2. Updated CaptureSheetView
+### 2. Updated CaptureComposeView
 
-**Location**: `ios/Offload/Features/Capture/CaptureSheetView.swift`
+**Location**: `ios/Offload/Features/Capture/CaptureComposeView.swift`
 
 **New UI Elements**:
 
@@ -288,7 +288,7 @@ Use this section to record your findings:
 ## Files to Review for Testing
 
 1. [VoiceRecordingService.swift](../ios/Offload/Data/Services/VoiceRecordingService.swift)
-2. [CaptureSheetView.swift](../ios/Offload/Features/Capture/CaptureSheetView.swift)
+2. [CaptureComposeView.swift](../ios/Offload/Features/Capture/CaptureComposeView.swift)
 3. [Thought.swift](../ios/Offload/Domain/Models/Thought.swift) (verify `.voice` source)
 4. [project.pbxproj](../ios/Offload.xcodeproj/project.pbxproj) (privacy keys)
 

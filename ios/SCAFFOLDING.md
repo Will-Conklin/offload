@@ -6,30 +6,33 @@ This document describes the current Offload iOS app scaffolding and what still n
 
 ## Overview
 
-The app compiles with functional capture + inbox flows. Organization now supports quick-add for plans, categories, and tags, while AI hand-off and settings remain mostly placeholder.
+The app compiles with functional capture and organization flows using a simplified data model. Items are captured and organized into Collections (Plans and Lists) with full CRUD operations.
 
 ## Layer Breakdown
 
 ### 1) App Layer (`App/`)
 - **offloadApp.swift**: Injects `PersistenceController.shared`.
-- **AppRootView.swift**: Current entry point that navigates directly to `InboxView`.
-- **MainTabView.swift**: Tab shell (Inbox, Organize, Settings placeholder) with a floating capture button; not yet wired as the root.
+- **MainTabView.swift**: Main tab navigation with Captures, Plans, and Lists tabs, plus a floating capture button.
 
 ### 2) Features (`Features/`)
-- **Inbox/**: `InboxView` lists `CaptureEntry` items via `CaptureWorkflowService` and supports deletion.
-- **Capture/**: `CaptureSheetView` is the primary experience with text + voice capture through `VoiceRecordingService`; `CaptureView` is a legacy text-only modal kept for reference.
-- **Organize/**: `OrganizeView` lists plans, categories, and tags with lightweight quick-add sheets; editing flows are still TODO.
-- **ContentView.swift**: Legacy scaffold view retained for reference.
+- **Captures/**:
+  - `CaptureComposeView`: Provides text + voice capture through `VoiceRecordingService`, creating Items with type=nil (uncategorized captures). Items can be starred and tagged.
+  - `CapturesListView`: Lists uncategorized Items (type=nil) with completion and deletion.
+- **Organize/**:
+  - `OrganizeView`: Unified view for Plans (isStructured=true) and Lists (isStructured=false) with create/edit flows.
+  - `CollectionDetailView`: Unified detail view showing Collection items with inline editing, starring, tagging, and move operations.
 
 ### 3) Domain Models (`Domain/Models/`)
-- Capture workflow: `CaptureEntry`, `HandOffRequest`, `HandOffRun`, `Suggestion`, `SuggestionDecision`, `Placement`.
-- Destinations: `Plan`, `Task` (simplified), `Tag`, `Category`, `ListEntity`, `ListItem`, `CommunicationItem`.
-- Enum values stored as strings for SwiftData compatibility; relationships use cascade/nullify delete rules per entity needs.
+- **Item**: Core content entity with type (nil/"task"/"link"), completedAt timestamp, isStarred flag, and tags array.
+- **Collection**: Container with isStructured flag (true=Plan with ordering, false=List without).
+- **CollectionItem**: Junction table enabling many-to-many relationships with position and parentId for hierarchy.
+- **Tag**: Simple categorization (name, color).
+- All models use SwiftData `@Model` macro with appropriate delete rules for relationships.
 
 ### 4) Data Layer (`Data/`)
-- **Persistence/**: `PersistenceController` registers the full schema for production/preview; `SwiftDataManager` provides a configurable container with TODOs for migrations/CloudKit.
-- **Repositories/**: CRUD + lifecycle helpers for capture, hand-off, suggestions, placements, plans, tasks, tags, categories, lists, and communication items.
-- **Services/**: `CaptureWorkflowService` (capture/inbox orchestration; AI hand-off methods stubbed) and `VoiceRecordingService` (recording + transcription).
+- **Persistence/**: `PersistenceController` and `SwiftDataManager` register the 4-model schema for production/preview; TODOs remain for migrations/CloudKit.
+- **Repositories/**: CRUD operations for Item, Collection, CollectionItem, and Tag with SwiftData integration.
+- **Services/**: `VoiceRecordingService` provides recording + on-device transcription.
 
 ### 5) Design System (`DesignSystem/`)
 - **Theme.swift**: Spacing + corner radius tokens.
@@ -42,18 +45,20 @@ The app compiles with functional capture + inbox flows. Organization now support
 ## Current Status
 
 ### ✅ Working
-- Capture via text or voice, saved as `CaptureEntry` with lifecycle state.
-- Inbox list with delete/archive operations through `CaptureWorkflowService`.
-- Manual creation of plans, categories, and tags through Organize quick-add sheets.
-- SwiftData schema registered for production and preview containers.
-- Repository + workflow tests using in-memory SwiftData.
+- Capture via text or voice, saved as Item with type=nil (uncategorized).
+- CapturesListView lists uncategorized Items with completion and deletion.
+- Organization views for Plans and Lists with create/edit/delete operations.
+- CollectionDetailView with inline item editing, starring, tagging, and move operations.
+- Simplified 4-model SwiftData schema registered for production and preview.
+- Theme system with 4 color schemes (Ocean Teal, Violet Pop, Sunset Coral, Slate).
 
 ### 🔄 In Progress / TODO
-- AI hand-off submission, suggestion presentation, decisions, and placement flows (`CaptureWorkflowService` stubs).
-- Organize tab editing flows for plans, categories, tags, plus creation/editing for lists and communication items.
-- Settings view and decision on using `MainTabView` as the app shell.
+- Settings view for app preferences and theme selection.
+- Enhanced tag management flows.
+- AI-assisted organization features (future enhancement).
 - CloudKit/backup/migration strategy in `SwiftDataManager`.
+- Comprehensive test suite for new model and repositories.
 
 ## Build Status
 
-Project compiles in Xcode with the current scaffolding. Build by opening `ios/Offload.xcodeproj`, selecting a simulator, and pressing **Cmd+B**. The app currently launches into the Inbox; tab navigation and settings are pending.
+Project compiles in Xcode with the current scaffolding. Build by opening `ios/Offload.xcodeproj`, selecting a simulator, and pressing **Cmd+B**. The app launches with the main tab navigation (Captures, Plans, Lists) and a floating capture button.

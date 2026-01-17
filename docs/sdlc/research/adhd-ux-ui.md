@@ -47,7 +47,7 @@
 
 ## Recommendations for Offload
 - **Capture flows (Features/Capture, App/MainTabView):** Keep the capture entry point always visible via a primary tab or floating button. Default to immediate save with optional “Organize now” secondary action; auto-focus the text area and show voice input as an equal first-class option.
-- **Inbox (Features/Inbox):** Present items in a calm list with light dividers and concise metadata (timestamp, type). Include batch-select + “Move to…” with undo rather than confirmations. Surface a “Ready to organize” chip when there are unfiled items.
+- **Capture list (Features/Capture):** Present items in a calm list with light dividers and concise metadata (timestamp, type). Include batch-select + “Move to…” with undo rather than confirmations. Surface a “Ready to organize” chip when there are unfiled items.
 - **Organize (Features/Organize):** Use two-level navigation max: destination list with inline counts, then detail. Provide smart filters (“Recently captured,” “High energy tasks”) as optional chips. Show inline suggestions with opt-in buttons, keeping AI output terse and collapsible.
 - **Design system (DesignSystem):** Define tokens for spacing, elevation, and color roles (base, accent, success, caution). Build focus states with both color and stroke weight. Keep iconography simple (stroke weight matching text weight) and pair with labels in navigation.
 - **Notifications and reminders (Services/Voice/Notifications):** If reminders are used, make them gentle and deferrable. Offer a daily digest option instead of multiple interrupts.

@@ -221,7 +221,7 @@ struct Materials {
 ```
 
 **Usage:**
-- Apply to: CaptureSheetView modal, OrganizeView cards, Settings sections
+- Apply to: CaptureComposeView modal, OrganizeView cards, Settings sections
 - Keep: Content backgrounds solid for readability
 - Result: Modern depth without overwhelming ADHD-friendly simplicity
 
@@ -496,7 +496,7 @@ struct ExpandableCard<Content: View, Detail: View>: View {
 
 **Usage:**
 - Replace fixed lineLimit(2) truncation
-- Captures with long text
+- Capture list with long text
 - Plan/List descriptions
 - Better readability
 
@@ -675,7 +675,7 @@ struct TimelineHourColumn: View {
 ```
 
 **Usage:**
-- Alternative view mode for Captures
+- Alternative view mode for Capture
 - Helps with time blindness
 - Visual representation of day structure
 

@@ -9,21 +9,21 @@
 
 ## Context
 
-Early prototypes and documentation used multiple names for the same concepts (for example, `Thought`, `BrainDumpEntry`, and `CaptureEntry` were all referenced at different times). As the event-sourced capture model solidified, we introduced clearer responsibilities—capture, hand-off, suggestion, placement—but legacy terms remain in some notes and copy. We need a single vocabulary to reduce confusion during development, onboarding, and future migrations.
+Early prototypes and documentation used multiple names for the same concepts. As the event-sourced capture model solidified, we introduced clearer responsibilities—capture, hand-off, suggestion, placement. We need a single vocabulary to reduce confusion during development and onboarding.
 
 ## Decision
 
-Adopt the following canonical terms and phase out legacy names:
+Adopt the following canonical terms and use them consistently:
 
-| Canonical term | Replaces | Rationale |
-| --- | --- | --- |
-| `CaptureEntry` | `Thought`, `BrainDumpEntry` | Aligns with “capture first” positioning and matches the SwiftData model that stores raw input. |
-| `HandOffRequest` / `HandOffRun` | Early “AI request”/“AI attempt” phrasing | Distinguishes user intent (request) from execution attempts (runs) in the workflow. |
-| `Suggestion` / `SuggestionDecision` | “AI proposal” / “acceptance” | Clarifies that AI output is advisory and that user responses are explicit decisions. |
-| `Placement` | “Result mapping” / “destination record” | Represents where accepted suggestions land without overloading “result” terminology. |
-| `Plan` | `Project` | Better reflects lightweight planning over heavyweight project management. |
-| `ListEntity` / `ListItem` | Generic “List” / `Item` | Avoids ambiguity with SwiftUI Lists and conveys hierarchy between container and entry. |
-| `CommunicationItem` | N/A (kept) | Name already matches its purpose (calls, emails, messages). |
+| Canonical term | Rationale |
+| --- | --- |
+| `CaptureEntry` | Aligns with “capture first” positioning and matches the SwiftData model that stores raw input. |
+| `HandOffRequest` / `HandOffRun` | Distinguishes user intent (request) from execution attempts (runs) in the workflow. |
+| `Suggestion` / `SuggestionDecision` | Clarifies that AI output is advisory and that user responses are explicit decisions. |
+| `Placement` | Represents where accepted suggestions land without overloading “result” terminology. |
+| `Plan` | Better reflects lightweight planning over heavyweight project management. |
+| `ListEntity` / `ListItem` | Avoids ambiguity with SwiftUI Lists and conveys hierarchy between container and entry. |
+| `CommunicationItem` | Name already matches its purpose (calls, emails, messages). |
 
 Unchanged terms retained for consistency and completeness:
 
@@ -35,19 +35,10 @@ Unchanged terms retained for consistency and completeness:
 | `VoiceRecordingService` | Stable | Accurately reflects responsibility for capture via audio; no competing names. |
 | `CaptureWorkflowService` | Stable | Matches the workflow orchestration role already referenced across docs. |
 
-Removed terms and concepts to avoid going forward:
-
-| Deprecated term | Replacement | Rationale |
-| --- | --- | --- |
-| `Inbox` (as a destination or view name) | Use workflow states: capture → hand-off → decision → placement; present surfaced tasks by plan/tag/category instead of a generic inbox | The event-sourced flow already captures newly created items; an “inbox” label conflicts with the structured placement narrative and should be removed from code and copy. |
-| `BrainDump` prefixes (e.g., `BrainDumpEntry`) | `CaptureEntry` | Consolidated to a single capture model; avoid mixed naming and ensure migrations map old references when encountered. |
-| `Project` (for destination) | `Plan` | Aligns with lightweight planning semantics and avoids heavyweight project-management connotations. |
-| Generic `List`/`Item` names | `ListEntity` / `ListItem` | Prevents confusion with SwiftUI `List` and clarifies hierarchy. |
-
 ## Consequences
 
-- All future documentation, UI copy, and schema discussions should use the canonical names above; legacy terms should be treated as deprecated.
-- When touching files that still reference legacy names, prefer renaming to the canonical vocabulary unless backward compatibility is required for migrations.
+- All future documentation, UI copy, and schema discussions should use the canonical names above.
+- When touching files that still reference older names, prefer renaming to the canonical vocabulary.
 - New diagrams and architectural docs should keep capture → hand-off → suggestion → decision → placement as the workflow narrative.
 
 ## Alternatives Considered
@@ -57,5 +48,4 @@ Removed terms and concepts to avoid going forward:
 
 ## Implementation Notes
 
-- Update onboarding, UI strings, and code comments opportunistically to remove legacy names.
-- For migrations, treat any persisted `Thought`/`Project` references as legacy aliases for `CaptureEntry` and `Plan` respectively when encountered.
+- Update onboarding, UI strings, and code comments opportunistically to use canonical names.

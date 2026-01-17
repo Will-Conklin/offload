@@ -434,7 +434,7 @@ Consider implementing multiple themes as user-selectable options:
 
 ### Phase 1: Visual Mockups
 1. Update Theme.swift with new color values in a feature branch
-2. Screenshot key screens (Captures, Organize, Settings) in both modes
+2. Screenshot key screens (Capture, Organize, Settings) in both modes
 3. Compare side-by-side with current scheme
 4. Assess with team for ADHD-friendliness
 

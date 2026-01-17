@@ -124,7 +124,7 @@ TBD
 ---
 
 ### 1.4 Fix Orphaned Foreign Key - acceptedSuggestionId ⚠️
-**Status:** 🟡 In Progress (model updated; migration pending if legacy data exists)
+**Status:** 🟡 In Progress (model updated; migration pending if pre-v1 data exists)
 **File:** `ios/Offload/Domain/Models/CaptureEntry.swift:23`
 
 **Checklist:**

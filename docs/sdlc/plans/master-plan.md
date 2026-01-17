@@ -54,7 +54,7 @@ This is the **single source of truth** for all Offload implementation planning. 
 
 #### Phase 1: Critical Fixes (COMPLETE ✅)
 All 8 critical production blockers resolved:
-1. ✅ CapturesView race condition fixed
+1. ✅ CaptureView race condition fixed
 2. ✅ All 21 error suppression instances fixed
 3. ✅ Repository queries use predicates (12/13 methods optimized)
 4. ✅ Orphaned foreign key replaced with relationship
@@ -103,7 +103,7 @@ All implementation complete, testing pending:
 - Spacing consistency fixes (15+ instances)
 
 **Progress:**
-- ✅ Applied glass treatment + Theme spacing to CaptureSheetView
+- ✅ Applied glass treatment + Theme spacing to CaptureComposeView
 
 **Estimated:** 4 days
 
@@ -233,7 +233,7 @@ All implementation complete, testing pending:
    - sm: 4 → 6, md: 8 → 10, lg: 12 → 16, xl: 16 → 24
 
 5. **Apply Glass Effects** (6 hours)
-   - CaptureSheetView modal
+   - CaptureComposeView modal
    - CardView component
    - OrganizeView cards
    - FAB (Floating Action Button)
@@ -537,7 +537,7 @@ All implementation complete, testing pending:
 
 | Task | Status | File(s) | Notes |
 |------|--------|---------|-------|
-| 1.1 CapturesView race condition | ✅ Complete | CapturesView.swift | Serialized deletes, single refresh |
+| 1.1 CaptureView race condition | ✅ Complete | CaptureView.swift | Serialized deletes, single refresh |
 | 1.2 Error suppression (21 instances) | ✅ Complete | Multiple files | All try? replaced with proper handling |
 | 1.3 N+1 query problems | ✅ Complete | Repositories | 12/13 use predicates (1 SwiftData limitation) |
 | 1.4 Orphaned foreign key | ✅ Complete | CaptureEntry.swift | UUID → @Relationship |
@@ -872,7 +872,7 @@ All implementation complete, testing pending:
 
 #### Phase 1-3 (Complete)
 - `ios/Offload/DesignSystem/ToastView.swift` (toast cancellation fix)
-- `ios/Offload/Features/Inbox/CapturesView.swift` (race condition fix)
+- `ios/Offload/Features/Capture/CaptureView.swift` (race condition fix)
 - `ios/Offload/Data/Repositories/*Repository.swift` (predicate queries)
 - `ios/Offload/Domain/Models/CaptureEntry.swift` (relationship fix)
 - `ios/Offload/Data/Services/CaptureWorkflowService.swift` (MainActor)
@@ -1061,7 +1061,7 @@ find ios/Offload -name "*.swift" | xargs wc -l
 ### Integration Testing
 
 #### End-to-End Flows
-- [ ] Capture (text) → View in Captures → Delete
+- [ ] Capture (text) → View in Capture → Delete
 - [ ] Capture (voice) → Transcription → View → Edit
 - [ ] Create Plan → Add Tasks → Mark Complete → Archive
 - [ ] Create List → Add Items → Check Off → Delete
@@ -1129,7 +1129,7 @@ find ios/Offload -name "*.swift" | xargs wc -l
   - Added VoiceOver requirements to all new components
 
 ### January 10, 2026 (v1)
-- ✅ Applied glass treatment and Theme spacing updates to CaptureSheetView
+- ✅ Applied glass treatment and Theme spacing updates to CaptureComposeView
 
 ### January 9, 2026 (v1)
 - ✅ Toast cancellation fix merged (commit 688110b)

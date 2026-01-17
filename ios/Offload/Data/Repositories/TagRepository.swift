@@ -4,8 +4,8 @@
 //
 //  Created by Claude Code on 12/31/25.
 //
-//  Intent: Manages tags for manual task organization.
-//  Supports many-to-many relationships with tasks.
+//  Intent: Manages tags for manual item organization.
+//  Supports tags stored on Item records.
 //
 
 import Foundation
@@ -85,12 +85,19 @@ final class TagRepository {
 
     // MARK: - Task Relationships
 
-    /// Get count of tasks using this tag
+    /// Get count of items using this tag
     func getTaskCount(tag: Tag) -> Int {
-        return tag.tasks?.count ?? 0
+        let tagName = tag.name
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate<Item> { item in
+                item.tags.contains(tagName)
+            }
+        )
+        let items = (try? modelContext.fetch(descriptor)) ?? []
+        return items.count
     }
 
-    /// Check if tag is used by any tasks
+    /// Check if tag is used by any items
     func isTagInUse(tag: Tag) -> Bool {
         return getTaskCount(tag: tag) > 0
     }

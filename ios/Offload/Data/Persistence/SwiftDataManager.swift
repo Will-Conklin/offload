@@ -21,21 +21,10 @@ final class SwiftDataManager {
 
     func createModelContainer() throws -> ModelContainer {
         let schema = Schema([
-            // Core workflow models
-            CaptureEntry.self,
-            HandOffRequest.self,
-            HandOffRun.self,
-            Suggestion.self,
-            SuggestionDecision.self,
-            Placement.self,
-            // Destination models
-            Plan.self,
-            Task.self,
+            Item.self,
+            Collection.self,
+            CollectionItem.self,
             Tag.self,
-            Category.self,
-            ListEntity.self,
-            ListItem.self,
-            CommunicationItem.self,
         ])
 
         let modelConfiguration = ModelConfiguration(

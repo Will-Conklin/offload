@@ -2,37 +2,36 @@
 //  OrganizeView.swift
 //  Offload
 //
-//  Created by Claude Code on 12/30/25.
-//
-//  Intent: Manual organization hub for creating plans, categories, and tags.
-//  Keeps quick-add flows lightweight to match capture-first philosophy.
+//  Simplified design for Plans and Lists tabs using Collections
 //
 
 import SwiftUI
 import SwiftData
 
 // AGENT NAV
-// - Organize List
-// - Sheets + Forms
-// - CRUD Helpers
+// - Scope
+// - Layout
+// - Collections
+// - Picker
+// - Sheets
 
 struct OrganizeView: View {
-    enum Scope {
-        case all
-        case plans
-        case lists
-        case communications
+    enum Scope: String, CaseIterable, Identifiable {
+        case plans, lists
+
+        var id: String { rawValue }
 
         var title: String {
             switch self {
-            case .all:
-                return "Organize"
-            case .plans:
-                return "Plans"
-            case .lists:
-                return "Lists"
-            case .communications:
-                return "Communications"
+            case .plans: return "Plans"
+            case .lists: return "Lists"
+            }
+        }
+
+        var isStructured: Bool {
+            switch self {
+            case .plans: return true
+            case .lists: return false
             }
         }
     }
@@ -41,648 +40,292 @@ struct OrganizeView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    @Query(sort: \Plan.createdAt, order: .reverse) private var plans: [Plan]
-    @Query(sort: \ListEntity.createdAt, order: .reverse) private var lists: [ListEntity]
-    @Query(sort: \CommunicationItem.createdAt, order: .reverse) private var communications: [CommunicationItem]
+    @Query(sort: \Collection.createdAt, order: .reverse) private var allCollections: [Collection]
 
-    let scope: Scope
-    @State private var activeSheet: OrganizeSheet?
-    @State private var errorMessage: String?
+    @AppStorage("organize.scope") private var selectedScopeRaw = Scope.plans.rawValue
+    @State private var showingCreate = false
     @State private var showingSettings = false
-    @State private var selectedPlanRoute: PlanRoute?
-    @State private var selectedList: ListEntity?
+    @State private var showingAccount = false
+    @State private var selectedCollection: Collection?
 
-    init(scope: Scope = .all) {
-        self.scope = scope
+    private var style: ThemeStyle { themeManager.currentStyle }
+    private var floatingTabBarClearance: CGFloat {
+        Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
     }
 
-    private var showsPlans: Bool { scope == .all || scope == .plans }
-    private var showsLists: Bool { scope == .all || scope == .lists }
-    private var showsCommunications: Bool { scope == .all || scope == .communications }
-
-    private var planSectionContent: some View {
-        Group {
-            if plans.isEmpty {
-                CardView {
-                    Text("No plans yet")
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                }
-                .frame(height: Theme.Cards.rowHeight)
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: Theme.Cards.verticalInset,
-                                          leading: Theme.Cards.horizontalInset,
-                                          bottom: Theme.Cards.verticalInset,
-                                          trailing: Theme.Cards.horizontalInset))
-                .listRowSeparator(.hidden)
-            } else {
-                ForEach(plans) { plan in
-                    Button {
-                        selectedPlanRoute = PlanRoute(id: plan.id)
-                    } label: {
-                        CardView {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(plan.title)
-                                    .font(.headline)
-                                    .lineLimit(1)
-
-                                if let detail = plan.detail, !detail.isEmpty {
-                                    Text(detail)
-                                        .font(.subheadline)
-                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                                        .lineLimit(2)
-                                }
-
-                                HStack {
-                                    Text(plan.createdAt, format: .dateTime.month().day().year())
-                                        .font(.caption)
-                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-
-                                    if let taskCount = plan.tasks?.count, taskCount > 0 {
-                                        Spacer()
-                                        Text("\(taskCount) tasks")
-                                            .font(.caption)
-                                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                                    }
-                                }
-                            }
-                        }
-                        .frame(height: Theme.Cards.rowHeight)
-                    }
-                    .cardButtonStyle()
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: Theme.Cards.verticalInset,
-                                              leading: Theme.Cards.horizontalInset,
-                                              bottom: Theme.Cards.verticalInset,
-                                              trailing: Theme.Cards.horizontalInset))
-                    .listRowSeparator(.hidden)
-                }
-                .onDelete(perform: deletePlans)
-            }
-        }
+    private var selectedScope: Scope {
+        Scope(rawValue: selectedScopeRaw) ?? .plans
     }
 
-    private var listSectionContent: some View {
-        Group {
-            if lists.isEmpty {
-                CardView {
-                    Text("No lists yet")
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                }
-                .frame(height: Theme.Cards.rowHeight)
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: Theme.Cards.verticalInset,
-                                          leading: Theme.Cards.horizontalInset,
-                                          bottom: Theme.Cards.verticalInset,
-                                          trailing: Theme.Cards.horizontalInset))
-                .listRowSeparator(.hidden)
-            } else {
-                ForEach(lists) { list in
-                    Button {
-                        selectedList = list
-                    } label: {
-                        CardView {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(list.title)
-                                        .font(Theme.Typography.cardTitle)
-                                        .lineLimit(1)
-                                    Spacer()
-                                    Text(list.listKind.rawValue.capitalized)
-                                        .font(Theme.Typography.badge)
-                                        .padding(.horizontal, Theme.Spacing.sm)
-                                        .padding(.vertical, 2)
-                                        .background(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle).opacity(0.2))
-                                        .cornerRadius(Theme.CornerRadius.sm)
-                                }
-
-                                if let itemCount = list.items?.count, itemCount > 0 {
-                                    let checkedCount = list.items?.filter { $0.isChecked }.count ?? 0
-                                    Text("\(checkedCount)/\(itemCount) items")
-                                        .font(.caption)
-                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                                }
-                            }
-                        }
-                        .frame(height: Theme.Cards.rowHeight)
-                    }
-                    .cardButtonStyle()
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: Theme.Cards.verticalInset,
-                                              leading: Theme.Cards.horizontalInset,
-                                              bottom: Theme.Cards.verticalInset,
-                                              trailing: Theme.Cards.horizontalInset))
-                    .listRowSeparator(.hidden)
-                }
-                .onDelete(perform: deleteLists)
-            }
-        }
-    }
-
-    private var communicationSectionContent: some View {
-        Group {
-            if communications.isEmpty {
-                CardView {
-                    Text("No communications yet")
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                }
-                .frame(height: Theme.Cards.rowHeight)
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: Theme.Cards.verticalInset,
-                                          leading: Theme.Cards.horizontalInset,
-                                          bottom: Theme.Cards.verticalInset,
-                                          trailing: Theme.Cards.horizontalInset))
-                .listRowSeparator(.hidden)
-            } else {
-                ForEach(communications) { comm in
-                    CardView {
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Image(systemName: iconForChannel(comm.communicationChannel))
-                                    .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: themeManager.currentStyle))
-                                Text(comm.recipient)
-                                    .font(Theme.Typography.cardTitle)
-                                    .lineLimit(1)
-                                Spacer()
-                                if comm.communicationStatus == .sent {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(Theme.Colors.success(colorScheme, style: themeManager.currentStyle))
-                                }
-                            }
-
-                            Text(comm.content)
-                                .font(Theme.Typography.cardBody)
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                                .lineLimit(2)
-
-                            Text(comm.createdAt, format: .dateTime.month().day().year())
-                                .font(Theme.Typography.metadata)
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: themeManager.currentStyle))
-                        }
-                    }
-                    .frame(height: Theme.Cards.rowHeight)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: Theme.Cards.verticalInset,
-                                              leading: Theme.Cards.horizontalInset,
-                                              bottom: Theme.Cards.verticalInset,
-                                              trailing: Theme.Cards.horizontalInset))
-                    .listRowSeparator(.hidden)
-                }
-                .onDelete(perform: deleteCommunications)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var addToolbarItem: some View {
-        switch scope {
-        case .all:
-            Menu {
-                Button("New Plan") {
-                    activeSheet = .plan
-                }
-                Button("New List") {
-                    activeSheet = .list
-                }
-                Button("New Communication") {
-                    activeSheet = .communication
-                }
-            } label: {
-                Label("Add", systemImage: Icons.add)
-            }
-        case .plans:
-            Button {
-                activeSheet = .plan
-            } label: {
-                Label("New Plan", systemImage: Icons.add)
-            }
-        case .lists:
-            Button {
-                activeSheet = .list
-            } label: {
-                Label("New List", systemImage: Icons.add)
-            }
-        case .communications:
-            Button {
-                activeSheet = .communication
-            } label: {
-                Label("New Communication", systemImage: Icons.add)
-            }
-        }
+    private var filteredCollections: [Collection] {
+        allCollections.filter { $0.isStructured == selectedScope.isStructured }
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.Gradients.appBackground(colorScheme, style: themeManager.currentStyle)
+                Theme.Colors.background(colorScheme, style: style)
                     .ignoresSafeArea()
 
-                List {
-                    if showsPlans {
-                        if scope == .all {
-                            Section("Plans") {
-                                planSectionContent
-                            }
-                        } else {
-                            Section {
-                                planSectionContent
-                            }
-                        }
-                    }
+                VStack(spacing: Theme.Spacing.sm) {
+                    scopePicker
 
-                    if showsLists {
-                        if scope == .all {
-                            Section("Lists") {
-                                listSectionContent
-                            }
-                        } else {
-                            Section {
-                                listSectionContent
-                            }
+                    ScrollView {
+                        LazyVStack(spacing: Theme.Spacing.md) {
+                            collectionsContent
                         }
+                        .padding(.horizontal, Theme.Spacing.md)
+                        .padding(.top, Theme.Spacing.sm)
+                        .padding(.bottom, Theme.Spacing.lg)
                     }
+                    .safeAreaInset(edge: .bottom) {
+                        Color.clear
+                            .frame(height: floatingTabBarClearance)
+                    }
+                }
+            }
+            .navigationTitle("Organize")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                        showingAccount = true
+                    } label: {
+                        IconTile(
+                            iconName: Icons.account,
+                            iconSize: 18,
+                            tileSize: 32,
+                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                        )
+                    }
+                    .accessibilityLabel("Account")
 
-                    if showsCommunications {
-                        if scope == .all {
-                            Section("Communications") {
-                                communicationSectionContent
-                            }
-                        } else {
-                            Section {
-                                communicationSectionContent
-                            }
-                        }
+                    Button { showingSettings = true } label: {
+                        IconTile(
+                            iconName: Icons.settings,
+                            iconSize: 18,
+                            tileSize: 32,
+                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                        )
                     }
+                    .accessibilityLabel("Settings")
                 }
-                .scrollContentBackground(.hidden)
-                .listStyle(.plain)
-                .listRowSeparator(.hidden)
-                .navigationTitle(scope.title)
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        addToolbarItem
-                    }
-
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showingSettings = true
-                        } label: {
-                            Image(systemName: Icons.settings)
-                        }
-                        .accessibilityLabel("Settings")
-                    }
-                }
-                .sheet(item: $activeSheet) { sheet in
-                    switch sheet {
-                    case .plan:
-                        PlanFormSheet { title, detail in
-                            try createPlan(title: title, detail: detail)
-                        }
-                    case .list:
-                        ListFormSheet { title, kind in
-                            try createList(title: title, kind: kind)
-                        }
-                    case .communication:
-                        CommunicationFormSheet { channel, recipient, content in
-                            try createCommunication(channel: channel, recipient: recipient, content: content)
-                        }
-                    }
-                }
-                .alert("Error", isPresented: .constant(errorMessage != nil), presenting: errorMessage) { _ in
-                    Button("OK") {
-                        errorMessage = nil
-                    }
-                } message: { message in
-                    Text(message)
-                }
-                .navigationDestination(item: $selectedPlanRoute) { route in
-                    PlanDetailView(planID: route.id)
-                }
-                .navigationDestination(item: $selectedList) { list in
-                    ListDetailView(list: list)
-                }
-                .sheet(isPresented: $showingSettings) {
-                    SettingsView()
-                }
+            }
+            .sheet(isPresented: $showingCreate) {
+                createSheet
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
+            }
+            .sheet(isPresented: $showingAccount) {
+                AccountView()
+            }
+            .navigationDestination(item: $selectedCollection) { collection in
+                CollectionDetailView(collectionID: collection.id)
             }
         }
     }
 
-    private func createPlan(title: String, detail: String?) throws {
-        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTitle.isEmpty else {
-            throw ValidationError("Plan title is required.")
-        }
+    // MARK: - Collections Content
 
-        let normalizedDetail = detail?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let plan = Plan(
-            title: trimmedTitle,
-            detail: (normalizedDetail?.isEmpty ?? true) ? nil : normalizedDetail
+    @ViewBuilder
+    private var collectionsContent: some View {
+        if filteredCollections.isEmpty {
+            emptyState
+        } else {
+            ForEach(Array(filteredCollections.enumerated()), id: \.element.id) { index, collection in
+                Button {
+                    selectedCollection = collection
+                } label: {
+                    CollectionCard(paletteIndex: index, collection: collection, colorScheme: colorScheme, style: style)
+                }
+                .buttonStyle(.plain)
+                .cardButtonStyle()
+            }
+
+            addCollectionButton
+                .padding(.top, Theme.Spacing.sm)
+        }
+    }
+
+    // MARK: - Empty State
+
+    private var emptyState: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            AppIcon(name: selectedScope == .plans ? Icons.plans : Icons.lists, size: 34)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+            Text("No \(selectedScope.title.lowercased()) yet")
+                .font(Theme.Typography.body)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+            addCollectionButton
+                .padding(.top, Theme.Spacing.sm)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.xxl)
+    }
+
+    private var addCollectionButton: some View {
+        FloatingActionButton(
+            title: "Add \(selectedScope == .plans ? "Plan" : "List")",
+            iconName: Icons.addCircleFilled
+        ) {
+            showingCreate = true
+        }
+        .accessibilityLabel("Add \(selectedScope.title)")
+    }
+
+    // MARK: - Scope Picker
+
+    private var scopePicker: some View {
+        let fill = Theme.Colors.surface(colorScheme, style: style)
+
+        return HStack(spacing: Theme.Spacing.xs) {
+            scopeButton(.plans)
+            scopeButton(.lists)
+        }
+        .padding(Theme.Spacing.xs)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)
+                .fill(fill)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)
+                        .stroke(
+                            Theme.Colors.borderMuted(colorScheme, style: style)
+                                .opacity(Theme.Opacity.borderMuted(colorScheme)),
+                            lineWidth: 0.6
+                        )
+                )
         )
-
-        modelContext.insert(plan)
-        try modelContext.save()
-    }
-
-    private func deletePlans(offsets: IndexSet) {
-        for index in offsets {
-            let plan = plans[index]
-            modelContext.delete(plan)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete plans: \(error.localizedDescription)"
-        }
-    }
-
-    private func createList(title: String, kind: ListKind) throws {
-        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTitle.isEmpty else {
-            throw ValidationError("List title is required.")
-        }
-
-        let list = ListEntity(title: trimmedTitle, kind: kind)
-        modelContext.insert(list)
-        try modelContext.save()
-    }
-
-    private func deleteLists(offsets: IndexSet) {
-        for index in offsets {
-            let list = lists[index]
-            modelContext.delete(list)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete lists: \(error.localizedDescription)"
-        }
-    }
-
-    private func createCommunication(channel: CommunicationChannel, recipient: String, content: String) throws {
-        let trimmedRecipient = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !trimmedRecipient.isEmpty else {
-            throw ValidationError("Recipient is required.")
-        }
-        guard !trimmedContent.isEmpty else {
-            throw ValidationError("Content is required.")
-        }
-
-        let comm = CommunicationItem(
-            channel: channel,
-            recipient: trimmedRecipient,
-            content: trimmedContent
+        .shadow(
+            color: Theme.Shadows.ultraLight(colorScheme),
+            radius: Theme.Shadows.elevationUltraLight,
+            y: Theme.Shadows.offsetYUltraLight
         )
-        modelContext.insert(comm)
-        try modelContext.save()
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.top, Theme.Spacing.sm)
     }
 
-    private func deleteCommunications(offsets: IndexSet) {
-        for index in offsets {
-            let comm = communications[index]
-            modelContext.delete(comm)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            modelContext.rollback()
-            errorMessage = "Failed to delete communications: \(error.localizedDescription)"
-        }
-    }
-
-    private func iconForChannel(_ channel: CommunicationChannel) -> String {
-        switch channel {
-        case .call:
-            return "phone.fill"
-        case .email:
-            return "envelope.fill"
-        case .text:
-            return "message.fill"
-        case .other:
-            return "ellipsis.message.fill"
-        }
-    }
-}
-
-private enum OrganizeSheet: Identifiable {
-    case plan
-    case list
-    case communication
-
-    var id: String {
-        switch self {
-        case .plan:
-            return "plan"
-        case .list:
-            return "list"
-        case .communication:
-            return "communication"
-        }
-    }
-}
-
-private struct PlanRoute: Identifiable, Hashable {
-    let id: UUID
-}
-
-private struct PlanFormSheet: View {
-    let onSave: (String, String?) async throws -> Void
-
-    @State private var title: String = ""
-    @State private var detail: String = ""
-
-    var body: some View {
-        FormSheet(
-            title: "New Plan",
-            saveButtonTitle: "Save",
-            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            onSave: {
-                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                let trimmedDetail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                guard !trimmedTitle.isEmpty else {
-                    throw ValidationError("Plan title is required.")
-                }
-
-                try await onSave(
-                    trimmedTitle,
-                    trimmedDetail.isEmpty ? nil : trimmedDetail
+    private func scopeButton(_ scope: Scope) -> some View {
+        Button {
+            selectedScopeRaw = scope.rawValue
+        } label: {
+            Text(scope.title)
+                .font(selectedScope == scope ? Theme.Typography.subheadlineSemibold : Theme.Typography.subheadline)
+                .foregroundStyle(
+                    selectedScope == scope
+                        ? Theme.Colors.cardTextPrimary(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style)
                 )
-            }
-        ) {
-            Section("Details") {
-                TextField("Plan title", text: $title)
-                TextField("Description (optional)", text: $detail, axis: .vertical)
-            }
-        }
-    }
-}
-
-private struct CategoryFormSheet: View {
-    let onSave: (String, String?) async throws -> Void
-
-    @State private var name: String = ""
-    @State private var icon: String = ""
-
-    var body: some View {
-        FormSheet(
-            title: "New Category",
-            saveButtonTitle: "Save",
-            isSaveDisabled: name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            onSave: {
-                let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-                let trimmedIcon = icon.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                guard !trimmedName.isEmpty else {
-                    throw ValidationError("Category name is required.")
-                }
-
-                try await onSave(
-                    trimmedName,
-                    trimmedIcon.isEmpty ? nil : trimmedIcon
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Theme.Spacing.xs)
+                .background(
+                    selectedScope == scope
+                        ? Theme.Surface.card(colorScheme, style: style)
+                        : Color.clear
                 )
-            }
-        ) {
-            Section("Details") {
-                TextField("Category name", text: $name)
-                TextField("Emoji (optional)", text: $icon)
-            }
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Create Sheet
+
+    @ViewBuilder
+    private var createSheet: some View {
+        CollectionFormSheet(isStructured: selectedScope.isStructured) { name in
+            let collection = Collection(name: name, isStructured: selectedScope.isStructured)
+            modelContext.insert(collection)
         }
     }
 }
 
-private struct TagFormSheet: View {
-    let onSave: (String, String?) async throws -> Void
+// MARK: - Collection Card
 
-    @State private var name: String = ""
-    @State private var color: String = ""
+private struct CollectionCard: View {
+    let paletteIndex: Int
+    let collection: Collection
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
 
-    var body: some View {
-        FormSheet(
-            title: "New Tag",
-            saveButtonTitle: "Save",
-            isSaveDisabled: name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            onSave: {
-                let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-                let trimmedColor = color.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                guard !trimmedName.isEmpty else {
-                    throw ValidationError("Tag name is required.")
-                }
-
-                try await onSave(
-                    trimmedName,
-                    trimmedColor.isEmpty ? nil : trimmedColor
-                )
-            }
-        ) {
-            Section("Details") {
-                TextField("Tag name", text: $name)
-                TextField("Color (optional)", text: $color)
-            }
-        }
+    private var tagNames: [String] {
+        let names = collection.collectionItems?
+            .compactMap { $0.item?.tags }
+            .flatMap { $0 } ?? []
+        return Array(Set(names)).sorted()
     }
-}
-
-private struct ListFormSheet: View {
-    let onSave: (String, ListKind) async throws -> Void
-
-    @State private var title: String = ""
-    @State private var kind: ListKind = .reference
 
     var body: some View {
-        FormSheet(
-            title: "New List",
-            saveButtonTitle: "Save",
-            isSaveDisabled: title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            onSave: {
-                let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        CardSurface {
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                HStack {
+                    Text(collection.name)
+                        .font(Theme.Typography.cardTitle)
+                        .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
 
-                guard !trimmedTitle.isEmpty else {
-                    throw ValidationError("List title is required.")
+                    Spacer()
                 }
 
-                try await onSave(trimmedTitle, kind)
-            }
-        ) {
-            Section("Details") {
-                TextField("List title", text: $title)
-                Picker("Type", selection: $kind) {
-                    ForEach(ListKind.allCases, id: \.self) { kind in
-                        Text(kind.rawValue.capitalized).tag(kind)
+                HStack {
+                    Text(collection.createdAt, format: .dateTime.month(.abbreviated).day())
+                        .font(Theme.Typography.metadata)
+                        .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+
+                    Spacer()
+
+                    if let count = collection.collectionItems?.count, count > 0 {
+                        Text("\(count) item\(count == 1 ? "" : "s")")
+                            .font(Theme.Typography.metadata)
+                            .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                     }
                 }
-                .pickerStyle(.segmented)
-            }
-        }
-    }
-}
 
-private struct CommunicationFormSheet: View {
-    let onSave: (CommunicationChannel, String, String) async throws -> Void
-
-    @State private var channel: CommunicationChannel = .text
-    @State private var recipient: String = ""
-    @State private var content: String = ""
-
-    var body: some View {
-        FormSheet(
-            title: "New Communication",
-            saveButtonTitle: "Save",
-            isSaveDisabled: recipient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            onSave: {
-                let trimmedRecipient = recipient.trimmingCharacters(in: .whitespacesAndNewlines)
-                let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                guard !trimmedRecipient.isEmpty else {
-                    throw ValidationError("Recipient is required.")
-                }
-                guard !trimmedContent.isEmpty else {
-                    throw ValidationError("Content is required.")
-                }
-
-                try await onSave(channel, trimmedRecipient, trimmedContent)
-            }
-        ) {
-            Section("Type") {
-                Picker("Channel", selection: $channel) {
-                    ForEach(CommunicationChannel.allCases, id: \.self) { channel in
-                        Label(channel.rawValue.capitalized, systemImage: iconForChannel(channel))
-                            .tag(channel)
+                if !tagNames.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: Theme.Spacing.xs) {
+                            ForEach(tagNames, id: \.self) { tagName in
+                                TagPill(
+                                    name: tagName,
+                                    color: Theme.Colors.tagColor(for: tagName, colorScheme, style: style)
+                                )
+                            }
+                        }
                     }
                 }
-                .pickerStyle(.segmented)
             }
-
-            Section("Details") {
-                TextField("Recipient", text: $recipient)
-                TextField("Message", text: $content, axis: .vertical)
-                    .lineLimit(3...6)
-            }
-        }
-    }
-
-    private func iconForChannel(_ channel: CommunicationChannel) -> String {
-        switch channel {
-        case .call:
-            return "phone.fill"
-        case .email:
-            return "envelope.fill"
-        case .text:
-            return "message.fill"
-        case .other:
-            return "ellipsis.message.fill"
         }
     }
 }
 
+// MARK: - Form Sheet
+
+private struct CollectionFormSheet: View {
+    let isStructured: Bool
+    let onSave: (String) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var name = ""
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField(isStructured ? "Plan name" : "List name", text: $name)
+            }
+            .navigationTitle(isStructured ? "New Plan" : "New List")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        onSave(name)
+                        dismiss()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+    }
+}
 
 #Preview {
     OrganizeView()
