@@ -2,6 +2,26 @@
 
 iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 
+## Critical
+
+- ALWAYS add headers to key files for agent navigation. Use the AGENT NAV format:
+
+  ```swift
+  // AGENT NAV
+  // - Section Name
+  // - Another Section
+  ```
+
+- ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
+- ALWAYS use explicit type references. SwiftData predicates require explicit type references for enum cases
+- ALWAYS clean up merged branches.
+- ALWAYS label pull requests with appropriate labels (bug, enhancement, documentation, etc.).
+- ALWAYS keep documentation up to date.
+- ALWAYS run markdownlint prior to committing documentation changes (no need to rerun after every edit).
+- DO NOT make README a changelog.  While in development, PR history can be used to track changes, release notes will be used after initial v1 release.
+- NEVER use markdown files to drive processes or store configuration that scripts parse. Use appropriate config formats (JSON, YAML, env files, shell scripts with hardcoded values) instead. Markdown is for human-readable documentation only.
+- ALWAYS use conventional commit syntax
+
 ## Product Philosophy
 
 **Offload** helps people capture thoughts and organize them with minimal friction.
@@ -32,32 +52,27 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 - Prioritize speed of capture over completeness
 - Let users organize later rather than forcing structure upfront
 
-## UI Design Principles
+## Agent Handoff Summary
 
-- Common as possible, unique as necesary
-- ALWAYS drive all visual component styling from `ios/Offload/DesignSystem/Theme.swift` as the single source of truth.
-- ALWAYS keep reusable UI components (cards, buttons, fields, etc.) defined in `ios/Offload/DesignSystem/Components.swift` as the single source of truth.
-- ALWAYS centralize icon usage and definitions in `ios/Offload/DesignSystem/Icons.swift` and `ios/Offload/DesignSystem/AppIcon.swift`.
-- ALWAYS keep 
+- **App intent**: Capture-first workflow; captures are uncategorized items and organization happens later in Plans (structured) and Lists (unstructured).
+- **Primary views**: `CaptureView` (inbox), `OrganizeView` (plans/lists), `CollectionDetailView` (plan/list detail), `SettingsView`.
+- **Navigation**: Root `MainTabView` for top-level tabs; `NavigationStack` for detail navigation; sheets use `sheet(item:)` for edit/pickers.
+- **Design system**: Single source of truth in `ios/Offload/DesignSystem/Theme.swift` and `ios/Offload/DesignSystem/Components.swift`; icons centralized in `ios/Offload/DesignSystem/Icons.swift` and `ios/Offload/DesignSystem/AppIcon.swift`; default theme is `elijah`.
+- **Data model**: Four SwiftData models only (Item, Collection, CollectionItem, Tag). `Item.type == nil` represents captures; `Collection.isStructured` distinguishes plans vs lists; `CollectionItem` stores order (`position`) and hierarchy (`parentId`).
+- **Relationships**: `Collection.collectionItems` and `Item.collectionItems` are `@Relationship` with cascade delete; `Collection.sortedItems` is the canonical ordering used by detail views.
+- **Persistence**: `PersistenceController` and `SwiftDataManager` register the schema; views access context via `@Environment(\.modelContext)` and use `@Query` or `FetchDescriptor`.
+- **Repositories**: CRUD lives in `ios/Offload/Data/Repositories/` for Item, Collection, CollectionItem, Tag; prefer using these for queries/mutations.
+- **Capture flow**: Capture UI creates `Item` records (type nil), can attach photo/voice, and moves to plan/list by creating a `CollectionItem` link.
 
-## Critical
+## UI Design Component Principles
 
-- ALWAYS add headers to key files for agent navigation. Use a format that's optimized for agent consumption.  Ensure consistency.
-- ALWAYS create branches before implementing new features or fixes. Consider worktrees for more complex work or refactors.
-- ALWAYS use explicit type references. SwiftData predicates require explicit type references for enum cases
-- ALWAYS clean up merged branches.
-- ALWAYS label pull requests with appropriate labels (bug, enhancement, documentation, etc.).
-- ALWAYS keep documentation up to date.
-- ALWAYS run markdownlint prior to committing documentation changes (no need to rerun after every edit).
-- DO NOT make README a changelog.  While in development, PR history can be used to track changes, release notes will be used after initial v1 release.
-- NEVER use markdown files to drive processes or store configuration that scripts parse. Use appropriate config formats (JSON, YAML, env files, shell scripts with hardcoded values) instead. Markdown is for human-readable documentation only.
-- ALWAYS use conventional commit syntax
+- Common as possible, unique as necessary
 
 ## Implementation Plans
 
 - ALWAYS keep plans up to date
-- Active implementation plans are tracked in [docs/plans/](docs/sdlc/plans/)
-- Move completed plans to [docs/plans/_archived](docs/sdlc/plans/_archived/)
+- Active implementation plans are tracked in [docs/sdlc/plans/](docs/sdlc/plans/)
+- Move completed plans to [docs/sdlc/plans/_archived/](docs/sdlc/plans/_archived/)
 
 ## Project
 
@@ -88,7 +103,7 @@ offload/
         Capture/                # Capture compose + list
         Organize/OrganizeView.swift
       Domain/                   # Business logic, models
-        Models/                 # SwiftData models (13 models - event-sourced capture workflow)
+        Models/                 # SwiftData models (4 models)
       Data/                     # Data layer
         Persistence/            # SwiftData container setup
         Repositories/           # CRUD/query repositories
@@ -147,24 +162,7 @@ TBD - Backend implementation coming soon.
 
 ## Architecture
 
-### iOS - Feature-Based Organization
-
-Code is organized by feature and layer:
-
-- **App/**: App lifecycle, configuration, dependency injection
-- **Features/**: UI screens and flows grouped by feature (Capture, Organize, Settings)
-- **Domain/**: Business logic, models (simplified Item/Collection schema)
-- **Data/**: Persistence, repositories, services, networking
-- **DesignSystem/**: Reusable UI components, themes, design tokens
-
-### iOS - Current Model Implementation
-
-Unified capture + organization model with 4 SwiftData models:
-
-- **Item**: Core content entity (uncategorized capture when `type` is nil; `task`/`link` when organized).
-- **Collection**: Container for items (isStructured=true for plans, false for lists).
-- **CollectionItem**: Join model for many-to-many relationships, with ordering + hierarchy.
-- **Tag**: Tag metadata; item tag values live on `Item.tags`.
+See **Agent Handoff Summary** above for model overview, views, and data flow.
 
 ### iOS - SwiftData Setup
 

@@ -1,15 +1,13 @@
-//
-//  PersistenceController.swift
-//  Offload
-//
-//  Created by Claude Code on 12/31/25.
-//
 //  Intent: Central SwiftData configuration for all models.
 //  Registers schema and provides shared/preview containers.
-//
 
 import Foundation
 import SwiftData
+
+// AGENT NAV
+// - Shared Container
+// - Preview Container
+
 
 /// Simplified persistence controller for all SwiftData models
 struct PersistenceController {

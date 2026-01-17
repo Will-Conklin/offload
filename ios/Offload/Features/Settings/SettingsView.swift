@@ -1,9 +1,4 @@
-//
-//  SettingsView.swift
-//  Offload
-//
 //  Simple flat settings: theme picker, tags/categories, basic info
-//
 
 import SwiftUI
 import SwiftData

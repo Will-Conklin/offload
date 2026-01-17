@@ -1,9 +1,4 @@
-//
-//  CaptureView.swift
-//  Offload
-//
 //  Flat design capture list with inline tagging and swipe actions
-//
 
 import SwiftUI
 import SwiftData
@@ -449,7 +444,10 @@ private struct MoveToPlanSheet: View {
             itemId: item.id,
             position: position
         )
+        collectionItem.collection = collection
+        collectionItem.item = item
         modelContext.insert(collectionItem)
+        try? modelContext.save()
 
         dismiss()
         onComplete()
@@ -472,7 +470,10 @@ private struct MoveToPlanSheet: View {
             itemId: item.id,
             position: 0
         )
+        collectionItem.collection = collection
+        collectionItem.item = item
         modelContext.insert(collectionItem)
+        try? modelContext.save()
 
         dismiss()
         onComplete()
@@ -569,7 +570,10 @@ private struct MoveToListSheet: View {
             itemId: item.id,
             position: nil
         )
+        collectionItem.collection = collection
+        collectionItem.item = item
         modelContext.insert(collectionItem)
+        try? modelContext.save()
 
         dismiss()
         onComplete()
@@ -592,7 +596,10 @@ private struct MoveToListSheet: View {
             itemId: item.id,
             position: nil
         )
+        collectionItem.collection = collection
+        collectionItem.item = item
         modelContext.insert(collectionItem)
+        try? modelContext.save()
 
         dismiss()
         onComplete()

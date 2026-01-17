@@ -1,9 +1,4 @@
-//
-//  AccountView.swift
-//  Offload
-//
 //  Placeholder account view for profile settings
-//
 
 import SwiftUI
 

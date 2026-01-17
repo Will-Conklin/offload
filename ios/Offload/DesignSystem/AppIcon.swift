@@ -1,9 +1,4 @@
-//
-//  AppIcon.swift
-//  Offload
-//
 //  SF Symbols wrapper for consistent sizing and template rendering.
-//
 
 import SwiftUI
 

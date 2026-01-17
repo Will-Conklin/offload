@@ -1,10 +1,3 @@
-//
-//  Icons.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
 import SwiftUI
 
 // AGENT NAV

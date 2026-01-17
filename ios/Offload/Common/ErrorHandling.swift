@@ -1,12 +1,5 @@
-//
-//  ErrorHandling.swift
-//  Offload
-//
-//  Created by Claude Code on 1/7/26.
-//
 //  Intent: Centralized error presentation types for consistent user-facing alerts
 //  and retry messaging across the app.
-//
 
 import Foundation
 import Observation
