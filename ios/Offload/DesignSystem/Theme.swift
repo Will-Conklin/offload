@@ -1,9 +1,4 @@
-//
-//  Theme.swift
-//  Offload
-//
 //  Elijah lavender/cream design system
-//
 
 import SwiftUI
 

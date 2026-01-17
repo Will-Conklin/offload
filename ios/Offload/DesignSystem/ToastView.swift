@@ -1,12 +1,5 @@
-//
-//  ToastView.swift
-//  Offload
-//
-//  Created by Claude Code on 1/5/26.
-//
 //  Intent: Toast notification system for displaying transient user feedback
 //  (success, error, info, warning messages) with auto-dismissal.
-//
 
 import SwiftUI
 

@@ -1,9 +1,4 @@
-//
-//  MainTabView.swift
-//  Offload
-//
 //  Flat design with floating pill tab bar
-//
 
 import SwiftUI
 import SwiftData

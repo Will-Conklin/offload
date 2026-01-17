@@ -1,6 +1,14 @@
 import Foundation
 import SwiftData
 
+// AGENT NAV
+// - Create
+// - Fetch
+// - Update
+// - Delete
+// - Helpers
+
+
 @MainActor
 final class CollectionRepository {
     private let modelContext: ModelContext

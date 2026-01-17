@@ -1,6 +1,14 @@
 import Foundation
 import SwiftData
 
+// AGENT NAV
+// - Create
+// - Fetch
+// - Update
+// - Delete
+// - Helpers
+
+
 @MainActor
 final class CollectionItemRepository {
     private let modelContext: ModelContext
@@ -16,12 +24,16 @@ final class CollectionItemRepository {
         position: Int? = nil,
         parentId: UUID? = nil
     ) throws -> CollectionItem {
+        let collection = try fetchCollection(collectionId)
+        let item = try fetchItem(itemId)
         let collectionItem = CollectionItem(
             collectionId: collectionId,
             itemId: itemId,
             position: position,
             parentId: parentId
         )
+        collectionItem.collection = collection
+        collectionItem.item = item
         modelContext.insert(collectionItem)
         try modelContext.save()
         return collectionItem
@@ -119,9 +131,27 @@ final class CollectionItemRepository {
         toCollectionId: UUID,
         position: Int? = nil
     ) throws {
+        let collection = try fetchCollection(toCollectionId)
         collectionItem.collectionId = toCollectionId
+        collectionItem.collection = collection
         collectionItem.position = position
         collectionItem.parentId = nil // Reset parent when moving
         try modelContext.save()
+    }
+
+    // MARK: - Private helpers
+
+    private func fetchCollection(_ id: UUID) throws -> Collection? {
+        let descriptor = FetchDescriptor<Collection>(
+            predicate: #Predicate { $0.id == id }
+        )
+        return try modelContext.fetch(descriptor).first
+    }
+
+    private func fetchItem(_ id: UUID) throws -> Item? {
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { $0.id == id }
+        )
+        return try modelContext.fetch(descriptor).first
     }
 }

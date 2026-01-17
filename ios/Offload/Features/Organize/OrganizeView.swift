@@ -1,9 +1,4 @@
-//
-//  OrganizeView.swift
-//  Offload
-//
 //  Simplified design for Plans and Lists tabs using Collections
-//
 
 import SwiftUI
 import SwiftData

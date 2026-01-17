@@ -1,6 +1,12 @@
 import Foundation
 import SwiftData
 
+// AGENT NAV
+// - Model
+// - Init
+// - Helpers
+
+
 @Model
 final class Collection {
     var id: UUID

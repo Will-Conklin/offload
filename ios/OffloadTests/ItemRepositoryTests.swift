@@ -1,9 +1,4 @@
-//
-//  ItemRepositoryTests.swift
 //  OffloadTests
-//
-//  Created by Claude Code on 1/13/26.
-//
 
 import XCTest
 import SwiftData

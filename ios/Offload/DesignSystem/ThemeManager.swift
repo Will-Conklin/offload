@@ -1,11 +1,4 @@
-//
-//  ThemeManager.swift
-//  Offload
-//
-//  Created by Claude Code on 1/10/26.
-//
 //  Intent: Manage user-selected theme style with persistence via UserDefaults.
-//
 
 import SwiftUI
 import Combine

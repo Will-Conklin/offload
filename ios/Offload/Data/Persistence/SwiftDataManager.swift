@@ -1,12 +1,10 @@
-//
-//  SwiftDataManager.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
 import Foundation
 import SwiftData
+
+// AGENT NAV
+// - Container
+// - Configuration
+
 
 /// Manages SwiftData model container configuration and setup
 final class SwiftDataManager {

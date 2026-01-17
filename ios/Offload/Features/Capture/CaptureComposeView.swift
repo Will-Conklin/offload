@@ -1,9 +1,4 @@
-//
-//  CaptureComposeView.swift
-//  Offload
-//
 //  Minimal capture: text + mic + attachment, optional tags/starred
-//
 
 import SwiftUI
 import SwiftData

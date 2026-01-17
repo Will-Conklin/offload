@@ -1,9 +1,4 @@
-//
-//  CollectionDetailView.swift
-//  Offload
-//
 //  Unified detail view for both structured (plans) and unstructured (lists) collections
-//
 
 import SwiftUI
 import SwiftData

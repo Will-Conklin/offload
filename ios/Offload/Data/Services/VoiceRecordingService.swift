@@ -1,15 +1,15 @@
-//
-//  VoiceRecordingService.swift
-//  Offload
-//
-//  Created by Claude Code on 12/31/25.
-//
-
 import Foundation
 import OSLog
 import AVFoundation
 import Speech
 import Observation
+
+// AGENT NAV
+// - State
+// - Permissions
+// - Recording
+// - Errors
+
 
 @Observable
 final class VoiceRecordingService: @unchecked Sendable {

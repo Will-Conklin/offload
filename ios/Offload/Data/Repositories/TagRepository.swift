@@ -1,15 +1,16 @@
-//
-//  TagRepository.swift
-//  Offload
-//
-//  Created by Claude Code on 12/31/25.
-//
 //  Intent: Manages tags for manual item organization.
 //  Supports tags stored on Item records.
-//
 
 import Foundation
 import SwiftData
+
+// AGENT NAV
+// - Create
+// - Read
+// - Update
+// - Delete
+// - Helpers
+
 
 /// Repository for Tag CRUD operations and queries
 final class TagRepository {

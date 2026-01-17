@@ -1,11 +1,10 @@
-//
-//  APIClient.swift
-//  Offload
-//
-//  Created by Claude Code on 12/30/25.
-//
-
 import Foundation
+
+// AGENT NAV
+// - Client
+// - Configuration
+// - TODOs
+
 
 /// Network client for API communication
 final class APIClient {
