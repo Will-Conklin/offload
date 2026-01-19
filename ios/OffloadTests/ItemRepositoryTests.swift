@@ -7,7 +7,7 @@
 
 import XCTest
 import SwiftData
-@testable import offload
+@testable import Offload
 
 
 @MainActor
@@ -380,6 +380,50 @@ final class ItemRepositoryTests: XCTestCase {
         XCTAssertFalse(item.isCompleted)
     }
 
+    func testMarkCompleted() throws {
+        let item = try repository.create(content: "Task")
+        XCTAssertNil(item.completedAt)
+
+        try repository.markCompleted(item)
+        XCTAssertNotNil(item.completedAt)
+
+        let firstCompletion = item.completedAt
+        try repository.markCompleted(item)
+        XCTAssertEqual(item.completedAt, firstCompletion)
+    }
+
+    func testMarkAllCompleted() throws {
+        let item1 = try repository.create(content: "Task 1")
+        let item2 = try repository.create(content: "Task 2")
+        let item3 = try repository.create(content: "Task 3")
+
+        try repository.markAllCompleted([item1, item2, item3])
+
+        XCTAssertNotNil(item1.completedAt)
+        XCTAssertNotNil(item2.completedAt)
+        XCTAssertNotNil(item3.completedAt)
+    }
+
+    func testMoveToCollection() throws {
+        let collectionRepository = CollectionRepository(modelContext: modelContext)
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item = try repository.create(content: "Move me")
+
+        try repository.moveToCollection(item, collection: collection, position: 0)
+
+        let fetchedCollection = try collectionRepository.fetchById(collection.id)
+        XCTAssertEqual(fetchedCollection?.collectionItems?.count, 1)
+        XCTAssertEqual(fetchedCollection?.collectionItems?.first?.itemId, item.id)
+    }
+
+    func testValidate() throws {
+        let item = try repository.create(content: "  ")
+        XCTAssertFalse(try repository.validate(item))
+
+        try repository.updateContent(item, content: "Valid")
+        XCTAssertTrue(try repository.validate(item))
+    }
+
     // MARK: - Delete Tests
 
     func testDelete() throws {
@@ -404,5 +448,14 @@ final class ItemRepositoryTests: XCTestCase {
         let remaining = try repository.fetchAll()
         XCTAssertEqual(remaining.count, 1)
         XCTAssertEqual(remaining[0].id, item2.id)
+    }
+
+    func testDeleteAll() throws {
+        let item1 = try repository.create(content: "Item 1")
+        let item2 = try repository.create(content: "Item 2")
+
+        try repository.deleteAll([item1, item2])
+
+        XCTAssertEqual(try repository.fetchAll().count, 0)
     }
 }
