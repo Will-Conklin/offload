@@ -45,12 +45,22 @@ Below design. Plans describe WHEN and HOW work is executed; they cannot introduc
 
 ## Canonical documents
 
-- [Offload Master Implementation Plan](./plan-master-plan.md)
+- ⚠️ **[Master Plan Reconciliation (Jan 19, 2026)](./RECONCILIATION-2026-01-19.md)** - READ THIS FIRST
+- [Offload Master Implementation Plan](./plan-master-plan.md) - ⚠️ Requires updates (see reconciliation)
 - [View Decomposition Plan](./plan-view-decomposition.md)
 - [Pagination Implementation Plan](./plan-pagination-implementation.md)
 - [Repository Pattern Consistency Plan](./plan-repository-pattern-consistency.md)
 - [Tag Relationship Refactor Plan](./plan-tag-relationship-refactor.md)
 - [Error Handling Improvements Plan](./plan-error-handling-improvements.md)
+
+### ⚠️ Important Note (Jan 19, 2026)
+
+The master plan was created on Jan 9-10, but major changes occurred on Jan 13 that were not reflected in the plan. See [RECONCILIATION-2026-01-19.md](./RECONCILIATION-2026-01-19.md) for details on:
+- UI direction change (flat design vs planned glassmorphism)
+- Data model simplification (4 models instead of 13+)
+- Repository pattern status (not complete as claimed)
+- Error handling status (21 try? instances remain)
+- Realistic timeline to v1 (5 weeks, not 8-10)
 
 ## Naming
 

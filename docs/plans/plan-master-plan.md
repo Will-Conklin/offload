@@ -20,10 +20,11 @@ structure_notes:
 # Offload Master Implementation Plan
 
 **Created:** January 9, 2026
-**Status:** Active Development
-**Current Phase:** Remediation Phase 1 Complete / UI Planning / Feature Development
-**Timeline:** 8-10 weeks to production-ready v1
-**Last Updated:** January 10, 2026
+**Status:** ⚠️ REQUIRES UPDATE - See RECONCILIATION-2026-01-19.md
+**Current Phase:** Post-UI Overhaul / Architecture Cleanup Needed
+**Timeline:** REQUIRES RE-ESTIMATION (original 8-10 week timeline obsolete)
+**Last Updated:** January 19, 2026
+**⚠️ CRITICAL:** This plan is significantly out of date. Major UI changes and data model simplifications occurred on Jan 13 that were not reflected in this plan. See RECONCILIATION-2026-01-19.md for details.
 
 ---
 
@@ -40,30 +41,41 @@ This is the **single source of truth** for all Offload implementation planning. 
 
 ---
 
-## Executive Summary
+## Executive Summary - ⚠️ OUTDATED - See Actual Status Below
 
-**Current State:**
+**⚠️ MAJOR CHANGES NOT REFLECTED IN ORIGINAL PLAN:**
 
-- ✅ **Phase 1 Critical Fixes:** 8/8 complete (toast fix merged Jan 9)
-- 🟡 **Phase 2 High Priority:** 5/5 implementation complete, testing pending
-- 🟡 **Phase 3 Architecture:** 3/3 complete
-- 🟡 **UI/UX Modernization:** Research complete, implementation started
-- ⏳ **Feature Gaps:** AI hand-off, suggestion UI, organize flows
+On January 13, 2026 (commit c008443), a massive UI overhaul was completed that:
+- Implemented **flat design** (not the planned glassmorphism)
+- Simplified data model to 4 core entities (removed 9+ models)
+- Removed CaptureEntry model entirely
+- Removed Communications feature
+- Added comprehensive ItemRepository tests
+- Redesigned all major views
 
-**Production Blockers Remaining:**
+**Actual Current State (Jan 19, 2026):**
 
-- Testing and validation of Phase 1-3 fixes
-- Performance benchmarking
-- Accessibility audit
+- ✅ **UI/UX:** Flat design implemented (Elijah theme with lavender/cream palette)
+- ✅ **Data Model:** Simplified to 4 models (Item, Collection, CollectionItem, Tag)
+- ⚠️ **Repository Pattern:** Repositories exist but environment injection NOT implemented
+- ⚠️ **Error Handling:** ErrorPresenter exists but 21 instances of `try?` remain
+- ⚠️ **Testing:** ItemRepository has 45 unit tests, manual testing status unknown
+- ❌ **ViewModels:** None exist (required for pagination plan)
 
-**Path to Production:**
+**Actual Production Blockers:**
 
-1. Complete testing of critical fixes (Week 1-2)
-2. Implement UI foundation (Weeks 2-3 - can start during Week 2 while testing completes)
-3. Build component library & micro-interactions (Weeks 3-4)
-4. Add ADHD-specific enhancements & accessibility (Weeks 5-6)
-5. Integration, polish and release prep (Weeks 7-8)
-6. Feature development for AI flows (Week 9-10+ post-v1)
+1. Repository pattern consistency (views still use direct modelContext)
+2. Error handling adoption (try? suppression throughout codebase)
+3. Testing validation (unknown status of manual/performance testing)
+4. CollectionDetailView decomposition (778 lines, needs refactoring)
+
+**Realistic Path to v1:**
+
+1. Repository pattern consistency (2 weeks)
+2. Error handling improvements (1 week)
+3. Testing & bug fixes (1 week)
+4. Release prep & documentation (1 week)
+5. **Total: ~5 weeks from Jan 20, 2026**
 
 ---
 
@@ -115,31 +127,31 @@ All implementation complete, testing pending:
 
 ### Stream B: UI/UX Modernization (P2-P3)
 
-**Status:** 🟡 Research Complete | Implementation Started
-**Priority:** HIGH
-**Owner:** TBD
+**Status:** ✅ COMPLETE (but diverged from plan) - Jan 13, 2026
+**Priority:** COMPLETED
+**Owner:** Will Conklin + Claude
 
-#### Research Findings (COMPLETE ✅)
+#### Actual Implementation (Jan 13, 2026 - Commit c008443)
 
-- Comprehensive iOS 2025-2026 trend analysis
-- ADHD-specific design patterns identified
-- Component library architecture planned
-- 4-phase implementation strategy defined
+**What Was Actually Built (different from plan):**
 
-#### UI Foundation (IN PROGRESS 🟡)
+- ✅ **Flat design system** (NOT glassmorphism as planned)
+- ✅ Single "Elijah" theme (lavender/cream palette)
+- ✅ Bold borders instead of shadows
+- ✅ Simplified spacing tokens (4, 8, 16, 24, 32, 48)
+- ✅ Redesigned all major views (Captures, Organize, Plans, Lists, Settings)
+- ✅ Floating tab bar with center capture button
+- ✅ Inline tagging and swipe actions
+- ✅ Star system (replaced priority)
 
-**Scope:**
+**What Was NOT Built (from original plan):**
 
-- Glassmorphism/Liquid Glass materials
-- Gradient accent system
-- Soft edges (updated corner radius)
-- Spacing consistency fixes (15+ instances)
-
-**Progress:**
-
-- ✅ Applied glass treatment + Theme spacing to CaptureComposeView
-
-**Estimated:** 4 days
+- ❌ Glassmorphism/Liquid Glass materials
+- ❌ Gradient accent system
+- ❌ 4 theme variants (only 1 theme exists)
+- ❌ Component library (still monolithic views)
+- ❌ Micro-interactions (spring animations)
+- ❌ ADHD-specific features (timeline, celebrations)
 
 #### Component Library (NOT STARTED ⏳)
 
@@ -179,38 +191,137 @@ All implementation complete, testing pending:
 
 ---
 
-### Stream C: Feature Development (P2-P3)
+### Stream C: Feature Development & Data Model (P2-P3)
 
-**Status:** 🟡 In Progress | Foundation Complete
-**Priority:** MEDIUM
-**Owner:** TBD
+**Status:** ✅ MAJOR SIMPLIFICATION COMPLETE (Jan 13, 2026)
+**Priority:** COMPLETED (different from original plan)
+**Owner:** Will Conklin + Claude
 
-#### Completed ✅
+#### Data Model Simplification (Jan 13, 2026) ✅
 
-- Core data models (CaptureEntry, HandOffRequest, Suggestion, etc.)
-- Repository layer (CRUD + lifecycle helpers)
-- CaptureWorkflowService (capture, archive, inbox queries)
-- Basic capture UI (text + voice)
-- Test infrastructure
+**Removed Models (9+ entities deleted):**
+- ❌ CaptureEntry (replaced by Item with type=nil)
+- ❌ HandOffRequest, HandOffRun, Suggestion, SuggestionDecision, Placement (AI workflow)
+- ❌ Plan, Task (consolidated into Item/Collection)
+- ❌ ListEntity, ListItem (consolidated into Item/Collection)
+- ❌ CommunicationItem (feature removed)
+- ❌ Category (unused)
 
-#### In Progress 🟡
+**New Simplified Model (4 core entities):**
+- ✅ **Item** - Unified entity for captures (type=nil), tasks, and links
+- ✅ **Collection** - Plans (isStructured=true) or Lists (isStructured=false)
+- ✅ **CollectionItem** - Junction table with position/hierarchy
+- ✅ **Tag** - Tags for items (string array, not relationship)
 
-- AI hand-off submission (stubbed)
-- Suggestion presentation UI (not started)
-- Organize tab flows (TODOs present)
-- Settings screen (placeholder)
+**Repositories Simplified:**
+- ✅ ItemRepository (45 unit tests added)
+- ✅ CollectionRepository
+- ✅ CollectionItemRepository
+- ✅ TagRepository
+- ❌ Deleted: 11 old repositories
 
-#### Not Started ⏳
+#### Features Implemented ✅
 
-- Backend API implementation
-- Full AI workflow (hand-off → suggestion → decision → placement)
+- ✅ Captures (text + voice + photo + tags)
+- ✅ Plans (structured ordered tasks)
+- ✅ Lists (unordered items)
+- ✅ Swipe actions (complete/delete)
+- ✅ Move between captures/plans/lists
+- ✅ Convert between task types
+- ✅ Inline tagging
+- ✅ Star system (replaced priority)
+- ✅ Settings (theme picker, tag management)
+
+#### Deferred to v1.1+ ⏳
+
+- AI workflow (all models removed)
+- Communications (feature removed)
 - Export/import functionality
 - Batch operations
-- Search and filtering
+- Advanced search and filtering
 
 ---
 
-## Consolidated Timeline (8-10 Weeks)
+## ⚠️ ORIGINAL TIMELINE (8-10 Weeks) - OBSOLETE
+
+**This timeline is no longer valid.** Major changes on Jan 13, 2026 completed much of the UI work differently than planned. See "Revised Timeline" section below for realistic path to v1.
+
+---
+
+## Revised Timeline (5 Weeks from Jan 20, 2026)
+
+### Week 1-2: Repository Pattern Consistency (HIGH PRIORITY)
+
+**Goal:** Eliminate direct modelContext usage in views, enforce repository pattern
+
+**Tasks:**
+1. Create repository environment keys (Common/RepositoryEnvironment.swift)
+2. Inject repositories in AppRootView
+3. Update CaptureView to use @Environment(\.itemRepository)
+4. Update CaptureComposeView to use repositories
+5. Update CollectionDetailView to use repositories (778 lines - largest refactor)
+6. Update OrganizeView to use repositories
+7. Remove all direct modelContext.delete() and modelContext.save() calls from views
+8. Unit tests for repository injection pattern
+
+**Exit Criteria:**
+- Zero direct modelContext mutations in Feature views
+- All CRUD operations through repositories
+- Tests passing
+
+### Week 3: Error Handling Improvements (HIGH PRIORITY)
+
+**Goal:** Replace try? with proper error handling throughout codebase
+
+**Tasks:**
+1. Replace 21 instances of try? with do-catch + ErrorPresenter
+2. Add structured error types (ValidationError, PersistenceError)
+3. Integrate ErrorPresenter in all views
+4. Add toast notifications for errors
+5. Update repositories to throw structured errors
+6. Unit tests for error handling paths
+
+**Exit Criteria:**
+- Zero try? for user-facing operations
+- All errors properly logged and presented
+- Error messages are user-friendly
+
+### Week 4: Testing & Bug Fixes
+
+**Goal:** Validate all functionality, fix critical bugs
+
+**Tasks:**
+1. Manual testing checklist (all features)
+2. Performance benchmarks (query times at 100/1000/10000 records)
+3. Accessibility audit (VoiceOver, Dynamic Type, contrast)
+4. Bug fixes from testing
+5. CollectionDetailView decomposition (if time permits)
+
+**Exit Criteria:**
+- No critical bugs remaining
+- Performance meets targets (<100ms at 1K records)
+- Basic accessibility compliance
+
+### Week 5: Release Prep & Documentation
+
+**Goal:** Production-ready v1 release
+
+**Tasks:**
+1. Update AGENTS.md with final architecture
+2. Write user-facing documentation
+3. Create release notes
+4. App Store materials (screenshots, description)
+5. TestFlight build and distribution
+6. Final QA pass
+
+**Exit Criteria:**
+- Documentation complete
+- Release candidate approved
+- TestFlight distributed
+
+---
+
+## ORIGINAL TIMELINE BELOW (for reference only)
 
 ### Weeks 1-2: Testing & Validation ⚠️ CRITICAL
 
@@ -559,7 +670,7 @@ All implementation complete, testing pending:
 
 ## Decision Log
 
-### Recent Decisions (Jan 9, 2026)
+### Recent Decisions (Jan 9-19, 2026)
 
 | Date | Decision | Rationale | Impact |
 |------|----------|-----------|--------|
@@ -568,32 +679,32 @@ All implementation complete, testing pending:
 | Jan 9 | Prioritize testing before new UI work | Validate critical fixes, avoid regressions | Weeks 1-2 focused on testing |
 | Jan 9 | Visual timeline as P2 (nice-to-have) | High ADHD value but can defer if needed | Flexible on timeline |
 | Jan 9 | Defer AI features to post-v1 | Focus on manual app first, AI as enhancement | MVP scope reduction |
+| **Jan 13** | **Flat design instead of glassmorphism** | **Faster to implement, cleaner aesthetic** | **Entire UI roadmap changed** |
+| **Jan 13** | **Simplify data model to 4 entities** | **Reduce complexity, remove unused features** | **Removed 9+ models** |
+| **Jan 13** | **Remove Communications feature** | **Out of scope for v1** | **Scope reduction** |
+| **Jan 13** | **Single "Elijah" theme** | **Simplify implementation** | **4-theme variant abandoned** |
 
-### Decisions Needed (By Jan 15, 2026)
+### Decisions Made (Previously Unresolved as of Jan 15, 2026)
 
-1. **Glassmorphism Implementation Level**
-   - [ ] Option A: Subtle (cards/modals) - **RECOMMENDED**
-   - [ ] Option B: Full Liquid Glass (navigation layer)
-   - [ ] Option C: Minimal (FAB/tabs only)
+1. **Glassmorphism Implementation Level** ✅ RESOLVED
+   - ✅ **ACTUAL: Flat design chosen instead** (Jan 13, 2026)
+   - Glassmorphism plan abandoned in favor of faster flat design implementation
 
-2. **Timeline Feature Priority**
+2. **Timeline Feature Priority** ⏳ STILL UNRESOLVED
    - [ ] Must-have for v1
-   - [ ] Nice-to-have for v1 - **RECOMMENDED**
-   - [ ] Defer to v1
+   - [ ] Nice-to-have for v1
+   - [x] **RECOMMEND: Defer to v1.1+** (not mentioned in Jan 13 work)
 
-3. **Celebration Animations**
-   - [ ] Include in v1 - **RECOMMENDED** (low effort, high ADHD value)
-   - [ ] Defer to v1
+3. **Celebration Animations** ⏳ STILL UNRESOLVED
+   - [x] **RECOMMEND: Defer to v1.1+** (not mentioned in Jan 13 work)
 
-4. **v1 Scope**
-   - [ ] Manual app only (no AI) - **RECOMMENDED**
-   - [ ] Include basic AI hand-off
-   - [ ] Full AI workflow required
+4. **v1 Scope** ⏳ PARTIALLY RESOLVED
+   - [x] Manual app only (no AI) - **IMPLICITLY CHOSEN** (AI workflow models removed)
+   - Focus on core capture/organize/plan/list functionality
 
-5. **Resource Allocation**
-   - [ ] 1 developer, 8-10 weeks - **RECOMMENDED**
-   - [ ] 2 developers, 4-5 weeks each
-   - [ ] Other: _______________
+5. **Resource Allocation** ⏳ UNCLEAR
+   - Current state suggests 1 developer active
+   - Timeline needs re-estimation based on actual progress
 
 ---
 
