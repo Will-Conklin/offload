@@ -30,7 +30,7 @@ struct OrganizeView: View {
         }
     }
 
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
@@ -41,6 +41,7 @@ struct OrganizeView: View {
     @State private var showingSettings = false
     @State private var showingAccount = false
     @State private var selectedCollection: Collection?
+    @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -227,8 +228,19 @@ struct OrganizeView: View {
     @ViewBuilder
     private var createSheet: some View {
         CollectionFormSheet(isStructured: selectedScope.isStructured) { name in
-            let collection = Collection(name: name, isStructured: selectedScope.isStructured)
-            modelContext.insert(collection)
+            let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmedName.isEmpty else {
+                errorPresenter.present(ValidationError("Collection name cannot be empty."))
+                return
+            }
+            do {
+                _ = try collectionRepository.create(
+                    name: trimmedName,
+                    isStructured: selectedScope.isStructured
+                )
+            } catch {
+                errorPresenter.present(error)
+            }
         }
     }
 }

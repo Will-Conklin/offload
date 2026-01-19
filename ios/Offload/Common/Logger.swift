@@ -9,7 +9,7 @@ import OSLog
 
 
 enum AppLogger {
-    static let subsystem = "wc.offload"
+    static let subsystem = "wc.Offload"
 
     static let general = Logger(subsystem: subsystem, category: "general")
     static let persistence = Logger(subsystem: subsystem, category: "persistence")

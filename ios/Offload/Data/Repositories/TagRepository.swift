@@ -69,10 +69,20 @@ final class TagRepository {
         return newTag
     }
 
+    /// Fetch or create a tag by name (alias for findOrCreate).
+    func fetchOrCreate(_ name: String, color: String? = nil) throws -> Tag {
+        try findOrCreate(name: name, color: color)
+    }
+
     // MARK: - Update
 
     func update(tag: Tag) throws {
         try modelContext.save()
+    }
+
+    /// Returns the number of items currently using this tag.
+    func updateUsageCount(_ tag: Tag) throws -> Int {
+        getTaskCount(tag: tag)
     }
 
     // MARK: - Delete
@@ -82,18 +92,21 @@ final class TagRepository {
         try modelContext.save()
     }
 
+    func fetchUnused() throws -> [Tag] {
+        let tags = try fetchAll()
+        return tags.filter { getTaskCount(tag: $0) == 0 }
+    }
+
     // MARK: - Task Relationships
 
     /// Get count of items using this tag
     func getTaskCount(tag: Tag) -> Int {
         let tagName = tag.name
-        let descriptor = FetchDescriptor<Item>(
-            predicate: #Predicate<Item> { item in
-                item.tags.contains(tagName)
-            }
-        )
+        // Note: SwiftData predicates don't support .contains() on [String] arrays,
+        // so we fetch all items and filter in-memory
+        let descriptor = FetchDescriptor<Item>()
         let items = (try? modelContext.fetch(descriptor)) ?? []
-        return items.count
+        return items.filter { $0.tags.contains(tagName) }.count
     }
 
     /// Check if tag is used by any items

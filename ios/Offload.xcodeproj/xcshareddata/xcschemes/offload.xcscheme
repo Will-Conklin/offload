@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "34B95EC22F04D56F0005166B"
-               BuildableName = "offload.app"
-               BlueprintName = "offload"
+               BuildableName = "Offload.app"
+               BlueprintName = "Offload"
                ReferencedContainer = "container:Offload.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "34B95EC22F04D56F0005166B"
-            BuildableName = "offload.app"
-            BlueprintName = "offload"
+            BuildableName = "Offload.app"
+            BlueprintName = "Offload"
             ReferencedContainer = "container:Offload.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -45,8 +45,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "34B95ED12F04D5710005166B"
-               BuildableName = "offloadTests.xctest"
-               BlueprintName = "offloadTests"
+               BuildableName = "OffloadTests.xctest"
+               BlueprintName = "OffloadTests"
                ReferencedContainer = "container:Offload.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -56,8 +56,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "34B95EDB2F04D5710005166B"
-               BuildableName = "offloadUITests.xctest"
-               BlueprintName = "offloadUITests"
+               BuildableName = "OffloadUITests.xctest"
+               BlueprintName = "OffloadUITests"
                ReferencedContainer = "container:Offload.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -78,8 +78,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "34B95EC22F04D56F0005166B"
-            BuildableName = "offload.app"
-            BlueprintName = "offload"
+            BuildableName = "Offload.app"
+            BlueprintName = "Offload"
             ReferencedContainer = "container:Offload.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -95,8 +95,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "34B95EC22F04D56F0005166B"
-            BuildableName = "offload.app"
-            BlueprintName = "offload"
+            BuildableName = "Offload.app"
+            BlueprintName = "Offload"
             ReferencedContainer = "container:Offload.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

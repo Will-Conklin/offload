@@ -11,35 +11,20 @@ import SwiftData
 struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext
 
-    // Create repositories from modelContext
-    private var itemRepository: ItemRepository {
-        ItemRepository(modelContext: modelContext)
-    }
-
-    private var collectionRepository: CollectionRepository {
-        CollectionRepository(modelContext: modelContext)
-    }
-
-    private var collectionItemRepository: CollectionItemRepository {
-        CollectionItemRepository(modelContext: modelContext)
-    }
-
-    private var tagRepository: TagRepository {
-        TagRepository(modelContext: modelContext)
-    }
-
     var body: some View {
+        let repositories = RepositoryBundle.make(modelContext: modelContext)
+
         MainTabView()
-            .environment(\.itemRepository, itemRepository)
-            .environment(\.collectionRepository, collectionRepository)
-            .environment(\.collectionItemRepository, collectionItemRepository)
-            .environment(\.tagRepository, tagRepository)
+            .environment(\.itemRepository, repositories.itemRepository)
+            .environment(\.collectionRepository, repositories.collectionRepository)
+            .environment(\.collectionItemRepository, repositories.collectionItemRepository)
+            .environment(\.tagRepository, repositories.tagRepository)
     }
 }
 
 #Preview {
     let container = PersistenceController.preview
-    let repos = EnvironmentValues.previewRepositories(from: container)
+    let repos = RepositoryBundle.preview(from: container)
 
     return AppRootView()
         .environmentObject(ThemeManager.shared)

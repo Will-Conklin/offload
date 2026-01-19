@@ -281,11 +281,16 @@ struct CaptureComposeView: View {
 
     private func save() {
         if voiceService.isRecording { voiceService.stopRecording() }
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedText.isEmpty else {
+            errorPresenter.present(ValidationError("Capture content cannot be empty."))
+            return
+        }
 
         do {
             _ = try itemRepository.create(
                 type: nil, // Uncategorized capture
-                content: text.trimmingCharacters(in: .whitespacesAndNewlines),
+                content: trimmedText,
                 attachmentData: attachmentData,
                 tags: selectedTags.map { $0.name },
                 isStarred: isStarred

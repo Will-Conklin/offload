@@ -13,7 +13,6 @@ import UIKit
 struct CaptureView: View {
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.collectionRepository) private var collectionRepository
-    @Environment(\.collectionItemRepository) private var collectionItemRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
     @State private var errorPresenter = ErrorPresenter()
@@ -333,7 +332,8 @@ private struct CaptureDetailView: View {
     let item: Item
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.itemRepository) private var itemRepository
+    @State private var errorPresenter = ErrorPresenter()
     @State private var content: String
 
     init(item: Item) {
@@ -357,9 +357,12 @@ private struct CaptureDetailView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        item.content = content
-                        try? modelContext.save()
-                        dismiss()
+                        do {
+                            try itemRepository.updateContent(item, content: content)
+                            dismiss()
+                        } catch {
+                            errorPresenter.present(error)
+                        }
                     }
                 }
             }
@@ -376,7 +379,6 @@ private struct MoveToPlanSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.collectionRepository) private var collectionRepository
-    @Environment(\.collectionItemRepository) private var collectionItemRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
@@ -458,11 +460,7 @@ private struct MoveToPlanSheet: View {
 
             // Link to collection
             let position = collection.collectionItems?.count ?? 0
-            try collectionItemRepository.addItemToCollection(
-                itemId: item.id,
-                collectionId: collection.id,
-                position: position
-            )
+            try itemRepository.moveToCollection(item, collection: collection, position: position)
 
             dismiss()
             onComplete()
@@ -483,11 +481,7 @@ private struct MoveToPlanSheet: View {
             try itemRepository.updateType(item, type: "task")
 
             // Link to collection
-            try collectionItemRepository.addItemToCollection(
-                itemId: item.id,
-                collectionId: collection.id,
-                position: 0
-            )
+            try itemRepository.moveToCollection(item, collection: collection, position: 0)
 
             dismiss()
             onComplete()
@@ -506,7 +500,6 @@ private struct MoveToListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.collectionRepository) private var collectionRepository
-    @Environment(\.collectionItemRepository) private var collectionItemRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
@@ -587,11 +580,7 @@ private struct MoveToListSheet: View {
             try itemRepository.updateType(item, type: "task")
 
             // Link to collection (no position for unstructured lists)
-            try collectionItemRepository.addItemToCollection(
-                itemId: item.id,
-                collectionId: collection.id,
-                position: nil
-            )
+            try itemRepository.moveToCollection(item, collection: collection, position: nil)
 
             dismiss()
             onComplete()
@@ -612,11 +601,7 @@ private struct MoveToListSheet: View {
             try itemRepository.updateType(item, type: "task")
 
             // Link to collection
-            try collectionItemRepository.addItemToCollection(
-                itemId: item.id,
-                collectionId: collection.id,
-                position: nil
-            )
+            try itemRepository.moveToCollection(item, collection: collection, position: nil)
 
             dismiss()
             onComplete()

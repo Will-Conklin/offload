@@ -64,7 +64,8 @@ struct CollectionDetailView: View {
                                         onAddTag: { tagPickerItem = item },
                                         onDelete: { deleteItem(collectionItem) },
                                         onEdit: { editingItem = item },
-                                        onOpenLink: { openLinkedCollection($0) }
+                                        onOpenLink: { openLinkedCollection($0) },
+                                        onError: { errorPresenter.present($0) }
                                     )
                                 }
                             }
@@ -154,12 +155,13 @@ struct CollectionDetailView: View {
     // MARK: - Data Loading
 
     private func loadCollection() {
-        let descriptor = FetchDescriptor<Collection>(
-            predicate: #Predicate { $0.id == collectionID }
-        )
-        if let fetchedCollection = try? modelContext.fetch(descriptor).first {
-            self.collection = fetchedCollection
-            loadItems()
+        do {
+            if let fetchedCollection = try collectionRepository.fetchById(collectionID) {
+                self.collection = fetchedCollection
+                loadItems()
+            }
+        } catch {
+            errorPresenter.present(error)
         }
     }
 
@@ -169,20 +171,19 @@ struct CollectionDetailView: View {
     }
 
     private func deleteItem(_ collectionItem: CollectionItem) {
-        modelContext.delete(collectionItem)
-        try? modelContext.save()
-        loadItems()
+        do {
+            try collectionItemRepository.removeItemFromCollection(collectionItem)
+            loadItems()
+        } catch {
+            errorPresenter.present(error)
+        }
     }
 
     private func openLinkedCollection(_ collectionID: UUID) {
-        let targetId = collectionID
-        let descriptor = FetchDescriptor<Collection>(
-            predicate: #Predicate<Collection> { collection in
-                collection.id == targetId
-            }
-        )
-        if let fetched = try? modelContext.fetch(descriptor).first {
-            linkedCollection = fetched
+        do {
+            linkedCollection = try collectionRepository.fetchById(collectionID)
+        } catch {
+            errorPresenter.present(error)
         }
     }
 }
@@ -200,8 +201,10 @@ private struct ItemRow: View {
     let onDelete: () -> Void
     let onEdit: () -> Void
     let onOpenLink: (UUID) -> Void
+    let onError: (Error) -> Void
 
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.collectionRepository) private var collectionRepository
     @State private var showingMenu = false
     @State private var linkedCollectionName: String?
 
@@ -290,8 +293,11 @@ private struct ItemRow: View {
     }
 
     private func toggleStar() {
-        item.isStarred.toggle()
-        try? modelContext.save()
+        do {
+            try itemRepository.toggleStar(item)
+        } catch {
+            onError(error)
+        }
     }
 
     private func loadLinkedCollectionName() {
@@ -299,13 +305,12 @@ private struct ItemRow: View {
             linkedCollectionName = nil
             return
         }
-        let targetId = linkedId
-        let descriptor = FetchDescriptor<Collection>(
-            predicate: #Predicate<Collection> { collection in
-                collection.id == targetId
-            }
-        )
-        linkedCollectionName = (try? modelContext.fetch(descriptor).first)?.name
+        do {
+            linkedCollectionName = try collectionRepository.fetchById(linkedId)?.name
+        } catch {
+            linkedCollectionName = nil
+            onError(error)
+        }
     }
 }
 
@@ -315,7 +320,8 @@ private struct ItemEditSheet: View {
     let item: Item
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.itemRepository) private var itemRepository
+    @State private var errorPresenter = ErrorPresenter()
     @State private var content: String
 
     init(item: Item) {
@@ -350,9 +356,15 @@ private struct ItemEditSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        item.content = content.trimmingCharacters(in: .whitespacesAndNewlines)
-                        try? modelContext.save()
-                        dismiss()
+                        do {
+                            try itemRepository.updateContent(
+                                item,
+                                content: content.trimmingCharacters(in: .whitespacesAndNewlines)
+                            )
+                            dismiss()
+                        } catch {
+                            errorPresenter.present(error)
+                        }
                     }
                 }
             }
@@ -367,7 +379,8 @@ private struct AddItemSheet: View {
     let collection: Collection?
 
     @Query(sort: \Collection.name) private var collections: [Collection]
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
@@ -386,6 +399,7 @@ private struct AddItemSheet: View {
     @State private var showingImagePicker = false
     @State private var imagePickerSource: UIImagePickerController.SourceType = .photoLibrary
     @State private var showingCameraUnavailableAlert = false
+    @State private var errorPresenter = ErrorPresenter()
 
     @FocusState private var isFocused: Bool
 
@@ -685,43 +699,54 @@ private struct AddItemSheet: View {
 
     private func save() {
         if voiceService.isRecording { voiceService.stopRecording() }
-        addItem()
-        dismiss()
+        do {
+            try addItem()
+            dismiss()
+        } catch {
+            errorPresenter.present(error)
+        }
     }
 
-    private func addItem() {
+    private func addItem() throws {
         let linkedId = type == .link ? linkedCollectionId : nil
         let linkedName = linkableCollections.first { $0.id == linkedId }?.name
+        if type == .link {
+            guard let linkedId else {
+                throw ValidationError("Select a list to link.")
+            }
+            if linkedId == collectionID {
+                throw ValidationError("Linked list cannot match this collection.")
+            }
+        } else {
+            let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else {
+                throw ValidationError("Item content cannot be empty.")
+            }
+        }
+
         let resolvedContent = type == .link ? (linkedName ?? "Linked Collection") : content
-        let item = Item(
+        let trimmedContent = resolvedContent.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let item = try itemRepository.create(
             type: type.rawValue,
-            content: resolvedContent.trimmingCharacters(in: .whitespacesAndNewlines),
+            content: trimmedContent,
             attachmentData: attachmentData,
             linkedCollectionId: linkedId,
             tags: selectedTags.map { $0.name },
             isStarred: isStarred
         )
-        modelContext.insert(item)
 
-        var position: Int? = nil
-        if let collection = collection {
-            if collection.isStructured {
-                position = collection.collectionItems?.count ?? 0
-            }
+        let targetCollection: Collection
+        if let collection {
+            targetCollection = collection
+        } else if let fetched = try collectionRepository.fetchById(collectionID) {
+            targetCollection = fetched
+        } else {
+            throw ValidationError("Collection not found.")
         }
 
-        let collectionItem = CollectionItem(
-            collectionId: collectionID,
-            itemId: item.id,
-            position: position
-        )
-        if let collection = collection {
-            collectionItem.collection = collection
-            collectionItem.item = item
-        }
-        modelContext.insert(collectionItem)
-
-        try? modelContext.save()
+        let position = targetCollection.isStructured ? (targetCollection.collectionItems?.count ?? 0) : nil
+        try itemRepository.moveToCollection(item, collection: targetCollection, position: position)
     }
 }
 
@@ -730,10 +755,11 @@ private struct AddItemSheet: View {
 private struct EditCollectionSheet: View {
     let collection: Collection
 
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.dismiss) private var dismiss
 
     @State private var name: String
+    @State private var errorPresenter = ErrorPresenter()
 
     init(collection: Collection) {
         self.collection = collection
@@ -749,9 +775,12 @@ private struct EditCollectionSheet: View {
 
                 Section {
                     Button("Delete Collection", role: .destructive) {
-                        modelContext.delete(collection)
-                        try? modelContext.save()
-                        dismiss()
+                        do {
+                            try collectionRepository.delete(collection)
+                            dismiss()
+                        } catch {
+                            errorPresenter.present(error)
+                        }
                     }
                 }
             }
@@ -763,9 +792,15 @@ private struct EditCollectionSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        collection.name = name
-                        try? modelContext.save()
-                        dismiss()
+                        do {
+                            try collectionRepository.updateName(
+                                collection,
+                                name: name.trimmingCharacters(in: .whitespacesAndNewlines)
+                            )
+                            dismiss()
+                        } catch {
+                            errorPresenter.present(error)
+                        }
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }

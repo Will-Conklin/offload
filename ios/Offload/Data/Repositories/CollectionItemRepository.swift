@@ -100,6 +100,14 @@ final class CollectionItemRepository {
         try modelContext.save()
     }
 
+    func reorder(for collection: Collection) throws {
+        let orderedItems = collection.sortedItems
+        for (index, collectionItem) in orderedItems.enumerated() {
+            collectionItem.position = index
+        }
+        try modelContext.save()
+    }
+
     // MARK: - Delete
     func removeItemFromCollection(_ collectionItem: CollectionItem) throws {
         modelContext.delete(collectionItem)

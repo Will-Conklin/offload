@@ -11,7 +11,7 @@ The app compiles with functional capture and organization flows using a simplifi
 
 ### 1) App Layer (`App/`)
 
-- **offloadApp.swift**: Injects `PersistenceController.shared`.
+- **OffloadApp.swift**: Injects `PersistenceController.shared`.
 - **MainTabView.swift**: Main tab navigation with Captures, Plans, and Lists tabs, plus a floating capture button.
 
 ### 2) Features (`Features/`)

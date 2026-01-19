@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 
 // MARK: - Environment Keys
@@ -30,24 +31,73 @@ private struct TagRepositoryKey: EnvironmentKey {
 
 extension EnvironmentValues {
     var itemRepository: ItemRepository {
-        get { self[ItemRepositoryKey.self] ?? fatalError("ItemRepository not injected") }
+        get {
+            if let repository = self[ItemRepositoryKey.self] {
+                return repository
+            }
+            AppLogger.general.error("ItemRepository not injected; falling back to modelContext.")
+            return ItemRepository(modelContext: modelContext)
+        }
         set { self[ItemRepositoryKey.self] = newValue }
     }
 
     var collectionRepository: CollectionRepository {
-        get { self[CollectionRepositoryKey.self] ?? fatalError("CollectionRepository not injected") }
+        get {
+            if let repository = self[CollectionRepositoryKey.self] {
+                return repository
+            }
+            AppLogger.general.error("CollectionRepository not injected; falling back to modelContext.")
+            return CollectionRepository(modelContext: modelContext)
+        }
         set { self[CollectionRepositoryKey.self] = newValue }
     }
 
     var collectionItemRepository: CollectionItemRepository {
-        get { self[CollectionItemRepositoryKey.self] ?? fatalError("CollectionItemRepository not injected") }
+        get {
+            if let repository = self[CollectionItemRepositoryKey.self] {
+                return repository
+            }
+            AppLogger.general.error("CollectionItemRepository not injected; falling back to modelContext.")
+            return CollectionItemRepository(modelContext: modelContext)
+        }
         set { self[CollectionItemRepositoryKey.self] = newValue }
     }
 
     var tagRepository: TagRepository {
-        get { self[TagRepositoryKey.self] ?? fatalError("TagRepository not injected") }
+        get {
+            if let repository = self[TagRepositoryKey.self] {
+                return repository
+            }
+            AppLogger.general.error("TagRepository not injected; falling back to modelContext.")
+            return TagRepository(modelContext: modelContext)
+        }
         set { self[TagRepositoryKey.self] = newValue }
     }
+}
+
+// MARK: - Repository Factory
+
+@MainActor
+struct RepositoryBundle {
+    let itemRepository: ItemRepository
+    let collectionRepository: CollectionRepository
+    let collectionItemRepository: CollectionItemRepository
+    let tagRepository: TagRepository
+
+    static func make(modelContext: ModelContext) -> RepositoryBundle {
+        RepositoryBundle(
+            itemRepository: ItemRepository(modelContext: modelContext),
+            collectionRepository: CollectionRepository(modelContext: modelContext),
+            collectionItemRepository: CollectionItemRepository(modelContext: modelContext),
+            tagRepository: TagRepository(modelContext: modelContext)
+        )
+    }
+
+    #if DEBUG
+    static func preview(from container: ModelContainer) -> RepositoryBundle {
+        make(modelContext: container.mainContext)
+    }
+    #endif
 }
 
 
@@ -62,12 +112,12 @@ extension EnvironmentValues {
         collectionItemRepository: CollectionItemRepository,
         tagRepository: TagRepository
     ) {
-        let context = container.mainContext
+        let repositories = RepositoryBundle.preview(from: container)
         return (
-            itemRepository: ItemRepository(modelContext: context),
-            collectionRepository: CollectionRepository(modelContext: context),
-            collectionItemRepository: CollectionItemRepository(modelContext: context),
-            tagRepository: TagRepository(modelContext: context)
+            itemRepository: repositories.itemRepository,
+            collectionRepository: repositories.collectionRepository,
+            collectionItemRepository: repositories.collectionItemRepository,
+            tagRepository: repositories.tagRepository
         )
     }
 }

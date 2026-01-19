@@ -38,6 +38,14 @@ final class CollectionRepository {
         return try modelContext.fetch(descriptor)
     }
 
+    func fetchWithItems() throws -> [Collection] {
+        let collections = try fetchAll()
+        for collection in collections {
+            _ = collection.collectionItems?.count
+        }
+        return collections
+    }
+
     func fetchById(_ id: UUID) throws -> Collection? {
         let descriptor = FetchDescriptor<Collection>(
             predicate: #Predicate { $0.id == id }
@@ -82,6 +90,44 @@ final class CollectionRepository {
 
     func updateIsStructured(_ collection: Collection, isStructured: Bool) throws {
         collection.isStructured = isStructured
+        try modelContext.save()
+    }
+
+    func addItem(_ item: Item, to collection: Collection, position: Int? = nil) throws {
+        let resolvedPosition: Int? = {
+            if let position {
+                return position
+            }
+            return collection.isStructured ? (collection.collectionItems?.count ?? 0) : nil
+        }()
+        let collectionItem = CollectionItem(
+            collectionId: collection.id,
+            itemId: item.id,
+            position: resolvedPosition,
+            parentId: nil
+        )
+        collectionItem.collection = collection
+        collectionItem.item = item
+        modelContext.insert(collectionItem)
+        try modelContext.save()
+    }
+
+    func removeItem(_ item: Item, from collection: Collection) throws {
+        guard let collectionItems = collection.collectionItems else { return }
+        for collectionItem in collectionItems where collectionItem.itemId == item.id {
+            modelContext.delete(collectionItem)
+        }
+        try modelContext.save()
+    }
+
+    func reorderItems(_ items: [Item], in collection: Collection) throws {
+        let collectionItems = collection.collectionItems ?? []
+        let orderedItemIds = items.map { $0.id }
+        for (index, itemId) in orderedItemIds.enumerated() {
+            if let collectionItem = collectionItems.first(where: { $0.itemId == itemId }) {
+                collectionItem.position = index
+            }
+        }
         try modelContext.save()
     }
 

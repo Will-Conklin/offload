@@ -186,6 +186,49 @@ final class ItemRepository {
         try modelContext.save()
     }
 
+    func markCompleted(_ item: Item) throws {
+        if item.completedAt == nil {
+            item.completedAt = Date()
+        }
+        try modelContext.save()
+    }
+
+    func moveToCollection(_ item: Item, collection: Collection, position: Int?) throws {
+        let collectionItem = CollectionItem(
+            collectionId: collection.id,
+            itemId: item.id,
+            position: position,
+            parentId: nil
+        )
+        collectionItem.collection = collection
+        collectionItem.item = item
+        modelContext.insert(collectionItem)
+        try modelContext.save()
+    }
+
+    // MARK: - Bulk Operations
+    func deleteAll(_ items: [Item]) throws {
+        guard !items.isEmpty else { return }
+        for item in items {
+            modelContext.delete(item)
+        }
+        try modelContext.save()
+    }
+
+    func markAllCompleted(_ items: [Item]) throws {
+        guard !items.isEmpty else { return }
+        let now = Date()
+        for item in items where item.completedAt == nil {
+            item.completedAt = now
+        }
+        try modelContext.save()
+    }
+
+    // MARK: - Validation
+    func validate(_ item: Item) throws -> Bool {
+        !item.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     // MARK: - Delete
     func delete(_ item: Item) throws {
         modelContext.delete(item)
@@ -193,9 +236,6 @@ final class ItemRepository {
     }
 
     func deleteMultiple(_ items: [Item]) throws {
-        for item in items {
-            modelContext.delete(item)
-        }
-        try modelContext.save()
+        try deleteAll(items)
     }
 }

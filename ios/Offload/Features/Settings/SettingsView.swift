@@ -86,12 +86,13 @@ struct SettingsView: View {
 // MARK: - Tag Management
 
 private struct TagManagementView: View {
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.tagRepository) private var tagRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
     @Query(sort: \Tag.name) private var tags: [Tag]
     @State private var showingAddTag = false
+    @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
@@ -147,13 +148,17 @@ private struct TagManagementView: View {
         .navigationTitle("Tags")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showingAddTag) {
-            AddTagSheet(modelContext: modelContext)
+            AddTagSheet()
         }
     }
 
     private func deleteTags(offsets: IndexSet) {
         for index in offsets {
-            modelContext.delete(tags[index])
+            do {
+                try tagRepository.delete(tag: tags[index])
+            } catch {
+                errorPresenter.present(error)
+            }
         }
     }
 }
@@ -161,10 +166,11 @@ private struct TagManagementView: View {
 // MARK: - Add Tag Sheet
 
 private struct AddTagSheet: View {
-    let modelContext: ModelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.tagRepository) private var tagRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
+    @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
@@ -190,9 +196,12 @@ private struct AddTagSheet: View {
                         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
                         guard !trimmed.isEmpty else { return }
 
-                        let tag = Tag(name: trimmed)
-                        modelContext.insert(tag)
-                        dismiss()
+                        do {
+                            _ = try tagRepository.fetchOrCreate(trimmed)
+                            dismiss()
+                        } catch {
+                            errorPresenter.present(error)
+                        }
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }

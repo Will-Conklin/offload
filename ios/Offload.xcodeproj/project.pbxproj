@@ -24,9 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		34B95EC32F04D56F0005166B /* offload.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = offload.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		34B95ED22F04D5710005166B /* offloadTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = offloadTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		34B95EDC2F04D5710005166B /* offloadUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = offloadUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		34B95EC32F04D56F0005166B /* Offload.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Offload.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		34B95ED22F04D5710005166B /* OffloadTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OffloadTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		34B95EDC2F04D5710005166B /* OffloadUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OffloadUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -85,9 +85,9 @@
 		34B95EC42F04D56F0005166B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				34B95EC32F04D56F0005166B /* offload.app */,
-				34B95ED22F04D5710005166B /* offloadTests.xctest */,
-				34B95EDC2F04D5710005166B /* offloadUITests.xctest */,
+				34B95EC32F04D56F0005166B /* Offload.app */,
+				34B95ED22F04D5710005166B /* OffloadTests.xctest */,
+				34B95EDC2F04D5710005166B /* OffloadUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		34B95EC22F04D56F0005166B /* offload */ = {
+		34B95EC22F04D56F0005166B /* Offload */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 34B95EE62F04D5710005166B /* Build configuration list for PBXNativeTarget "offload" */;
+			buildConfigurationList = 34B95EE62F04D5710005166B /* Build configuration list for PBXNativeTarget "Offload" */;
 			buildPhases = (
 				34B95EBF2F04D56F0005166B /* Sources */,
 				34B95EC02F04D56F0005166B /* Frameworks */,
@@ -110,16 +110,16 @@
 			fileSystemSynchronizedGroups = (
 				34B95EC52F04D56F0005166B /* Offload */,
 			);
-			name = offload;
+			name = Offload;
 			packageProductDependencies = (
 			);
-			productName = offload;
-			productReference = 34B95EC32F04D56F0005166B /* offload.app */;
+			productName = Offload;
+			productReference = 34B95EC32F04D56F0005166B /* Offload.app */;
 			productType = "com.apple.product-type.application";
 		};
-		34B95ED12F04D5710005166B /* offloadTests */ = {
+		34B95ED12F04D5710005166B /* OffloadTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 34B95EE92F04D5710005166B /* Build configuration list for PBXNativeTarget "offloadTests" */;
+			buildConfigurationList = 34B95EE92F04D5710005166B /* Build configuration list for PBXNativeTarget "OffloadTests" */;
 			buildPhases = (
 				34B95ECE2F04D5710005166B /* Sources */,
 				34B95ECF2F04D5710005166B /* Frameworks */,
@@ -133,16 +133,16 @@
 			fileSystemSynchronizedGroups = (
 				34B95ED52F04D5710005166B /* OffloadTests */,
 			);
-			name = offloadTests;
+			name = OffloadTests;
 			packageProductDependencies = (
 			);
-			productName = offloadTests;
-			productReference = 34B95ED22F04D5710005166B /* offloadTests.xctest */;
+			productName = OffloadTests;
+			productReference = 34B95ED22F04D5710005166B /* OffloadTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		34B95EDB2F04D5710005166B /* offloadUITests */ = {
+		34B95EDB2F04D5710005166B /* OffloadUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 34B95EEC2F04D5710005166B /* Build configuration list for PBXNativeTarget "offloadUITests" */;
+			buildConfigurationList = 34B95EEC2F04D5710005166B /* Build configuration list for PBXNativeTarget "OffloadUITests" */;
 			buildPhases = (
 				34B95ED82F04D5710005166B /* Sources */,
 				34B95ED92F04D5710005166B /* Frameworks */,
@@ -156,11 +156,11 @@
 			fileSystemSynchronizedGroups = (
 				34B95EDF2F04D5710005166B /* OffloadUITests */,
 			);
-			name = offloadUITests;
+			name = OffloadUITests;
 			packageProductDependencies = (
 			);
-			productName = offloadUITests;
-			productReference = 34B95EDC2F04D5710005166B /* offloadUITests.xctest */;
+			productName = OffloadUITests;
+			productReference = 34B95EDC2F04D5710005166B /* OffloadUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				34B95EC22F04D56F0005166B /* offload */,
-				34B95ED12F04D5710005166B /* offloadTests */,
-				34B95EDB2F04D5710005166B /* offloadUITests */,
+				34B95EC22F04D56F0005166B /*/* Offload */,
+				34B95ED12F04D5710005166B /* OffloadTests */,
+				34B95EDB2F04D5710005166B /* OffloadUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		34B95ED42F04D5710005166B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 34B95EC22F04D56F0005166B /* offload */;
+			target = 34B95EC22F04D56F0005166B /*/* Offload */;
 			targetProxy = 34B95ED32F04D5710005166B /* PBXContainerItemProxy */;
 		};
 		34B95EDE2F04D5710005166B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 34B95EC22F04D56F0005166B /* offload */;
+			target = 34B95EC22F04D56F0005166B /*/* Offload */;
 			targetProxy = 34B95EDD2F04D5710005166B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -414,7 +414,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wc.offload;
+				PRODUCT_BUNDLE_IDENTIFIER = wc.Offload;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -450,7 +450,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wc.offload;
+				PRODUCT_BUNDLE_IDENTIFIER = wc.Offload;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -472,7 +472,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wc.offloadTests;
+				PRODUCT_BUNDLE_IDENTIFIER = wc.OffloadTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -480,7 +480,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/offload.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/offload";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Offload.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Offload";
 			};
 			name = Debug;
 		};
@@ -494,7 +494,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wc.offloadTests;
+				PRODUCT_BUNDLE_IDENTIFIER = wc.OffloadTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -502,7 +502,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/offload.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/offload";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Offload.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Offload";
 			};
 			name = Release;
 		};
@@ -514,7 +514,7 @@
 				DEVELOPMENT_TEAM = K86HVH894Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wc.offloadUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = wc.OffloadUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -522,7 +522,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = offload;
+				TEST_TARGET_NAME = Offload;
 			};
 			name = Debug;
 		};
@@ -534,7 +534,7 @@
 				DEVELOPMENT_TEAM = K86HVH894Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wc.offloadUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = wc.OffloadUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -542,7 +542,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = offload;
+				TEST_TARGET_NAME = Offload;
 			};
 			name = Release;
 		};
@@ -558,7 +558,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		34B95EE62F04D5710005166B /* Build configuration list for PBXNativeTarget "offload" */ = {
+		34B95EE62F04D5710005166B /* Build configuration list for PBXNativeTarget "Offload" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				34B95EE72F04D5710005166B /* Debug */,
@@ -567,7 +567,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		34B95EE92F04D5710005166B /* Build configuration list for PBXNativeTarget "offloadTests" */ = {
+		34B95EE92F04D5710005166B /* Build configuration list for PBXNativeTarget "OffloadTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				34B95EEA2F04D5710005166B /* Debug */,
@@ -576,7 +576,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		34B95EEC2F04D5710005166B /* Build configuration list for PBXNativeTarget "offloadUITests" */ = {
+		34B95EEC2F04D5710005166B /* Build configuration list for PBXNativeTarget "OffloadUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				34B95EED2F04D5710005166B /* Debug */,

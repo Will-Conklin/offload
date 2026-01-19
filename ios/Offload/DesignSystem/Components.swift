@@ -427,13 +427,15 @@ struct ItemTagPickerSheet: View {
     let item: Item
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.tagRepository) private var tagRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
     @Query(sort: \Tag.name) private var allTags: [Tag]
 
     @State private var newTagName = ""
+    @State private var errorPresenter = ErrorPresenter()
     @FocusState private var focused: Bool
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -487,19 +489,24 @@ struct ItemTagPickerSheet: View {
         let trimmed = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        let tag = Tag(name: trimmed)
-        modelContext.insert(tag)
-        if !item.tags.contains(trimmed) {
-            item.tags.append(trimmed)
+        do {
+            let tag = try tagRepository.fetchOrCreate(trimmed)
+            try itemRepository.addTag(item, tag: tag.name)
+            newTagName = ""
+        } catch {
+            errorPresenter.present(error)
         }
-        newTagName = ""
     }
 
     private func toggleTag(_ tag: Tag) {
-        if let index = item.tags.firstIndex(of: tag.name) {
-            item.tags.remove(at: index)
-        } else {
-            item.tags.append(tag.name)
+        do {
+            if item.tags.contains(tag.name) {
+                try itemRepository.removeTag(item, tag: tag.name)
+            } else {
+                try itemRepository.addTag(item, tag: tag.name)
+            }
+        } catch {
+            errorPresenter.present(error)
         }
     }
 }
@@ -508,13 +515,14 @@ struct TagSelectionSheet: View {
     @Binding var selectedTags: [Tag]
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.tagRepository) private var tagRepository
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
     @Query(sort: \Tag.name) private var allTags: [Tag]
 
     @State private var newName = ""
+    @State private var errorPresenter = ErrorPresenter()
     @FocusState private var focused: Bool
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -573,12 +581,15 @@ struct TagSelectionSheet: View {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        let tag = Tag(name: trimmed)
-        modelContext.insert(tag)
-        if !selectedTags.contains(where: { $0.id == tag.id }) {
-            selectedTags.append(tag)
+        do {
+            let tag = try tagRepository.fetchOrCreate(trimmed)
+            if !selectedTags.contains(where: { $0.id == tag.id }) {
+                selectedTags.append(tag)
+            }
+            newName = ""
+        } catch {
+            errorPresenter.present(error)
         }
-        newName = ""
     }
 
     private func toggleSelection(for tag: Tag) {
