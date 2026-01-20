@@ -51,9 +51,9 @@ This document analyzes the current Offload color scheme and proposes alternative
 
 ## Current Color Scheme Analysis
 
-### Light Mode
+### Light Mode (Current)
 
-```
+```text
 Background:    #F7FAFD (soft gray-blue, very light)
 Surface:       #FFFFFF (pure white)
 Primary:       #3372D9 (medium blue)
@@ -66,9 +66,9 @@ Text Secondary:#5A6370 (medium gray)
 Border:        #DCE1E8 (light gray-blue)
 ```
 
-### Dark Mode
+### Dark Mode (Current)
 
-```
+```text
 Background:    #121517 (deep charcoal)
 Surface:       #1F2127 (lighter charcoal)
 Primary:       #66B3F7 (bright soft blue)
@@ -120,9 +120,9 @@ Based on ADHD UX research and app philosophy, all alternatives must:
 **Mood:** Calm confidence, organic productivity
 **Best For:** Users who find blue too cold or clinical
 
-#### Light Mode
+#### Light Mode (Sage & Stone)
 
-```
+```text
 Background:    #F5F3EF (warm off-white, stone)
 Surface:       #FEFDFB (warm white)
 Primary:       #5F8575 (sage green)
@@ -136,9 +136,9 @@ Border:        #E0DDD8 (warm divider)
 Focus:         #78A694 (bright sage)
 ```
 
-#### Dark Mode
+#### Dark Mode (Sage & Stone)
 
-```
+```text
 Background:    #1C1E1B (deep forest)
 Surface:       #272A26 (charcoal-green)
 Primary:       #8FBA9D (light sage)
@@ -170,9 +170,9 @@ Replace `accentPrimary` blue with sage, keep all other semantic colors similar s
 **Mood:** Peaceful focus, calm creativity
 **Best For:** Users sensitive to overstimulation, night-time usage
 
-#### Light Mode
+#### Light Mode (Lavender Calm)
 
-```
+```text
 Background:    #F6F5F9 (pale lavender-gray)
 Surface:       #FDFCFE (near-white with purple tint)
 Primary:       #7B68B8 (soft purple)
@@ -186,9 +186,9 @@ Border:        #E3E0EA (lavender divider)
 Focus:         #9B85D4 (bright lavender)
 ```
 
-#### Dark Mode
+#### Dark Mode (Lavender Calm)
 
-```
+```text
 Background:    #1A1625 (deep purple-black)
 Surface:       #252034 (dark purple-gray)
 Primary:       #A797DB (light lavender)
@@ -222,9 +222,9 @@ Border:        #3A344A (muted purple)
 **Mood:** Clean, professional, trusted
 **Best For:** Users who like current blue but want slightly more personality
 
-#### Light Mode
+#### Light Mode (Ocean Minimal)
 
-```
+```text
 Background:    #F5F8FA (soft blue-white, warmer than current)
 Surface:       #FFFFFF (pure white)
 Primary:       #2B7FB8 (ocean blue, warmer than current)
@@ -238,9 +238,9 @@ Border:        #DAE3EA (blue-gray divider)
 Focus:         #4DA3D9 (bright ocean)
 ```
 
-#### Dark Mode
+#### Dark Mode (Ocean Minimal)
 
-```
+```text
 Background:    #0F1419 (deep ocean)
 Surface:       #1A2028 (dark slate)
 Primary:       #5DADE6 (bright ocean)
@@ -272,9 +272,9 @@ Conservative update that improves current scheme without dramatic change.
 **Mood:** Motivated, warm, optimistic
 **Best For:** Users who need energy boost without anxiety
 
-#### Light Mode
+#### Light Mode (Sunset Productivity)
 
-```
+```text
 Background:    #FBF7F3 (warm cream)
 Surface:       #FFFEFB (warm white)
 Primary:       #E37A5F (coral-orange, muted)
@@ -288,9 +288,9 @@ Border:        #EBE3DA (warm divider)
 Focus:         #F59D82 (bright coral)
 ```
 
-#### Dark Mode
+#### Dark Mode (Sunset Productivity)
 
-```
+```text
 Background:    #1A1411 (dark chocolate)
 Surface:       #26211C (warm charcoal)
 Primary:       #F4A88A (soft coral)
@@ -324,9 +324,9 @@ Border:        #3F3832 (warm brown)
 **Mood:** Zen, focused, distraction-free
 **Best For:** Users who want absolute minimal visual noise
 
-#### Light Mode
+#### Light Mode (Monochrome Focus)
 
-```
+```text
 Background:    #F9F9F9 (near white)
 Surface:       #FFFFFF (pure white)
 Primary:       #3D3D3D (dark gray - used sparingly)
@@ -340,9 +340,9 @@ Border:        #E5E5E5 (light gray)
 Focus:         #000000 (pure black with stroke weight)
 ```
 
-#### Dark Mode
+#### Dark Mode (Monochrome Focus)
 
-```
+```text
 Background:    #121212 (true dark)
 Surface:       #1E1E1E (elevated dark)
 Primary:       #E0E0E0 (light gray - used sparingly)
@@ -378,9 +378,9 @@ Border:        #3D3D3D (dark gray)
 **Mood:** Clean energy, mental clarity
 **Best For:** Users who want calm but with subtle energy
 
-#### Light Mode
+#### Light Mode (Mint Fresh)
 
-```
+```text
 Background:    #F6FAFA (pale mint)
 Surface:       #FFFFFF (pure white)
 Primary:       #4DB8A6 (mint teal)
@@ -394,9 +394,9 @@ Border:        #E0ECEB (mint divider)
 Focus:         #6DD9C4 (bright mint)
 ```
 
-#### Dark Mode
+#### Dark Mode (Mint Fresh)
 
-```
+```text
 Background:    #0F1615 (deep teal-black)
 Surface:       #1A2322 (dark teal-gray)
 Primary:       #6FD9C4 (bright mint)
@@ -422,7 +422,7 @@ Border:        #2E3F3D (muted teal)
 ## Comparison Matrix
 
 | Scheme | Uniqueness | Warmth | Calm | Energy | Accessibility | Dark Mode |
-|--------|-----------|--------|------|--------|---------------|-----------|
+| ------ | ---------- | ------ | ---- | ------ | ------------- | --------- |
 | **Current (Blue-Gray)** | ⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | **Sage & Stone** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 | **Lavender Calm** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
@@ -532,7 +532,7 @@ For any chosen alternative:
 
 ## Conclusion
 
-**Top Recommendation: Sage & Stone**
+### Top Recommendation: Sage & Stone
 
 This scheme provides:
 
@@ -544,7 +544,7 @@ This scheme provides:
 - ✅ Excellent accessibility
 - ✅ Works beautifully in dark mode
 
-**Runner-up: Ocean Minimal**
+### Runner-up: Ocean Minimal
 
 If team prefers conservative evolution:
 
@@ -553,7 +553,7 @@ If team prefers conservative evolution:
 - ✅ Safe, proven color psychology
 - ✅ Easy implementation
 
-**Wild Card: Lavender Calm**
+### Wild Card: Lavender Calm
 
 For bold differentiation:
 

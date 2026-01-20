@@ -13,10 +13,10 @@ structure_notes:
   - "Keep the top-level section outline intact."
 ---
 
+# Offload Polish Phase Implementation Plan
+
 > **⚠️ DEPRECATED:** This document has been superseded by [plan-master-plan.md](./plan-master-plan.md) as of January 9, 2026.
 > Please refer to the master plan for the single source of truth on all implementation planning.
-
-# Offload Polish Phase Implementation Plan
 
 **Goal:** Ship a polished, production-ready manual organization app with excellent UX, accessibility, and visual design.
 
@@ -578,7 +578,7 @@ private func loadInbox() async {
 
 ### 3.3 Update Form Sheets to Use Toast
 
-**Replace inline error text in all form sheets with toast notifications on save failure**
+Replace inline error text in all form sheets with toast notifications on save failure.
 
 ---
 
@@ -826,7 +826,7 @@ Button(action: { showingCapture = true }) {
 
 ## Implementation Order
 
-**Week 1: Foundation**
+### Week 1: Foundation
 
 1. Complete typography system
 2. Replace all hardcoded colors
@@ -834,7 +834,7 @@ Button(action: { showingCapture = true }) {
 4. Build feedback components
 5. Implement toast system
 
-**Week 2: Stability**
+### Week 2: Stability
 
 1. Fix InboxView race condition
 2. Add error handling to all views
@@ -842,7 +842,7 @@ Button(action: { showingCapture = true }) {
 4. Build export service
 5. Implement backup/restore
 
-**Week 3: Accessibility**
+### Week 3: Accessibility
 
 1. Add VoiceOver labels
 2. Test Dynamic Type
@@ -850,7 +850,7 @@ Button(action: { showingCapture = true }) {
 4. Implement archive functionality
 5. Add empty states
 
-**Week 4: Polish**
+### Week 4: Polish
 
 1. Search and filter
 2. Batch operations

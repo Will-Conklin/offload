@@ -60,7 +60,7 @@ We will use the following technology stack:
 - **Rationale:** Scales well as app grows, clear separation of concerns
 - **Structure:**
 
-  ```
+  ```text
   - App/ (entry point, navigation)
   - Features/ (UI organized by feature)
   - Domain/ (business logic, models)

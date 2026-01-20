@@ -15,12 +15,12 @@ structure_notes:
   - "Keep top-level sections: PHASE 1: CRITICAL FIXES (Week 1-2); PHASE 2: HIGH PRIORITY FIXES (Week 3-4); PHASE 3: ARCHITECTURE IMPROVEMENTS (Week 5-6); OVERALL PROGRESS; COMPLETION CRITERIA; NOTES & BLOCKERS."
 ---
 
-<!-- Intent: Track remediation plan execution status, evidence, and remaining gaps. -->
+# Remediation Progress Tracking
 
 > **⚠️ DEPRECATED:** This document has been superseded by [plan-master-plan.md](./plan-master-plan.md) as of January 9, 2026.
 > Please refer to the master plan for the single source of truth on all implementation planning.
 
-# Remediation Progress Tracking
+<!-- Intent: Track remediation plan execution status, evidence, and remaining gaps. -->
 
 **Created:** January 6, 2026
 **Status:** Phase 1 complete (testing pending); Phase 2 in progress
@@ -52,7 +52,7 @@ This document tracks the implementation progress of the [Remediation Plan](./pla
 
 **Testing Evidence:**
 
-```
+```text
 Not yet collected.
 ```
 
@@ -101,7 +101,7 @@ Not yet collected.
 
 **Testing Evidence:**
 
-```
+```text
 TBD
 ```
 
@@ -149,7 +149,7 @@ TBD
 
 **Performance Testing:**
 
-```
+```text
 Before:
 TBD
 
@@ -176,7 +176,7 @@ TBD
 
 **Migration Testing:**
 
-```
+```text
 TBD
 ```
 
@@ -204,7 +204,7 @@ TBD
 
 **Verification:**
 
-```
+```text
 TBD
 ```
 
@@ -228,7 +228,7 @@ TBD
 
 **Testing Evidence:**
 
-```
+```text
 TBD
 ```
 
@@ -252,7 +252,7 @@ TBD
 
 **Testing Evidence:**
 
-```
+```text
 TBD
 ```
 
@@ -279,7 +279,7 @@ TBD
 
 **Testing Evidence:**
 
-```
+```text
 TBD
 ```
 

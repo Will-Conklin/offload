@@ -13,12 +13,12 @@ structure_notes:
   - "Keep the top-level section outline intact."
 ---
 
-<!-- Intent: Track critical remediation scope, priorities, and fix guidance for Offload releases. -->
+# Critical Issues Remediation Plan
 
 > **⚠️ DEPRECATED:** This document has been superseded by [plan-master-plan.md](./plan-master-plan.md) as of January 9, 2026.
 > Please refer to the master plan for the single source of truth on all implementation planning.
 
-# Critical Issues Remediation Plan
+<!-- Intent: Track critical remediation scope, priorities, and fix guidance for Offload releases. -->
 
 **Created:** January 6, 2026
 **Status:** Active remediation (Phase 2 in progress)
@@ -34,7 +34,7 @@ Based on the comprehensive adversarial security review, this codebase has **8 cr
 
 ## Implementation Update (January 8, 2026)
 
-**Completed**
+### Completed
 
 - Inbox deletion race condition fixed in `CapturesView` (serialized deletes + single refresh).
 - `try?` save suppression removed across capture, organize, settings, and persistence flows with rollback/error messaging.
@@ -48,7 +48,7 @@ Based on the comprehensive adversarial security review, this codebase has **8 cr
 - Logger scaffolding added and integrated across services.
 - Repository + workflow tests added for core data flows.
 
-**Remaining**
+### Remaining
 
 - Toast dismissal cancellation handling (still uses `try? Task.sleep`, cancellation guard missing).
 - Fetch optimization for pending suggestions remains in-memory due to SwiftData relationship limits (denormalization candidate).
@@ -59,11 +59,11 @@ Based on the comprehensive adversarial security review, this codebase has **8 cr
 ## Issue Summary
 
 | Severity | Count | Must Fix Before Production |
-|----------|-------|---------------------------|
-| CRITICAL | 8 | ✓ Yes |
-| HIGH | 12 | ✓ Yes |
-| MEDIUM | 18 | Recommended |
-| LOW | 15 | Nice to have |
+| -------- | ----- | -------------------------- |
+| CRITICAL | 8     | ✓ Yes                      |
+| HIGH     | 12    | ✓ Yes                      |
+| MEDIUM   | 18    | Recommended                |
+| LOW      | 15    | Nice to have               |
 
 ---
 

@@ -198,12 +198,12 @@ Goal: Verify voice transcription quality meets the 80% accuracy threshold with 1
 ## Overall Accuracy Summary
 
 | Test # | Spoken Words | Transcribed Correctly | Accuracy |
-|--------|--------------|----------------------|----------|
-| 2      |              |                      | ____%    |
-| 3      |              |                      | ____%    |
-| 4      |              |                      | ____%    |
-| 5      |              |                      | ____%    |
-| 10     |              |                      | ____%    |
+| ------ | ------------ | --------------------- | -------- |
+| 2      |              |                       | ____%    |
+| 3      |              |                       | ____%    |
+| 4      |              |                       | ____%    |
+| 5      |              |                       | ____%    |
+| 10     |              |                       | ____%    |
 
 **Average Accuracy**: _____%
 **Threshold**: 80%

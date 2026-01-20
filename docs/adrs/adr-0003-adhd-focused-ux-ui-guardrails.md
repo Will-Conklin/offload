@@ -69,6 +69,6 @@ These guardrails reduce decision fatigue, support working memory limits, and low
 
 ## Revision History
 
-| Version | Date | Notes |
-|---------|------|-------|
-| 1.0 | 2026-01-05 | Initial decision |
+| Version | Date       | Notes            |
+| ------- | ---------- | ---------------- |
+| 1.0     | 2026-01-05 | Initial decision |

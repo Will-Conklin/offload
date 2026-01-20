@@ -87,7 +87,7 @@ private func deleteItem(_ item: Item) {
 
 **Single Responsibility**: Views render UI and handle user interaction. Repositories handle data operations.
 
-```
+```text
 ┌─────────────────┐
 │   SwiftUI View  │
 │  (Presentation) │

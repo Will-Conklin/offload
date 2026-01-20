@@ -416,7 +416,7 @@ Sample data manually created; no data factory pattern.
 ## 📈 Code Health Metrics
 
 | Metric | Rating | Notes |
-|--------|--------|-------|
+| ------ | ------ | ----- |
 | **Code Organization** | ⭐⭐⭐⭐⭐ | Excellent feature-based structure |
 | **Type Safety** | ⭐⭐⭐⭐⭐ | Strong Swift types, SwiftData |
 | **Test Coverage** | ⭐⭐⭐⭐ | Good data layer; needs UI tests |
@@ -467,7 +467,7 @@ This is a **professionally structured iOS project in active development** with:
 
 ### Directory Structure
 
-```
+```text
 /offload/
 ├── .github/workflows/        # GitHub Actions CI/CD
 ├── ios/                      # MAIN APPLICATION
@@ -512,7 +512,7 @@ This is a **professionally structured iOS project in active development** with:
 
 ### Event-Sourced Capture Workflow
 
-```
+```text
 CaptureEntry → HandOffRequest → HandOffRun → Suggestion → SuggestionDecision → Placement
      (raw)         (request)     (execution)   (AI output)   (user decision)    (final location)
 ```

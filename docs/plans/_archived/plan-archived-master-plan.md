@@ -46,6 +46,7 @@ This is the **single source of truth** for all Offload implementation planning. 
 **⚠️ MAJOR CHANGES NOT REFLECTED IN ORIGINAL PLAN:**
 
 On January 13, 2026 (commit c008443), a massive UI overhaul was completed that:
+
 - Implemented **flat design** (not the planned glassmorphism)
 - Simplified data model to 4 core entities (removed 9+ models)
 - Removed CaptureEntry model entirely
@@ -200,6 +201,7 @@ All implementation complete, testing pending:
 #### Data Model Simplification (Jan 13, 2026) ✅
 
 **Removed Models (9+ entities deleted):**
+
 - ❌ CaptureEntry (replaced by Item with type=nil)
 - ❌ HandOffRequest, HandOffRun, Suggestion, SuggestionDecision, Placement (AI workflow)
 - ❌ Plan, Task (consolidated into Item/Collection)
@@ -208,12 +210,14 @@ All implementation complete, testing pending:
 - ❌ Category (unused)
 
 **New Simplified Model (4 core entities):**
+
 - ✅ **Item** - Unified entity for captures (type=nil), tasks, and links
 - ✅ **Collection** - Plans (isStructured=true) or Lists (isStructured=false)
 - ✅ **CollectionItem** - Junction table with position/hierarchy
 - ✅ **Tag** - Tags for items (string array, not relationship)
 
 **Repositories Simplified:**
+
 - ✅ ItemRepository (45 unit tests added)
 - ✅ CollectionRepository
 - ✅ CollectionItemRepository
@@ -255,6 +259,7 @@ All implementation complete, testing pending:
 **Goal:** Eliminate direct modelContext usage in views, enforce repository pattern
 
 **Tasks:**
+
 1. Create repository environment keys (Common/RepositoryEnvironment.swift)
 2. Inject repositories in AppRootView
 3. Update CaptureView to use @Environment(\.itemRepository)
@@ -265,6 +270,7 @@ All implementation complete, testing pending:
 8. Unit tests for repository injection pattern
 
 **Exit Criteria:**
+
 - Zero direct modelContext mutations in Feature views
 - All CRUD operations through repositories
 - Tests passing
@@ -274,6 +280,7 @@ All implementation complete, testing pending:
 **Goal:** Replace try? with proper error handling throughout codebase
 
 **Tasks:**
+
 1. Replace 21 instances of try? with do-catch + ErrorPresenter
 2. Add structured error types (ValidationError, PersistenceError)
 3. Integrate ErrorPresenter in all views
@@ -282,6 +289,7 @@ All implementation complete, testing pending:
 6. Unit tests for error handling paths
 
 **Exit Criteria:**
+
 - Zero try? for user-facing operations
 - All errors properly logged and presented
 - Error messages are user-friendly
@@ -291,6 +299,7 @@ All implementation complete, testing pending:
 **Goal:** Validate all functionality, fix critical bugs
 
 **Tasks:**
+
 1. Manual testing checklist (all features)
 2. Performance benchmarks (query times at 100/1000/10000 records)
 3. Accessibility audit (VoiceOver, Dynamic Type, contrast)
@@ -298,6 +307,7 @@ All implementation complete, testing pending:
 5. CollectionDetailView decomposition (if time permits)
 
 **Exit Criteria:**
+
 - No critical bugs remaining
 - Performance meets targets (<100ms at 1K records)
 - Basic accessibility compliance
@@ -307,6 +317,7 @@ All implementation complete, testing pending:
 **Goal:** Production-ready v1 release
 
 **Tasks:**
+
 1. Update AGENTS.md with final architecture
 2. Write user-facing documentation
 3. Create release notes
@@ -315,6 +326,7 @@ All implementation complete, testing pending:
 6. Final QA pass
 
 **Exit Criteria:**
+
 - Documentation complete
 - Release candidate approved
 - TestFlight distributed
@@ -673,7 +685,7 @@ All implementation complete, testing pending:
 ### Recent Decisions (Jan 9-19, 2026)
 
 | Date | Decision | Rationale | Impact |
-|------|----------|-----------|--------|
+| ---- | -------- | --------- | ------ |
 | Jan 9 | Toast cancellation fix merged | Critical P0 bug, completes Phase 1 | Phase 1 now 8/8 complete |
 | Jan 9 | Consolidate all plans into plan-master-plan.md | Single source of truth, reduce confusion | Supersedes 4 separate docs |
 | Jan 9 | Prioritize testing before new UI work | Validate critical fixes, avoid regressions | Weeks 1-2 focused on testing |
@@ -716,7 +728,7 @@ All implementation complete, testing pending:
 **Status:** ✅ 8/8 tasks complete
 
 | Task | Status | File(s) | Notes |
-|------|--------|---------|-------|
+| ---- | ------ | ------- | ----- |
 | 1.1 CaptureView race condition | ✅ Complete | CaptureView.swift | Serialized deletes, single refresh |
 | 1.2 Error suppression (21 instances) | ✅ Complete | Multiple files | All try? replaced with proper handling |
 | 1.3 N+1 query problems | ✅ Complete | Repositories | 12/13 use predicates (1 SwiftData limitation) |
@@ -740,7 +752,7 @@ All implementation complete, testing pending:
 **Status:** 🟡 5/5 implementation done, testing pending
 
 | Task | Status | File(s) | Notes |
-|------|--------|---------|-------|
+| ---- | ------ | ------- | ----- |
 | 2.1 Task.category relationship | 🟡 Done | Task.swift | @Relationship added, testing pending |
 | 2.2 Array index out of bounds | 🟡 Done | ListDetailView, PlanDetailView | Capture items before delete |
 | 2.3 Error handling patterns | 🟡 Done | Common/ErrorHandling.swift | ErrorPresenter added, integration pending |
@@ -757,13 +769,13 @@ All implementation complete, testing pending:
 
 ---
 
-### Phase 3: Architecture (COMPLETE ✅)
+### Phase 3: Architecture (Work Breakdown)
 
 **Duration:** Completed (Jan 6-8, 2026)
 **Status:** ✅ 3/3 tasks complete
 
 | Task | Status | File(s) | Notes |
-|------|--------|---------|-------|
+| ---- | ------ | ------- | ----- |
 | 3.1 Generic FormSheet | ✅ Complete | FormSheet.swift | ~400 lines removed, all forms migrated |
 | 3.2 Test suite | ✅ Complete | Tests/ | Repository + workflow tests added |
 | 3.3 Logging | ✅ Complete | Common/Logger.swift | AppLogger added to workflows |
@@ -776,7 +788,7 @@ All implementation complete, testing pending:
 **Status:** 🟡 Research complete, implementation started
 
 | Task | Status | Estimated | Priority |
-|------|--------|-----------|----------|
+| ---- | ------ | --------- | -------- |
 | Materials, Gradients, Animations | ⏳ | 4 hours | P1 |
 | Typography improvements | ⏳ | 2 hours | P1 |
 | Update corner radius | ⏳ | 1 hour | P1 |
@@ -793,7 +805,7 @@ All implementation complete, testing pending:
 **Status:** ⏳ Designs complete, implementation pending
 
 | Task | Status | Estimated | Priority |
-|------|--------|-----------|----------|
+| ---- | ------ | --------- | -------- |
 | Unified Badge component + VoiceOver | ⏳ | 4 hours | P1 |
 | Expandable Card + VoiceOver | ⏳ | 4 hours | P1 |
 | Pill Selector + VoiceOver | ⏳ | 3 hours | P2 |
@@ -810,7 +822,7 @@ All implementation complete, testing pending:
 **Status:** ⏳ Patterns defined, implementation pending
 
 | Task | Status | Estimated | Priority |
-|------|--------|-----------|----------|
+| ---- | ------ | --------- | -------- |
 | Spring animations | ⏳ | 4 hours | P1 |
 | Reduce Motion support | ⏳ | 2 hours | P1 |
 | Improved shadows | ⏳ | 2 hours | P2 |
@@ -828,7 +840,7 @@ All implementation complete, testing pending:
 **Status:** ⏳ Research complete, implementation pending
 
 | Task | Status | Estimated | Priority |
-|------|--------|-----------|----------|
+| ---- | ------ | --------- | -------- |
 | Visual timeline view | ⏳ | 12 hours | P2 |
 | Gentle transition indicators | ⏳ | 3 hours | P2 |
 | Accessibility audit & fixes | ⏳ | 6 hours | P1 |
@@ -847,7 +859,7 @@ All implementation complete, testing pending:
 **Status:** ⏳ Pending all P0-P1 work complete
 
 | Task | Status | Estimated | Priority |
-|------|--------|-----------|----------|
+| ---- | ------ | --------- | -------- |
 | Merge all P0-P1 changes | ⏳ | 2 days | P0 |
 | Comprehensive testing | ⏳ | 3 days | P0 |
 | Final polish | ⏳ | 2 days | P0 |
@@ -1227,7 +1239,7 @@ find ios/Offload -name "*.swift" | xargs wc -l
 
 ### Animation Testing
 
-#### Performance
+#### Animation Performance
 
 - [ ] Spring animations run at 60fps
 - [ ] No frame drops on button presses
@@ -1328,7 +1340,7 @@ find ios/Offload -name "*.swift" | xargs wc -l
 - [ ] No debug print statements (use AppLogger)
 - [ ] Logging uses proper log levels
 
-#### Performance
+#### Runtime Performance
 
 - [ ] No N+1 queries (all use predicates)
 - [ ] Async operations properly isolated (@MainActor)

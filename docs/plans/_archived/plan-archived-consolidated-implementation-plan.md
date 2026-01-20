@@ -16,12 +16,14 @@ structure_notes:
   - "Keep the top-level section outline intact."
 ---
 
+# Consolidated Implementation Plan: Offload iOS App
+
 <!-- Intent: Consolidated implementation plan merging critical remediation fixes with UI/UX enhancements for production-ready release. -->
 
-> **⚠️ DEPRECATED:** This document has been superseded by [plan-master-plan.md](./plan-master-plan.md) as of January 9, 2026.
-> Please refer to the master plan for the single source of truth on all implementation planning.
-
-# Consolidated Implementation Plan: Offload iOS App
+> **⚠️ DEPRECATED:** This document has been superseded by
+> [plan-master-plan.md](./plan-master-plan.md) as of January 9, 2026.
+> Please refer to the master plan for the single source of truth on all
+> implementation planning.
 
 **Created:** January 9, 2026
 **Status:** Active Planning
@@ -306,7 +308,7 @@ do {
 
 **Estimated:** 4 hours
 
-**Decision Point: Glassmorphism Level**
+#### Decision Point: Glassmorphism Level
 
 - [ ] **Option A (Recommended):** Subtle glass on cards/modals only
 - [ ] **Option B:** Full Liquid Glass on navigation layer
@@ -1052,10 +1054,10 @@ grep -r "spacing: [0-9]" ios/Offload --include="*.swift"
 
 ### Decisions Made
 
-| Date | Decision | Rationale | Impact |
-|------|----------|-----------|--------|
-| Jan 8, 2026 | Fix remediation items first | Critical bugs block production | Phase 1 prioritized |
-| Jan 9, 2026 | Consolidated planning approach | Avoid duplicate effort, clarity | This document |
+| Date        | Decision                       | Rationale                          | Impact              |
+| ----------- | ------------------------------ | ---------------------------------- | ------------------- |
+| Jan 8, 2026 | Fix remediation items first    | Critical bugs block production     | Phase 1 prioritized |
+| Jan 9, 2026 | Consolidated planning approach | Avoid duplicate effort, clarity    | This document       |
 
 ---
 
@@ -1090,7 +1092,7 @@ grep -r "spacing: [0-9]" ios/Offload --include="*.swift"
 
 ### Git Branch Strategy
 
-```
+```text
 main (protected)
 ├── remediation/phase-1 (critical fixes)
 ├── remediation/phase-2 (high priority)
@@ -1121,7 +1123,7 @@ main (protected)
 
 ## Appendix A: Task Dependency Graph
 
-```
+```text
 Phase 1: Critical Fixes (MUST COMPLETE FIRST)
 ├── Toast Cancellation Fix
 ├── Fetch Optimization
@@ -1270,7 +1272,7 @@ Phase 6: Integration & Testing (DEPENDS ON ALL)
 
 ### Phase 4: Animation Testing
 
-#### Performance
+#### Animation Performance
 
 - [ ] Spring animations at 60fps
 - [ ] No frame drops on button press

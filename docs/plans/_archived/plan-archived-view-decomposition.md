@@ -53,7 +53,7 @@ Break down large, complex view files into smaller, focused, reusable components 
 
 ### CollectionDetailView Structure (782 lines)
 
-```
+```text
 CollectionDetailView
 ├── Main body (collection header, item list)
 ├── AddItemSheet (nested struct, ~100 lines)
@@ -81,7 +81,7 @@ CollectionDetailView
 
 ### File Organization Strategy
 
-```
+```text
 Features/
 ├── Capture/
 │   ├── CaptureView.swift (list container)
@@ -125,7 +125,7 @@ Features/
 
 #### 1.1 Create Sheets Directory
 
-```
+```text
 Features/Organize/Sheets/
 ├── AddItemSheet.swift
 ├── EditItemSheet.swift
