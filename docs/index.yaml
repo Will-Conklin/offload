@@ -154,3 +154,10 @@ sections:
       - id: research-ios-ui-trends-2025
         title: iOS UI Trends Research & Recommendations for Offload
         path: research/research-ios-ui-trends-2025.md
+  - id: proposals
+    title: Proposals
+    description: Structured ideas not yet ready for PRD.
+    documents:
+      - id: proposals-readme
+        title: Proposals
+        path: proposals/README.md

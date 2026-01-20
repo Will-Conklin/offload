@@ -6,7 +6,7 @@ owners:
   - Offload
 applies_to:
   - agents
-last_updated: 2026-01-17
+last_updated: 2026-01-19
 related: []
 structure_notes:
   - "Top-level section order: Scope; Documentation Authority Model (MANDATORY); Documentation Safety Rules; Structural Rules; Expected Agent Behavior."
@@ -37,6 +37,7 @@ Agents must not infer authority from prose, chronology, or filenames.
 4. design/ — technical architecture and implementation approach (HOW)
 5. plans/ — sequencing, milestones, execution strategy (WHEN)
 6. research/ — exploratory work, spikes, benchmarks (NON-AUTHORITATIVE)
+7. proposals/ — structured ideas not yet ready for PRD (NON-AUTHORITATIVE)
 
 ### Authority Resolution Order
 
@@ -48,6 +49,7 @@ reference/
 → design/
 → plans/
 → research/
+→ proposals/
 
 If ambiguity remains:
 
@@ -61,10 +63,11 @@ If ambiguity remains:
 
 - Never introduce requirements outside `prds/`
 - Never introduce decisions outside `adrs/`
-- Never treat `research/` as source of truth
+- Never treat `research/` or `proposals/` as source of truth
 - Design docs must not contradict ADRs or PRDs
 - Plans must not introduce scope, requirements, or architecture
 - Reference docs must not include rationale or narrative
+- Proposals must not be treated as approved scope until promoted to PRD
 
 ---
 
