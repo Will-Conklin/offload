@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+import os
 
 
 
@@ -20,6 +21,13 @@ struct AppRootView: View {
             .environment(\.collectionItemRepository, repositories.collectionItemRepository)
             .environment(\.tagRepository, repositories.tagRepository)
             .withToast()
+            .task {
+                do {
+                    try TagMigration.runIfNeeded(modelContext: modelContext)
+                } catch {
+                    AppLogger.general.error("Tag migration failed: \(error.localizedDescription)")
+                }
+            }
     }
 }
 

@@ -14,6 +14,7 @@ final class Tag {
     var name: String
     var color: String?
     var createdAt: Date
+    var items: [Item]
 
     init(
         id: UUID = UUID(),
@@ -25,5 +26,6 @@ final class Tag {
         self.name = name
         self.color = color
         self.createdAt = createdAt
+        self.items = []
     }
 }

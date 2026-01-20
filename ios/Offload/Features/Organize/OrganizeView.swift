@@ -299,11 +299,13 @@ private struct CollectionCard: View {
     let colorScheme: ColorScheme
     let style: ThemeStyle
 
-    private var tagNames: [String] {
-        let names = collection.collectionItems?
+    private var tags: [Tag] {
+        let tags = collection.collectionItems?
             .compactMap { $0.item?.tags }
             .flatMap { $0 } ?? []
-        return Array(Set(names)).sorted()
+        return Dictionary(uniqueKeysWithValues: tags.map { ($0.id, $0) })
+            .values
+            .sorted { $0.name < $1.name }
     }
 
     var body: some View {
@@ -331,13 +333,15 @@ private struct CollectionCard: View {
                     }
                 }
 
-                if !tagNames.isEmpty {
+                if !tags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: Theme.Spacing.xs) {
-                            ForEach(tagNames, id: \.self) { tagName in
+                            ForEach(tags) { tag in
                                 TagPill(
-                                    name: tagName,
-                                    color: Theme.Colors.tagColor(for: tagName, colorScheme, style: style)
+                                    name: tag.name,
+                                    color: tag.color
+                                        .map { Color(hex: $0) }
+                                        ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
                                 )
                             }
                         }

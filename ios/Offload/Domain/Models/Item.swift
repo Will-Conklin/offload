@@ -15,7 +15,10 @@ final class Item {
     var metadata: String // JSON string for flexible future features
     var attachmentData: Data? // Optional attachment data (photo, etc.)
     var linkedCollectionId: UUID? // for type="link" items pointing to collections
-    var tags: [String] // array of tag names
+    @Attribute(originalName: "tags")
+    var legacyTags: [String] // legacy tag names for migration
+    @Relationship(deleteRule: .nullify, inverse: \Tag.items)
+    var tagLinks: [Tag]
     var isStarred: Bool
     var followUpDate: Date?
     var completedAt: Date? // nullable timestamp for completion status
@@ -44,7 +47,8 @@ final class Item {
         self.metadata = metadata
         self.attachmentData = attachmentData
         self.linkedCollectionId = linkedCollectionId
-        self.tags = tags
+        self.legacyTags = tags
+        self.tagLinks = []
         self.isStarred = isStarred
         self.followUpDate = followUpDate
         self.completedAt = completedAt
@@ -93,5 +97,13 @@ enum ItemType: String, Codable, CaseIterable {
         case .task: return "Task"
         case .link: return "Link"
         }
+    }
+}
+
+extension Item {
+    // Keep a stable API name while the stored relationship is tagLinks.
+    var tags: [Tag] {
+        get { tagLinks }
+        set { tagLinks = newValue }
     }
 }

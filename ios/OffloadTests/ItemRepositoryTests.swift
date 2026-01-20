@@ -64,11 +64,16 @@ final class ItemRepositoryTests: XCTestCase {
     }
 
     func testCreateItemWithTags() throws {
-        let item = try repository.create(content: "Tagged item", tags: ["urgent", "work"])
+        let urgent = Tag(name: "urgent")
+        let work = Tag(name: "work")
+        modelContext.insert(urgent)
+        modelContext.insert(work)
+        try modelContext.save()
+        let item = try repository.create(content: "Tagged item", tags: [urgent, work])
 
         XCTAssertEqual(item.tags.count, 2)
-        XCTAssertTrue(item.tags.contains("urgent"))
-        XCTAssertTrue(item.tags.contains("work"))
+        XCTAssertTrue(item.tags.contains(where: { $0.id == urgent.id }))
+        XCTAssertTrue(item.tags.contains(where: { $0.id == work.id }))
     }
 
     func testCreateItemWithFollowUpDate() throws {
@@ -164,17 +169,25 @@ final class ItemRepositoryTests: XCTestCase {
     }
 
     func testFetchByTag() throws {
-        try repository.create(content: "Item 1", tags: ["work"])
-        try repository.create(content: "Item 2", tags: ["work", "urgent"])
-        try repository.create(content: "Item 3", tags: ["personal"])
+        let work = Tag(name: "work")
+        let urgent = Tag(name: "urgent")
+        let personal = Tag(name: "personal")
+        modelContext.insert(work)
+        modelContext.insert(urgent)
+        modelContext.insert(personal)
+        try modelContext.save()
 
-        let workItems = try repository.fetchByTag("work")
+        try repository.create(content: "Item 1", tags: [work])
+        try repository.create(content: "Item 2", tags: [work, urgent])
+        try repository.create(content: "Item 3", tags: [personal])
+
+        let workItems = try repository.fetchByTag(work)
         XCTAssertEqual(workItems.count, 2)
 
-        let urgentItems = try repository.fetchByTag("urgent")
+        let urgentItems = try repository.fetchByTag(urgent)
         XCTAssertEqual(urgentItems.count, 1)
 
-        let personalItems = try repository.fetchByTag("personal")
+        let personalItems = try repository.fetchByTag(personal)
         XCTAssertEqual(personalItems.count, 1)
     }
 
@@ -314,33 +327,49 @@ final class ItemRepositoryTests: XCTestCase {
         let item = try repository.create(content: "Item")
         XCTAssertTrue(item.tags.isEmpty)
 
-        try repository.addTag(item, tag: "urgent")
-        XCTAssertEqual(item.tags.count, 1)
-        XCTAssertTrue(item.tags.contains("urgent"))
+        let urgent = Tag(name: "urgent")
+        let work = Tag(name: "work")
+        modelContext.insert(urgent)
+        modelContext.insert(work)
+        try modelContext.save()
 
-        try repository.addTag(item, tag: "work")
+        try repository.addTag(item, tag: urgent)
+        XCTAssertEqual(item.tags.count, 1)
+        XCTAssertTrue(item.tags.contains(where: { $0.id == urgent.id }))
+
+        try repository.addTag(item, tag: work)
         XCTAssertEqual(item.tags.count, 2)
-        XCTAssertTrue(item.tags.contains("work"))
+        XCTAssertTrue(item.tags.contains(where: { $0.id == work.id }))
     }
 
     func testAddDuplicateTag() throws {
-        let item = try repository.create(content: "Item", tags: ["urgent"])
+        let urgent = Tag(name: "urgent")
+        modelContext.insert(urgent)
+        try modelContext.save()
+        let item = try repository.create(content: "Item", tags: [urgent])
 
-        try repository.addTag(item, tag: "urgent")
+        try repository.addTag(item, tag: urgent)
 
         // Should not add duplicate
         XCTAssertEqual(item.tags.count, 1)
     }
 
     func testRemoveTag() throws {
-        let item = try repository.create(content: "Item", tags: ["urgent", "work", "personal"])
+        let urgent = Tag(name: "urgent")
+        let work = Tag(name: "work")
+        let personal = Tag(name: "personal")
+        modelContext.insert(urgent)
+        modelContext.insert(work)
+        modelContext.insert(personal)
+        try modelContext.save()
+        let item = try repository.create(content: "Item", tags: [urgent, work, personal])
 
-        try repository.removeTag(item, tag: "work")
+        try repository.removeTag(item, tag: work)
 
         XCTAssertEqual(item.tags.count, 2)
-        XCTAssertFalse(item.tags.contains("work"))
-        XCTAssertTrue(item.tags.contains("urgent"))
-        XCTAssertTrue(item.tags.contains("personal"))
+        XCTAssertFalse(item.tags.contains(where: { $0.id == work.id }))
+        XCTAssertTrue(item.tags.contains(where: { $0.id == urgent.id }))
+        XCTAssertTrue(item.tags.contains(where: { $0.id == personal.id }))
     }
 
     func testUpdateFollowUpDate() throws {

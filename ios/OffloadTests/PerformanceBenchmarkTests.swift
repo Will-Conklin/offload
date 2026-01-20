@@ -81,19 +81,24 @@ final class PerformanceBenchmarkTests: XCTestCase {
         let container = try makeContainer()
         let context = container.mainContext
         let repository = ItemRepository(modelContext: context)
+        let targetTag = Tag(name: tag)
+        let otherTag = Tag(name: "other")
+        context.insert(targetTag)
+        context.insert(otherTag)
         try seedItems(count: count, modelContext: context) { item, index in
             if index.isMultiple(of: 3) {
-                item.tags = [tag]
+                item.tags = [targetTag]
             } else if index.isMultiple(of: 5) {
-                item.tags = ["other"]
+                item.tags = [otherTag]
             }
         }
+        try context.save()
 
         let options = XCTMeasureOptions()
         options.iterationCount = 3
         measure(metrics: [XCTClockMetric()], options: options) {
             do {
-                _ = try repository.fetchByTag(tag)
+                _ = try repository.fetchByTag(targetTag)
             } catch {
                 XCTFail("fetchByTag failed: \(error)")
             }

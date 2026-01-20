@@ -3,7 +3,7 @@
 // Governed by: AGENTS.md
 // Additional instructions: Keep CRUD logic centralized and consistent with SwiftData models.
 
-//  Supports tags stored on Item records.
+//  Supports Tag entities linked to Item relationships.
 
 import Foundation
 import SwiftData
@@ -88,6 +88,11 @@ final class TagRepository {
     // MARK: - Delete
 
     func delete(tag: Tag) throws {
+        if !tag.items.isEmpty {
+            for item in tag.items {
+                item.tags.removeAll { $0.id == tag.id }
+            }
+        }
         modelContext.delete(tag)
         try modelContext.save()
     }
@@ -101,12 +106,7 @@ final class TagRepository {
 
     /// Get count of items using this tag
     func getTaskCount(tag: Tag) -> Int {
-        let tagName = tag.name
-        // Note: SwiftData predicates don't support .contains() on [String] arrays,
-        // so we fetch all items and filter in-memory
-        let descriptor = FetchDescriptor<Item>()
-        let items = (try? modelContext.fetch(descriptor)) ?? []
-        return items.filter { $0.tags.contains(tagName) }.count
+        tag.items.count
     }
 
     /// Check if tag is used by any items

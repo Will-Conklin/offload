@@ -20,8 +20,6 @@ struct CollectionDetailView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    @Query(sort: \Tag.name) private var allTags: [Tag]
-
     @State private var collection: Collection?
     @State private var showingAddItem = false
     @State private var showingEdit = false
@@ -35,10 +33,6 @@ struct CollectionDetailView: View {
     private var floatingTabBarClearance: CGFloat {
         Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
     }
-    private var tagLookup: [String: Tag] {
-        Dictionary(uniqueKeysWithValues: allTags.map { ($0.name, $0) })
-    }
-
     var body: some View {
         ZStack {
             Theme.Colors.background(colorScheme, style: style)
@@ -65,7 +59,6 @@ struct CollectionDetailView: View {
                                         isStructured: collection.isStructured,
                                         colorScheme: colorScheme,
                                         style: style,
-                                        tagLookup: tagLookup,
                                         onAddTag: { tagPickerItem = item },
                                         onDelete: { deleteItem(collectionItem) },
                                         onEdit: { editingItem = item },
@@ -227,7 +220,6 @@ private struct ItemRow: View {
     let isStructured: Bool
     let colorScheme: ColorScheme
     let style: ThemeStyle
-    let tagLookup: [String: Tag]
     let onAddTag: () -> Void
     let onDelete: () -> Void
     let onEdit: () -> Void
@@ -297,7 +289,6 @@ private struct ItemRow: View {
 
                     ItemActionRow(
                         tags: item.tags,
-                        tagLookup: tagLookup,
                         isStarred: item.isStarred,
                         onAddTag: onAddTag,
                         onToggleStar: toggleStar
@@ -780,7 +771,7 @@ private struct AddItemSheet: View {
             content: trimmedContent,
             attachmentData: attachmentData,
             linkedCollectionId: linkedId,
-            tags: selectedTags.map { $0.name },
+            tags: selectedTags,
             isStarred: isStarred
         )
 

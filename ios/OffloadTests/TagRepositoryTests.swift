@@ -45,8 +45,8 @@ final class TagRepositoryTests: XCTestCase {
 
     func testUpdateUsageCount() throws {
         let tag = try tagRepository.fetchOrCreate("urgent")
-        _ = try itemRepository.create(content: "Item 1", tags: [tag.name])
-        _ = try itemRepository.create(content: "Item 2", tags: [tag.name])
+        _ = try itemRepository.create(content: "Item 1", tags: [tag])
+        _ = try itemRepository.create(content: "Item 2", tags: [tag])
 
         let count = try tagRepository.updateUsageCount(tag)
         XCTAssertEqual(count, 2)
@@ -55,7 +55,7 @@ final class TagRepositoryTests: XCTestCase {
     func testFetchUnused() throws {
         let unused = try tagRepository.fetchOrCreate("unused")
         let used = try tagRepository.fetchOrCreate("used")
-        _ = try itemRepository.create(content: "Item 1", tags: [used.name])
+        _ = try itemRepository.create(content: "Item 1", tags: [used])
 
         let unusedTags = try tagRepository.fetchUnused()
         XCTAssertTrue(unusedTags.contains(where: { $0.id == unused.id }))

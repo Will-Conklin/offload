@@ -18,8 +18,6 @@ struct CaptureView: View {
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = CaptureListViewModel()
 
-    @Query(sort: \Tag.name) private var allTags: [Tag]
-
     @State private var showingSettings = false
     @State private var showingAccount = false
     @State private var showingAddItem = false
@@ -32,10 +30,6 @@ struct CaptureView: View {
     private var floatingTabBarClearance: CGFloat {
         Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
     }
-    private var tagLookup: [String: Tag] {
-        Dictionary(uniqueKeysWithValues: allTags.map { ($0.name, $0) })
-    }
-
     var body: some View {
         NavigationStack {
             ZStack {
@@ -56,7 +50,6 @@ struct CaptureView: View {
                                 item: item,
                                 colorScheme: colorScheme,
                                 style: style,
-                                tagLookup: tagLookup,
                                 onTap: { selectedItem = item },
                                 onAddTag: { tagPickerItem = item },
                                 onToggleStar: { toggleStar(item) },
@@ -252,7 +245,6 @@ private struct ItemCard: View {
     let item: Item
     let colorScheme: ColorScheme
     let style: ThemeStyle
-    let tagLookup: [String: Tag]
     let onTap: () -> Void
     let onAddTag: () -> Void
     let onToggleStar: () -> Void
@@ -285,7 +277,6 @@ private struct ItemCard: View {
 
                     ItemActionRow(
                         tags: item.tags,
-                        tagLookup: tagLookup,
                         isStarred: item.isStarred,
                         onAddTag: onAddTag,
                         onToggleStar: onToggleStar

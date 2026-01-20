@@ -22,7 +22,7 @@ final class ItemRepository {
         metadata: String = "{}",
         attachmentData: Data? = nil,
         linkedCollectionId: UUID? = nil,
-        tags: [String] = [],
+        tags: [Tag] = [],
         isStarred: Bool = false,
         followUpDate: Date? = nil
     ) throws -> Item {
@@ -32,10 +32,11 @@ final class ItemRepository {
             metadata: metadata,
             attachmentData: attachmentData,
             linkedCollectionId: linkedCollectionId,
-            tags: tags,
+            tags: [],
             isStarred: isStarred,
             followUpDate: followUpDate
         )
+        item.tags = tags
         modelContext.insert(item)
         try modelContext.save()
         return item
@@ -80,12 +81,8 @@ final class ItemRepository {
         return try modelContext.fetch(descriptor)
     }
 
-    func fetchByTag(_ tag: String) throws -> [Item] {
-        let descriptor = FetchDescriptor<Item>(
-            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
-        )
-        let allItems = try modelContext.fetch(descriptor)
-        return allItems.filter { $0.tags.contains(tag) }
+    func fetchByTag(_ tag: Tag) throws -> [Item] {
+        tag.items.sorted { $0.createdAt > $1.createdAt }
     }
 
     func searchByContent(_ query: String) throws -> [Item] {
@@ -160,15 +157,15 @@ final class ItemRepository {
         try modelContext.save()
     }
 
-    func addTag(_ item: Item, tag: String) throws {
-        if !item.tags.contains(tag) {
+    func addTag(_ item: Item, tag: Tag) throws {
+        if !item.tags.contains(where: { $0.id == tag.id }) {
             item.tags.append(tag)
             try modelContext.save()
         }
     }
 
-    func removeTag(_ item: Item, tag: String) throws {
-        item.tags.removeAll { $0 == tag }
+    func removeTag(_ item: Item, tag: Tag) throws {
+        item.tags.removeAll { $0.id == tag.id }
         try modelContext.save()
     }
 

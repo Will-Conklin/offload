@@ -371,8 +371,7 @@ struct ItemActionButton: View {
 // MARK: - Item Actions
 
 struct ItemActionRow: View {
-    let tags: [String]
-    let tagLookup: [String: Tag]
+    let tags: [Tag]
     let isStarred: Bool
     let onAddTag: () -> Void
     let onToggleStar: () -> Void
@@ -398,13 +397,12 @@ struct ItemActionRow: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: Theme.Spacing.xs) {
-                        ForEach(tags, id: \.self) { tagName in
+                        ForEach(tags) { tag in
                             TagPill(
-                                name: tagName,
-                                color: tagLookup[tagName]
-                                    .flatMap { $0.color }
+                                name: tag.name,
+                                color: tag.color
                                     .map { Color(hex: $0) }
-                                    ?? Theme.Colors.tagColor(for: tagName, colorScheme, style: style)
+                                    ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
                             )
                         }
                     }
@@ -467,7 +465,7 @@ struct ItemTagPickerSheet: View {
                                 Text(tag.name)
                                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                                 Spacer()
-                                if item.tags.contains(tag.name) {
+                                if item.tags.contains(where: { $0.id == tag.id }) {
                                     AppIcon(name: Icons.check, size: 12)
                                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                                 }
@@ -496,7 +494,7 @@ struct ItemTagPickerSheet: View {
 
         do {
             let tag = try tagRepository.fetchOrCreate(trimmed)
-            try itemRepository.addTag(item, tag: tag.name)
+            try itemRepository.addTag(item, tag: tag)
             newTagName = ""
         } catch {
             errorPresenter.present(error)
@@ -505,10 +503,10 @@ struct ItemTagPickerSheet: View {
 
     private func toggleTag(_ tag: Tag) {
         do {
-            if item.tags.contains(tag.name) {
-                try itemRepository.removeTag(item, tag: tag.name)
+            if item.tags.contains(where: { $0.id == tag.id }) {
+                try itemRepository.removeTag(item, tag: tag)
             } else {
-                try itemRepository.addTag(item, tag: tag.name)
+                try itemRepository.addTag(item, tag: tag)
             }
         } catch {
             errorPresenter.present(error)

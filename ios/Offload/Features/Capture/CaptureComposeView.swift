@@ -306,7 +306,7 @@ struct CaptureComposeView: View {
                 type: nil, // Uncategorized capture
                 content: trimmedText,
                 attachmentData: attachmentData,
-                tags: selectedTags.map { $0.name },
+                tags: selectedTags,
                 isStarred: isStarred
             )
             dismiss()
