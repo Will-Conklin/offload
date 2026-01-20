@@ -200,7 +200,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				34B95EC22F04D56F0005166B /*/* Offload */,
+				34B95EC22F04D56F0005166B /* Offload */,
 				34B95ED12F04D5710005166B /* OffloadTests */,
 				34B95EDB2F04D5710005166B /* OffloadUITests */,
 			);
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		34B95ED42F04D5710005166B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 34B95EC22F04D56F0005166B /*/* Offload */;
+			target = 34B95EC22F04D56F0005166B /* Offload */;
 			targetProxy = 34B95ED32F04D5710005166B /* PBXContainerItemProxy */;
 		};
 		34B95EDE2F04D5710005166B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 34B95EC22F04D56F0005166B /*/* Offload */;
+			target = 34B95EC22F04D56F0005166B /* Offload */;
 			targetProxy = 34B95EDD2F04D5710005166B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -395,6 +395,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = K86HVH894Y;
@@ -416,6 +417,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = wc.Offload;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -431,6 +433,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = K86HVH894Y;
@@ -452,6 +455,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = wc.Offload;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;

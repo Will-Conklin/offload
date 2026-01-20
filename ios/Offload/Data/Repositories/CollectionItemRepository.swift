@@ -47,6 +47,29 @@ final class CollectionItemRepository {
         return try modelContext.fetch(descriptor)
     }
 
+    func fetchPage(
+        collectionId: UUID,
+        isStructured: Bool,
+        limit: Int,
+        offset: Int
+    ) throws -> [CollectionItem] {
+        var descriptor: FetchDescriptor<CollectionItem>
+        if isStructured {
+            descriptor = FetchDescriptor<CollectionItem>(
+                predicate: #Predicate { $0.collectionId == collectionId },
+                sortBy: [SortDescriptor(\.position)]
+            )
+        } else {
+            descriptor = FetchDescriptor<CollectionItem>(
+                predicate: #Predicate { $0.collectionId == collectionId },
+                sortBy: [SortDescriptor(\CollectionItem.item?.createdAt, order: .forward)]
+            )
+        }
+        descriptor.fetchLimit = limit
+        descriptor.fetchOffset = offset
+        return try modelContext.fetch(descriptor)
+    }
+
     func fetchByItem(_ itemId: UUID) throws -> [CollectionItem] {
         let descriptor = FetchDescriptor<CollectionItem>(
             predicate: #Predicate { $0.itemId == itemId }

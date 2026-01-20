@@ -46,6 +46,29 @@ final class CollectionRepositoryTests: XCTestCase {
         XCTAssertEqual(collections.first?.collectionItems?.count, 1)
     }
 
+    func testFetchPageFiltersAndSorts() throws {
+        let base = Date()
+        let plan1 = try collectionRepository.create(name: "Plan 1", isStructured: true)
+        let plan2 = try collectionRepository.create(name: "Plan 2", isStructured: true)
+        let list1 = try collectionRepository.create(name: "List 1", isStructured: false)
+        let list2 = try collectionRepository.create(name: "List 2", isStructured: false)
+
+        plan1.createdAt = base.addingTimeInterval(-10)
+        plan2.createdAt = base
+        list1.createdAt = base.addingTimeInterval(-20)
+        list2.createdAt = base.addingTimeInterval(-5)
+        try modelContext.save()
+
+        let firstPlanPage = try collectionRepository.fetchPage(isStructured: true, limit: 1, offset: 0)
+        XCTAssertEqual(firstPlanPage.map(\.id), [plan2.id])
+
+        let secondPlanPage = try collectionRepository.fetchPage(isStructured: true, limit: 1, offset: 1)
+        XCTAssertEqual(secondPlanPage.map(\.id), [plan1.id])
+
+        let listPage = try collectionRepository.fetchPage(isStructured: false, limit: 2, offset: 0)
+        XCTAssertEqual(listPage.map(\.id), [list2.id, list1.id])
+    }
+
     func testAddAndRemoveItem() throws {
         let collection = try collectionRepository.create(name: "List", isStructured: false)
         let item = try itemRepository.create(content: "Item 1")

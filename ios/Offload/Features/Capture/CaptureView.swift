@@ -16,12 +16,7 @@ struct CaptureView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
     @State private var errorPresenter = ErrorPresenter()
-
-    @Query(
-        filter: #Predicate<Item> { $0.type == nil && $0.completedAt == nil },
-        sort: \Item.createdAt,
-        order: .reverse
-    ) private var items: [Item]
+    @State private var viewModel = CaptureListViewModel()
 
     @Query(sort: \Tag.name) private var allTags: [Tag]
 
@@ -50,7 +45,12 @@ struct CaptureView: View {
 
                 ScrollView {
                     LazyVStack(spacing: Theme.Spacing.md) {
-                        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                        if viewModel.items.isEmpty && viewModel.isLoading {
+                            ProgressView()
+                                .padding(.vertical, Theme.Spacing.sm)
+                        }
+
+                        ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, item in
                             ItemCard(
                                 index: index,
                                 item: item,
@@ -67,6 +67,16 @@ struct CaptureView: View {
                                     moveDestination = destination
                                 }
                             )
+                            .onAppear {
+                                if index == viewModel.items.count - 1 {
+                                    loadNextPage()
+                                }
+                            }
+                        }
+
+                        if viewModel.isLoading && !viewModel.items.isEmpty {
+                            ProgressView()
+                                .padding(.vertical, Theme.Spacing.sm)
                         }
 
                         FloatingActionButton(title: "Add Item", iconName: Icons.addCircleFilled) {
@@ -119,7 +129,7 @@ struct CaptureView: View {
             .sheet(isPresented: $showingAccount) {
                 AccountView()
             }
-            .sheet(isPresented: $showingAddItem) {
+            .sheet(isPresented: $showingAddItem, onDismiss: refreshItems) {
                 CaptureComposeView()
             }
             .sheet(item: $selectedItem) { item in
@@ -144,6 +154,7 @@ struct CaptureView: View {
                     MoveToPlanSheet(item: item) {
                         moveItem = nil
                         moveDestination = nil
+                        refreshItems()
                     }
                 }
             }
@@ -162,10 +173,14 @@ struct CaptureView: View {
                     MoveToListSheet(item: item) {
                         moveItem = nil
                         moveDestination = nil
+                        refreshItems()
                     }
                 }
             }
             .errorToasts(errorPresenter)
+        }
+        .onAppear {
+            loadInitialIfNeeded()
         }
     }
 
@@ -174,6 +189,7 @@ struct CaptureView: View {
     private func deleteItem(_ item: Item) {
         do {
             try itemRepository.delete(item)
+            viewModel.remove(item)
         } catch {
             errorPresenter.present(error)
         }
@@ -182,6 +198,7 @@ struct CaptureView: View {
     private func completeItem(_ item: Item) {
         do {
             try itemRepository.complete(item)
+            viewModel.remove(item)
         } catch {
             errorPresenter.present(error)
         }
@@ -190,6 +207,31 @@ struct CaptureView: View {
     private func toggleStar(_ item: Item) {
         do {
             try itemRepository.toggleStar(item)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func loadInitialIfNeeded() {
+        guard !viewModel.hasLoaded else { return }
+        do {
+            try viewModel.loadInitial(using: itemRepository)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func loadNextPage() {
+        do {
+            try viewModel.loadNextPage(using: itemRepository)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func refreshItems() {
+        do {
+            try viewModel.refresh(using: itemRepository)
         } catch {
             errorPresenter.present(error)
         }

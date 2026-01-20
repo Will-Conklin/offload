@@ -130,6 +130,16 @@ final class ItemRepository {
         return try modelContext.fetch(descriptor)
     }
 
+    func fetchCaptureItems(limit: Int, offset: Int) throws -> [Item] {
+        var descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { $0.type == nil && $0.completedAt == nil },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = limit
+        descriptor.fetchOffset = offset
+        return try modelContext.fetch(descriptor)
+    }
+
     // MARK: - Update
     func update(_ item: Item) throws {
         try modelContext.save()
