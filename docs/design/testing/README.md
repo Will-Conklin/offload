@@ -9,6 +9,7 @@ applies_to:
 last_updated: 2026-01-19
 related:
   - design-v1-manual-testing-checklist
+  - design-v1-manual-testing-results
   - design-voice-capture-testing-guide
   - design-voice-capture-test-results
 structure_notes:
@@ -41,6 +42,7 @@ Design-level authority. These docs explain how to validate features but do not d
 ## Canonical documents
 
 - [V1 Manual Testing Checklist](./design-v1-manual-testing-checklist.md)
+- [V1 Manual Testing Results](./design-v1-manual-testing-results.md)
 - [Voice Capture Testing Guide](./design-voice-capture-testing-guide.md)
 - [Voice Capture Test Results](./design-voice-capture-test-results.md)
 

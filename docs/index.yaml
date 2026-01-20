@@ -59,6 +59,9 @@ sections:
       - id: design-v1-manual-testing-checklist
         title: V1 Manual Testing Checklist
         path: design/testing/design-v1-manual-testing-checklist.md
+      - id: design-v1-manual-testing-results
+        title: V1 Manual Testing Results
+        path: design/testing/design-v1-manual-testing-results.md
       - id: design-voice-capture-test-results
         title: Voice Capture Test Results
         path: design/testing/design-voice-capture-test-results.md
