@@ -168,6 +168,7 @@ struct CaptureComposeView: View {
                         }
                         .padding(4)
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Remove attachment")
                     }
                 }
 
@@ -202,6 +203,12 @@ struct CaptureComposeView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(voiceService.isRecording ? "Stop recording" : "Start voice capture")
+                .accessibilityHint(
+                    voiceService.isRecording
+                        ? "Stops recording and keeps the transcription."
+                        : "Records voice and transcribes into the capture."
+                )
 
                 Button { showingAttachmentSource = true } label: {
                     IconTile(
@@ -214,6 +221,8 @@ struct CaptureComposeView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(attachmentData == nil ? "Add attachment" : "Change attachment")
+                .accessibilityHint("Attach a photo to this capture.")
 
                 Button { showingTags = true } label: {
                     IconTile(
@@ -226,6 +235,8 @@ struct CaptureComposeView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(selectedTags.isEmpty ? "Add tags" : "Edit tags")
+                .accessibilityHint("Select tags for this capture.")
 
                 Button { isStarred.toggle() } label: {
                     IconTile(
@@ -238,6 +249,8 @@ struct CaptureComposeView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(isStarred ? "Unstar capture" : "Star capture")
+                .accessibilityHint("Toggle the star for this capture.")
 
                 Spacer()
 
