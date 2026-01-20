@@ -6,8 +6,9 @@ owners:
   - Offload
 applies_to:
   - testing
-last_updated: 2026-01-17
+last_updated: 2026-01-19
 related:
+  - design-v1-manual-testing-checklist
   - design-voice-capture-testing-guide
   - design-voice-capture-test-results
 structure_notes:
@@ -39,6 +40,7 @@ Design-level authority. These docs explain how to validate features but do not d
 
 ## Canonical documents
 
+- [V1 Manual Testing Checklist](./design-v1-manual-testing-checklist.md)
 - [Voice Capture Testing Guide](./design-voice-capture-testing-guide.md)
 - [Voice Capture Test Results](./design-voice-capture-test-results.md)
 
