@@ -247,6 +247,24 @@ final class ItemRepositoryTests: XCTestCase {
         XCTAssertEqual(captures[0].content, "Active capture")
     }
 
+    func testFetchCaptureItemsPage() throws {
+        let base = Date()
+        let item1 = try repository.create(content: "Older")
+        let item2 = try repository.create(content: "Middle")
+        let item3 = try repository.create(content: "Newest")
+
+        item1.createdAt = base.addingTimeInterval(-30)
+        item2.createdAt = base.addingTimeInterval(-10)
+        item3.createdAt = base
+        try modelContext.save()
+
+        let firstPage = try repository.fetchCaptureItems(limit: 2, offset: 0)
+        XCTAssertEqual(firstPage.map(\.id), [item3.id, item2.id])
+
+        let secondPage = try repository.fetchCaptureItems(limit: 2, offset: 2)
+        XCTAssertEqual(secondPage.map(\.id), [item1.id])
+    }
+
     // MARK: - Update Tests
 
     func testUpdate() throws {

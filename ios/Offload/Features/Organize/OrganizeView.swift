@@ -6,7 +6,6 @@
 //  Simplified design for Plans and Lists tabs using Collections
 
 import SwiftUI
-import SwiftData
 
 
 struct OrganizeView: View {
@@ -34,14 +33,13 @@ struct OrganizeView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
-    @Query(sort: \Collection.createdAt, order: .reverse) private var allCollections: [Collection]
-
     @AppStorage("organize.scope") private var selectedScopeRaw = Scope.plans.rawValue
     @State private var showingCreate = false
     @State private var showingSettings = false
     @State private var showingAccount = false
     @State private var selectedCollection: Collection?
     @State private var errorPresenter = ErrorPresenter()
+    @State private var viewModel = OrganizeListViewModel()
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -50,10 +48,6 @@ struct OrganizeView: View {
 
     private var selectedScope: Scope {
         Scope(rawValue: selectedScopeRaw) ?? .plans
-    }
-
-    private var filteredCollections: [Collection] {
-        allCollections.filter { $0.isStructured == selectedScope.isStructured }
     }
 
     var body: some View {
@@ -106,7 +100,7 @@ struct OrganizeView: View {
                     .accessibilityLabel("Settings")
                 }
             }
-            .sheet(isPresented: $showingCreate) {
+            .sheet(isPresented: $showingCreate, onDismiss: refreshCollections) {
                 createSheet
             }
             .sheet(isPresented: $showingSettings) {
@@ -119,16 +113,27 @@ struct OrganizeView: View {
                 CollectionDetailView(collectionID: collection.id)
             }
         }
+        .onAppear {
+            loadScopeIfNeeded()
+        }
+        .onChange(of: selectedScopeRaw) { _, _ in
+            updateScope()
+        }
     }
 
     // MARK: - Collections Content
 
     @ViewBuilder
     private var collectionsContent: some View {
-        if filteredCollections.isEmpty {
-            emptyState
+        if viewModel.collections.isEmpty {
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding(.vertical, Theme.Spacing.sm)
+            } else {
+                emptyState
+            }
         } else {
-            ForEach(Array(filteredCollections.enumerated()), id: \.element.id) { index, collection in
+            ForEach(Array(viewModel.collections.enumerated()), id: \.element.id) { index, collection in
                 Button {
                     selectedCollection = collection
                 } label: {
@@ -136,6 +141,16 @@ struct OrganizeView: View {
                 }
                 .buttonStyle(.plain)
                 .cardButtonStyle()
+                .onAppear {
+                    if index == viewModel.collections.count - 1 {
+                        loadNextPage()
+                    }
+                }
+            }
+
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding(.vertical, Theme.Spacing.sm)
             }
 
             addCollectionButton
@@ -241,6 +256,35 @@ struct OrganizeView: View {
             } catch {
                 errorPresenter.present(error)
             }
+        }
+    }
+
+    private func loadScopeIfNeeded() {
+        guard !viewModel.hasLoaded else { return }
+        updateScope()
+    }
+
+    private func updateScope() {
+        do {
+            try viewModel.setScope(isStructured: selectedScope.isStructured, using: collectionRepository)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func loadNextPage() {
+        do {
+            try viewModel.loadNextPage(using: collectionRepository)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func refreshCollections() {
+        do {
+            try viewModel.refresh(using: collectionRepository)
+        } catch {
+            errorPresenter.present(error)
         }
     }
 }

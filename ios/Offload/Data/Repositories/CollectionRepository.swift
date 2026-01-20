@@ -69,6 +69,16 @@ final class CollectionRepository {
         return try modelContext.fetch(descriptor)
     }
 
+    func fetchPage(isStructured: Bool, limit: Int, offset: Int) throws -> [Collection] {
+        var descriptor = FetchDescriptor<Collection>(
+            predicate: #Predicate { $0.isStructured == isStructured },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = limit
+        descriptor.fetchOffset = offset
+        return try modelContext.fetch(descriptor)
+    }
+
     func searchByName(_ query: String) throws -> [Collection] {
         let lowercaseQuery = query.lowercased()
         let descriptor = FetchDescriptor<Collection>(

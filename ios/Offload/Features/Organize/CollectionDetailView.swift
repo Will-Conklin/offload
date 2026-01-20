@@ -23,13 +23,13 @@ struct CollectionDetailView: View {
     @Query(sort: \Tag.name) private var allTags: [Tag]
 
     @State private var collection: Collection?
-    @State private var items: [CollectionItem] = []
     @State private var showingAddItem = false
     @State private var showingEdit = false
     @State private var linkedCollection: Collection?
     @State private var editingItem: Item?
     @State private var tagPickerItem: Item?
     @State private var errorPresenter = ErrorPresenter()
+    @State private var viewModel = CollectionDetailViewModel()
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -52,7 +52,12 @@ struct CollectionDetailView: View {
 
                         // Items list
                         LazyVStack(spacing: Theme.Spacing.md) {
-                            ForEach(items) { collectionItem in
+                            if viewModel.items.isEmpty && viewModel.isLoading {
+                                ProgressView()
+                                    .padding(.vertical, Theme.Spacing.sm)
+                            }
+
+                            ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
                                 if let item = collectionItem.item {
                                     ItemRow(
                                         item: item,
@@ -68,6 +73,16 @@ struct CollectionDetailView: View {
                                         onError: { errorPresenter.present($0) }
                                     )
                                 }
+                                .onAppear {
+                                    if index == viewModel.items.count - 1 {
+                                        loadNextPage()
+                                    }
+                                }
+                            }
+
+                            if viewModel.isLoading && !viewModel.items.isEmpty {
+                                ProgressView()
+                                    .padding(.vertical, Theme.Spacing.sm)
                             }
                         }
                         .padding(.horizontal, Theme.Spacing.md)
@@ -116,7 +131,7 @@ struct CollectionDetailView: View {
         }
         .onChange(of: showingAddItem) { _, isPresented in
             if !isPresented {
-                loadItems()
+                refreshItems()
             }
         }
         .onAppear {
@@ -136,7 +151,7 @@ struct CollectionDetailView: View {
                 Spacer()
             }
 
-            Text("\(items.count) item\(items.count == 1 ? "" : "s")")
+            Text("\(viewModel.items.count) item\(viewModel.items.count == 1 ? "" : "s")")
                 .font(Theme.Typography.metadata)
                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
         }
@@ -158,22 +173,37 @@ struct CollectionDetailView: View {
         do {
             if let fetchedCollection = try collectionRepository.fetchById(collectionID) {
                 self.collection = fetchedCollection
-                loadItems()
+                try viewModel.setCollection(
+                    id: fetchedCollection.id,
+                    isStructured: fetchedCollection.isStructured,
+                    using: collectionItemRepository
+                )
             }
         } catch {
             errorPresenter.present(error)
         }
     }
 
-    private func loadItems() {
-        guard let collection = collection else { return }
-        self.items = collection.sortedItems
+    private func loadNextPage() {
+        do {
+            try viewModel.loadNextPage(using: collectionItemRepository)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func refreshItems() {
+        do {
+            try viewModel.refresh(using: collectionItemRepository)
+        } catch {
+            errorPresenter.present(error)
+        }
     }
 
     private func deleteItem(_ collectionItem: CollectionItem) {
         do {
             try collectionItemRepository.removeItemFromCollection(collectionItem)
-            loadItems()
+            viewModel.remove(collectionItem)
         } catch {
             errorPresenter.present(error)
         }

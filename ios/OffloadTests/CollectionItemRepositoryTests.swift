@@ -88,4 +88,69 @@ final class CollectionItemRepositoryTests: XCTestCase {
         XCTAssertEqual(positions?[item3.id], 1)
         XCTAssertEqual(positions?[item1.id], 2)
     }
+
+    func testFetchPageStructuredUsesPosition() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item1 = try itemRepository.create(content: "Item 1")
+        let item2 = try itemRepository.create(content: "Item 2")
+        let item3 = try itemRepository.create(content: "Item 3")
+
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item1.id,
+            collectionId: collection.id,
+            position: 2
+        )
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item2.id,
+            collectionId: collection.id,
+            position: 0
+        )
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item3.id,
+            collectionId: collection.id,
+            position: 1
+        )
+
+        let page = try collectionItemRepository.fetchPage(
+            collectionId: collection.id,
+            isStructured: true,
+            limit: 2,
+            offset: 0
+        )
+        XCTAssertEqual(page.map(\.itemId), [item2.id, item3.id])
+    }
+
+    func testFetchPageUnstructuredUsesItemCreatedAt() throws {
+        let collection = try collectionRepository.create(name: "List", isStructured: false)
+        let base = Date()
+        let item1 = try itemRepository.create(content: "Oldest")
+        let item2 = try itemRepository.create(content: "Middle")
+        let item3 = try itemRepository.create(content: "Newest")
+
+        item1.createdAt = base.addingTimeInterval(-30)
+        item2.createdAt = base.addingTimeInterval(-10)
+        item3.createdAt = base
+        try modelContext.save()
+
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item1.id,
+            collectionId: collection.id
+        )
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item2.id,
+            collectionId: collection.id
+        )
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item3.id,
+            collectionId: collection.id
+        )
+
+        let page = try collectionItemRepository.fetchPage(
+            collectionId: collection.id,
+            isStructured: false,
+            limit: 2,
+            offset: 0
+        )
+        XCTAssertEqual(page.map(\.itemId), [item1.id, item2.id])
+    }
 }
