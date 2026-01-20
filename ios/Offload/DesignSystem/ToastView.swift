@@ -59,6 +59,7 @@ struct ToastView: View {
         HStack(spacing: Theme.Spacing.sm) {
             AppIcon(name: toast.type.iconName, size: 18)
                 .foregroundStyle(toast.type.color(colorScheme, style: themeManager.currentStyle))
+                .accessibilityHidden(true)
 
             Text(toast.message)
                 .font(Theme.Typography.body)
@@ -76,6 +77,10 @@ struct ToastView: View {
             y: Theme.Shadows.offsetYUltraLight
         )
         .padding(.horizontal, Theme.Spacing.md)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(toast.message)
+        .accessibilityHint("Double tap to dismiss.")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
