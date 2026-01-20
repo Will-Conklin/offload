@@ -124,7 +124,7 @@ Users experience stress when ideas, tasks, or plans accumulate faster than they 
 - Works offline
 - Immediate persistence
 
-**Stored data (Item)**
+### Stored data (Item)
 
 - id (UUID)
 - content (String)
@@ -162,7 +162,7 @@ AI analyzes Items and returns suggested organization such as:
 - **List** (unstructured Collection) with Item entries
 - **Task** (standalone Item)
 
-**AI output requirements**
+#### AI output requirements
 
 - Strict structured JSON
 - Confidence score per suggestion
@@ -199,7 +199,7 @@ User must be able to:
 - `isStructured = false`
 - Items listed by creation time
 
-**Items**
+#### Items
 
 - Tasks are Items with `type = "task"`
 - Links are Items with `type = "link"` pointing to a Collection
@@ -326,29 +326,29 @@ Plans and Lists are implemented as Collections: `isStructured = true` for plans,
 
 ### ADHD-Focused Design Principles
 
-**Capture-first default**
+#### Capture-first default
 
 - Persistent capture control with immediate-save behavior
 - Organizing is optional and secondary
 
-**Undo over confirmation**
+#### Undo over confirmation
 
 - Destructive actions use undo banners/snackbars (not blocking modals)
 - Exception: batch destructive actions may use confirmation
 
-**Calm visual system**
+#### Calm visual system
 
 - Restrained palette: base + primary accent + secondary accent
 - Accessible contrast ratios
 - Consistent spacing tokens to reduce visual noise
 
-**Predictable navigation**
+#### Predictable navigation
 
 - Core areas one tap away via main tab shell
 - Capture uses sheets; editing uses full screens
 - Swipe actions mirrored with visible buttons
 
-**Gentle organization prompts**
+#### Gentle organization prompts
 
 - Non-blocking chips/cards (e.g., "Ready to organize")
 - Snooze/dismiss options on all prompts
@@ -365,12 +365,12 @@ Plans and Lists are implemented as Collections: `isStructured = true` for plans,
 
 ## 13. Risks & mitigations
 
-| Risk | Mitigation |
-|---|---|
-| AI cost spikes | Hard per-user caps |
-| Misclassification | Review screen + confidence |
-| User distrust | Raw text preserved |
-| Overbuilding | Strict V1 scope lock |
+| Risk              | Mitigation                   |
+| ----------------- | ---------------------------- |
+| AI cost spikes    | Hard per-user caps           |
+| Misclassification | Review screen + confidence   |
+| User distrust     | Raw text preserved           |
+| Overbuilding      | Strict V1 scope lock         |
 
 ---
 
