@@ -146,6 +146,39 @@ final class PerformanceBenchmarkTests: XCTestCase {
         }
     }
 
+    private func benchmarkFetchStarred(count: Int) throws {
+        let container = try makeContainer()
+        let context = container.mainContext
+        let repository = ItemRepository(modelContext: context)
+        try seedItems(count: count, modelContext: context) { item, index in
+            item.isStarred = index.isMultiple(of: 4)
+        }
+
+        let options = XCTMeasureOptions()
+        options.iterationCount = 3
+        measure(metrics: [XCTClockMetric()], options: options) {
+            XCTAssertNoThrow(try repository.fetchStarred())
+        }
+    }
+
+    private func benchmarkFetchWithFollowUp(count: Int) throws {
+        let container = try makeContainer()
+        let context = container.mainContext
+        let repository = ItemRepository(modelContext: context)
+        let followUpDate = Date(timeIntervalSince1970: 0)
+        try seedItems(count: count, modelContext: context) { item, index in
+            if index.isMultiple(of: 7) {
+                item.followUpDate = followUpDate
+            }
+        }
+
+        let options = XCTMeasureOptions()
+        options.iterationCount = 3
+        measure(metrics: [XCTClockMetric()], options: options) {
+            XCTAssertNoThrow(try repository.fetchWithFollowUp())
+        }
+    }
+
     func testFetchAllPerformance100Items() throws {
         try benchmarkFetchAll(count: 100)
     }
