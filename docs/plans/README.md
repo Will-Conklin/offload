@@ -6,19 +6,15 @@ owners:
   - Offload
 applies_to:
   - Offload
-last_updated: 2026-01-17
+last_updated: 2026-01-19
 related:
-  - plan-master-plan
-  - plan-view-decomposition
-  - plan-pagination-implementation
-  - plan-repository-pattern-consistency
-  - plan-tag-relationship-refactor
-  - plan-error-handling-improvements
+  - plan-v1-roadmap
 structure_notes:
-  - "Section order: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
-  - "Keep top-level sections: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
+  - "Section order: Purpose; Authority; What belongs here; What does not belong
+    here; Canonical documents; Naming."
+  - "Keep top-level sections: Purpose; Authority; What belongs here; What does
+    not belong here; Canonical documents; Naming."
 ---
-
 
 # Plans
 
@@ -28,7 +24,8 @@ Define sequencing, milestones, and execution strategy for approved scope.
 
 ## Authority
 
-Below design. Plans describe WHEN and HOW work is executed; they cannot introduce requirements, decisions, or architecture changes.
+Below design. Plans describe WHEN and HOW work is executed; they cannot
+introduce requirements, decisions, or architecture changes.
 
 ## What belongs here
 
@@ -45,24 +42,18 @@ Below design. Plans describe WHEN and HOW work is executed; they cannot introduc
 
 ## Canonical documents
 
-- ⚠️ **[Master Plan Reconciliation (Jan 19, 2026)](./RECONCILIATION-2026-01-19.md)** - READ THIS FIRST
-- [Offload Master Implementation Plan](./plan-master-plan.md) - ⚠️ Requires updates (see reconciliation)
-- [View Decomposition Plan](./plan-view-decomposition.md)
-- [Pagination Implementation Plan](./plan-pagination-implementation.md)
-- [Repository Pattern Consistency Plan](./plan-repository-pattern-consistency.md)
-- [Tag Relationship Refactor Plan](./plan-tag-relationship-refactor.md)
-- [Error Handling Improvements Plan](./plan-error-handling-improvements.md)
+### Active
 
-### ⚠️ Important Note (Jan 19, 2026)
+- [Offload v1 Roadmap](./plan-v1-roadmap.md) - Single source of truth for v1
 
-The master plan was created on Jan 9-10, but major changes occurred on Jan 13 that were not reflected in the plan. See [RECONCILIATION-2026-01-19.md](./RECONCILIATION-2026-01-19.md) for details on:
-- UI direction change (flat design vs planned glassmorphism)
-- Data model simplification (4 models instead of 13+)
-- Repository pattern status (not complete as claimed)
-- Error handling status (21 try? instances remain)
-- Realistic timeline to v1 (5 weeks, not 8-10)
+### Archived
+
+All other plans have been archived to `_archived/`. See
+[archived plans](./_archived/README.md) for historical context.
 
 ## Naming
 
-- Use kebab-case with a concise feature or outcome, for example `plan-error-handling-improvements.md`.
-- Move completed or superseded plans to `plans/_archived/` without renaming.
+- Use kebab-case with a concise feature or outcome, for example
+  `plan-error-handling-improvements.md`.
+- Move completed or superseded plans to `plans/_archived/` with
+  `plan-archived-` prefix.

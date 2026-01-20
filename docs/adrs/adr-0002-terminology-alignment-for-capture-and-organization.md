@@ -8,7 +8,7 @@ applies_to:
   - terminology
   - product
   - documentation
-last_updated: 2026-01-03
+last_updated: 2026-01-19
 related: []
 structure_notes:
   - "Section order: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
@@ -33,27 +33,41 @@ Early prototypes and documentation used multiple names for the same concepts. As
 
 ## Decision
 
-Adopt the following canonical terms and use them consistently:
+Adopt the following canonical terms and use them consistently.
 
-| Canonical term | Rationale |
-| --- | --- |
-| `CaptureEntry` | Aligns with “capture first” positioning and matches the SwiftData model that stores raw input. |
-| `HandOffRequest` / `HandOffRun` | Distinguishes user intent (request) from execution attempts (runs) in the workflow. |
-| `Suggestion` / `SuggestionDecision` | Clarifies that AI output is advisory and that user responses are explicit decisions. |
-| `Placement` | Represents where accepted suggestions land without overloading “result” terminology. |
-| `Plan` | Better reflects lightweight planning over heavyweight project management. |
-| `ListEntity` / `ListItem` | Avoids ambiguity with SwiftUI Lists and conveys hierarchy between container and entry. |
-| `CommunicationItem` | Name already matches its purpose (calls, emails, messages). |
+> **Note (Jan 19, 2026):** The January 13, 2026 UI overhaul consolidated the
+> data model significantly. Many terms below are now **superseded** - see the
+> updated table for current status.
 
-Unchanged terms retained for consistency and completeness:
+### Current v1 terminology (Jan 2026)
 
-| Canonical term | Current usage | Rationale |
-| --- | --- | --- |
-| `Category` | Stable | Describes lightweight grouping for tasks; no conflicting aliases observed. |
-| `Tag` | Stable | Common, user-friendly label semantics that align with many productivity tools. |
-| `Task` | Stable | Represents actionable items; already aligned with capture-first language. |
-| `VoiceRecordingService` | Stable | Accurately reflects responsibility for capture via audio; no competing names. |
-| `CaptureWorkflowService` | Stable | Matches the workflow orchestration role already referenced across docs. |
+| Term             | Status   | Notes                                          |
+| ---------------- | -------- | ---------------------------------------------- |
+| `Item`           | Active   | Unified model for captures, tasks, and links   |
+| `Collection`     | Active   | Unified container for plans and lists          |
+| `CollectionItem` | Active   | Join table for Item ↔ Collection relationship  |
+| `Tag`            | Active   | User-defined labels stored on `Item.tags`      |
+| `Plan`           | UI term  | Collection with `isStructured = true`          |
+| `List`           | UI term  | Collection with `isStructured = false`         |
+
+### Superseded terminology (pre-consolidation)
+
+| Original term                      | Replaced by                           |
+| ---------------------------------- | ------------------------------------- |
+| `CaptureEntry`                     | `Item` with `type = nil`              |
+| `ListEntity` / `ListItem`          | `Collection` / `CollectionItem`       |
+| `CommunicationItem`                | Removed (feature cut)                 |
+| `Category`                         | Removed (unused)                      |
+| `HandOffRequest` / `HandOffRun`    | Deferred to post-v1 (AI features)     |
+| `Suggestion` / `SuggestionDecision`| Deferred to post-v1 (AI features)     |
+| `Placement`                        | Deferred to post-v1 (AI features)     |
+
+### Stable terms (unchanged)
+
+| Term                   | Status | Notes                                           |
+| ---------------------- | ------ | ----------------------------------------------- |
+| `Tag`                  | Stable | User-friendly label semantics                   |
+| `VoiceRecordingService`| Stable | Capture via audio                               |
 
 ## Consequences
 
@@ -76,6 +90,7 @@ Unchanged terms retained for consistency and completeness:
 
 ## Revision History
 
-| Version | Date | Notes |
-|---------|------|-------|
-| 1.0 | 2026-01-03 | Initial decision |
+| Version | Date       | Notes                                              |
+| ------- | ---------- | -------------------------------------------------- |
+| 1.0     | 2026-01-03 | Initial decision                                   |
+| 1.1     | 2026-01-19 | Updated for Jan 13 data model consolidation        |

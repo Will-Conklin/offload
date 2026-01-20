@@ -1,3 +1,4 @@
+---
 # File: docs/index.yaml
 # Role: Documentation navigation index
 # Authority: Navigation only (not source of truth)
@@ -28,13 +29,13 @@ sections:
         title: ADRs
         path: adrs/README.md
       - id: adr-0001-technology-stack-and-architecture
-        title: adr-0001: Technology Stack and Architecture
+        title: "adr-0001: Technology Stack and Architecture"
         path: adrs/adr-0001-technology-stack-and-architecture.md
       - id: adr-0002-terminology-alignment-for-capture-and-organization
-        title: adr-0002: Terminology Alignment for Capture and Organization
+        title: "adr-0002: Terminology Alignment"
         path: adrs/adr-0002-terminology-alignment-for-capture-and-organization.md
       - id: adr-0003-adhd-focused-ux-ui-guardrails
-        title: adr-0003: ADHD-Focused UX/UI Guardrails
+        title: "adr-0003: ADHD-Focused UX/UI Guardrails"
         path: adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
   - id: prds
     title: Product Requirements
@@ -73,11 +74,11 @@ sections:
         path: plans/_archived/README.md
         archived: true
       - id: plan-archived-brain-dump-model
-        title: Plan: Capture Event-Sourced Model
+        title: "Plan: Capture Event-Sourced Model"
         path: plans/_archived/plan-archived-brain-dump-model.md
         archived: true
       - id: plan-archived-consolidated-implementation-plan
-        title: Consolidated Implementation Plan: Offload iOS App
+        title: "Consolidated Implementation Plan: Offload iOS App"
         path: plans/_archived/plan-archived-consolidated-implementation-plan.md
         archived: true
       - id: plan-archived-polish-phase
@@ -92,24 +93,33 @@ sections:
         title: Remediation Progress Tracking
         path: plans/_archived/plan-archived-remediation-tracking.md
         archived: true
-      - id: plan-error-handling-improvements
+      - id: plan-v1-roadmap
+        title: Offload v1 Roadmap
+        path: plans/plan-v1-roadmap.md
+      - id: plan-archived-error-handling-improvements
         title: Error Handling Improvements Plan
-        path: plans/plan-error-handling-improvements.md
-      - id: plan-master-plan
+        path: plans/_archived/plan-archived-error-handling-improvements.md
+        archived: true
+      - id: plan-archived-master-plan
         title: Offload Master Implementation Plan
-        path: plans/plan-master-plan.md
-      - id: plan-pagination-implementation
+        path: plans/_archived/plan-archived-master-plan.md
+        archived: true
+      - id: plan-archived-pagination-implementation
         title: Pagination Implementation Plan
-        path: plans/plan-pagination-implementation.md
-      - id: plan-repository-pattern-consistency
+        path: plans/_archived/plan-archived-pagination-implementation.md
+        archived: true
+      - id: plan-archived-repository-pattern-consistency
         title: Repository Pattern Consistency Plan
-        path: plans/plan-repository-pattern-consistency.md
-      - id: plan-tag-relationship-refactor
+        path: plans/_archived/plan-archived-repository-pattern-consistency.md
+        archived: true
+      - id: plan-archived-tag-relationship-refactor
         title: Tag Relationship Refactor Plan
-        path: plans/plan-tag-relationship-refactor.md
-      - id: plan-view-decomposition
+        path: plans/_archived/plan-archived-tag-relationship-refactor.md
+        archived: true
+      - id: plan-archived-view-decomposition
         title: View Decomposition Plan
-        path: plans/plan-view-decomposition.md
+        path: plans/_archived/plan-archived-view-decomposition.md
+        archived: true
   - id: research
     title: Research
     description: Exploratory work, spikes, benchmarks, reviews.
@@ -121,7 +131,7 @@ sections:
         title: Reviews
         path: research/reviews/README.md
       - id: research-2026-01-04-main-branch-review
-        title: Code Review: Main Branch - Comprehensive Analysis
+        title: "Code Review: Main Branch - Comprehensive Analysis"
         path: research/reviews/research-2026-01-04-main-branch-review.md
       - id: research-adhd-ux-ui
         title: ADHD-First UX and UI Guidance for Offload

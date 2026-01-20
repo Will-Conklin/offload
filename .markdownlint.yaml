@@ -1,0 +1,6 @@
+# File: .markdownlint.yaml
+# Role: Markdown lint configuration
+# Authority: Tooling configuration
+# Governed by: AGENTS.md
+# Additional instructions: Disable only line length rule (MD013).
+MD013: false

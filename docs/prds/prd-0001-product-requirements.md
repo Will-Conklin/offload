@@ -6,12 +6,12 @@ owners:
   - will-conklin
 applies_to:
   - product
-last_updated: 2026-01-09
+last_updated: 2026-01-19
 related:
   - adr-0001-technology-stack-and-architecture
   - adr-0002-terminology-alignment-for-capture-and-organization
   - adr-0003-adhd-focused-ux-ui-guardrails
-  - plan-master-plan
+  - plan-v1-roadmap
 structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals (V1); 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model (V1); 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
   - "Keep the top-level section outline intact."
@@ -19,8 +19,8 @@ structure_notes:
 
 # Offload — V1 Product Requirements Document (PRD)
 
-**Version:** 1.2
-**Date:** 2026-01-09
+**Version:** 1.3
+**Date:** 2026-01-19
 **Status:** Active
 **Owner:** Will Conklin
 
@@ -61,7 +61,7 @@ Users experience stress when ideas, tasks, or plans accumulate faster than they 
 - No automatic task creation without confirmation
 - No calendar scheduling or reminders
 - No collaboration or sharing
-- No cross-platform support (iPhone only; no iPad in v1)
+- No cross-platform support (iOS only; iPhone and iPad)
 - No multi-device sync in v1
 - No complex onboarding flows
 
@@ -376,40 +376,44 @@ Plans and Lists are implemented as Collections: `isStructured = true` for plans,
 
 ## 14. Implementation tracking
 
-> **Note:** Detailed implementation status is tracked in the [Master Plan](../plans/plan-master-plan.md), which is the single source of truth for progress.
+> **Note:** Detailed implementation status is tracked in the
+> [v1 Roadmap](../plans/plan-v1-roadmap.md), which is the single source of
+> truth for progress.
 
-### High-level phases
+### Current status (Jan 19, 2026)
 
-1. **Core Infrastructure** — SwiftData models, repositories, capture foundation
-2. **Critical Remediation** — Bug fixes, error handling, architecture improvements
-3. **UI/UX Modernization** — Design system, component library, ADHD enhancements
-4. **AI Integration** — Hand-off flow, backend proxy, usage limits
-5. **Release** — TestFlight beta, App Store submission
+- ✅ **Core Infrastructure** — SwiftData models, repositories, capture foundation
+- ✅ **UI/UX Foundation** — Flat design system (Elijah theme), ADHD-focused UX
+- ✅ **Repository Pattern** — Environment injection, all views use repositories
+- ⏳ **Testing & Polish** — Manual testing, performance benchmarks
+- ⏸️ **AI Integration** — Deferred to post-v1
 
-See [plan-master-plan.md](../plans/plan-master-plan.md) for current status and detailed task breakdown.
+See [plan-v1-roadmap.md](../plans/plan-v1-roadmap.md) for current status.
 
 ---
 
 ## 15. Open decisions (tracked)
 
-> **Note:** See [plan-master-plan.md](../plans/plan-master-plan.md) decision log for resolution status.
+> **Note:** See [plan-v1-roadmap.md](../plans/plan-v1-roadmap.md) decision log
+> for resolution status.
 
-| Decision | Status | Notes |
-|----------|--------|-------|
-| Final app name | Decided | "Offload" |
-| v1 scope | Decided | Manual-only; AI in post-v1 |
-| Platform | Decided | iPhone only; no iPad in v1 |
-| AI provider/model | Open | Evaluate options in AI integration phase (post-v1) |
-| Paid tier soft cap numbers | Open | Determine based on cost analysis (post-v1) |
-| Sign in with Apple | Deferred | Not required for local-only v1 |
-| Glassmorphism implementation level | Open | Due Jan 15, 2026 |
+| Decision                   | Status  | Notes                                     |
+| -------------------------- | ------- | ----------------------------------------- |
+| Final app name             | Decided | "Offload"                                 |
+| v1 scope                   | Decided | Manual-only; AI in post-v1                |
+| Platform                   | Decided | iOS (iPhone and iPad)                     |
+| UI direction               | Decided | Flat design (Elijah theme) - Jan 13, 2026 |
+| AI provider/model          | Decided | Deferred to post-v1                       |
+| Paid tier soft cap numbers | Decided | Deferred to post-v1                       |
+| Sign in with Apple         | Decided | Not required for local-only v1            |
 
 ---
 
 ## 16. Revision history
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2025-12-30 | Initial PRD |
-| 1.1 | 2026-01-09 | Terminology alignment (adr-0002), ADHD UX guardrails (adr-0003), updated data model, linked to master-plan |
-| 1.2 | 2026-01-09 | Clarified v1 scope (manual-only, iPhone-only), split success metrics, marked AI/backend as post-v1, added Speech framework details |
+| Version | Date       | Changes                                                                              |
+| ------- | ---------- | ------------------------------------------------------------------------------------ |
+| 1.0     | 2025-12-30 | Initial PRD                                                                          |
+| 1.1     | 2026-01-09 | Terminology alignment, ADHD UX guardrails, updated data model                        |
+| 1.2     | 2026-01-09 | Clarified v1 scope (manual-only), split success metrics, marked AI as post-v1        |
+| 1.3     | 2026-01-19 | Updated platform to iPhone+iPad, resolved open decisions, linked to v1-roadmap       |
