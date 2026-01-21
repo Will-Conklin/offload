@@ -6,7 +6,7 @@ owners:
   - Offload
 applies_to:
   - agents
-last_updated: 2026-01-17
+last_updated: 2026-01-19
 related: []
 structure_notes:
   - "Top-level section order: Scope; Documentation Authority Model (MANDATORY); Documentation Safety Rules; Structural Rules; Expected Agent Behavior."

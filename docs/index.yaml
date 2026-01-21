@@ -24,6 +24,7 @@ sections:
         path: reference/testing/reference-test-runtime-baselines.md
   - id: adrs
     title: Architecture Decisions
+    description: Architecture and product decisions with rationale.
     documents:
       - id: adrs-readme
         title: ADRs
@@ -39,6 +40,7 @@ sections:
         path: adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
   - id: prds
     title: Product Requirements
+    description: Product requirements, scope, goals, and success metrics.
     documents:
       - id: prds-readme
         title: PRDs

@@ -6,7 +6,7 @@ owners:
   - Offload
 applies_to:
   - reviews
-last_updated: 2026-01-04
+last_updated: 2026-01-20
 related:
   - research-2026-01-04-main-branch-review
 structure_notes:
@@ -41,5 +41,5 @@ Research-level authority. Reviews are informational and must not define requirem
 
 ## Naming
 
-- Use `YYYY-MM-DD-<scope>-review.md` for consistency.
+- Use `research-YYYY-MM-DD-<scope>-review.md` for consistency.
 - Keep scope concise and stable.
