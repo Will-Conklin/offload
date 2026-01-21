@@ -11,8 +11,8 @@ related:
   - design-voice-capture-testing-guide
   - design-voice-capture-test-results
 structure_notes:
-  - "Section order: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
-  - "Keep top-level sections: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
+  - "Section order: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Template; Naming."
+  - "Keep top-level sections: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Template; Naming."
 ---
 
 
@@ -43,6 +43,53 @@ Below prd. Design defines HOW approved requirements are implemented; it cannot s
 
 - [Voice Capture Testing Guide](./testing/design-voice-capture-testing-guide.md)
 - [Voice Capture Test Results](./testing/design-voice-capture-test-results.md)
+
+## Template
+
+```markdown
+---
+id: design-{feature-name}
+type: design
+status: active
+owners:
+  - {name}
+applies_to:
+  - {area}
+last_updated: YYYY-MM-DD
+related:
+  - prd-0001-{feature-name}
+  - adr-0001-{decision-title}
+structure_notes:
+  - "Section order: Overview; Architecture; Data Flow; UI Behavior; Testing; Constraints."
+---
+
+# Design: {Feature Name}
+
+## Overview
+
+{Brief description of the technical design and its relationship to approved
+requirements}
+
+## Architecture
+
+{High-level architecture, components, and their interactions}
+
+## Data Flow
+
+{How data moves through the system}
+
+## UI Behavior
+
+{Detailed UI behavior specifications and states}
+
+## Testing
+
+{Testing approach and validation steps}
+
+## Constraints
+
+{Technical constraints derived from ADRs or PRDs}
+```
 
 ## Naming
 

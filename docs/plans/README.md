@@ -11,9 +11,9 @@ related:
   - plan-v1-roadmap
 structure_notes:
   - "Section order: Purpose; Authority; What belongs here; What does not belong
-    here; Canonical documents; Naming."
+    here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; What belongs here; What does
-    not belong here; Canonical documents; Naming."
+    not belong here; Canonical documents; Template; Naming."
 ---
 
 # Plans
@@ -50,6 +50,70 @@ introduce requirements, decisions, or architecture changes.
 
 All other plans have been archived to `_archived/`. See
 [archived plans](./_archived/README.md) for historical context.
+
+## Template
+
+```markdown
+---
+id: plan-{feature-name}
+type: plan
+status: active
+owners:
+  - {name}
+applies_to:
+  - {area}
+last_updated: YYYY-MM-DD
+related:
+  - prd-0001-{feature-name}
+structure_notes:
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+---
+
+# Plan: {Feature Name}
+
+## Overview
+
+{Brief description of what this plan covers and its relationship to approved
+scope}
+
+## Goals
+
+- {Goal 1}
+- {Goal 2}
+
+## Phases
+
+### Phase 1: {Phase Name}
+
+**Status:** Not Started | In Progress | Completed
+
+- [ ] Task 1
+- [ ] Task 2
+
+### Phase 2: {Phase Name}
+
+**Status:** Not Started | In Progress | Completed
+
+- [ ] Task 1
+- [ ] Task 2
+
+## Dependencies
+
+- {Dependency 1}
+- {Dependency 2}
+
+## Risks
+
+| Risk   | Impact | Mitigation   |
+| ------ | ------ | ------------ |
+| {risk} | {H/M/L} | {mitigation} |
+
+## Progress
+
+| Date       | Update              |
+| ---------- | ------------------- |
+| YYYY-MM-DD | {progress update}   |
+```
 
 ## Naming
 
