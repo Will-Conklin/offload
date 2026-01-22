@@ -82,6 +82,18 @@ sections:
       - id: design-readme
         title: Design
         path: design/README.md
+      - id: design-persistent-bottom-tab-bar
+        title: Persistent Bottom Tab Bar Design
+        path: design/design-persistent-bottom-tab-bar.md
+      - id: design-convert-plans-lists
+        title: Convert Plans ↔ Lists Design
+        path: design/design-convert-plans-lists.md
+      - id: design-drag-drop-ordering
+        title: Drag & Drop Ordering Design
+        path: design/design-drag-drop-ordering.md
+      - id: design-item-search-tags
+        title: Item Search by Text or Tag Design
+        path: design/design-item-search-tags.md
       - id: design-testing-readme
         title: Testing
         path: design/testing/README.md

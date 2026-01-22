@@ -11,6 +11,10 @@ related:
   - design-voice-capture-testing-guide
   - design-voice-capture-test-results
   - design-context-aware-ci-pipeline
+  - design-persistent-bottom-tab-bar
+  - design-convert-plans-lists
+  - design-drag-drop-ordering
+  - design-item-search-tags
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
@@ -57,6 +61,10 @@ draft → active → deprecated
 - [Voice Capture Testing Guide](./testing/design-voice-capture-testing-guide.md)
 - [Voice Capture Test Results](./testing/design-voice-capture-test-results.md)
 - [Context-Aware CI Pipeline Design](./design-context-aware-ci-pipeline.md)
+- [Persistent Bottom Tab Bar Design](./design-persistent-bottom-tab-bar.md)
+- [Convert Plans ↔ Lists Design](./design-convert-plans-lists.md)
+- [Drag & Drop Ordering Design](./design-drag-drop-ordering.md)
+- [Item Search by Text or Tag Design](./design-item-search-tags.md)
 
 ## Template
 
