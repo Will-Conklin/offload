@@ -13,6 +13,8 @@ related:
   - adr-0003-adhd-focused-ux-ui-guardrails
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
   - adr-0005-collection-ordering-and-hierarchy-persistence
+  - adr-0006-ci-provider-selection
+  - adr-0007-context-aware-ci-workflow-strategy
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
@@ -62,6 +64,8 @@ proposed → accepted → superseded | deprecated
 - [adr-0003: ADHD-Focused UX/UI Guardrails](./adr-0003-adhd-focused-ux-ui-guardrails.md)
 - [adr-0004: Tab Bar Navigation Shell and Offload CTA](./adr-0004-tab-bar-navigation-shell-and-offload-cta.md)
 - [adr-0005: Collection Ordering and Hierarchy Persistence](./adr-0005-collection-ordering-and-hierarchy-persistence.md)
+- [adr-0006: CI Provider Selection](./adr-0006-ci-provider-selection.md)
+- [adr-0007: Context-Aware CI Workflow Strategy](./adr-0007-context-aware-ci-workflow-strategy.md)
 
 ## Template
 

@@ -44,6 +44,12 @@ sections:
       - id: adr-0005-collection-ordering-and-hierarchy-persistence
         title: "adr-0005: Collection Ordering and Hierarchy Persistence"
         path: adrs/adr-0005-collection-ordering-and-hierarchy-persistence.md
+      - id: adr-0006-ci-provider-selection
+        title: "adr-0006: CI Provider Selection"
+        path: adrs/adr-0006-ci-provider-selection.md
+      - id: adr-0007-context-aware-ci-workflow-strategy
+        title: "adr-0007: Context-Aware CI Workflow Strategy"
+        path: adrs/adr-0007-context-aware-ci-workflow-strategy.md
   - id: prds
     title: Product Requirements
     description: Product requirements, scope, goals, and success metrics.
@@ -66,6 +72,9 @@ sections:
       - id: prd-0005-item-search-tags
         title: Offload — V1.1 Item Search by Text or Tag PRD
         path: prds/prd-0005-item-search-tags.md
+      - id: prd-0006-context-aware-ci-pipeline
+        title: Offload — V1 Context-Aware CI Pipeline PRD
+        path: prds/prd-0006-context-aware-ci-pipeline.md
   - id: design
     title: Design
     description: Technical design and implementation guidance.
@@ -98,9 +107,6 @@ sections:
       - id: plan-logging-implementation
         title: "Plan: Comprehensive Logging Implementation (Proposed)"
         path: plans/plan-logging-implementation.md
-      - id: plan-context-aware-ci-pipeline
-        title: "Plan: Context-Aware CI Pipeline (Proposed)"
-        path: plans/plan-context-aware-ci-pipeline.md
       - id: plans-archived-readme
         title: Archived Plans
         path: plans/_archived/README.md
