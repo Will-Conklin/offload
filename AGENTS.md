@@ -41,9 +41,9 @@ open ios/Offload.xcodeproj    # Open in Xcode
 - ALWAYS clean up merged branches
 - ALWAYS label pull requests with appropriate labels
 - ALWAYS keep documentation up to date
-- ALWAYS run markdownlint prior to committing documentation changes
+- ALWAYS run markdownlint prior to committing documentation changes, use `--fix` to auto-fix issues
 - ALWAYS run yamllint prior to committing yaml changes
-- ALWAYS use conventional commit syntax
+- ALWAYS commit atomic commits using conventional commit syntax
 - NEVER use markdown files to drive processes or store configuration that scripts parse
 
 ## Documentation Authority
