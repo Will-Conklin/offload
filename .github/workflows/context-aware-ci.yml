@@ -66,10 +66,10 @@ jobs:
               if ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
                 git fetch origin "${BASE_SHA}" --depth=1
               fi
-              changed_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}")
+              changed_files=$(git diff --name-only "${BASE_SHA}..${HEAD_SHA}")
             else
               git fetch origin "${DEFAULT_BRANCH}" --depth=1
-              changed_files=$(git diff --name-only "origin/${DEFAULT_BRANCH}...${HEAD_SHA}")
+              changed_files=$(git diff --name-only "origin/${DEFAULT_BRANCH}..${HEAD_SHA}")
             fi
           fi
 
