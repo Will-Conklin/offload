@@ -48,6 +48,18 @@ sections:
       - id: prd-0001-product-requirements
         title: Offload — V1 Product Requirements Document (PRD)
         path: prds/prd-0001-product-requirements.md
+      - id: prd-0002-persistent-bottom-tab-bar
+        title: Offload — V1.1 Persistent Bottom Tab Bar PRD
+        path: prds/prd-0002-persistent-bottom-tab-bar.md
+      - id: prd-0003-convert-plans-lists
+        title: Offload — V1.1 Convert Plans ↔ Lists PRD
+        path: prds/prd-0003-convert-plans-lists.md
+      - id: prd-0004-drag-drop-ordering
+        title: Offload — V1.1 Drag & Drop Ordering PRD
+        path: prds/prd-0004-drag-drop-ordering.md
+      - id: prd-0005-item-search-tags
+        title: Offload — V1.1 Item Search by Text or Tag PRD
+        path: prds/prd-0005-item-search-tags.md
   - id: design
     title: Design
     description: Technical design and implementation guidance.
@@ -80,18 +92,6 @@ sections:
       - id: plan-logging-implementation
         title: "Plan: Comprehensive Logging Implementation (Proposed)"
         path: plans/plan-logging-implementation.md
-      - id: plan-bottom-tab-bar-offload-cta
-        title: "Plan: Persistent Bottom Tab Bar & Offload CTA (Proposed)"
-        path: plans/plan-bottom-tab-bar-offload-cta.md
-      - id: plan-convert-plan-list
-        title: "Plan: Convert Plans ↔ Lists (Proposed)"
-        path: plans/plan-convert-plan-list.md
-      - id: plan-drag-drop-collection-items
-        title: "Plan: Drag & Drop Ordering and Hierarchy (Proposed)"
-        path: plans/plan-drag-drop-collection-items.md
-      - id: plan-search-items-tags
-        title: "Plan: Search Items by Text or Tag (Proposed)"
-        path: plans/plan-search-items-tags.md
       - id: plans-archived-readme
         title: Archived Plans
         path: plans/_archived/README.md
