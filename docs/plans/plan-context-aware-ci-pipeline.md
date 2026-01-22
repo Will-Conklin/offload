@@ -33,33 +33,33 @@ run override, and a scheduled full CI run per PRD-0006.
 
 ### Phase 1: Workflow Skeleton
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add workflow triggers for `pull_request`, `workflow_dispatch` with
+- [x] Add workflow triggers for `pull_request`, `workflow_dispatch` with
       `full_run`, and `schedule`.
-- [ ] Configure concurrency to avoid redundant runs on the same ref.
-- [ ] Establish shared environment/outputs for lane flags.
+- [x] Configure concurrency to avoid redundant runs on the same ref.
+- [x] Establish shared environment/outputs for lane flags.
 
 ### Phase 2: Change Detection
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Implement `detect-changes` job and lane outputs (`docs_changed`,
+- [x] Implement `detect-changes` job and lane outputs (`docs_changed`,
       `docs_only`, `ios`, `backend`, `scripts`, `full_run`).
-- [ ] Align path rules with the design doc (docs/**, root *.md, ios/**,
+- [x] Align path rules with the design doc (docs/**, root *.md, ios/**,
       backend/**, scripts/**).
 
 ### Phase 3: Lane Jobs
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add docs lane (markdownlint + doc checks).
-- [ ] Add iOS, backend, scripts lanes with existing tooling.
-- [ ] Gate lanes with `if:` using change outputs and full_run.
+- [x] Add docs lane (markdownlint + doc checks).
+- [x] Add iOS, backend, scripts lanes with existing tooling.
+- [x] Gate lanes with `if:` using change outputs and full_run.
 
 ### Phase 4: Validation
 
-**Status:** Not Started
+**Status:** In Progress
 
 - [ ] Verify docs-only, iOS-only, mixed, manual full run, and scheduled run
       scenarios.
@@ -85,3 +85,4 @@ run override, and a scheduled full CI run per PRD-0006.
 | Date       | Update              |
 | ---------- | ------------------- |
 | 2026-01-22 | Draft plan created. |
+| 2026-01-22 | Implemented workflow gating, lanes, and docs reference. |

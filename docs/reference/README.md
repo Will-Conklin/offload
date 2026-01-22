@@ -52,6 +52,7 @@ draft → active → deprecated
 ## Canonical documents
 
 - [Test Runtime Baselines](./testing/reference-test-runtime-baselines.md)
+- [CI Path Filters and Lane Triggers](./ci/reference-ci-path-filters.md)
 
 ## Template
 

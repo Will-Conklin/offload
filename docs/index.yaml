@@ -19,6 +19,9 @@ sections:
       - id: reference-testing-readme
         title: Testing
         path: reference/testing/README.md
+      - id: reference-ci-path-filters
+        title: CI Path Filters and Lane Triggers
+        path: reference/ci/reference-ci-path-filters.md
       - id: reference-test-runtime-baselines
         title: Test Runtime Baselines
         path: reference/testing/reference-test-runtime-baselines.md

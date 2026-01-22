@@ -1,0 +1,200 @@
+# File: .github/workflows/context-aware-ci.yml
+# Role: Context-aware CI entry point with lane gating
+# Authority: Workflow orchestration
+# Governed by: AGENTS.md
+# Additional instructions: Keep lane conditions aligned with docs/reference/ci/reference-ci-path-filters.md
+
+name: Context-Aware CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      full_run:
+        description: Run the full CI suite
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: '30 4 * * *'
+
+concurrency:
+  group: context-aware-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    name: Detect change lanes
+    runs-on: ubuntu-latest
+    outputs:
+      docs_changed: ${{ steps.classify.outputs.docs_changed }}
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+      ios_changed: ${{ steps.classify.outputs.ios_changed }}
+      backend_changed: ${{ steps.classify.outputs.backend_changed }}
+      scripts_changed: ${{ steps.classify.outputs.scripts_changed }}
+      full_run: ${{ steps.classify.outputs.full_run }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Classify changed paths
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          FULL_RUN_INPUT: ${{ inputs.full_run }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          full_run=false
+          if [[ "${EVENT_NAME}" == "schedule" ]]; then
+            full_run=true
+          fi
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" && "${FULL_RUN_INPUT}" == "true" ]]; then
+            full_run=true
+          fi
+
+          changed_files=""
+          if [[ "${full_run}" == "false" ]]; then
+            if [[ "${EVENT_NAME}" == "pull_request" ]]; then
+              if [[ -z "${BASE_SHA}" ]]; then
+                echo "Missing base SHA for pull_request event" >&2
+                exit 1
+              fi
+              changed_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}")
+            else
+              git fetch origin "${DEFAULT_BRANCH}" --depth=1
+              changed_files=$(git diff --name-only "origin/${DEFAULT_BRANCH}...${HEAD_SHA}")
+            fi
+          fi
+
+          echo "Changed files:" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -n "${changed_files}" ]]; then
+            printf '%s\n' "${changed_files}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "(none detected or full run requested)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          docs_changed=false
+          ios_changed=false
+          backend_changed=false
+          scripts_changed=false
+
+          if [[ "${full_run}" == "false" && -n "${changed_files}" ]]; then
+            if printf '%s\n' "${changed_files}" | grep -Eq '^(docs/|[^/]+\.md$)'; then
+              docs_changed=true
+            fi
+            if printf '%s\n' "${changed_files}" | grep -Eq '^ios/'; then
+              ios_changed=true
+            fi
+            if printf '%s\n' "${changed_files}" | grep -Eq '^backend/'; then
+              backend_changed=true
+            fi
+            if printf '%s\n' "${changed_files}" | grep -Eq '^scripts/'; then
+              scripts_changed=true
+            fi
+          fi
+
+          docs_only=false
+          if [[ "${docs_changed}" == "true" && "${ios_changed}" == "false" && "${backend_changed}" == "false" && "${scripts_changed}" == "false" ]]; then
+            docs_only=true
+          fi
+
+          echo "full_run=${full_run}" >> "$GITHUB_OUTPUT"
+          echo "docs_changed=${docs_changed}" >> "$GITHUB_OUTPUT"
+          echo "docs_only=${docs_only}" >> "$GITHUB_OUTPUT"
+          echo "ios_changed=${ios_changed}" >> "$GITHUB_OUTPUT"
+          echo "backend_changed=${backend_changed}" >> "$GITHUB_OUTPUT"
+          echo "scripts_changed=${scripts_changed}" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Lane summary"
+            echo "- full_run: ${full_run}"
+            echo "- docs_changed: ${docs_changed}"
+            echo "- docs_only: ${docs_only}"
+            echo "- ios_changed: ${ios_changed}"
+            echo "- backend_changed: ${backend_changed}"
+            echo "- scripts_changed: ${scripts_changed}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  docs:
+    name: Docs lane (markdownlint)
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        needs.detect-changes.outputs.full_run == 'true' ||
+        needs.detect-changes.outputs.docs_changed == 'true'
+      }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint
+        run: npm install --global markdownlint-cli
+
+      - name: Run markdownlint
+        run: markdownlint -c .markdownlint.yaml "docs/**/*.md" "*.md"
+
+  ios-build:
+    name: iOS build lane
+    needs: detect-changes
+    if: >-
+      ${{
+        needs.detect-changes.outputs.full_run == 'true' ||
+        (needs.detect-changes.outputs.ios_changed == 'true' &&
+        needs.detect-changes.outputs.docs_only != 'true')
+      }}
+    uses: ./.github/workflows/ios-build.yml
+
+  ios-tests:
+    name: iOS tests lane
+    needs: detect-changes
+    if: >-
+      ${{
+        needs.detect-changes.outputs.full_run == 'true' ||
+        (needs.detect-changes.outputs.ios_changed == 'true' &&
+        needs.detect-changes.outputs.docs_only != 'true')
+      }}
+    uses: ./.github/workflows/ios-tests.yml
+
+  backend:
+    name: Backend lane
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        needs.detect-changes.outputs.full_run == 'true' ||
+        (needs.detect-changes.outputs.backend_changed == 'true' &&
+        needs.detect-changes.outputs.docs_only != 'true')
+      }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run backend checks
+        run: scripts/ci/backend-checks.sh
+
+  scripts:
+    name: Scripts lane
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        needs.detect-changes.outputs.full_run == 'true' ||
+        (needs.detect-changes.outputs.scripts_changed == 'true' &&
+        needs.detect-changes.outputs.docs_only != 'true')
+      }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run scripts checks
+        run: scripts/ci/scripts-checks.sh

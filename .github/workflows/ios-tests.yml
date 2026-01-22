@@ -1,11 +1,14 @@
+# File: .github/workflows/ios-tests.yml
+# Role: Reusable iOS tests lane
+# Authority: CI workflow lane
+# Governed by: AGENTS.md
+# Additional instructions: Invoked from context-aware CI orchestration.
 # Intent: Minimal iOS tests-only workflow with pinned CI values, running preflight and tests while always collecting diagnostics artifacts.
 
 name: iOS Tests
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
+  workflow_call:
 
 jobs:
   bootstrap:
@@ -75,6 +78,9 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ needs.bootstrap.outputs.ci_xcode_version }}
+
+      - name: Preflight
+        run: scripts/ios/preflight.sh
 
       - name: Write diagnostics report
         if: ${{ always() }}
