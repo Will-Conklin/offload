@@ -143,7 +143,12 @@ jobs:
       - name: Install markdownlint
         run: npm install --global markdownlint-cli
 
-      - name: Run markdownlint
+      - name: Run markdownlint (strict)
+        if: needs.detect-changes.outputs.docs_only == 'true'
+        run: markdownlint -c .markdownlint.yaml "docs/**/*.md" "*.md"
+
+      - name: Run markdownlint (warning)
+        if: needs.detect-changes.outputs.docs_only != 'true'
         continue-on-error: true
         run: markdownlint -c .markdownlint.yaml "docs/**/*.md" "*.md"
 
