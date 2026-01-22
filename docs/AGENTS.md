@@ -76,6 +76,7 @@ If ambiguity remains:
 - Additional front-matter keys MAY be used when required by a doc type (for example: `decision-date`, `decision-makers` for ADRs).
 - Use stable document IDs
 - Prefer explicit links or IDs over prose references
+- When referencing other docs in body text, use Markdown links with paths (no bare IDs like `adr-0002`).
 - Preserve historical ADRs; deprecate instead of deleting
 - Do not collapse multiple documents unless explicitly instructed
 

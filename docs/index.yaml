@@ -22,9 +22,21 @@ sections:
       - id: reference-ci-path-filters
         title: CI Path Filters and Lane Triggers
         path: reference/ci/reference-ci-path-filters.md
+      - id: reference-context-aware-ci-pipeline
+        title: Context-Aware CI Pipeline
+        path: reference/ci/reference-context-aware-ci-pipeline.md
       - id: reference-test-runtime-baselines
         title: Test Runtime Baselines
         path: reference/testing/reference-test-runtime-baselines.md
+      - id: reference-persistent-bottom-tab-bar
+        title: Persistent Bottom Tab Bar
+        path: reference/reference-persistent-bottom-tab-bar.md
+      - id: reference-convert-plans-lists
+        title: Convert Plans ↔ Lists
+        path: reference/reference-convert-plans-lists.md
+      - id: reference-drag-drop-ordering
+        title: Drag & Drop Ordering
+        path: reference/reference-drag-drop-ordering.md
   - id: adrs
     title: Architecture Decisions
     description: Architecture and product decisions with rationale.
