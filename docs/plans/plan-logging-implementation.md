@@ -21,6 +21,7 @@ using the existing `wc.Offload` subsystem. This plan focuses on sequencing and
 execution for logging coverage across critical paths and user workflows.
 
 Execution notes:
+
 - Scope: Implementation across all 5 phases; OSLog only (no third-party crash
   reporting).
 - Existing categories: `general`, `persistence`, `networking`, `voice`,
@@ -28,6 +29,7 @@ Execution notes:
 - Current coverage: limited (~6 log statements across 3 files).
 
 Logging standards:
+
 - Log levels:
   - `.debug`: Development details (offsets, intermediate states)
   - `.info`: Notable operations (user actions, completions)
@@ -39,6 +41,7 @@ Logging standards:
   - User content is redacted by default
 
 Example patterns:
+
 ```swift
 // Repository CRUD
 func delete(_ item: Item) throws {
@@ -105,6 +108,7 @@ func loadNextPage(using repository: ItemRepository) throws {
 - [ ] `cancelRecording()` logs cancellation.
 
 Files:
+
 - `ios/Offload/Data/Services/VoiceRecordingService.swift`
 
 ### Phase 3: ViewModel State Transitions (Priority: Medium)
@@ -128,6 +132,7 @@ Add pagination and state change logging:
 - [ ] `AppRootView.swift`: log repository initialization.
 
 Files:
+
 - `ios/Offload/App/offloadApp.swift`
 - `ios/Offload/App/AppRootView.swift`
 
@@ -141,6 +146,7 @@ Files:
   - `handleVoice()`, `save()`
 
 Verification (post-phase checklist):
+
 - Access logs on device via Console.app, `log stream`, or Xcode console.
 - Manual QA checklist:
   - App launch logs version info.
@@ -155,7 +161,7 @@ Verification (post-phase checklist):
   - Kill app during voice recording; verify logs show state.
   - Create/delete items rapidly; verify CRUD logs.
   - Navigate between tabs; verify pagination logs.
-  - Deny microphone permission; verify denial logged.
+- Deny microphone permission; verify denial logged.
 
 ## Dependencies
 
