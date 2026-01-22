@@ -80,6 +80,9 @@ sections:
       - id: plan-logging-implementation
         title: "Plan: Comprehensive Logging Implementation (Proposed)"
         path: plans/plan-logging-implementation.md
+      - id: plan-context-aware-ci-pipeline
+        title: "Plan: Context-Aware CI Pipeline (Proposed)"
+        path: plans/plan-context-aware-ci-pipeline.md
       - id: plans-archived-readme
         title: Archived Plans
         path: plans/_archived/README.md
