@@ -1,7 +1,7 @@
 ---
 id: prd-0005-item-search-tags
 type: product-requirements
-status: proposed
+status: accepted
 owners:
   - Will-Conklin
 applies_to:
@@ -24,7 +24,7 @@ structure_notes:
 # Offload — Item Search by Text or Tag PRD
 
 **Date:** 2026-01-22
-**Status:** Proposed
+**Status:** Accepted
 **Owner:** Offload
 
 **Related ADRs:**

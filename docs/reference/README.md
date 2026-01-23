@@ -6,8 +6,14 @@ owners:
   - Will-Conklin
 applies_to:
   - reference
-last_updated: 2026-01-17
+last_updated: 2026-01-22
 related:
+  - reference-context-aware-ci-pipeline
+  - reference-convert-plans-lists
+  - reference-ci-path-filters
+  - reference-drag-drop-ordering
+  - reference-item-search-tags
+  - reference-persistent-bottom-tab-bar
   - reference-test-runtime-baselines
 depends_on:
   - docs/reference/reference-test-runtime-baselines.md
@@ -63,6 +69,7 @@ draft → active → deprecated
 - [Persistent Bottom Tab Bar](./reference-persistent-bottom-tab-bar.md)
 - [Convert Plans ↔ Lists](./reference-convert-plans-lists.md)
 - [Drag & Drop Ordering](./reference-drag-drop-ordering.md)
+- [Item Search by Text or Tag](./reference-item-search-tags.md)
 
 ## Template
 
