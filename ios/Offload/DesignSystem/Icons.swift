@@ -29,6 +29,7 @@ struct Icons {
 
     static let add = "plus"
     static let addCircleFilled = "plus.circle.fill"
+    static let write = "pencil"
     static let deleteFilled = "trash.fill"
     static let more = "ellipsis"
     static let externalLink = "arrow.up.right.square"
