@@ -41,6 +41,7 @@ open ios/Offload.xcodeproj    # Open in Xcode
 - ALWAYS clean up merged branches
 - ALWAYS label pull requests with appropriate labels
 - ALWAYS keep documentation up to date
+- ALWAYS ensure a PRD, design, plan, and reference doc exist and are accepted before implementing changes, along with any associated ADRs
 - ALWAYS run markdownlint prior to committing documentation changes, use `--fix` to auto-fix issues
 - ALWAYS run yamllint prior to committing yaml changes
 - ALWAYS commit atomic commits using conventional commit syntax

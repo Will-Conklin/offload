@@ -20,7 +20,7 @@ structure_notes:
 ## Overview
 
 Implement the five-destination tab shell defined in PRD-0002 and ADR-0004 with a
-centered Offload CTA that opens quick capture flows. The design reuses the
+centered Offload CTA that expands to reveal quick capture actions. The design reuses the
 existing `MainTabView` and `FloatingTabBar` patterns while expanding to five
 destinations and maintaining ADHD-friendly navigation guardrails.
 
@@ -41,17 +41,19 @@ destinations and maintaining ADHD-friendly navigation guardrails.
 
 ## Data Flow
 
-1. User taps the Offload CTA.
-2. `MainTabView` sets `quickCaptureMode` to `.write` or `.voice`.
-3. A sheet presents `CaptureComposeView` with the selected mode.
-4. Capture completion posts `Notification.Name.captureItemsChanged`, keeping
+1. User taps the Offload CTA to reveal quick actions.
+2. User selects Write or Voice.
+3. `MainTabView` sets `quickCaptureMode` to `.write` or `.voice`.
+4. A sheet presents `CaptureComposeView` with the selected mode.
+5. Capture completion posts `Notification.Name.captureItemsChanged`, keeping
    list views in sync.
 
 ## UI Behavior
 
 - The tab bar stays anchored and visible across navigation stacks.
-- The Offload CTA appears centered and visually distinct, with two quick actions
-  for write and voice.
+- The Offload CTA appears centered and visually distinct; the main button
+  protrudes above the top border of the bar, and the CTA expands to reveal
+  labeled Write and Voice quick actions.
 - The Account tab lands on `AccountView`; Settings remains one tap away from
   Account.
 - The Settings icon remains in Capture/Organize toolbars; the Account icon moves

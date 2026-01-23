@@ -6,9 +6,15 @@ owners:
   - Offload
 applies_to:
   - Offload
-last_updated: 2026-01-17
+last_updated: 2026-01-22
 related:
+  - reference-context-aware-ci-pipeline
+  - reference-convert-plans-lists
+  - reference-drag-drop-ordering
+  - reference-item-search-tags
+  - reference-persistent-bottom-tab-bar
   - reference-test-runtime-baselines
+  - reference-ci-path-filters
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
@@ -53,6 +59,11 @@ draft → active → deprecated
 
 - [Test Runtime Baselines](./testing/reference-test-runtime-baselines.md)
 - [CI Path Filters and Lane Triggers](./ci/reference-ci-path-filters.md)
+- [Persistent Bottom Tab Bar](./reference-persistent-bottom-tab-bar.md)
+- [Convert Plans and Lists](./reference-convert-plans-lists.md)
+- [Drag and Drop Ordering](./reference-drag-drop-ordering.md)
+- [Item Search by Text or Tag](./reference-item-search-tags.md)
+- [Context-Aware CI Pipeline](./reference-context-aware-ci-pipeline.md)
 
 ## Template
 

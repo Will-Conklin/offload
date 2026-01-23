@@ -1,7 +1,7 @@
 ---
 id: prd-0005-item-search-tags
 type: product-requirements
-status: proposed
+status: accepted
 owners:
   - Offload
 applies_to:
@@ -15,9 +15,9 @@ structure_notes:
 
 # Offload — V1.1 Item Search by Text or Tag PRD
 
-**Version:** 1.1
+**Version:** 1.2
 **Date:** 2026-01-22
-**Status:** Proposed
+**Status:** Accepted
 **Owner:** Offload
 
 **Related ADRs:**
@@ -146,3 +146,4 @@ Search uses existing item text and tag relationships.
 | Version | Date | Notes |
 | --- | --- | --- |
 | 1.1 | 2026-01-22 | Initial proposal. |
+| 1.2 | 2026-01-22 | Accepted. |
