@@ -73,16 +73,16 @@ run override, and a scheduled full CI run per PRD-0006.
 
 ## Risks
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Change detection misclassifies paths | H | Keep path rules minimal and covered by QA scenarios. |
-| Docs-only PRs still trigger non-doc lanes | M | Ensure `docs_only` guard is applied to other lanes. |
-| Full runs missed on schedule | M | Validate cron schedule and monitor runs. |
-| Required checks mismatch lane names | M | Coordinate required checks with workflow job names. |
+| Risk                                      | Impact | Mitigation                                          |
+| ----------------------------------------- | ------ | --------------------------------------------------- |
+| Change detection misclassifies paths      | H      | Keep path rules minimal and covered by QA scenarios.|
+| Docs-only PRs still trigger non-doc lanes | M      | Ensure `docs_only` guard is applied to other lanes. |
+| Full runs missed on schedule              | M      | Validate cron schedule and monitor runs.            |
+| Required checks mismatch lane names       | M      | Coordinate required checks with workflow job names. |
 
 ## Progress
 
-| Date       | Update              |
-| ---------- | ------------------- |
-| 2026-01-22 | Draft plan created. |
+| Date       | Update                                                  |
+| ---------- | ------------------------------------------------------- |
+| 2026-01-22 | Draft plan created.                                     |
 | 2026-01-22 | Implemented workflow gating, lanes, and docs reference. |
