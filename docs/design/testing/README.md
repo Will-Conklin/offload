@@ -1,17 +1,22 @@
 ---
 id: design-testing-readme
 type: design
-status: active
+status: accepted
 owners:
   - Offload
 applies_to:
   - testing
-last_updated: 2026-01-19
+last_updated: 2026-01-25
 related:
   - design-manual-testing-checklist
   - design-manual-testing-results
   - design-voice-capture-testing-guide
   - design-voice-capture-test-results
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
   - "Keep top-level sections: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."

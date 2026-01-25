@@ -1,7 +1,7 @@
 ---
 id: design-voice-capture-testing-guide
 type: design
-status: active
+status: accepted
 owners:
   - Offload
 applies_to:
@@ -10,6 +10,11 @@ applies_to:
   - testing
 last_updated: 2026-01-17
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; What Was Implemented; Testing Checklist; Expected Results; Decision Checkpoint (Day 3); Day 7 Checkpoint; Testing Notes; Debugging Tips; Files to Review for Testing; Next Week Preview."
   - "Keep the top-level section outline intact."

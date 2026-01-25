@@ -25,7 +25,8 @@ README files are informational for users.
 
 ## Purpose
 
-Define contracts, schemas, APIs, terminology, and invariants that code must follow.
+Define contracts, schemas, APIs, terminology, and invariants that code must
+follow, including implemented contractual identifiers.
 
 ## Contains
 
@@ -35,6 +36,8 @@ Define contracts, schemas, APIs, terminology, and invariants that code must foll
 - Terminology glossaries
 - System invariants and constraints
 - Configuration contracts
+- Contractual identifiers from implemented systems (for example, model or
+  endpoint identifiers), without implementation approach details
 
 ## When to create
 
@@ -57,9 +60,12 @@ Define contracts, schemas, APIs, terminology, and invariants that code must foll
 - Machine-readable where possible (JSON Schema, OpenAPI, etc.)
 - Clear versioning for breaking changes
 - Examples of valid usage
+- Contractual identifiers may include implemented names, but avoid how-to or
+  step-by-step approach
 
 ## Boundaries
 
 - Does not include "why" decisions were made (see ADRs)
-- Does not include implementation details (see design docs)
+- Does not include execution sequencing or implementation approach (see plans
+  and design docs)
 - Does not include feature requirements (see PRDs)

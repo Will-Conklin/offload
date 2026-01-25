@@ -10,6 +10,13 @@ last_updated: 2026-01-22
 related:
   - adr-0007-context-aware-ci-workflow-strategy
   - prd-0006-context-aware-ci-pipeline
+depends_on:
+  - docs/adrs/adr-0007-context-aware-ci-workflow-strategy.md
+  - docs/prds/prd-0006-context-aware-ci-pipeline.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Definition; Schema; Invariants; Examples."
 ---

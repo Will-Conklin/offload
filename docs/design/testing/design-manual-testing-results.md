@@ -1,7 +1,7 @@
 ---
 id: design-manual-testing-results
 type: design
-status: active
+status: accepted
 owners:
   - Offload
 applies_to:
@@ -10,6 +10,11 @@ applies_to:
 last_updated: 2026-01-19
 related:
   - design-manual-testing-checklist
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Runs; Open issues; Revision history."
   - "Keep top-level sections: Purpose; Runs; Open issues; Revision history."

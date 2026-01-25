@@ -11,6 +11,14 @@ related:
   - prd-0004-drag-drop-ordering
   - adr-0005-collection-ordering-and-hierarchy-persistence
   - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on:
+  - docs/prds/prd-0004-drag-drop-ordering.md
+  - docs/adrs/adr-0005-collection-ordering-and-hierarchy-persistence.md
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Architecture; Data Flow; UI Behavior; Testing; Constraints."
 ---

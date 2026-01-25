@@ -13,6 +13,16 @@ related:
   - plan-persistent-bottom-tab-bar
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
   - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on:
+  - docs/prds/prd-0002-persistent-bottom-tab-bar.md
+  - docs/design/design-persistent-bottom-tab-bar.md
+  - docs/plans/plan-persistent-bottom-tab-bar.md
+  - docs/adrs/adr-0004-tab-bar-navigation-shell-and-offload-cta.md
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Definition; Schema; Invariants; Examples."
 ---

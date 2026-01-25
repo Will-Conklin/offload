@@ -11,6 +11,14 @@ related:
   - prd-0006-context-aware-ci-pipeline
   - adr-0006-ci-provider-selection
   - adr-0007-context-aware-ci-workflow-strategy
+depends_on:
+  - docs/prds/prd-0006-context-aware-ci-pipeline.md
+  - docs/adrs/adr-0006-ci-provider-selection.md
+  - docs/adrs/adr-0007-context-aware-ci-workflow-strategy.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Architecture; Data Flow; UI Behavior; Testing; Constraints."
 ---

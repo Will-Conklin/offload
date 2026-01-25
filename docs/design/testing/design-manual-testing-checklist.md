@@ -1,7 +1,7 @@
 ---
 id: design-manual-testing-checklist
 type: design
-status: active
+status: accepted
 owners:
   - Offload
 applies_to:
@@ -11,6 +11,11 @@ last_updated: 2026-01-19
 related:
   - plan-roadmap
   - design-voice-capture-testing-guide
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Scope; Preconditions; Checklist; Evidence; Revision history."
   - "Keep top-level sections: Purpose; Scope; Preconditions; Checklist; Evidence; Revision history."

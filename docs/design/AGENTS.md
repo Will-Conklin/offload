@@ -46,7 +46,7 @@ Document technical architecture and implementation approach (HOW).
 ## Lifecycle
 
 - Created after ADRs, before plans
-- Status: draft -> active -> deprecated
+- Status: proposed -> accepted -> archived
 - Must not contradict ADRs or PRDs
 - Updated when implementation approach changes
 - Archived when implementation is complete

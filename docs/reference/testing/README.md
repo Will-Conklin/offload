@@ -9,6 +9,12 @@ applies_to:
 last_updated: 2026-01-17
 related:
   - reference-test-runtime-baselines
+depends_on:
+  - docs/reference/reference-test-runtime-baselines.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
   - "Keep top-level sections: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."

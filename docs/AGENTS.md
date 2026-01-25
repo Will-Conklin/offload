@@ -80,7 +80,7 @@ If ambiguity remains:
 - Never treat `discovery/` or `research/` as source of truth
 - Design docs must not contradict ADRs or PRDs
 - Plans must not introduce scope, requirements, or architecture
-- Reference docs must not include rationale or narrative
+- Reference docs must be factual, may include implemented contractual identifiers, and must avoid rationale or implementation approach
 - Accepted documents must never be updated without explicit user approval
 
 ---
