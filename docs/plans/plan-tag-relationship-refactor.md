@@ -1,24 +1,24 @@
 ---
-id: plan-v1-tag-relationship-refactor
+id: plan-tag-relationship-refactor
 type: plan
 status: draft
 owners:
   - Offload
 applies_to:
-  - pre-v1-scope
+  - pre-launch-scope
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Tag Relationship Refactor (Pre-v1 Candidate)
+# Plan: Tag Relationship Refactor (Pre-launch Candidate)
 
 ## Overview
 
 Execution plan for the optional tag relationship refactor listed as additional
-pre-v1 scope in the v1 roadmap. Work should begin only after scope is confirmed
+pre-launch scope in the roadmap. Work should begin only after scope is confirmed
 via PRD/ADR updates.
 
 ## Goals
@@ -51,7 +51,7 @@ via PRD/ADR updates.
 
 ## Dependencies
 
-- Approved PRD/ADR updates for pre-v1 scope.
+- Approved PRD/ADR updates for pre-launch scope.
 - SwiftData migration guidance and test coverage.
 
 ## Risks
@@ -59,10 +59,10 @@ via PRD/ADR updates.
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
 | Migration causes data loss | H | Validate backups and run staged migration tests. |
-| Scope shifts delay v1 | M | Keep work gated behind scope confirmation. |
+| Scope shifts delay launch | M | Keep work gated behind scope confirmation. |
 
 ## Progress
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

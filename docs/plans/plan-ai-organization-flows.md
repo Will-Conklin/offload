@@ -1,24 +1,24 @@
 ---
-id: plan-v1-ai-organization-flows
+id: plan-ai-organization-flows
 type: plan
 status: draft
 owners:
   - Offload
 applies_to:
-  - pre-v1-scope
+  - pre-launch-scope
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: AI Organization Flows & Review Screen (Pre-v1 Candidate)
+# Plan: AI Organization Flows & Review Screen (Pre-launch Candidate)
 
 ## Overview
 
 Execution plan for the optional AI organization flows and review screen listed
-as additional pre-v1 scope in the v1 roadmap. Work should begin only after
+as additional pre-launch scope in the roadmap. Work should begin only after
 scope is confirmed via PRD/ADR updates.
 
 ## Goals
@@ -58,11 +58,11 @@ scope is confirmed via PRD/ADR updates.
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| AI scope expands beyond v1 | H | Keep work gated until scope is approved. |
+| AI scope expands beyond launch | H | Keep work gated until scope is approved. |
 | Privacy constraints unclear | H | Align with backend/privacy plan before build. |
 
 ## Progress
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

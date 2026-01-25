@@ -1,24 +1,24 @@
 ---
-id: plan-v1-visual-timeline
+id: plan-visual-timeline
 type: plan
 status: draft
 owners:
   - Offload
 applies_to:
-  - pre-v1-scope
+  - pre-launch-scope
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Visual Timeline (Pre-v1 Candidate)
+# Plan: Visual Timeline (Pre-launch Candidate)
 
 ## Overview
 
 Execution plan for the optional visual timeline feature listed as additional
-pre-v1 scope in the v1 roadmap. Work should begin only after scope is confirmed
+pre-launch scope in the roadmap. Work should begin only after scope is confirmed
 via PRD/ADR updates.
 
 ## Goals
@@ -58,11 +58,11 @@ via PRD/ADR updates.
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| Scope adds complexity to v1 timeline | M | Keep work gated until scope approval. |
+| Scope adds complexity to launch timeline | M | Keep work gated until scope approval. |
 | Visuals conflict with design system | M | Align with design system before build. |
 
 ## Progress
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

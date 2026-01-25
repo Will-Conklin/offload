@@ -1,24 +1,24 @@
 ---
-id: plan-v1-view-decomposition
+id: plan-view-decomposition
 type: plan
 status: draft
 owners:
   - Offload
 applies_to:
-  - pre-v1-scope
+  - pre-launch-scope
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: View Decomposition (Pre-v1 Candidate)
+# Plan: View Decomposition (Pre-launch Candidate)
 
 ## Overview
 
-Execution plan for decomposing large SwiftUI views listed as optional pre-v1
-scope in the v1 roadmap. Work should begin only after scope is confirmed via
+Execution plan for decomposing large SwiftUI views listed as optional pre-launch
+scope in the roadmap. Work should begin only after scope is confirmed via
 PRD/ADR updates.
 
 ## Goals
@@ -51,7 +51,7 @@ PRD/ADR updates.
 
 ## Dependencies
 
-- Scope confirmation for pre-v1 work.
+- Scope confirmation for pre-launch work.
 - Updated design system guidance for shared components.
 
 ## Risks
@@ -65,4 +65,4 @@ PRD/ADR updates.
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

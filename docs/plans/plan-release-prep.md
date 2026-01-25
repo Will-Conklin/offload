@@ -1,20 +1,20 @@
 ---
-id: plan-v1-release-prep
+id: plan-release-prep
 type: plan
 status: active
 owners:
   - Offload
 applies_to:
-  - v1-release
+  - launch-release
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
-  - plan-v1-testing-polish
+  - plan-roadmap
+  - plan-testing-polish
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: V1 Release Prep
+# Plan: Release Prep
 
 ## Overview
 
@@ -24,7 +24,7 @@ metadata, and TestFlight distribution.
 
 ## Goals
 
-- Prepare documentation and release notes for v1 launch.
+- Prepare documentation and release notes for launch.
 - Finalize App Store metadata and assets.
 - Distribute builds via TestFlight for final validation.
 
@@ -34,8 +34,8 @@ metadata, and TestFlight distribution.
 
 **Status:** Not Started
 
-- [ ] Update documentation tied to v1 scope and readiness.
-- [ ] Draft v1 release notes.
+- [ ] Update documentation tied to launch scope and readiness.
+- [ ] Draft release notes.
 
 ### Phase 2: App Store Metadata
 
@@ -53,7 +53,7 @@ metadata, and TestFlight distribution.
 
 ## Dependencies
 
-- Completion of v1 testing and polish plan.
+- Completion of launch testing and polish plan.
 - Updated product requirements and design assets, if needed.
 
 ## Risks
@@ -68,4 +68,4 @@ metadata, and TestFlight distribution.
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

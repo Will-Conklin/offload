@@ -54,8 +54,8 @@ open ios/Offload.xcodeproj    # Open in Xcode
 - Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for
   YAML, and use conventional atomic commits
 - NEVER use markdown files to drive non-agent processes or store configuration
-  that non-agent scripts parse; agent-readable metadata in `docs/` is allowed
-  per `docs/AGENTS.md`
+  that non-agent scripts parse; document metadata for agents must live only in
+  YAML front-matter per `docs/AGENTS.md`
 
 ## Documentation Authority
 

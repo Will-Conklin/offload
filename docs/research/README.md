@@ -13,18 +13,15 @@ related:
   - research-color-scheme-alternatives
   - research-ios-ui-trends-2025
   - research-2026-01-04-main-branch-review
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
 ---
-
-Status: informational  
-Owner: Offload  
-Depends on: none  
-Supersedes: none  
-Accepted by: none  
-Accepted at: n/a  
-Related issues/PRs: none
 
 # Research
 

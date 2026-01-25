@@ -10,17 +10,15 @@ applies_to:
 last_updated: 2026-01-25
 related:
   - prd-0001-product-requirements
+depends_on:
+  - docs/prds/prd-0001-product-requirements.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Summary; Findings; Recommendations; Sources."
 ---
-
-Status: informational  
-Owner: Offload  
-Depends on: docs/prds/prd-0001-product-requirements.md  
-Supersedes: none  
-Accepted by: none  
-Accepted at: n/a  
-Related issues/PRs: none
 
 # Research: Offline AI Quota Enforcement
 

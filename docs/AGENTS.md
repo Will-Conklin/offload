@@ -10,7 +10,7 @@ last_updated: 2026-01-19
 related: []
 structure_notes:
   - "Agent guidance only."
-  - "Top-level section order: Scope; Documentation Authority Model (MANDATORY); Documentation Safety Rules; Structural Rules; Documentation Workflow Dependencies; Document Metadata (Agent-Readable); Expected Agent Behavior."
+  - "Top-level section order: Scope; Documentation Authority Model (MANDATORY); Documentation Safety Rules; Structural Rules; Documentation Workflow Dependencies; Expected Agent Behavior."
 ---
 # Documentation Agent Guide — Offload
 
@@ -381,6 +381,7 @@ If ambiguity remains:
 - Every document MUST include YAML front-matter
 - Front-matter format MUST include: `id`, `type`, `status`, `owners`, `applies_to`, `last_updated`, `related`, `structure_notes`
 - Front-matter is for agent parsing only; non-agent automation must not parse or depend on it
+- Document metadata must live only in YAML front-matter; do not add metadata blocks to the body
 - Additional front-matter keys MAY be used when required by a doc type (for example: `decision-date`, `decision-makers` for ADRs).
 - `structure_notes` are agent guidance for section order and navigation
 - Use stable document IDs
@@ -409,39 +410,6 @@ Documentation must be created and accepted in dependency order before implementa
 - Plans MUST NOT be accepted if they depend on incomplete designs
 - Implementation MUST NOT start until the required documentation chain is complete
 - Agents MUST surface missing prerequisite documentation and block progression
-
----
-
-## Document Metadata (Agent-Readable)
-
-All docs under `docs/` MUST include a short metadata block immediately after the
-YAML front-matter, written for agents and NOT for non-agent automation.
-
-**Required fields:**
-
-- Status: draft | accepted | superseded | archived
-- Owner: @handle or team
-- Depends on: list of doc paths (or "none")
-- Supersedes: list of doc paths (or "none")
-- Accepted by: name or role (when status is accepted)
-- Accepted at: YYYY-MM-DD (when status is accepted)
-- Related issues/PRs: links or IDs (or "none")
-
-**Example:**
-Status: draft
-Owner: @product
-Depends on: docs/prds/offload-capture.md
-Supersedes: none
-Accepted by: none
-Accepted at: n/a
-Related issues/PRs: #123
-
-**Rules:**
-
-- Accepted docs must record "Accepted by/at"; changing accepted docs requires
-  explicit user approval and an updated metadata block.
-- Non-agent automation must not parse this block; agents may use it for clarity
-  and auditability.
 
 ---
 

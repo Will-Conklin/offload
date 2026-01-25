@@ -1,25 +1,25 @@
 ---
-id: plan-v1-ai-pricing-limits
+id: plan-ai-pricing-limits
 type: plan
 status: draft
 owners:
   - Offload
 applies_to:
-  - pre-v1-scope
+  - pre-launch-scope
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
-  - plan-v1-ai-organization-flows
+  - plan-roadmap
+  - plan-ai-organization-flows
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: AI Pricing & Limits (Pre-v1 Candidate)
+# Plan: AI Pricing & Limits (Pre-launch Candidate)
 
 ## Overview
 
 Execution plan for AI pricing and limits (free/paid tiers, server-side
-enforcement) listed as additional pre-v1 scope in the v1 roadmap. Work should
+enforcement) listed as additional pre-launch scope in the roadmap. Work should
 begin only after scope is confirmed via PRD/ADR updates.
 
 ## Goals
@@ -66,4 +66,4 @@ begin only after scope is confirmed via PRD/ADR updates.
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

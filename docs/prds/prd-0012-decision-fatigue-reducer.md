@@ -11,17 +11,17 @@ related:
   - adr-0003-adhd-focused-ux-ui-guardrails
   - prd-0001-product-requirements
   - prd-0011-executive-function-prompts
+depends_on:
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+  - docs/prds/prd-0001-product-requirements.md
+  - docs/prds/prd-0011-executive-function-prompts.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics; 7. Core user flows; 8. Functional requirements; 9. Pricing & limits; 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions; 16. Revision history."
 ---
-
-Status: draft  
-Owner: Offload  
-Depends on: docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md; docs/prds/prd-0001-product-requirements.md; docs/prds/prd-0011-executive-function-prompts.md  
-Supersedes: none  
-Accepted by: none  
-Accepted at: n/a  
-Related issues/PRs: none
 
 # Offload — Decision Fatigue Reducer PRD
 

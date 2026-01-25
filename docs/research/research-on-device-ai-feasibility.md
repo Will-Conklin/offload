@@ -15,17 +15,15 @@ related:
   - prd-0010-tone-assistant
   - prd-0011-executive-function-prompts
   - prd-0012-decision-fatigue-reducer
+depends_on:
+  - docs/prds/prd-0001-product-requirements.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Summary; Findings; Recommendations; Sources."
 ---
-
-Status: informational  
-Owner: Offload  
-Depends on: docs/prds/prd-0001-product-requirements.md  
-Supersedes: none  
-Accepted by: none  
-Accepted at: n/a  
-Related issues/PRs: none
 
 # Research: On-Device AI Feasibility for Offload
 

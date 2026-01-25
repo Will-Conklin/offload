@@ -1,29 +1,29 @@
 ---
-id: plan-v1-advanced-accessibility
+id: plan-advanced-accessibility
 type: plan
 status: draft
 owners:
   - Offload
 applies_to:
-  - pre-v1-scope
+  - pre-launch-scope
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Advanced Accessibility Features (Pre-v1 Candidate)
+# Plan: Advanced Accessibility Features (Pre-launch Candidate)
 
 ## Overview
 
-Execution plan for advanced accessibility features listed as additional pre-v1
-scope in the v1 roadmap. Work should begin only after scope is confirmed via
+Execution plan for advanced accessibility features listed as additional pre-launch
+scope in the roadmap. Work should begin only after scope is confirmed via
 PRD/ADR updates.
 
 ## Goals
 
-- Deliver accessibility enhancements beyond baseline v1 requirements.
+- Deliver accessibility enhancements beyond baseline launch requirements.
 - Ensure features are validated with assistive technologies.
 
 ## Phases
@@ -58,11 +58,11 @@ PRD/ADR updates.
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| Feature creep delays v1 | M | Keep work gated until scope is approved. |
+| Feature creep delays launch | M | Keep work gated until scope is approved. |
 | Accessibility regressions | M | Run regression testing after each change. |
 
 ## Progress
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

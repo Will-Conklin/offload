@@ -1,23 +1,23 @@
 ---
-id: plan-v1-testing-polish
+id: plan-testing-polish
 type: plan
 status: active
 owners:
   - Offload
 applies_to:
-  - v1-release
+  - launch-release
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: V1 Testing & Polish
+# Plan: Testing & Polish
 
 ## Overview
 
-Execution plan for the final v1 testing and polish work identified in the v1
+Execution plan for the final launch testing and polish work identified in the
 roadmap. This plan sequences manual testing, performance validation, bug fixes,
 and accessibility review before release prep begins.
 
@@ -26,7 +26,7 @@ and accessibility review before release prep begins.
 - Validate core capture, organize, and collection workflows against approved
   scope.
 - Resolve defects discovered during manual testing.
-- Confirm accessibility, permissions, and offline behavior are stable for v1.
+- Confirm accessibility, permissions, and offline behavior are stable for launch.
 
 ## Phases
 
@@ -34,7 +34,7 @@ and accessibility review before release prep begins.
 
 **Status:** Not Started
 
-- [ ] Run the v1 manual testing checklist end-to-end.
+- [ ] Run the launch manual testing checklist end-to-end.
 - [ ] Verify capture list actions (complete, star, delete) match PRD intent.
 - [ ] Confirm voice recording (permissions, start/stop, transcription).
 - [ ] Validate offline capture and persistence.
@@ -62,11 +62,11 @@ and accessibility review before release prep begins.
 
 - [ ] Review VoiceOver support for core views.
 - [ ] Validate contrast, tap targets, and focus order.
-- [ ] Log any v1 blockers and confirm resolution.
+- [ ] Log any launch blockers and confirm resolution.
 
 ## Dependencies
 
-- V1 manual testing artifacts in `docs/design/testing/`.
+- Launch manual testing artifacts in `docs/design/testing/`.
 - Stable build of the iOS app for QA execution.
 
 ## Risks
@@ -81,4 +81,4 @@ and accessibility review before release prep begins.
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

@@ -9,17 +9,15 @@ applies_to:
 last_updated: 2026-01-25
 related:
   - prd-0001-product-requirements
+depends_on:
+  - docs/prds/prd-0001-product-requirements.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics; 7. Core user flows; 8. Functional requirements; 9. Pricing & limits; 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions; 16. Revision history."
 ---
-
-Status: proposed  
-Owner: Offload  
-Depends on: docs/prds/prd-0001-product-requirements.md  
-Supersedes: none  
-Accepted by: none  
-Accepted at: n/a  
-Related issues/PRs: none
 
 # Offload — Pricing and Limits PRD
 

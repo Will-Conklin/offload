@@ -9,18 +9,15 @@ applies_to:
 last_updated: 2026-01-17
 related:
   - prd-0001-product-requirements
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
 ---
-
-Status: active  
-Owner: Offload  
-Depends on: none  
-Supersedes: none  
-Accepted by: none  
-Accepted at: n/a  
-Related issues/PRs: none
 
 # PRD
 
