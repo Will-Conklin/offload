@@ -35,20 +35,31 @@ open ios/Offload.xcodeproj    # Open in Xcode
 ## Critical Directives
 
 - NEVER commit directly to main branch
-- ALWAYS suggest to user a new branch before implementing a new set of changes
-- ALWAYS create branches before implementing large features or fixes
+- For feature work: ALWAYS create a new branch (suggest it before starting) and
+  never work on main
+- For feature work: Use conventional commit prefixes in branch names (examples:
+  `feat/`, `fix/`, `docs/`, `chore/`)
 - ALWAYS use explicit type references (SwiftData predicates require this for enum cases)
 - ALWAYS clean up merged branches
-- ALWAYS label pull requests with appropriate labels
-- ALWAYS keep documentation up to date
-- ALWAYS run markdownlint prior to committing documentation changes, use `--fix` to auto-fix issues
-- ALWAYS run yamllint prior to committing yaml changes
-- ALWAYS commit atomic commits using conventional commit syntax
-- NEVER use markdown files to drive processes or store configuration that scripts parse
+- ALWAYS label pull requests using the repository's label settings; ask the user
+  if uncertain
+- For feature work: REQUIRE accepted PRD + design + plan + any ADRs before
+  implementation; keep docs updated; create reference docs when contracts
+  stabilize
+- For feature work: Track plans with GitHub issues; update status/comments/links;
+  move plan issues through Ready → In Progress → Done using repo project
+  settings
+- Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for
+  YAML, and use conventional atomic commits
+- NEVER use markdown files to drive non-agent processes or store configuration
+  that non-agent scripts parse; agent-readable metadata in `docs/` is allowed
+  per `docs/AGENTS.md`
 
 ## Documentation Authority
 
-All agent behavior related to documentation under `docs/` is governed by `docs/AGENTS.md` (AUTHORITATIVE).
+All agent behavior related to documentation under `docs/` is governed by
+`docs/AGENTS.md` (AUTHORITATIVE). If this file conflicts with `docs/AGENTS.md`
+for documentation behavior, `docs/AGENTS.md` wins.
 
 Agents MUST follow `docs/AGENTS.md` when reading, writing, restructuring, or interpreting documentation. This file governs repository-wide and code-level behavior only.
 
@@ -97,8 +108,3 @@ Add agent-readable headers to non-Markdown config files that agents read/modify:
 - **Persistence**: Views use `@Query` for reactive data and `@Environment(\.itemRepository)` etc. for mutations
 - **Repositories**: Injected via `RepositoryEnvironment.swift`; CRUD in `ios/Offload/Data/Repositories/`
 - **Capture flow**: Creates `Item` records (type nil), can attach photo/voice, moves to plan/list via `CollectionItem` link
-
-## Implementation Plans
-
-- Active plans tracked in `docs/plans/`
-- Completed plans moved to `docs/plans/_archived/`
