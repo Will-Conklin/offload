@@ -1,7 +1,7 @@
 ---
 id: research-ios-ui-trends-2025
 type: research
-status: informational
+status: completed
 owners:
   - Offload
 applies_to:
@@ -9,21 +9,17 @@ applies_to:
   - ui
   - trends
 last_updated: 2026-01-17
-related: []
+related:
+  - prd-0001-product-requirements
+  - adr-0003-adhd-focused-ux-ui-guardrails
 structure_notes:
-  - "Section order: Executive Summary; Research Findings: 2025-2026 iOS Trends; Current State Analysis: Offload; Recommendations for Offload; Implementation Priority Tiers; Recommended Phased Approach; Maintaining ADHD-Friendly Design; Testing & Validation; Sources & References; Appendix: Code Snippets."
+  - "Section order: Executive Summary; Research Findings: 2025-2026 iOS Trends; Current State Analysis: Offload; Recommendations for Offload; Maintaining ADHD-Friendly Design; Testing & Validation; Sources & References; Appendix: Code Snippets."
   - "Keep the top-level section outline intact."
 ---
 
 <!-- Intent: Document modern iOS UI/UX trends for 2025-2026 and specific recommendations for Offload app improvements. -->
 
 # iOS UI Trends Research & Recommendations for Offload
-
-**Created:** January 9, 2026
-**Research Focus:** Modern iOS design patterns, ADHD-friendly UI, visual enhancements
-**Sources:** Industry trends, SwiftUI best practices, ADHD productivity app analysis
-
----
 
 ## Executive Summary
 
@@ -246,7 +242,7 @@ Based on analysis of award-winning ADHD apps (Tiimo - 2025 iPhone App of the Yea
 
 ## Recommendations for Offload
 
-### Priority 1: Visual Depth & Modern Materials (High Impact)
+### Visual Depth & Modern Materials
 
 #### **1.1 Glassmorphism on Cards & Modals**
 
@@ -364,7 +360,7 @@ struct CornerRadius {
 
 ---
 
-### Priority 2: Micro-Interactions & Animations (Medium Impact)
+### Micro-Interactions & Animations
 
 #### **2.1 Spring Animations**
 
@@ -455,7 +451,7 @@ struct CelebrationEffect: View {
 
 ---
 
-### Priority 3: Component Library Expansions (Medium Impact)
+### Component Library Expansions
 
 #### **3.1 Unified Badge Component**
 
@@ -696,7 +692,7 @@ struct ProgressRing: View {
 
 ---
 
-### Priority 4: ADHD-Specific Enhancements (High Value)
+### ADHD-Specific Enhancements
 
 #### **4.1 Visual Timeline View (Inspired by Tiimo)**
 
@@ -799,7 +795,7 @@ struct NextUpIndicator: View {
 
 ---
 
-### Priority 5: Layout & Polish (Quick Wins)
+### Layout & Polish
 
 #### **5.1 Bottom Sheet Pattern**
 
@@ -925,110 +921,6 @@ struct SkeletonView: View {
 - Add `.accessibilityLabel()` modifiers
 - Test with VoiceOver
 - Improves screen reader experience
-
----
-
-## Implementation Priority Tiers
-
-### Tier 1: Highest Visual Impact
-
-1. ✨ **Glassmorphism on cards/modals** (modern, on-trend)
-2. 🎨 **Gradient accents on primary actions** (visual interest)
-3. 🧩 **Unified Badge component** (consistency)
-4. 📱 **Increased corner radius** (warmer, 2025 trend)
-5. ⚡ **Spring animations** (purposeful feedback)
-
-**Estimated Effort:** 2-3 days
-**Visual Impact:** High
-**ADHD Impact:** Medium
-
----
-
-### Tier 2: Feature Enhancements
-
-1. 🎭 **Visual timeline view** (ADHD-specific, high value)
-2. 📐 **Bottom sheet patterns** (ergonomics)
-3. 🎯 **Typography hierarchy** (weight improvements)
-4. 📊 **Progress indicators** (visual feedback)
-5. 🎨 **Expandable cards** (solve truncation)
-
-**Estimated Effort:** 4-5 days
-**Visual Impact:** Medium
-**ADHD Impact:** High (especially timeline)
-
----
-
-### Tier 3: Polish & Consistency
-
-1. ✨ **Loading skeletons** (modern UX)
-2. 🎯 **Button press states** (tactile)
-3. 📏 **Spacing consistency fixes** (15+ instances)
-4. 🌑 **Shadow refinements** (depth)
-5. ♿ **Accessibility labels** (screen readers)
-6. 🎊 **Celebration animations** (optional, dopamine)
-
-**Estimated Effort:** 2-3 days
-**Visual Impact:** Low-Medium
-**ADHD Impact:** Medium
-
----
-
-## Recommended Phased Approach
-
-### Phase UI-1: Core Visual Refresh (Week 1)
-
-**Goal:** Modernize visual design with minimal code changes
-
-1. Add glassmorphism materials to Theme.swift
-2. Implement gradient accent system
-3. Update corner radius values
-4. Apply glass effects to cards, modals, FAB
-5. Add spring animations to buttons
-
-**Deliverable:** Noticeably more modern, polished UI
-
----
-
-### Phase UI-2: Component Library (Week 2)
-
-**Goal:** Add missing components for consistency
-
-1. Unified Badge component
-2. Expandable Card component
-3. Pill Selector component
-4. Progress indicators (Ring, Bar)
-5. Loading skeleton component
-
-**Deliverable:** Consistent, reusable component library
-
----
-
-### Phase UI-3: ADHD Enhancements (Week 3)
-
-**Goal:** Add ADHD-specific features for cognitive support
-
-1. Visual timeline view (alternative to list)
-2. Completion celebration animations
-3. Gentle transition indicators
-4. "Next up" badges
-5. Settings toggle for animations
-
-**Deliverable:** Improved ADHD-friendliness with measurable user benefit
-
----
-
-### Phase UI-4: Polish & Refinement (Week 4)
-
-**Goal:** Consistency, accessibility, final touches
-
-1. Fix spacing inconsistencies (15+ instances)
-2. Add accessibility labels
-3. Implement bottom sheet patterns
-4. Shadow/depth refinements
-5. Button press state improvements
-6. Typography weight adjustments
-
-**Deliverable:** Production-ready, polished, accessible UI
 
 ---
 
@@ -1226,4 +1118,3 @@ Badge.status("In Progress")
 
 **Document Version:** 1.0
 **Last Updated:** January 9, 2026
-**Status:** Ready for Implementation Planning

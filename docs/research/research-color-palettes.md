@@ -1,14 +1,16 @@
 ---
 id: research-color-palettes
 type: research
-status: informational
+status: completed
 owners:
   - Offload
 applies_to:
   - color
   - palettes
 last_updated: 2026-01-17
-related: []
+related:
+  - research-adhd-ux-ui
+  - adr-0003-adhd-focused-ux-ui-guardrails
 structure_notes:
   - "Section order: Option 1: Calm Focus (Light); Option 2: Warm Minimal (Light); Option 3: Cool Clarity (Light); Option 4: Dark Focus (Dark Mode); Usage Guidance."
   - "Keep top-level sections: Option 1: Calm Focus (Light); Option 2: Warm Minimal (Light); Option 3: Cool Clarity (Light); Option 4: Dark Focus (Dark Mode); Usage Guidance."

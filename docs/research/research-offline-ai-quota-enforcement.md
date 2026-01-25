@@ -1,7 +1,7 @@
 ---
 id: research-offline-ai-quota-enforcement
 type: research
-status: informational
+status: completed
 owners:
   - Offload
 applies_to:

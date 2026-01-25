@@ -1,7 +1,7 @@
 ---
 id: research-privacy-learning-user-data
 type: research
-status: informational
+status: completed
 owners:
   - Offload
 applies_to:

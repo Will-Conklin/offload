@@ -1,7 +1,7 @@
 ---
 id: research-on-device-ai-feasibility
 type: research
-status: informational
+status: completed
 owners:
   - Offload
 applies_to:
