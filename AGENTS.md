@@ -37,6 +37,8 @@ open ios/Offload.xcodeproj    # Open in Xcode
 - NEVER commit directly to main branch
 - For feature work: ALWAYS create a new branch (suggest it before starting) and
   never work on main
+- For feature work: Use conventional commit prefixes in branch names (examples:
+  `feat/`, `fix/`, `docs/`, `chore/`)
 - ALWAYS use explicit type references (SwiftData predicates require this for enum cases)
 - ALWAYS clean up merged branches
 - ALWAYS label pull requests using the repository's label settings; ask the user
