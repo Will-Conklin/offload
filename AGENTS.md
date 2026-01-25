@@ -49,6 +49,8 @@ open ios/Offload.xcodeproj    # Open in Xcode
 - For feature work: Track plans with GitHub issues; update status/comments/links;
   move plan issues through Ready → In Progress → Done using repo project
   settings
+- NEVER assume version numbers or pricing information; treat them as deferred
+  unless explicitly documented
 - Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for
   YAML, and use conventional atomic commits
 - NEVER use markdown files to drive non-agent processes or store configuration

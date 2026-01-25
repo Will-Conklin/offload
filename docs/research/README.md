@@ -18,6 +18,13 @@ structure_notes:
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
 ---
 
+Status: informational  
+Owner: Offload  
+Depends on: none  
+Supersedes: none  
+Accepted by: none  
+Accepted at: n/a  
+Related issues/PRs: none
 
 # Research
 
@@ -58,6 +65,9 @@ in-progress → informational → stale
 - [Color Scheme Options for Offload](./research-color-palettes.md)
 - [Color Scheme Alternatives for Offload](./research-color-scheme-alternatives.md)
 - [iOS UI Trends Research & Recommendations for Offload](./research-ios-ui-trends-2025.md)
+- [On-Device AI Feasibility for Offload](./research-on-device-ai-feasibility.md)
+- [Offline AI Quota Enforcement](./research-offline-ai-quota-enforcement.md)
+- [Privacy Implications of Learning from User Data](./research-privacy-learning-user-data.md)
 - [Code Review: Main Branch - Comprehensive Analysis](./reviews/research-2026-01-04-main-branch-review.md)
 
 ## Template

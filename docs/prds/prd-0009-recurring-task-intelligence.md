@@ -14,9 +14,16 @@ structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics; 7. Core user flows; 8. Functional requirements; 9. Pricing & limits; 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions; 16. Revision history."
 ---
 
+Status: draft  
+Owner: Offload  
+Depends on: docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md; docs/prds/prd-0001-product-requirements.md  
+Supersedes: none  
+Accepted by: none  
+Accepted at: n/a  
+Related issues/PRs: none
+
 # Offload — Recurring Task Intelligence PRD
 
-**Version:** 1.0
 **Date:** 2026-01-24
 **Status:** Draft
 **Owner:** Offload
@@ -24,7 +31,7 @@ structure_notes:
 **Related ADRs:**
 
 - [adr-0003: ADHD-Focused UX/UI Guardrails](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
-- [prd-0001: V1 Product Requirements](prd-0001-product-requirements.md)
+- [prd-0001: Product Requirements](prd-0001-product-requirements.md)
 
 ---
 
@@ -86,7 +93,7 @@ arbitrary schedules.
 - No rigid recurring task schedules
 - No "overdue" indicators or red warnings
 - No streak tracking or completion pressure
-- No calendar integration or time-based reminders (in v1)
+- No calendar integration or time-based reminders initially
 - No automatic task creation without user approval
 - No nagging or escalating notifications
 - No shared or collaborative recurring tasks
@@ -193,23 +200,8 @@ arbitrary schedules.
 
 ## 9. Pricing & limits (hybrid model)
 
-### Free tier
-
-- Up to 5 active recurring patterns
-- Basic pattern detection (regular intervals only)
-- Manual pattern management
-
-### Paid tier
-
-- Unlimited active patterns
-- Advanced pattern detection (irregular, seasonal, contextual)
-- Learning from dismissal patterns
-- Pattern suggestions with confidence indicators
-- Historical pattern analytics
-
-**Rationale:** Pattern detection is a quality-of-life feature. Free tier
-provides core value for essential recurring tasks; paid tier unlocks full
-intelligence for power users.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -437,4 +429,4 @@ intelligence for power users.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.0 | 2026-01-24 | Initial draft based on user research |
+| N/A | 2026-01-24 | Initial draft based on user research |

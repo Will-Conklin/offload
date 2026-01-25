@@ -10,12 +10,19 @@ last_updated: 2026-01-22
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
 structure_notes:
-  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals (V1); 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model (V1); 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
+  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
 ---
 
-# Offload — V1.1 Item Search by Text or Tag PRD
+Status: proposed  
+Owner: Offload  
+Depends on: docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md  
+Supersedes: none  
+Accepted by: none  
+Accepted at: n/a  
+Related issues/PRs: none
 
-**Version:** 1.1
+# Offload — Item Search by Text or Tag PRD
+
 **Date:** 2026-01-22
 **Status:** Proposed
 **Owner:** Offload
@@ -41,7 +48,7 @@ slow navigation and missed context.
 
 ---
 
-## 3. Product goals (V1)
+## 3. Product goals
 
 - Provide search access near settings with a floating search bar.
 - Support search by item text and by tag.
@@ -94,7 +101,8 @@ slow navigation and missed context.
 
 ## 9. Pricing & limits (hybrid model)
 
-No pricing or limits changes.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -104,7 +112,7 @@ No new AI or backend requirements.
 
 ---
 
-## 11. Data model (V1)
+## 11. Data model
 
 Search uses existing item text and tag relationships.
 
@@ -145,4 +153,4 @@ Search uses existing item text and tag relationships.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.1 | 2026-01-22 | Initial proposal. |
+| N/A | 2026-01-22 | Initial proposal. |

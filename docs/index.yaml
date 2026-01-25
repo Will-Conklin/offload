@@ -73,23 +73,44 @@ sections:
         title: PRDs
         path: prds/README.md
       - id: prd-0001-product-requirements
-        title: Offload — V1 Product Requirements Document (PRD)
+        title: Offload — Product Requirements Document (PRD)
         path: prds/prd-0001-product-requirements.md
       - id: prd-0002-persistent-bottom-tab-bar
-        title: Offload — V1.1 Persistent Bottom Tab Bar PRD
+        title: Offload — Persistent Bottom Tab Bar PRD
         path: prds/prd-0002-persistent-bottom-tab-bar.md
       - id: prd-0003-convert-plans-lists
-        title: Offload — V1.1 Convert Plans ↔ Lists PRD
+        title: Offload — Convert Plans ↔ Lists PRD
         path: prds/prd-0003-convert-plans-lists.md
       - id: prd-0004-drag-drop-ordering
-        title: Offload — V1.1 Drag & Drop Ordering PRD
+        title: Offload — Drag & Drop Ordering PRD
         path: prds/prd-0004-drag-drop-ordering.md
       - id: prd-0005-item-search-tags
-        title: Offload — V1.1 Item Search by Text or Tag PRD
+        title: Offload — Item Search by Text or Tag PRD
         path: prds/prd-0005-item-search-tags.md
       - id: prd-0006-context-aware-ci-pipeline
-        title: Offload — V1 Context-Aware CI Pipeline PRD
+        title: Offload — Context-Aware CI Pipeline PRD
         path: prds/prd-0006-context-aware-ci-pipeline.md
+      - id: prd-0007-smart-task-breakdown
+        title: Offload — Smart Task Breakdown PRD
+        path: prds/prd-0007-smart-task-breakdown.md
+      - id: prd-0008-brain-dump-compiler
+        title: Offload — Brain Dump Compiler Enhancement PRD
+        path: prds/prd-0008-brain-dump-compiler.md
+      - id: prd-0009-recurring-task-intelligence
+        title: Offload — Recurring Task Intelligence PRD
+        path: prds/prd-0009-recurring-task-intelligence.md
+      - id: prd-0010-tone-assistant
+        title: Offload — Tone Assistant PRD
+        path: prds/prd-0010-tone-assistant.md
+      - id: prd-0011-executive-function-prompts
+        title: Offload — Executive Function Prompts PRD
+        path: prds/prd-0011-executive-function-prompts.md
+      - id: prd-0012-decision-fatigue-reducer
+        title: Offload — Decision Fatigue Reducer PRD
+        path: prds/prd-0012-decision-fatigue-reducer.md
+      - id: prd-0013-pricing-limits
+        title: Offload — Pricing and Limits PRD
+        path: prds/prd-0013-pricing-limits.md
   - id: design
     title: Design
     description: Technical design and implementation guidance.
@@ -113,10 +134,10 @@ sections:
         title: Testing
         path: design/testing/README.md
       - id: design-v1-manual-testing-checklist
-        title: V1 Manual Testing Checklist
+        title: Manual Testing Checklist
         path: design/testing/design-v1-manual-testing-checklist.md
       - id: design-v1-manual-testing-results
-        title: V1 Manual Testing Results
+        title: Manual Testing Results
         path: design/testing/design-v1-manual-testing-results.md
       - id: design-voice-capture-test-results
         title: Voice Capture Test Results
@@ -177,13 +198,13 @@ sections:
         path: plans/_archived/plan-archived-remediation-tracking.md
         archived: true
       - id: plan-v1-roadmap
-        title: Offload v1 Roadmap
+        title: Offload Roadmap
         path: plans/plan-v1-roadmap.md
       - id: plan-v1-testing-polish
-        title: "Plan: V1 Testing & Polish"
+        title: "Plan: Testing & Polish"
         path: plans/plan-v1-testing-polish.md
       - id: plan-v1-release-prep
-        title: "Plan: V1 Release Prep"
+        title: "Plan: Release Prep"
         path: plans/plan-v1-release-prep.md
       - id: plan-v1-tag-relationship-refactor
         title: "Plan: Tag Relationship Refactor"
@@ -258,3 +279,12 @@ sections:
       - id: research-ios-ui-trends-2025
         title: iOS UI Trends Research & Recommendations for Offload
         path: research/research-ios-ui-trends-2025.md
+      - id: research-on-device-ai-feasibility
+        title: On-Device AI Feasibility for Offload
+        path: research/research-on-device-ai-feasibility.md
+      - id: research-offline-ai-quota-enforcement
+        title: Offline AI Quota Enforcement
+        path: research/research-offline-ai-quota-enforcement.md
+      - id: research-privacy-learning-user-data
+        title: Privacy Implications of Learning from User Data
+        path: research/research-privacy-learning-user-data.md

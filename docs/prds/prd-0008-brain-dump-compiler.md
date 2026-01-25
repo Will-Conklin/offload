@@ -14,9 +14,16 @@ structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics; 7. Core user flows; 8. Functional requirements; 9. Pricing & limits; 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions; 16. Revision history."
 ---
 
+Status: draft  
+Owner: Offload  
+Depends on: docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md; docs/prds/prd-0001-product-requirements.md  
+Supersedes: none  
+Accepted by: none  
+Accepted at: n/a  
+Related issues/PRs: none
+
 # Offload — Brain Dump Compiler Enhancement PRD
 
-**Version:** 1.0
 **Date:** 2026-01-24
 **Status:** Draft
 **Owner:** Offload
@@ -24,7 +31,7 @@ structure_notes:
 **Related ADRs:**
 
 - [adr-0003: ADHD-Focused UX/UI Guardrails](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
-- [prd-0001: V1 Product Requirements](prd-0001-product-requirements.md)
+- [prd-0001: Product Requirements](prd-0001-product-requirements.md)
 
 ---
 
@@ -180,23 +187,8 @@ This creates a bottleneck between capture and organization.
 
 ## 9. Pricing & limits (hybrid model)
 
-### Free tier
-
-- 5 compilations per month
-- Unlimited manual organization
-- Basic categorization (task, idea, question)
-
-### Paid tier
-
-- Unlimited compilations
-- Advanced categorization (decision, concern, reference, insight)
-- Learning from organization patterns
-- Batch compilation of multiple captures
-- Priority processing
-
-**Rationale:** Compilation is a power feature that requires significant AI
-processing. Free tier provides taste of value; paid tier unlocks full utility
-for heavy users.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -400,4 +392,4 @@ for heavy users.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.0 | 2026-01-24 | Initial draft based on user research |
+| N/A | 2026-01-24 | Initial draft based on user research |

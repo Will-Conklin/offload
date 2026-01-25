@@ -14,9 +14,16 @@ structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics; 7. Core user flows; 8. Functional requirements; 9. Pricing & limits; 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions; 16. Revision history."
 ---
 
+Status: draft  
+Owner: Offload  
+Depends on: docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md; docs/prds/prd-0001-product-requirements.md  
+Supersedes: none  
+Accepted by: none  
+Accepted at: n/a  
+Related issues/PRs: none
+
 # Offload — Tone Assistant PRD
 
-**Version:** 1.0
 **Date:** 2026-01-24
 **Status:** Draft
 **Owner:** Offload
@@ -24,7 +31,7 @@ structure_notes:
 **Related ADRs:**
 
 - [adr-0003: ADHD-Focused UX/UI Guardrails](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
-- [prd-0001: V1 Product Requirements](prd-0001-product-requirements.md)
+- [prd-0001: Product Requirements](prd-0001-product-requirements.md)
 
 ---
 
@@ -197,25 +204,8 @@ over-editing, or miscommunication.
 
 ## 9. Pricing & limits (hybrid model)
 
-### Free tier
-
-- 10 tone transformations per month
-- 3 saved presets
-- Basic tone options (formal, friendly, concise)
-- Single transformation preview
-
-### Paid tier
-
-- Unlimited tone transformations
-- Unlimited presets
-- Advanced tone options (empathetic, direct, nuanced blends)
-- Multi-tone preview (see all options at once)
-- Transformation history
-- Priority processing
-
-**Rationale:** Tone transformation is valuable for specific high-anxiety
-communications. Free tier enables critical use cases; paid tier for frequent
-communicators and power users.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -433,4 +423,4 @@ communicators and power users.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.0 | 2026-01-24 | Initial draft based on Goblin Tools gap analysis |
+| N/A | 2026-01-24 | Initial draft based on Goblin Tools gap analysis |
