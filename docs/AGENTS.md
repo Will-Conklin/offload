@@ -102,6 +102,7 @@ If ambiguity remains:
 - When referencing other docs in body text, use Markdown links with paths (no bare IDs like `adr-0002`).
 - Preserve historical ADRs; deprecate instead of deleting
 - Do not collapse multiple documents unless explicitly instructed
+- Archived docs can be moved to directory-level `_archived/` directories; create them when missing
 
 ### Owner Assignment Rules
 
