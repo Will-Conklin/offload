@@ -63,9 +63,9 @@ Adopt the following canonical terms and use them consistently.
 | `ListEntity` / `ListItem`          | `Collection` / `CollectionItem`       |
 | `CommunicationItem`                | Removed (feature cut)                 |
 | `Category`                         | Removed (unused)                      |
-| `HandOffRequest` / `HandOffRun`    | Deferred (AI features)     |
-| `Suggestion` / `SuggestionDecision`| Deferred (AI features)     |
-| `Placement`                        | Deferred (AI features)     |
+| `HandOffRequest` / `HandOffRun`    | Deferred (AI features)                |
+| `Suggestion` / `SuggestionDecision`| Deferred (AI features)                |
+| `Placement`                        | Deferred (AI features)                |
 
 ### Stable terms (unchanged)
 
