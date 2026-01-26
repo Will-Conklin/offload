@@ -60,14 +60,14 @@ Active development. For current plans and milestones, see
 
 ## Documentation
 
-- `docs/index.yaml` (documentation index)
-- `docs/prds/prd-0001-product-requirements.md`
-- `docs/adrs/README.md`
-- `docs/design/README.md`
-- `docs/plans/README.md`
-- `docs/reference/README.md`
-- `docs/research/README.md`
-- `ios/README.md`
+- [Documentation index](docs/index.yaml) — navigation map for all docs.
+- [Product requirements](docs/prds/README.md) — scope, goals, and success criteria.
+- [Architecture decisions](docs/adrs/README.md) — ADR index and rationale.
+- [Design docs](docs/design/README.md) — technical approach and test guidance.
+- [Implementation plans](docs/plans/README.md) — execution sequencing and status.
+- [Reference docs](docs/reference/README.md) — contracts, schemas, and invariants.
+- [Research](docs/research/README.md) — exploratory notes and reviews.
+- [iOS Development Guide](ios/README.md) — setup, build, and run details.
 
 ## Getting Started
 
