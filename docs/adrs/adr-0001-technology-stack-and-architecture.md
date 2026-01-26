@@ -3,7 +3,7 @@ id: adr-0001-technology-stack-and-architecture
 type: architecture-decision
 status: accepted
 owners:
-  - will-conklin
+  - Will-Conklin
 applies_to:
   - architecture
   - ios
@@ -20,7 +20,7 @@ structure_notes:
   - "Keep the top-level section outline intact."
 decision-date: 2025-12-30
 decision-makers:
-  - will-conklin
+  - Will-Conklin
 ---
 
 <!-- Intent: Record the chosen technology stack and keep implementation notes aligned with the current codebase. -->
@@ -83,7 +83,7 @@ We will use the following technology stack:
 
 **Decision Deferred:** Backend technology to be determined when needed
 
-- **Considerations:** May not need backend for v1 (local-only)
+- **Considerations:** May not need backend initially (local-only)
 - **Future Options:** Vapor (Swift), Node.js, or managed services
 - **Requirements:** Must support CloudKit or custom sync protocol
 
@@ -146,7 +146,7 @@ We will use the following technology stack:
 ### Redux/TCA for State Management
 
 - **Pros:** Predictable state, good for complex apps
-- **Cons:** Significant boilerplate, overkill for v1
+- **Cons:** Significant boilerplate, overkill for current needs
 - **Decision:** Rejected - @Query sufficient for current needs, can add later
 
 ## Implementation Notes
@@ -186,7 +186,7 @@ We will use the following technology stack:
   - Workaround: Use case-sensitive search
 - **Limited optional chaining**: Complex optional predicates not supported
   - Workaround: Fetch all and filter in memory for complex queries
-- Acceptable for MVP scale, can optimize later with custom indexing if needed
+- Acceptable for current scale, can optimize later with custom indexing if needed
 
 ## References
 
@@ -197,6 +197,6 @@ We will use the following technology stack:
 
 ## Revision History
 
-- 2025-12-30: Initial decision (v1)
+- 2025-12-30: Initial decision
 - 2025-12-31: Updated with Week 2 implementation findings (SwiftData relationships, repository queries, predicate limitations)
 - 2026-01-20: Updated tag storage notes for relationship-based tags

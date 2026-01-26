@@ -3,7 +3,7 @@ id: plan-error-handling-improvements
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - error
   - handling

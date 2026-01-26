@@ -3,9 +3,9 @@ id: prd-0012-decision-fatigue-reducer
 type: product-requirements
 status: draft
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-24
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -115,7 +115,7 @@ pick something reasonable and move forward.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -407,7 +407,7 @@ Pricing and limits are deferred; see
 
 - **Medium complexity** for recommendation logic
 - **Low complexity** for basic UI
-- Estimated 2-3 week implementation for MVP
+- Estimated 2-3 week implementation
 - Additional 1-2 weeks for pattern learning and refinements
 
 ### Testing requirements

@@ -3,7 +3,7 @@ id: research-adhd-ux-ui
 type: research
 status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - adhd
   - ux

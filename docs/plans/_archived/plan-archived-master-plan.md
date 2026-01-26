@@ -3,9 +3,9 @@ id: plan-master-plan
 type: plan
 status: archived
 owners:
-  - tbd
+  - TBD
 applies_to:
-  - Offload
+  - Will-Conklin
 last_updated: 2026-01-17
 related:
   - research-ios-ui-trends-2025

@@ -3,7 +3,7 @@ id: design-manual-testing-checklist
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - testing
   - launch-release

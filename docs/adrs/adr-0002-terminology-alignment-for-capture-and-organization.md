@@ -3,10 +3,10 @@ id: adr-0002-terminology-alignment-for-capture-and-organization
 type: architecture-decision
 status: accepted
 owners:
-  - will-conklin
+  - Will-Conklin
 applies_to:
   - terminology
-  - product
+  - Will-Conklin
   - documentation
 last_updated: 2026-01-20
 related: []
@@ -20,7 +20,7 @@ structure_notes:
   - "Keep top-level sections: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: 2026-01-03
 decision-makers:
-  - will-conklin
+  - Will-Conklin
 ---
 
 <!-- Intent: Record terminology alignment decisions from early iterations so documentation and code use the same vocabulary. -->
@@ -44,7 +44,7 @@ Adopt the following canonical terms and use them consistently.
 > data model significantly. Many terms below are now **superseded** - see the
 > updated table for current status.
 
-### Current v1 terminology (Jan 2026)
+### Current terminology (Jan 2026)
 
 | Term             | Status   | Notes                                          |
 | ---------------- | -------- | ---------------------------------------------- |
@@ -63,9 +63,9 @@ Adopt the following canonical terms and use them consistently.
 | `ListEntity` / `ListItem`          | `Collection` / `CollectionItem`       |
 | `CommunicationItem`                | Removed (feature cut)                 |
 | `Category`                         | Removed (unused)                      |
-| `HandOffRequest` / `HandOffRun`    | Deferred to post-v1 (AI features)     |
-| `Suggestion` / `SuggestionDecision`| Deferred to post-v1 (AI features)     |
-| `Placement`                        | Deferred to post-v1 (AI features)     |
+| `HandOffRequest` / `HandOffRun`    | Deferred (AI features)     |
+| `Suggestion` / `SuggestionDecision`| Deferred (AI features)     |
+| `Placement`                        | Deferred (AI features)     |
 
 ### Stable terms (unchanged)
 

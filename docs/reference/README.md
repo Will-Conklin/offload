@@ -3,9 +3,9 @@ id: reference-readme
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - reference
 last_updated: 2026-01-17
 related:
   - reference-test-runtime-baselines
@@ -72,7 +72,7 @@ id: reference-{topic}
 type: reference
 status: active
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD

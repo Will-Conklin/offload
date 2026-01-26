@@ -3,7 +3,7 @@ id: adrs-readme
 type: architecture-decision
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - architecture
 last_updated: 2026-01-22
@@ -80,7 +80,7 @@ id: adr-NNNN-{decision-title}
 type: architecture-decision
 status: proposed
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - architecture
 last_updated: YYYY-MM-DD

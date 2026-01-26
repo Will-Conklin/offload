@@ -3,9 +3,9 @@ id: prd-0001-product-requirements
 type: product-requirements
 status: active
 owners:
-  - will-conklin
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-20
 related:
   - adr-0001-technology-stack-and-architecture
@@ -21,7 +21,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
+  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (after deployment); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
   - "Keep the top-level section outline intact."
 ---
 
@@ -84,7 +84,7 @@ Users experience stress when ideas, tasks, or plans accumulate faster than they 
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 ### Manual-only (current scope)
 

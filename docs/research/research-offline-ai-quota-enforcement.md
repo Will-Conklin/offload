@@ -3,10 +3,10 @@ id: research-offline-ai-quota-enforcement
 type: research
 status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - ai
-  - product
+  - Will-Conklin
 last_updated: 2026-01-25
 related:
   - prd-0001-product-requirements

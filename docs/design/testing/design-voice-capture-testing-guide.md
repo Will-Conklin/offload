@@ -3,7 +3,7 @@ id: design-voice-capture-testing-guide
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - voice
   - capture
@@ -223,7 +223,7 @@ These will trigger permission dialogs on first use.
    - If needed later, can add optional audio attachment
 
 4. **Single Recording at a Time**: Cannot capture multiple simultaneous recordings
-   - Expected behavior for MVP
+   - Expected behavior
 
 ## Decision Checkpoint (Day 3)
 

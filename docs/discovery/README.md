@@ -3,7 +3,7 @@ id: discovery-readme
 type: discovery
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - discovery
 last_updated: 2026-01-25

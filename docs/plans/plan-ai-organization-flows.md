@@ -3,9 +3,9 @@ id: plan-ai-organization-flows
 type: plan
 status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-launch-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
   - plan-roadmap
@@ -18,12 +18,12 @@ structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: AI Organization Flows & Review Screen (Pre-launch Candidate)
+# Plan: AI Organization Flows & Review Screen (Pending Confirmation)
 
 ## Overview
 
 Execution plan for the optional AI organization flows and review screen listed
-as additional pre-launch scope in the roadmap. Work should begin only after
+as additional proposed scope in the roadmap. Work should begin only after
 scope is confirmed via PRD/ADR updates.
 
 ## Goals

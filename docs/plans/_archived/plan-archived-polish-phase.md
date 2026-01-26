@@ -3,7 +3,7 @@ id: plan-archived-polish-phase
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - polish
 last_updated: 2026-01-17

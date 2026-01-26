@@ -3,7 +3,7 @@ id: design-context-aware-ci-pipeline
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - ci
 last_updated: 2026-01-22

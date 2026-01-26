@@ -3,7 +3,7 @@ id: plan-pagination-implementation
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - pagination
 last_updated: 2026-01-17

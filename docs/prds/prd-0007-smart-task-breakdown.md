@@ -3,9 +3,9 @@ id: prd-0007-smart-task-breakdown
 type: product-requirements
 status: draft
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-24
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -99,7 +99,7 @@ feels like additional work before the "real" work can begin.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -312,7 +312,7 @@ Pricing and limits are deferred; see
 ### Complexity estimate
 
 - **High complexity** due to AI integration and template matching logic
-- Estimated 3-4 week implementation for MVP
+- Estimated 3-4 week implementation
 - Additional 2 weeks for template management UI and refinement
 
 ### Testing requirements

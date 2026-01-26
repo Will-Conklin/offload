@@ -3,9 +3,9 @@ id: plan-logging-implementation
 type: plan
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - Will-Conklin
 last_updated: 2026-01-22
 related: []
 depends_on: []

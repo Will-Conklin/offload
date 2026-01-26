@@ -3,7 +3,7 @@ id: research-color-scheme-alternatives
 type: research
 status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - color
   - scheme

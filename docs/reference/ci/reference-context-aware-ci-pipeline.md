@@ -3,7 +3,7 @@ id: reference-context-aware-ci-pipeline
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - ci
 last_updated: 2026-01-22

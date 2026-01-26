@@ -3,7 +3,7 @@ id: plan-repository-pattern-consistency
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - repository
   - pattern

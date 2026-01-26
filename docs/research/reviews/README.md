@@ -3,7 +3,7 @@ id: research-reviews-readme
 type: research
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - reviews
 last_updated: 2026-01-25

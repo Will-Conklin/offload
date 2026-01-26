@@ -3,7 +3,7 @@ id: plan-archived-consolidated-implementation-plan
 type: plan
 status: archived
 owners:
-  - tbd
+  - TBD
 applies_to:
   - consolidated
 last_updated: 2026-01-17

@@ -3,9 +3,9 @@ id: plans-archived-readme
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - Will-Conklin
 last_updated: 2026-01-20
 related:
   - plan-archived-brain-dump-model

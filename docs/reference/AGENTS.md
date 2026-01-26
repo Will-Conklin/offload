@@ -3,7 +3,7 @@ id: reference-agents
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - agents
   - reference

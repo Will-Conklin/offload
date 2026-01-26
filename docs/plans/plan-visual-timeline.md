@@ -3,9 +3,9 @@ id: plan-visual-timeline
 type: plan
 status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-launch-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
   - plan-roadmap
@@ -18,12 +18,12 @@ structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Visual Timeline (Pre-launch Candidate)
+# Plan: Visual Timeline (Pending Confirmation)
 
 ## Overview
 
 Execution plan for the optional visual timeline feature listed as additional
-pre-launch scope in the roadmap. Work should begin only after scope is confirmed
+proposed scope in the roadmap. Work should begin only after scope is confirmed
 via PRD/ADR updates.
 
 ## Goals

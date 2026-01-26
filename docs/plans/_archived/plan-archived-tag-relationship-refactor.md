@@ -3,7 +3,7 @@ id: plan-tag-relationship-refactor
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - tag
   - relationship

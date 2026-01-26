@@ -3,9 +3,9 @@ id: research-readme
 type: research
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - research
 last_updated: 2026-01-25
 related:
   - research-adhd-ux-ui
@@ -74,7 +74,7 @@ id: research-{topic}
 type: research
 status: active
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD

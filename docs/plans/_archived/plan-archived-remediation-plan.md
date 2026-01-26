@@ -3,7 +3,7 @@ id: plan-archived-remediation-plan
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - remediation
 last_updated: 2026-01-17

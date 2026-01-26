@@ -3,7 +3,7 @@ id: research-ios-ui-trends-2025
 type: research
 status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - ios
   - ui

@@ -3,7 +3,7 @@ id: research-privacy-learning-user-data
 type: research
 status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - ai
   - privacy

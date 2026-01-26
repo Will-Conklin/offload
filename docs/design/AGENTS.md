@@ -3,10 +3,10 @@ id: design-agents
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - agents
-  - design
+  - Will-Conklin
 last_updated: 2026-01-25
 related:
   - docs-agents

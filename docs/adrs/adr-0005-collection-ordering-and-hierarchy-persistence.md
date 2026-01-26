@@ -3,7 +3,7 @@ id: adr-0005-collection-ordering-and-hierarchy-persistence
 type: architecture-decision
 status: accepted
 owners:
-  - product
+  - Will-Conklin
   - ios
 applies_to:
   - data-model
@@ -26,7 +26,7 @@ structure_notes:
   - "Section order: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: 2026-01-21
 decision-makers:
-  - product
+  - Will-Conklin
   - ios
 ---
 

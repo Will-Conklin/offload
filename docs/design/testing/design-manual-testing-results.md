@@ -3,7 +3,7 @@ id: design-manual-testing-results
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - testing
   - launch-release

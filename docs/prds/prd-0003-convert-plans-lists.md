@@ -3,9 +3,9 @@ id: prd-0003-convert-plans-lists
 type: product-requirements
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-22
 related:
   - adr-0002-terminology-alignment-for-capture-and-organization
@@ -18,7 +18,7 @@ accepted_by: Offload
 accepted_at: 2026-01-22
 related_issues: []
 structure_notes:
-  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
+  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (after deployment); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
 ---
 
 # Offload — Convert Plans ↔ Lists PRD
@@ -70,7 +70,7 @@ needs, but cannot change type later without recreating the collection.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |

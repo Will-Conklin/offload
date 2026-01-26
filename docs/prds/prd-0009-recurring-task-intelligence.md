@@ -3,9 +3,9 @@ id: prd-0009-recurring-task-intelligence
 type: product-requirements
 status: draft
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-24
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -109,7 +109,7 @@ arbitrary schedules.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -397,7 +397,7 @@ Pricing and limits are deferred; see
 
 - **Medium complexity** for pattern detection algorithm
 - **Low complexity** for basic UI
-- Estimated 2-3 week implementation for MVP
+- Estimated 2-3 week implementation
 - Additional 1-2 weeks for learning refinements and Settings UI
 
 ### Testing requirements

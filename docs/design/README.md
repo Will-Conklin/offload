@@ -3,9 +3,9 @@ id: design-readme
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - design
 last_updated: 2026-01-25
 related:
   - design-voice-capture-testing-guide
@@ -79,7 +79,7 @@ id: design-{feature-name}
 type: design
 status: proposed
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD

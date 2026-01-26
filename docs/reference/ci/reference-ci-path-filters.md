@@ -3,7 +3,7 @@ id: reference-ci-path-filters
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - ci
 last_updated: 2026-01-22

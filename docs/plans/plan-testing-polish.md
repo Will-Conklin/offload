@@ -3,7 +3,7 @@ id: plan-testing-polish
 type: plan
 status: in-progress
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - launch-release
 last_updated: 2026-01-20

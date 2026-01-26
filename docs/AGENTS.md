@@ -3,7 +3,7 @@ id: docs-agents
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - agents
 last_updated: 2026-01-25
@@ -105,6 +105,13 @@ If ambiguity remains:
 - When referencing other docs in body text, use Markdown links with paths (no bare IDs like `adr-0002`).
 - Preserve historical ADRs; deprecate instead of deleting
 - Do not collapse multiple documents unless explicitly instructed
+
+### Owner Assignment Rules
+
+- **NEVER assume or infer document ownership**
+- Use `TBD` if the owner is not explicitly known
+- Owner values MUST be individual contributor names (e.g., `Will-Conklin`), never role-based (e.g., "design", "product")
+- Do not use generic values like "Offload" unless explicitly specified for meta-documentation
 
 ---
 

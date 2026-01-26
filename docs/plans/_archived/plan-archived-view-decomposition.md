@@ -3,7 +3,7 @@ id: plan-view-decomposition
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - view
   - decomposition

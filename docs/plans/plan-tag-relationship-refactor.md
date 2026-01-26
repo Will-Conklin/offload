@@ -3,9 +3,9 @@ id: plan-tag-relationship-refactor
 type: plan
 status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-launch-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
   - plan-roadmap
@@ -18,12 +18,12 @@ structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Tag Relationship Refactor (Pre-launch Candidate)
+# Plan: Tag Relationship Refactor (Pending Confirmation)
 
 ## Overview
 
 Execution plan for the optional tag relationship refactor listed as additional
-pre-launch scope in the roadmap. Work should begin only after scope is confirmed
+proposed scope in the roadmap. Work should begin only after scope is confirmed
 via PRD/ADR updates.
 
 ## Goals
@@ -56,7 +56,7 @@ via PRD/ADR updates.
 
 ## Dependencies
 
-- Approved PRD/ADR updates for pre-launch scope.
+- Approved PRD/ADR updates for proposed scope.
 - SwiftData migration guidance and test coverage.
 
 ## Risks

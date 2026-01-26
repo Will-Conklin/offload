@@ -3,7 +3,7 @@ id: adr-0003-adhd-focused-ux-ui-guardrails
 type: architecture-decision
 status: accepted
 owners:
-  - design
+  - Will-Conklin
   - ios
 applies_to:
   - architecture
@@ -24,7 +24,7 @@ structure_notes:
   - "Keep top-level sections: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: 2026-01-05
 decision-makers:
-  - design
+  - Will-Conklin
   - ios
 ---
 

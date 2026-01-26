@@ -3,9 +3,9 @@ id: plan-advanced-accessibility
 type: plan
 status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-launch-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
   - plan-roadmap
@@ -18,11 +18,11 @@ structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Advanced Accessibility Features (Pre-launch Candidate)
+# Plan: Advanced Accessibility Features (Pending Confirmation)
 
 ## Overview
 
-Execution plan for advanced accessibility features listed as additional pre-launch
+Execution plan for advanced accessibility features listed as additional proposed
 scope in the roadmap. Work should begin only after scope is confirmed via
 PRD/ADR updates.
 

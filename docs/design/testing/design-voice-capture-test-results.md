@@ -3,7 +3,7 @@ id: design-voice-capture-test-results
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - voice
   - capture

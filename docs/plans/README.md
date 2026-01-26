@@ -3,9 +3,9 @@ id: plans-readme
 type: plan
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - plans
 last_updated: 2026-01-25
 related:
   - plan-roadmap
@@ -76,7 +76,7 @@ proposed → accepted → in-progress → completed/archived
 - [Plan: Logging Implementation](./plan-logging-implementation.md)
 - [Plan: Context-Aware CI Pipeline](./plan-context-aware-ci-pipeline.md)
 
-### Proposed (Pre-launch Candidates)
+### Proposed (Pending Confirmations)
 
 - [Plan: Tag Relationship Refactor](./plan-tag-relationship-refactor.md)
 - [Plan: View Decomposition](./plan-view-decomposition.md)
@@ -100,7 +100,7 @@ id: plan-{feature-name}
 type: plan
 status: proposed
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD

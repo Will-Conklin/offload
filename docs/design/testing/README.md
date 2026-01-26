@@ -3,7 +3,7 @@ id: design-testing-readme
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - testing
 last_updated: 2026-01-25

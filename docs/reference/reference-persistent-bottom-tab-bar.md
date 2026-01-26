@@ -3,7 +3,7 @@ id: reference-persistent-bottom-tab-bar
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - navigation
 last_updated: 2026-01-22

@@ -3,9 +3,9 @@ id: prd-0013-pricing-limits
 type: product-requirements
 status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-25
 related:
   - prd-0001-product-requirements

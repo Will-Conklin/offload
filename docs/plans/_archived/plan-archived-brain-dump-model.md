@@ -3,7 +3,7 @@ id: plan-archived-brain-dump-model
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - brain
   - dump

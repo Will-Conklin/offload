@@ -3,7 +3,7 @@ id: plan-roadmap
 type: plan
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - launch-release
 last_updated: 2026-01-22
@@ -104,7 +104,7 @@ handling work is effectively complete.
 - [Plan: Testing & Polish](./plan-testing-polish.md)
 - [Plan: Release Prep](./plan-release-prep.md)
 
-### Pre-launch candidate scope (requires PRD/ADR confirmation)
+### Proposed scope (requires PRD/ADR confirmation)
 
 - [Plan: Tag Relationship Refactor](./plan-tag-relationship-refactor.md)
 - [Plan: View Decomposition](./plan-view-decomposition.md)

@@ -3,9 +3,9 @@ id: prd-0008-brain-dump-compiler
 type: product-requirements
 status: draft
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-24
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -106,7 +106,7 @@ This creates a bottleneck between capture and organization.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -359,7 +359,7 @@ Pricing and limits are deferred; see
 ### Complexity estimate
 
 - **High complexity** due to NLP requirements and learning system
-- Estimated 4-5 week implementation for MVP
+- Estimated 4-5 week implementation
 - Additional 2 weeks for batch compilation and learning refinements
 - Requires significant testing with diverse brain dump content
 

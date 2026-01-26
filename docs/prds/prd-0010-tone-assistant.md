@@ -3,9 +3,9 @@ id: prd-0010-tone-assistant
 type: product-requirements
 status: draft
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - product
+  - Will-Conklin
 last_updated: 2026-01-24
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -109,7 +109,7 @@ over-editing, or miscommunication.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -391,7 +391,7 @@ Pricing and limits are deferred; see
 ### Complexity estimate
 
 - **High complexity** due to nuanced AI tone transformation requirements
-- Estimated 3-4 week implementation for MVP
+- Estimated 3-4 week implementation
 - Additional 2 weeks for preset system and multi-tone preview
 
 ### Testing requirements

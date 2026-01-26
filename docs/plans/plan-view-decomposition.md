@@ -3,9 +3,9 @@ id: plan-view-decomposition
 type: plan
 status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-launch-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
   - plan-roadmap
@@ -18,11 +18,11 @@ structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: View Decomposition (Pre-launch Candidate)
+# Plan: View Decomposition (Pending Confirmation)
 
 ## Overview
 
-Execution plan for decomposing large SwiftUI views listed as optional pre-launch
+Execution plan for decomposing large SwiftUI views listed as optional proposed
 scope in the roadmap. Work should begin only after scope is confirmed via
 PRD/ADR updates.
 
@@ -56,7 +56,7 @@ PRD/ADR updates.
 
 ## Dependencies
 
-- Scope confirmation for pre-launch work.
+- Scope confirmation for proposed work.
 - Updated design system guidance for shared components.
 
 ## Risks

@@ -3,7 +3,7 @@ id: research-2026-01-04-main-branch-review
 type: research
 status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - main
   - branch
@@ -190,7 +190,7 @@ private func deleteEntries(offsets: IndexSet) {
 
 Cannot use enums in predicates: `#Predicate { $0.status == .inbox }` doesn't work.
 
-**Current Workaround**: Fetch all and filter in memory (acceptable for MVP, not scalable).
+**Current Workaround**: Fetch all and filter in memory (acceptable for current scale, not scalable long-term).
 
 **Recommendation**: Document this limitation in repository code comments and plan for optimization when dataset grows.
 

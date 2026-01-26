@@ -3,9 +3,9 @@ id: plan-ai-pricing-limits
 type: plan
 status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-launch-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
   - plan-roadmap
@@ -19,12 +19,12 @@ structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: AI Pricing & Limits (Pre-launch Candidate)
+# Plan: AI Pricing & Limits (Pending Confirmation)
 
 ## Overview
 
 Execution plan for AI pricing and limits (free/paid tiers, server-side
-enforcement) listed as additional pre-launch scope in the roadmap. Work should
+enforcement) listed as additional proposed scope in the roadmap. Work should
 begin only after scope is confirmed via PRD/ADR updates.
 
 ## Goals

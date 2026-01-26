@@ -3,7 +3,7 @@ id: adr-0007-context-aware-ci-workflow-strategy
 type: architecture-decision
 status: accepted
 owners:
-  - product
+  - Will-Conklin
   - ios
 applies_to:
   - ci
@@ -23,7 +23,7 @@ structure_notes:
   - "Section order: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: 2026-01-21
 decision-makers:
-  - product
+  - Will-Conklin
   - ios
 ---
 
