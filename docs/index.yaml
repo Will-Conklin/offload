@@ -28,6 +28,9 @@ sections:
       - id: reference-context-aware-ci-pipeline
         title: Context-Aware CI Pipeline
         path: reference/ci/reference-context-aware-ci-pipeline.md
+      - id: reference-frontmatter-schema
+        title: Frontmatter Schema Reference
+        path: reference/reference-frontmatter-schema.md
       - id: reference-test-runtime-baselines
         title: Test Runtime Baselines
         path: reference/testing/reference-test-runtime-baselines.md
