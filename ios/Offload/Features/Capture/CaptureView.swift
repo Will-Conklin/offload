@@ -18,8 +18,8 @@ struct CaptureView: View {
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = CaptureListViewModel()
 
+    let navigationTitle: String
     @State private var showingSettings = false
-    @State private var showingAccount = false
     @State private var showingAddItem = false
     @State private var selectedItem: Item?
     @State private var tagPickerItem: Item?
@@ -30,6 +30,10 @@ struct CaptureView: View {
     private var floatingTabBarClearance: CGFloat {
         Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
     }
+    init(navigationTitle: String = "Capture") {
+        self.navigationTitle = navigationTitle
+    }
+
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottomTrailing) {
@@ -88,22 +92,10 @@ struct CaptureView: View {
                 .padding(.trailing, Theme.Spacing.md)
                 .padding(.bottom, Theme.Spacing.md)
             }
-            .navigationTitle("Capture")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        showingAccount = true
-                    } label: {
-                        IconTile(
-                            iconName: Icons.account,
-                            iconSize: 18,
-                            tileSize: 32,
-                            style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
-                        )
-                    }
-                    .accessibilityLabel("Account")
-
                     Button {
                         showingSettings = true
                     } label: {
@@ -119,9 +111,6 @@ struct CaptureView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
-            }
-            .sheet(isPresented: $showingAccount) {
-                AccountView()
             }
             .sheet(isPresented: $showingAddItem, onDismiss: refreshItems) {
                 CaptureComposeView()

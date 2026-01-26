@@ -37,7 +37,6 @@ struct OrganizeView: View {
     @AppStorage("organize.scope") private var selectedScopeRaw = Scope.plans.rawValue
     @State private var showingCreate = false
     @State private var showingSettings = false
-    @State private var showingAccount = false
     @State private var selectedCollection: Collection?
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = OrganizeListViewModel()
@@ -78,18 +77,6 @@ struct OrganizeView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        showingAccount = true
-                    } label: {
-                        IconTile(
-                            iconName: Icons.account,
-                            iconSize: 18,
-                            tileSize: 32,
-                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
-                        )
-                    }
-                    .accessibilityLabel("Account")
-
                     Button { showingSettings = true } label: {
                         IconTile(
                             iconName: Icons.settings,
@@ -106,9 +93,6 @@ struct OrganizeView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
-            }
-            .sheet(isPresented: $showingAccount) {
-                AccountView()
             }
             .navigationDestination(item: $selectedCollection) { collection in
                 CollectionDetailView(collectionID: collection.id)
