@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - plan-roadmap
   - plan-ai-organization-flows
@@ -16,7 +16,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: AI Pricing & Limits (Pending Confirmation)
@@ -66,6 +66,10 @@ begin only after scope is confirmed via PRD/ADR updates.
 | --- | --- | --- |
 | Pricing changes introduce scope creep | M | Keep decisions in PRD/ADR updates. |
 | Enforcement gaps | H | Validate backend enforcement early. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

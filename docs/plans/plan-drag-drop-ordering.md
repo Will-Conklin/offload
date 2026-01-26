@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - organize
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related:
   - prd-0004-drag-drop-ordering
   - adr-0005-collection-ordering-and-hierarchy-persistence
@@ -18,7 +18,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Drag and Drop Ordering
@@ -81,6 +81,10 @@ and persistence.
 | Drag gestures conflict with scrolling | M | Tune hit targets and gesture priority. |
 | Incorrect ordering after nested moves | M | Add deterministic reorder logic and QA. |
 | Hidden children cause confusion | M | Provide clear expand/collapse affordances. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

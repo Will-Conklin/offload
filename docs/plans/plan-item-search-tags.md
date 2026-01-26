@@ -7,7 +7,7 @@ owners:
 applies_to:
   - capture
   - organize
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related:
   - prd-0005-item-search-tags
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -19,7 +19,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Item Search by Text or Tag
@@ -80,6 +80,10 @@ chips for scoped searches and minimal disruption to existing flows.
 | Search UI overlaps existing controls | M | Tune placement and spacing per device. |
 | Large datasets slow searches | M | Use efficient predicates and throttling. |
 | Tag chips overwhelm UI | L | Limit chip count and prioritize matches. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - plans
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related: []
 depends_on: []
 supersedes: []
@@ -14,7 +14,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Comprehensive Logging Implementation (Proposed)
@@ -180,6 +180,10 @@ Verification (post-phase checklist):
 | Log noise reduces signal | M | Follow log level guidance and avoid overusing `.debug` in production paths. |
 | Sensitive data exposed | H | Use privacy annotations; keep user content `.private`. |
 | Missed crash context | M | Prioritize Phase 1 coverage and verify fatal paths. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

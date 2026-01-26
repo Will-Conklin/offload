@@ -112,7 +112,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: {Feature Name}
@@ -154,6 +154,10 @@ scope}
 | ------ | ------ | ------------ |
 | {risk} | {H/M/L} | {mitigation} |
 
+## User Verification
+
+- [ ] User verification complete.
+
 ## Progress
 
 | Date       | Update              |
@@ -165,5 +169,5 @@ scope}
 
 - Use kebab-case with a concise feature or outcome, for example
   `plan-error-handling-improvements.md`.
-- Move completed or superseded plans to `plans/_archived/` with
-  `plan-archived-` prefix.
+- Move completed or superseded plans to `plans/_archived/`.
+- Keep original filenames when archiving to preserve links; avoid renaming.

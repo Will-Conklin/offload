@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - plan-roadmap
   - plan-testing-polish
@@ -16,7 +16,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Release Prep
@@ -68,6 +68,10 @@ metadata, and TestFlight distribution.
 | Documentation gaps | M | Review PRDs and ADRs before updates. |
 | App Store assets outdated | M | Audit assets early in Phase 2. |
 | TestFlight feedback delays | L | Schedule buffer before final submission. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 
