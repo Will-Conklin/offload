@@ -49,6 +49,11 @@ open ios/Offload.xcodeproj    # Open in Xcode
 - For feature work: Track plans with GitHub issues; update status/comments/links;
   move plan issues through Ready → In Progress → Done using repo project
   settings
+- For plan issues: add proposed plans as GitHub issues and add them to the
+  Offload project with status Backlog; move to Ready once the plan is accepted;
+  move to In Progress when work starts; move to In Review when a PR is open and
+  all plan items are complete except User Verification; move to Done after the
+  PR merges
 - NEVER assume version numbers or pricing information; treat them as deferred
   unless explicitly documented
 - Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for
