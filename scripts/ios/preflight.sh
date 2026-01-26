@@ -167,7 +167,7 @@ print_devices_for_pinned_runtime() {
     return
   fi
 
-  if ! printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}" | grep -Fq "${runtime_header}"; then
+  if ! printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}" | grep -Fq -- "${runtime_header}"; then
     echo "  (no devices found for ${runtime_header})"
     return
   fi

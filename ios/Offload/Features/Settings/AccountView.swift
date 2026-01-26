@@ -9,9 +9,9 @@ import SwiftUI
 
 
 struct AccountView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
+    @State private var showingSettings = false
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
@@ -35,9 +35,22 @@ struct AccountView: View {
             .navigationTitle("Account")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        IconTile(
+                            iconName: Icons.settings,
+                            iconSize: 18,
+                            tileSize: 32,
+                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                        )
+                    }
+                    .accessibilityLabel("Settings")
                 }
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
             }
         }
     }

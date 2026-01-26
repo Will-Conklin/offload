@@ -6,7 +6,11 @@ owners:
   - Will-Conklin
 applies_to:
   - navigation
+<<<<<<< HEAD
 last_updated: 2026-01-26
+=======
+last_updated: 2026-01-26
+>>>>>>> main
 related:
   - prd-0002-persistent-bottom-tab-bar
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
@@ -84,7 +88,14 @@ preserving ADHD-friendly navigation patterns.
 
 ## Progress
 
+<<<<<<< HEAD
 | Date       | Update                                                   |
 | ---------- | -------------------------------------------------------- |
 | 2026-01-21 | Draft plan created.                                      |
 | 2026-01-22 | Implementation complete; awaiting user verification.     |
+=======
+| Date       | Update                                                   |
+| ---------- | -------------------------------------------------------- |
+| 2026-01-21 | Draft plan created.                                      |
+| 2026-01-22 | Implementation complete; awaiting user verification.     |
+>>>>>>> main
