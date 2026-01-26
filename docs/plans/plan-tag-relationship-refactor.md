@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - plan-roadmap
 depends_on: []
@@ -15,7 +15,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Tag Relationship Refactor (Pending Confirmation)
@@ -65,6 +65,10 @@ via PRD/ADR updates.
 | --- | --- | --- |
 | Migration causes data loss | H | Validate backups and run staged migration tests. |
 | Scope shifts delay launch | M | Keep work gated behind scope confirmation. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

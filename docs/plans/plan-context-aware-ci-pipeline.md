@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - ci
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related:
   - prd-0006-context-aware-ci-pipeline
   - adr-0006-ci-provider-selection
@@ -18,7 +18,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Context-Aware CI Pipeline
@@ -84,6 +84,10 @@ run override, and a scheduled full CI run per PRD-0006.
 | Docs-only PRs still trigger non-doc lanes | M      | Ensure `docs_only` guard is applied to other lanes. |
 | Full runs missed on schedule              | M      | Validate cron schedule and monitor runs.            |
 | Required checks mismatch lane names       | M      | Coordinate required checks with workflow job names. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

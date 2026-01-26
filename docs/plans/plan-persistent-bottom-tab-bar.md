@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - navigation
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related:
   - prd-0002-persistent-bottom-tab-bar
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
@@ -18,7 +18,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Persistent Bottom Tab Bar
@@ -78,9 +78,13 @@ preserving ADHD-friendly navigation patterns.
 | Capture affordances feel less prominent | M | Preserve CTA size/contrast and quick actions. |
 | Navigation regressions in existing flows | M | Smoke-test Capture/Organize navigation stacks. |
 
+## User Verification
+
+- [ ] User verification complete.
+
 ## Progress
 
-| Date       | Update                |
-| ---------- | --------------------- |
-| 2026-01-21 | Draft plan created.   |
+| Date       | Update                                           |
+| ---------- | ------------------------------------------------ |
+| 2026-01-21 | Draft plan created.                              |
 | 2026-01-22 | Shipped the persistent tab shell and CTA layout. |

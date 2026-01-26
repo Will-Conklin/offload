@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - plan-roadmap
 depends_on: []
@@ -15,7 +15,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Testing & Polish
@@ -81,6 +81,10 @@ and accessibility review before release prep begins.
 | Late defects extend timeline | M | Prioritize blockers and defer non-critical polish. |
 | Accessibility gaps found late | M | Run accessibility checks early in Phase 4. |
 | Performance regressions | M | Track baseline results and retest after fixes. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

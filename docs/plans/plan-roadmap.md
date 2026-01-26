@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related:
   - plan-testing-polish
   - plan-release-prep
@@ -148,3 +148,7 @@ handling work is effectively complete.
 | Launch scope | Manual app only (no AI)                   | Jan 19 |
 | Pagination   | Defer to later release                    | Jan 19 |
 | ViewModels   | Not needed for launch (@Query sufficient) | Jan 19 |
+
+## User Verification
+
+- [ ] User verification complete.

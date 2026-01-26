@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - organize
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related:
   - prd-0003-convert-plans-lists
   - adr-0005-collection-ordering-and-hierarchy-persistence
@@ -17,7 +17,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: Convert Plans and Lists
@@ -82,6 +82,10 @@ ADR-0005.
 | Hierarchy loss surprises users | H | Require confirmation and clear warning copy. |
 | Ordering becomes inconsistent | M | Use deterministic flattening and verify in QA. |
 | Conversion fails to refresh UI | M | Ensure list view models reload after updates. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

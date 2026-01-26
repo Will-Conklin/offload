@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - plan-roadmap
 depends_on: []
@@ -15,7 +15,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: AI Organization Flows & Review Screen (Pending Confirmation)
@@ -65,6 +65,10 @@ scope is confirmed via PRD/ADR updates.
 | --- | --- | --- |
 | AI scope expands beyond launch | H | Keep work gated until scope is approved. |
 | Privacy constraints unclear | H | Align with backend/privacy plan before build. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 

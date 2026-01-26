@@ -53,6 +53,7 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
 - Created after design docs, before implementation
 - Status: proposed -> accepted -> in-progress -> completed/archived
 - Updated as implementation progresses
+- Plans can only move to completed/archived when every item in the User Verification section is checked
 - Active plans tracked in `docs/plans/`
 - Completed plans moved to `docs/plans/_archived/`
 
@@ -62,6 +63,7 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
 - Clear phases and milestones
 - Links to GitHub issues for tracking
 - References to design docs and PRDs
+- A User Verification section with a checklist; agents must not update or check items in this section
 
 ## Boundaries
 
@@ -69,3 +71,4 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
 - Does not make architectural decisions (see ADRs)
 - Does not define technical approach (see design docs)
 - Must have prerequisite docs complete before acceptance
+- Agents must not modify the User Verification section in plans

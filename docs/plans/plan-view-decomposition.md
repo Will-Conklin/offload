@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - plan-roadmap
 depends_on: []
@@ -15,7 +15,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
+  - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
 # Plan: View Decomposition (Pending Confirmation)
@@ -65,6 +65,10 @@ PRD/ADR updates.
 | --- | --- | --- |
 | Refactor introduces regressions | M | Incremental refactors with focused QA. |
 | Schedule impact | M | Prioritize only the largest views if time is limited. |
+
+## User Verification
+
+- [ ] User verification complete.
 
 ## Progress
 
