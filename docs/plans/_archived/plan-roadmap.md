@@ -1,12 +1,12 @@
 ---
 id: plan-roadmap
 type: plan
-status: accepted
+status: archived
 owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-01-22
+last_updated: 2026-01-25
 related:
   - plan-testing-polish
   - plan-release-prep
@@ -24,7 +24,7 @@ accepted_by: null
 accepted_at: null
 related_issues: []
 structure_notes:
-  - "Single source of truth for launch planning"
+  - "Archived launch roadmap snapshot"
   - "Supersedes plan-archived-master-plan.md"
 priority: critical
 ---
@@ -33,8 +33,9 @@ priority: critical
 
 ## Executive Summary
 
-This document is the **single source of truth** for launch planning. It
-supersedes the original master plan (now archived) which became out of date
+This document was the **single source of truth** for launch planning. It is
+now archived; execution planning is tracked in the standalone plan documents.
+It supersedes the original master plan (now archived) which became out of date
 after the January 13, 2026 UI overhaul.
 
 **Last verified:** January 20, 2026
@@ -101,19 +102,19 @@ handling work is effectively complete.
 
 ### Active execution plans
 
-- [Plan: Testing & Polish](./plan-testing-polish.md)
-- [Plan: Release Prep](./plan-release-prep.md)
+- [Plan: Testing & Polish](../plan-testing-polish.md)
+- [Plan: Release Prep](../plan-release-prep.md)
 
 ### Proposed scope (requires PRD/ADR confirmation)
 
-- [Plan: Tag Relationship Refactor](./plan-tag-relationship-refactor.md)
-- [Plan: View Decomposition](./plan-view-decomposition.md)
-- [Plan: Visual Timeline](./plan-visual-timeline.md)
-- [Plan: Celebration Animations](./plan-celebration-animations.md)
-- [Plan: Advanced Accessibility Features](./plan-advanced-accessibility.md)
-- [Plan: AI Organization Flows & Review Screen](./plan-ai-organization-flows.md)
-- [Plan: AI Pricing & Limits](./plan-ai-pricing-limits.md)
-- [Plan: Backend API + Privacy Constraints](./plan-backend-api-privacy.md)
+- [Plan: Tag Relationship Refactor](../plan-tag-relationship-refactor.md)
+- [Plan: View Decomposition](../plan-view-decomposition.md)
+- [Plan: Visual Timeline](../plan-visual-timeline.md)
+- [Plan: Celebration Animations](../plan-celebration-animations.md)
+- [Plan: Advanced Accessibility Features](../plan-advanced-accessibility.md)
+- [Plan: AI Organization Flows & Review Screen](../plan-ai-organization-flows.md)
+- [Plan: AI Pricing & Limits](../plan-ai-pricing-limits.md)
+- [Plan: Backend API + Privacy Constraints](../plan-backend-api-privacy.md)
 
 ## File Sizes Reference
 
@@ -148,3 +149,7 @@ handling work is effectively complete.
 | Launch scope | Manual app only (no AI)                   | Jan 19 |
 | Pagination   | Defer to later release                    | Jan 19 |
 | ViewModels   | Not needed for launch (@Query sufficient) | Jan 19 |
+
+## User Verification
+
+- [ ] User verification complete.

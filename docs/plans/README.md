@@ -7,8 +7,7 @@ owners:
 applies_to:
   - plans
 last_updated: 2026-01-25
-related:
-  - plan-roadmap
+related: []
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -68,7 +67,6 @@ proposed → accepted → in-progress → completed/archived
 
 ### Accepted
 
-- [Offload Roadmap](./plan-roadmap.md) - Single source of truth for launch
 - [Plan: Persistent Bottom Tab Bar](./plan-persistent-bottom-tab-bar.md)
 - [Plan: Convert Plans and Lists](./plan-convert-plans-lists.md)
 - [Plan: Drag and Drop Ordering](./plan-drag-drop-ordering.md)
@@ -89,8 +87,11 @@ proposed → accepted → in-progress → completed/archived
 
 ### Archived
 
-All other plans have been archived to `_archived/`. See
+Archived plans have been moved to `_archived/`. See
 [archived plans](./_archived/README.md) for historical context.
+Notable archived plans include:
+
+- [Offload Roadmap](./_archived/plan-roadmap.md)
 
 ## Template
 

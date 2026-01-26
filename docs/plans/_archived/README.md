@@ -7,7 +7,7 @@ owners:
 applies_to:
   - plans
   - archived
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - plan-archived-brain-dump-model
   - plan-archived-consolidated-implementation-plan
@@ -20,6 +20,7 @@ related:
   - plan-archived-repository-pattern-consistency
   - plan-archived-tag-relationship-refactor
   - plan-archived-view-decomposition
+  - plan-roadmap
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -64,6 +65,7 @@ Same authority as plans, but no longer active. Archived plans are historical rec
 - [Repository Pattern Consistency Plan](./plan-archived-repository-pattern-consistency.md)
 - [Tag Relationship Refactor Plan](./plan-archived-tag-relationship-refactor.md)
 - [View Decomposition Plan](./plan-archived-view-decomposition.md)
+- [Offload Roadmap](./plan-roadmap.md)
 
 ## Naming
 
