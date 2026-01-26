@@ -40,6 +40,9 @@ sections:
       - id: reference-drag-drop-ordering
         title: Drag & Drop Ordering
         path: reference/reference-drag-drop-ordering.md
+      - id: reference-item-search-tags
+        title: Item Search by Text or Tag
+        path: reference/reference-item-search-tags.md
   - id: adrs
     title: Architecture Decisions
     description: Architecture and product decisions with rationale.
