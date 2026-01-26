@@ -217,7 +217,8 @@ sections:
         archived: true
       - id: plan-roadmap
         title: Offload Roadmap
-        path: plans/plan-roadmap.md
+        path: plans/_archived/plan-roadmap.md
+        archived: true
       - id: plan-testing-polish
         title: "Plan: Testing & Polish"
         path: plans/plan-testing-polish.md

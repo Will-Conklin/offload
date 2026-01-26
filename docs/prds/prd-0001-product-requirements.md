@@ -367,9 +367,9 @@ Plans and Lists are implemented as Collections: `isStructured = true` for plans,
 
 ## 14. Implementation tracking
 
-> **Note:** Detailed implementation status is tracked in the
-> [roadmap](../plans/plan-roadmap.md), which is the single source of
-> truth for progress.
+> **Note:** Detailed implementation status is tracked in the standalone plan
+> documents; the [archived roadmap](../plans/_archived/plan-roadmap.md) is
+> retained for historical context.
 
 ### Current status (Jan 19, 2026)
 
@@ -379,14 +379,14 @@ Plans and Lists are implemented as Collections: `isStructured = true` for plans,
 - ⏳ **Testing & Polish** — Manual testing, performance benchmarks
 - ⏸️ **AI Integration** — Deferred to future release
 
-See [roadmap](../plans/plan-roadmap.md) for current status.
+See the standalone plan documents for current status.
 
 ---
 
 ## 15. Open decisions (tracked)
 
-> **Note:** See the [roadmap](../plans/plan-roadmap.md) decision log
-> for resolution status.
+> **Note:** See the [archived roadmap](../plans/_archived/plan-roadmap.md)
+> decision log for historical context.
 
 | Decision              | Status  | Notes                                        |
 | --------------------- | ------- | -------------------------------------------- |
