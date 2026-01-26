@@ -86,10 +86,10 @@ jobs:
           scripts_changed=false
 
           if [[ "${full_run}" == "false" && -n "${changed_files}" ]]; then
-            if printf '%s\n' "${changed_files}" | grep -Eq '^(docs/|[^/]+\.md$)'; then
+            if printf '%s\n' "${changed_files}" | grep -Eq '^(docs/|[^/]+\.md$|ios/README\.md$)'; then
               docs_changed=true
             fi
-            if printf '%s\n' "${changed_files}" | grep -Eq '^ios/'; then
+            if printf '%s\n' "${changed_files}" | grep -Ev '^ios/README\.md$' | grep -Eq '^ios/'; then
               ios_changed=true
             fi
             if printf '%s\n' "${changed_files}" | grep -Eq '^backend/'; then
@@ -145,12 +145,12 @@ jobs:
 
       - name: Run markdownlint (strict)
         if: needs.detect-changes.outputs.docs_only == 'true'
-        run: markdownlint -c .markdownlint.yaml "docs/**/*.md" "*.md"
+        run: markdownlint -c .markdownlint.yaml "docs/**/*.md" "*.md" "ios/README.md"
 
       - name: Run markdownlint (warning)
         if: needs.detect-changes.outputs.docs_only != 'true'
         continue-on-error: true
-        run: markdownlint -c .markdownlint.yaml "docs/**/*.md" "*.md"
+        run: markdownlint -c .markdownlint.yaml "docs/**/*.md" "*.md" "ios/README.md"
 
   ios-build:
     name: iOS build lane

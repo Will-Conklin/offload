@@ -68,7 +68,7 @@ Lane path filters and ownership are defined in
 
 ## Invariants
 
-- Docs lane runs for any change under `docs/**` or root-level `*.md` files.
+- Docs lane runs for any change under `docs/**`, root-level `*.md`, or `ios/README.md`.
 - Docs-only changes skip non-doc lanes.
 - Manual full runs and scheduled runs execute all lanes regardless of paths.
 - The pipeline uses GitHub Actions per
@@ -80,5 +80,6 @@ Lane path filters and ownership are defined in
 
 - A PR that changes only `docs/prds/prd-0006-context-aware-ci-pipeline.md`
   runs the docs lane only.
+- A PR that changes only `ios/README.md` runs the docs lane only.
 - A PR that changes `ios/Offload/App/OffloadApp.swift` runs the iOS lane.
 - A manual `workflow_dispatch` with `full_run=true` runs all lanes.

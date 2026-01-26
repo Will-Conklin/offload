@@ -42,14 +42,14 @@ which lanes run for a change set.
 
 | Lane | Paths | Owner | Notes |
 | --- | --- | --- | --- |
-| Docs | `docs/**`, root `*.md` | Docs + CI maintainers | Runs markdownlint. |
+| Docs | `docs/**`, root `*.md`, `ios/README.md` | Docs + CI maintainers | Runs markdownlint. |
 | iOS | `ios/**` | iOS | Runs iOS build/tests. |
 | Backend | `backend/**` | Backend | Runs backend checks. |
 | Scripts | `scripts/**` | Automation | Runs scripts checks. |
 
 ## Invariants
 
-- Docs-only changes are those limited to `docs/**` and root-level `*.md` files.
+- Docs-only changes are those limited to `docs/**`, root-level `*.md`, and `ios/README.md`.
 - Docs-only changes skip non-doc lanes.
 - Full runs execute all lanes regardless of paths.
 
@@ -57,5 +57,6 @@ which lanes run for a change set.
 
 - `docs/design/design-context-aware-ci-pipeline.md` → docs lane only.
 - `README.md` → docs lane only.
+- `ios/README.md` → docs lane only.
 - `ios/Offload/App/OffloadApp.swift` → iOS lane.
 - `docs/` + `ios/` changes → docs + iOS lanes.
