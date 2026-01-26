@@ -11,6 +11,14 @@ related:
   - prd-0003-convert-plans-lists
   - adr-0005-collection-ordering-and-hierarchy-persistence
   - adr-0002-terminology-alignment-for-capture-and-organization
+depends_on:
+  - docs/prds/prd-0003-convert-plans-lists.md
+  - docs/adrs/adr-0005-collection-ordering-and-hierarchy-persistence.md
+  - docs/adrs/adr-0002-terminology-alignment-for-capture-and-organization.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Architecture; Data Flow; UI Behavior; Testing; Constraints."
 ---

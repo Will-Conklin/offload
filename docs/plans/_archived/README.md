@@ -3,9 +3,10 @@ id: plans-archived-readme
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - plans
+  - archived
 last_updated: 2026-01-20
 related:
   - plan-archived-brain-dump-model
@@ -19,6 +20,11 @@ related:
   - plan-archived-repository-pattern-consistency
   - plan-archived-tag-relationship-refactor
   - plan-archived-view-decomposition
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
   - "Keep top-level sections: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."

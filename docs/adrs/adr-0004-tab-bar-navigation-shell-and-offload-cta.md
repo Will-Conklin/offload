@@ -3,7 +3,7 @@ id: adr-0004-tab-bar-navigation-shell-and-offload-cta
 type: architecture-decision
 status: accepted
 owners:
-  - product
+  - Will-Conklin
   - ios
 applies_to:
   - navigation
@@ -14,11 +14,17 @@ last_updated: 2026-01-22
 related:
   - prd-0002-persistent-bottom-tab-bar
   - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on:
+  - docs/prds/prd-0002-persistent-bottom-tab-bar.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: 2026-01-21
 decision-makers:
-  - product
+  - Will-Conklin
   - ios
 ---
 

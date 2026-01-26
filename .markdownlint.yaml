@@ -2,5 +2,8 @@
 # Role: Markdown lint configuration
 # Authority: Tooling configuration
 # Governed by: AGENTS.md
-# Additional instructions: Disable only line length rule (MD013).
+# Additional instructions: Disable line length (MD013) and allow agent metadata
+# blocks to appear before the first heading (MD041).
+---
 MD013: false
+MD041: false

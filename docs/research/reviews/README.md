@@ -1,14 +1,19 @@
 ---
 id: research-reviews-readme
 type: research
-status: informational
+status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - reviews
-last_updated: 2026-01-20
+last_updated: 2026-01-25
 related:
   - research-2026-01-04-main-branch-review
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."
   - "Keep top-level sections: Purpose; Authority; What belongs here; What does not belong here; Canonical documents; Naming."

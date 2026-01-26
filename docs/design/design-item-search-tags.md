@@ -12,6 +12,14 @@ related:
   - prd-0005-item-search-tags
   - adr-0003-adhd-focused-ux-ui-guardrails
   - adr-0002-terminology-alignment-for-capture-and-organization
+depends_on:
+  - docs/prds/prd-0005-item-search-tags.md
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+  - docs/adrs/adr-0002-terminology-alignment-for-capture-and-organization.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Architecture; Data Flow; UI Behavior; Testing; Constraints."
 ---

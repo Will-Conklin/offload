@@ -1,24 +1,29 @@
 ---
-id: plan-v1-backend-api-privacy
+id: plan-backend-api-privacy
 type: plan
-status: draft
+status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-v1-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Backend API + Privacy Constraints (Pre-v1 Candidate)
+# Plan: Backend API + Privacy Constraints (Pending Confirmation)
 
 ## Overview
 
 Execution plan for backend API and privacy constraints listed as additional
-pre-v1 scope in the v1 roadmap. Work should begin only after scope is confirmed
+proposed scope in the roadmap. Work should begin only after scope is confirmed
 via PRD/ADR updates.
 
 ## Goals
@@ -65,4 +70,4 @@ via PRD/ADR updates.
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

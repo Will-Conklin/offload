@@ -3,12 +3,17 @@ id: plans-readme
 type: plan
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
-last_updated: 2026-01-22
+  - plans
+last_updated: 2026-01-25
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does
     not belong here; Canonical documents; Template; Naming."
@@ -30,15 +35,16 @@ introduce requirements, decisions, or architecture changes.
 ## Lifecycle
 
 ```text
-draft → active → completed | archived
+proposed → accepted → in-progress → completed/archived
 ```
 
-| Status      | Meaning                                         |
-| ----------- | ----------------------------------------------- |
-| `draft`     | Plan being developed, not yet approved          |
-| `active`    | Approved and in execution                       |
-| `completed` | All work finished successfully                  |
-| `archived`  | Superseded, abandoned, or no longer relevant    |
+| Status         | Meaning                                      |
+| -------------- | -------------------------------------------- |
+| `proposed`     | Plan drafted, not yet approved               |
+| `accepted`     | Approved and ready to start                  |
+| `in-progress`  | Work underway                                |
+| `completed`    | All work finished successfully               |
+| `archived`     | Superseded, abandoned, or no longer relevant |
 
 ## What belongs here
 
@@ -55,26 +61,31 @@ draft → active → completed | archived
 
 ## Canonical documents
 
-### Active
+### In Progress
 
-- [Offload v1 Roadmap](./plan-v1-roadmap.md) - Single source of truth for v1
-- [Plan: V1 Testing & Polish](./plan-v1-testing-polish.md)
-- [Plan: V1 Release Prep](./plan-v1-release-prep.md)
+- [Plan: Testing & Polish](./plan-testing-polish.md)
+- [Plan: Release Prep](./plan-release-prep.md)
 
-### Draft (Pre-v1 Candidates)
+### Accepted
 
+- [Offload Roadmap](./plan-roadmap.md) - Single source of truth for launch
 - [Plan: Persistent Bottom Tab Bar](./plan-persistent-bottom-tab-bar.md)
 - [Plan: Convert Plans and Lists](./plan-convert-plans-lists.md)
 - [Plan: Drag and Drop Ordering](./plan-drag-drop-ordering.md)
 - [Plan: Item Search by Text or Tag](./plan-item-search-tags.md)
-- [Plan: Tag Relationship Refactor](./plan-v1-tag-relationship-refactor.md)
-- [Plan: View Decomposition](./plan-v1-view-decomposition.md)
-- [Plan: Visual Timeline](./plan-v1-visual-timeline.md)
-- [Plan: Celebration Animations](./plan-v1-celebration-animations.md)
-- [Plan: Advanced Accessibility Features](./plan-v1-advanced-accessibility.md)
-- [Plan: AI Organization Flows & Review Screen](./plan-v1-ai-organization-flows.md)
-- [Plan: AI Pricing & Limits](./plan-v1-ai-pricing-limits.md)
-- [Plan: Backend API + Privacy Constraints](./plan-v1-backend-api-privacy.md)
+- [Plan: Logging Implementation](./plan-logging-implementation.md)
+- [Plan: Context-Aware CI Pipeline](./plan-context-aware-ci-pipeline.md)
+
+### Proposed (Pending Confirmations)
+
+- [Plan: Tag Relationship Refactor](./plan-tag-relationship-refactor.md)
+- [Plan: View Decomposition](./plan-view-decomposition.md)
+- [Plan: Visual Timeline](./plan-visual-timeline.md)
+- [Plan: Celebration Animations](./plan-celebration-animations.md)
+- [Plan: Advanced Accessibility Features](./plan-advanced-accessibility.md)
+- [Plan: AI Organization Flows & Review Screen](./plan-ai-organization-flows.md)
+- [Plan: AI Pricing & Limits](./plan-ai-pricing-limits.md)
+- [Plan: Backend API + Privacy Constraints](./plan-backend-api-privacy.md)
 
 ### Archived
 
@@ -87,14 +98,19 @@ All other plans have been archived to `_archived/`. See
 ---
 id: plan-{feature-name}
 type: plan
-status: active
+status: proposed
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD
 related:
   - prd-0001-{feature-name}
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---

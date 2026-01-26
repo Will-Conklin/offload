@@ -1,13 +1,18 @@
 ---
 id: plan-pagination-implementation
 type: plan
-status: active
+status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - pagination
 last_updated: 2026-01-17
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Problem Statement; Current State; Proposed Solution; Implementation Steps; Testing Strategy; Risks & Considerations; Success Criteria; Configuration; Next Steps; Related Documents."
   - "Keep the top-level section outline intact."

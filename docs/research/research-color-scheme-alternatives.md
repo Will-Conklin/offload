@@ -1,9 +1,9 @@
 ---
 id: research-color-scheme-alternatives
 type: research
-status: informational
+status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - color
   - scheme
@@ -14,25 +14,19 @@ related:
   - research-adhd-ux-ui
   - research-ios-ui-trends-2025
   - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
-  - "Section order: Executive Summary; Current Color Scheme Analysis; Design Principles for Alternatives; Alternative Color Schemes; Comparison Matrix; ADHD-Friendliness Assessment; Implementation Recommendations; Testing Strategy; Accessibility Validation Checklist; Conclusion; Next Steps."
+  - "Section order: Executive Summary; Current Color Scheme Analysis; Design Principles for Alternatives; Alternative Color Schemes; Comparison Matrix; ADHD-Friendliness Assessment; Recommendations; Accessibility Validation Checklist; Conclusion."
   - "Keep the top-level section outline intact."
 ---
 
 <!-- Intent: Research and propose alternative color schemes for Offload based on current implementation analysis and ADHD-friendly design principles. -->
 
 # Color Scheme Alternatives for Offload
-
-**Created:** 2026-01-10
-**Status:** Research Complete
-**Related Documents:**
-
-- [Current Color Palettes](research-color-palettes.md)
-- [ADHD UX/UI Research](research-adhd-ux-ui.md)
-- [iOS UI Trends 2025](research-ios-ui-trends-2025.md)
-- [adr-0003: ADHD UX Guardrails](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
-
----
 
 ## Executive Summary
 
@@ -454,33 +448,21 @@ Border:        #2E3F3D (muted teal)
 
 ---
 
-## Implementation Recommendations
+## Recommendations
 
-### Quick Win: Ocean Minimal
-
-**Effort:** Low (minimal code changes)
-**Impact:** Medium (subtle improvement)
-**Risk:** Very Low (conservative evolution)
+### Ocean Minimal
 
 Adjust existing color values slightly warmer. Requires only Theme.swift updates.
 
-### Recommended: Sage & Stone
-
-**Effort:** Low-Medium (color value changes + testing)
-**Impact:** High (distinctive, warmer, fresh)
-**Risk:** Medium (bigger change, may need user feedback)
+### Sage & Stone
 
 Replace blue system with sage green. Maintains all ADHD principles while adding warmth and uniqueness.
 
-### Bold Option: Lavender Calm
-
-**Effort:** Low-Medium
-**Impact:** Very High (unique positioning)
-**Risk:** Medium-High (less traditional for productivity)
+### Lavender Calm
 
 Best for truly differentiating from competitors while maintaining calm ADHD-friendly approach.
 
-### User Choice Approach
+### Multi-theme option
 
 Consider implementing multiple themes as user-selectable options:
 
@@ -488,31 +470,6 @@ Consider implementing multiple themes as user-selectable options:
 - **Warm:** Sage & Stone (natural, grounded)
 - **Calm:** Lavender Calm (stress-reducing)
 - **Focus:** Monochrome (minimal distraction)
-
----
-
-## Testing Strategy
-
-### Phase 1: Visual Mockups
-
-1. Update Theme.swift with new color values in a feature branch
-2. Screenshot key screens (Capture, Organize, Settings) in both modes
-3. Compare side-by-side with current scheme
-4. Assess with team for ADHD-friendliness
-
-### Phase 2: User Feedback (Optional)
-
-1. Create prototype builds with 2-3 finalist schemes
-2. TestFlight with small user group
-3. Survey on: calm feeling, focus support, visual appeal, eye strain
-4. Analyze feedback for ADHD-specific concerns
-
-### Phase 3: Implementation
-
-1. Update Theme.swift with chosen scheme
-2. Test all components in both light/dark modes
-3. Verify accessibility with VoiceOver and contrast tools
-4. Update marketing materials if visual identity changes
 
 ---
 
@@ -561,19 +518,3 @@ For bold differentiation:
 - ✅ Strong stress-reduction psychology
 - ✅ Appeals to creative ADHD users
 - ⚠️ Less traditional (could be strength or weakness)
-
----
-
-## Next Steps
-
-1. **Review with team** - Discuss top 3 options
-2. **Create visual mockups** - Update Theme.swift in branch, screenshot key views
-3. **Validate accessibility** - Run contrast checkers, colorblind simulations
-4. **Decision** - Select scheme or plan user testing
-5. **Implementation** - Update Theme.swift, test thoroughly, commit
-
----
-
-**Document Status:** ✅ Ready for Team Review
-**Recommended Decision Timeline:** Week of 2026-01-13
-**Implementation Estimate:** 1-2 days (color values only)

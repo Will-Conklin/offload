@@ -1,26 +1,30 @@
 ---
 id: research-2026-01-04-main-branch-review
 type: research
-status: informational
+status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - main
   - branch
   - reviews
 last_updated: 2026-01-04
-related: []
+related:
+  - prd-0001-product-requirements
+  - adr-0001-technology-stack-and-architecture
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
-  - "Section order: Executive Summary; 🔴 Critical Issues; 🟡 Moderate Issues; 🟢 Minor Issues; ✅ Strengths (What's Working Well); 📊 Test Coverage Analysis; 🎯 Prioritized Recommendations; 🔒 Security Review; 📈 Code Health Metrics; Final Verdict; Detailed Codebase Exploration Notes; Review Methodology."
+  - "Section order: Executive Summary; 🔴 Critical Issues; 🟡 Moderate Issues; 🟢 Minor Issues; ✅ Strengths (What's Working Well); 📊 Test Coverage Analysis; 🎯 Recommendations; 🔒 Security Review; 📈 Code Health Metrics; Final Verdict; Detailed Codebase Exploration Notes; Review Methodology."
   - "Keep the top-level section outline intact."
 ---
 
 # Code Review: Main Branch - Comprehensive Analysis
 
-**Date**: 2026-01-04
-**Reviewer**: Claude Code
-**Branch**: main
-**Commit**: c337ffa (Add deterministic simulator UDID selection for CI scripts)
+This review covers the `main` branch at commit `c337ffa` (Add deterministic simulator UDID selection for CI scripts) as of 2026-01-04.
 
 ---
 
@@ -186,7 +190,7 @@ private func deleteEntries(offsets: IndexSet) {
 
 Cannot use enums in predicates: `#Predicate { $0.status == .inbox }` doesn't work.
 
-**Current Workaround**: Fetch all and filter in memory (acceptable for MVP, not scalable).
+**Current Workaround**: Fetch all and filter in memory (acceptable for current scale, not scalable long-term).
 
 **Recommendation**: Document this limitation in repository code comments and plan for optimization when dataset grows.
 
@@ -208,7 +212,7 @@ private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en
 
 SwiftData schema will evolve, but there's no migration plan documented.
 
-**Recommendation**: Before v1 release:
+**Recommendation**:
 
 1. Document migration strategy
 2. Consider CloudKit sync implications
@@ -355,37 +359,36 @@ Sample data manually created; no data factory pattern.
 
 ---
 
-## 🎯 Prioritized Recommendations
+## 🎯 Recommendations
 
-### Priority 1 (Blocking v1)
+### Core functionality
 
-1. ✅ **Implement AI hand-off orchestration** (`submitForOrganization`, `fetchSuggestions`, etc.)
-2. ✅ **Build backend API** and client implementation
-3. ✅ **Complete Organize tab** UI for destination management
-4. ✅ **Fix MainTabView routing** (stop bypassing tabs)
-5. ✅ **Implement Settings tab** (user preferences, quotas)
+- Implement AI hand-off orchestration (`submitForOrganization`, `fetchSuggestions`, etc.).
+- Build the backend API and client implementation.
+- Complete the Organize tab UI for destination management.
+- Implement the Settings tab for user preferences and quotas.
 
-### Priority 2 (High Value)
+### Navigation and UX
 
-1. 🔧 **Fix InboxView delete race condition** (ios/Offload/Features/Inbox/InboxView.swift:68-84)
-2. 🔧 **Complete Theme system** (colors, typography, dark mode)
-3. 🔧 **Add error toast/alert UI** throughout
-4. 🔧 **Accept adr-0002** and do terminology cleanup pass
-5. 🔧 **Expand test coverage** to UI and integration tests
+- Fix `MainTabView` routing so tabs are accessible.
+- Define a canonical capture entry point to avoid UX ambiguity.
 
-### Priority 3 (Polish)
+### Quality and reliability
 
-1. 🎨 Multi-language support (remove en-US hardcode)
-2. 🎨 Database migration strategy
-3. 🎨 Simplify CI/CD workflows (composite actions)
-4. 🎨 Centralized configuration/environment
-5. 🎨 Extract TestDataFactory for preview data
+- Fix the InboxView delete race condition (`ios/Offload/Features/Inbox/InboxView.swift:68-84`).
+- Add error toast/alert UI for user-facing failures.
+- Expand test coverage to UI and integration workflows.
 
-### Priority 4 (Nice to Have)
+### Platform and architecture
 
-1. ⚡ Remove excessive TODOs from design system
-2. ⚡ Define canonical capture entry point (UX)
-3. ⚡ SwiftData predicate optimization (when scaling)
+- Complete the theme system (colors, typography, dark mode).
+- Accept `adr-0002` and complete a terminology cleanup pass.
+- Add a documented database migration strategy.
+- Simplify CI/CD workflows (composite actions) and centralize configuration.
+- Extract `TestDataFactory` for preview data.
+- Remove excessive TODOs from the design system.
+- Revisit SwiftData predicate optimization as data scales.
+- Add multi-language support to remove the hardcoded en-US locale.
 
 ---
 
@@ -447,7 +450,7 @@ This is a **professionally structured iOS project in active development** with:
 - Incomplete UI (tabs, settings)
 - Missing design system components
 
-**Next Steps**: Focus on Priority 1 tasks to reach v1 feature parity. The technical foundation is solid—now it needs feature completion.
+The technical foundation is solid, but core features remain incomplete.
 
 ---
 
@@ -462,7 +465,7 @@ This is a **professionally structured iOS project in active development** with:
 - **Capture First, Organize Later** - No forced upfront categorization
 - **Psychological Safety** - No guilt, shame, or forced structure
 - **Offline-First** - Works completely offline with on-device speech recognition
-- **Privacy-Focused** - All data stays on device (Phase 1-2), optional backend sync later
+- **Privacy-Focused** - All data stays on device today; backend sync is not present
 - **User Control** - AI suggests, never auto-modifies
 
 ### Directory Structure
@@ -488,11 +491,11 @@ This is a **professionally structured iOS project in active development** with:
 │   │   └── Resources/       # Assets, fonts
 │   ├── OffloadTests/        # Unit tests (12 files, 45+ tests)
 │   └── OffloadUITests/      # UI tests (minimal)
-├── backend/                 # Backend services (Phase 3+, scaffolding only)
+├── backend/                 # Backend services (scaffolding only)
 ├── docs/                    # Documentation
 │   ├── adr/                 # Architecture Decision Records
 │   ├── design/              # Technical design and testing guides
-│   ├── plans/               # Implementation roadmap
+│   ├── plans/               # Execution plans
 │   ├── prd/                 # Product requirements
 │   ├── reference/           # Contracts and baselines
 │   └── research/            # Exploratory notes and reviews

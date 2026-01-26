@@ -3,10 +3,10 @@ id: design-readme
 type: design
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
-last_updated: 2026-01-22
+  - design
+last_updated: 2026-01-25
 related:
   - design-voice-capture-testing-guide
   - design-voice-capture-test-results
@@ -15,6 +15,11 @@ related:
   - design-convert-plans-lists
   - design-drag-drop-ordering
   - design-item-search-tags
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
@@ -34,14 +39,14 @@ Below prd. Design defines HOW approved requirements are implemented; it cannot s
 ## Lifecycle
 
 ```text
-draft → active → deprecated
+proposed → accepted → archived
 ```
 
 | Status       | Meaning                                    |
 | ------------ | ------------------------------------------ |
-| `draft`      | Design being developed, not yet approved   |
-| `active`     | Approved and authoritative for feature     |
-| `deprecated` | Superseded or no longer applicable         |
+| `proposed`   | Design being developed, not yet approved   |
+| `accepted`   | Approved and authoritative for feature     |
+| `archived`   | Superseded or no longer applicable         |
 
 ## What belongs here
 
@@ -72,15 +77,22 @@ draft → active → deprecated
 ---
 id: design-{feature-name}
 type: design
-status: active
+status: proposed
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD
 related:
   - prd-0001-{feature-name}
   - adr-0001-{decision-title}
+depends_on:
+  - docs/prds/prd-0001-{feature-name}.md
+  - docs/adrs/adr-0001-{decision-title}.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Architecture; Data Flow; UI Behavior; Testing; Constraints."
 ---

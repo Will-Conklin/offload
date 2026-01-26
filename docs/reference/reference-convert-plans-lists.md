@@ -3,7 +3,7 @@ id: reference-convert-plans-lists
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - organize
 last_updated: 2026-01-22
@@ -12,6 +12,15 @@ related:
   - design-convert-plans-lists
   - plan-convert-plans-lists
   - adr-0005-collection-ordering-and-hierarchy-persistence
+depends_on:
+  - docs/prds/prd-0003-convert-plans-lists.md
+  - docs/design/design-convert-plans-lists.md
+  - docs/plans/plan-convert-plans-lists.md
+  - docs/adrs/adr-0005-collection-ordering-and-hierarchy-persistence.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Definition; Schema; Invariants; Examples."
 ---

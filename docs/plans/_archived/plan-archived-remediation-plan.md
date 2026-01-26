@@ -3,11 +3,16 @@ id: plan-archived-remediation-plan
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - remediation
 last_updated: 2026-01-17
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Executive Summary; Implementation Update (January 8, 2026); Issue Summary; PHASE 1: CRITICAL FIXES (Week 1-2); PHASE 2: HIGH PRIORITY FIXES (Week 3-4); PHASE 3: ARCHITECTURE IMPROVEMENTS (Week 5-6); PHASE 4: TESTING & VALIDATION (Ongoing); IMPLEMENTATION TIMELINE; SUCCESS CRITERIA; RISK MITIGATION; APPENDIX: Verification Commands."
   - "Keep the top-level section outline intact."

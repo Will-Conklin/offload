@@ -3,13 +3,18 @@ id: plan-archived-remediation-tracking
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - remediation
   - tracking
 last_updated: 2026-01-17
 related:
   - plan-archived-remediation-plan
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: PHASE 1: CRITICAL FIXES (Week 1-2); PHASE 2: HIGH PRIORITY FIXES (Week 3-4); PHASE 3: ARCHITECTURE IMPROVEMENTS (Week 5-6); OVERALL PROGRESS; COMPLETION CRITERIA; NOTES & BLOCKERS."
   - "Keep top-level sections: PHASE 1: CRITICAL FIXES (Week 1-2); PHASE 2: HIGH PRIORITY FIXES (Week 3-4); PHASE 3: ARCHITECTURE IMPROVEMENTS (Week 5-6); OVERALL PROGRESS; COMPLETION CRITERIA; NOTES & BLOCKERS."

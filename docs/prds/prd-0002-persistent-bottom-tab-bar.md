@@ -3,21 +3,30 @@ id: prd-0002-persistent-bottom-tab-bar
 type: product-requirements
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - product
+  - navigation
+  - ui
 last_updated: 2026-01-22
 related:
   - adr-0002-terminology-alignment-for-capture-and-organization
   - adr-0003-adhd-focused-ux-ui-guardrails
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
+depends_on:
+  - docs/adrs/adr-0002-terminology-alignment-for-capture-and-organization.md
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+  - docs/adrs/adr-0004-tab-bar-navigation-shell-and-offload-cta.md
+supersedes: []
+accepted_by: Offload
+accepted_at: 2026-01-22
+related_issues: []
 structure_notes:
-  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals (V1); 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model (V1); 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
+  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (after deployment); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
 ---
 
-# Offload — V1.1 Persistent Bottom Tab Bar PRD
+# Offload — Persistent Bottom Tab Bar PRD
 
-**Version:** 1.1
 **Date:** 2026-01-22
 **Status:** Proposed
 **Owner:** Offload
@@ -45,7 +54,7 @@ quick capture. The primary action is not prominent and there is no tie-in with t
 
 ---
 
-## 3. Product goals (V1)
+## 3. Product goals
 
 - Provide a consistent, edge-anchored bottom tab bar with five destinations.
 - Emphasize Offload as the main CTA via a center-weighted action.
@@ -67,7 +76,7 @@ quick capture. The primary action is not prominent and there is no tie-in with t
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -97,7 +106,8 @@ quick capture. The primary action is not prominent and there is no tie-in with t
 
 ## 9. Pricing & limits (hybrid model)
 
-No pricing or limits changes.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -107,7 +117,7 @@ No new AI or backend requirements.
 
 ---
 
-## 11. Data model (V1)
+## 11. Data model
 
 No new data model changes required.
 
@@ -149,4 +159,4 @@ No new data model changes required.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.1 | 2026-01-22 | Initial proposal. |
+| N/A | 2026-01-22 | Initial proposal. |

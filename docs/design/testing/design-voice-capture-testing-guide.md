@@ -1,15 +1,20 @@
 ---
 id: design-voice-capture-testing-guide
 type: design
-status: active
+status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - voice
   - capture
   - testing
 last_updated: 2026-01-17
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; What Was Implemented; Testing Checklist; Expected Results; Decision Checkpoint (Day 3); Day 7 Checkpoint; Testing Notes; Debugging Tips; Files to Review for Testing; Next Week Preview."
   - "Keep the top-level section outline intact."
@@ -218,7 +223,7 @@ These will trigger permission dialogs on first use.
    - If needed later, can add optional audio attachment
 
 4. **Single Recording at a Time**: Cannot capture multiple simultaneous recordings
-   - Expected behavior for MVP
+   - Expected behavior
 
 ## Decision Checkpoint (Day 3)
 

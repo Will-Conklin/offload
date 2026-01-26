@@ -3,21 +3,30 @@ id: prd-0012-decision-fatigue-reducer
 type: product-requirements
 status: draft
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - product
+  - ai
+  - adhd
 last_updated: 2026-01-24
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
   - prd-0001-product-requirements
   - prd-0011-executive-function-prompts
+depends_on:
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+  - docs/prds/prd-0001-product-requirements.md
+  - docs/prds/prd-0011-executive-function-prompts.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics; 7. Core user flows; 8. Functional requirements; 9. Pricing & limits; 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions; 16. Revision history."
 ---
 
 # Offload — Decision Fatigue Reducer PRD
 
-**Version:** 1.0
 **Date:** 2026-01-24
 **Status:** Draft
 **Owner:** Offload
@@ -25,7 +34,7 @@ structure_notes:
 **Related ADRs:**
 
 - [adr-0003: ADHD-Focused UX/UI Guardrails](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
-- [prd-0001: V1 Product Requirements](prd-0001-product-requirements.md)
+- [prd-0001: Product Requirements](prd-0001-product-requirements.md)
 
 **Related PRDs:**
 
@@ -108,7 +117,7 @@ pick something reasonable and move forward.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -216,23 +225,8 @@ pick something reasonable and move forward.
 
 ## 9. Pricing & limits (hybrid model)
 
-### Free tier
-
-- 10 decision sessions per month
-- Basic recommendations (2 options)
-- Single clarifying question
-
-### Paid tier
-
-- Unlimited decision sessions
-- Advanced recommendations (context-aware, pattern-learning)
-- "Just pick for me" instant recommendations
-- Decision history and pattern insights
-- Custom priority weighting
-
-**Rationale:** Decision support is valuable for critical moments of paralysis.
-Free tier provides essential help; paid tier for users who rely on decision
-scaffolding regularly.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -415,7 +409,7 @@ scaffolding regularly.
 
 - **Medium complexity** for recommendation logic
 - **Low complexity** for basic UI
-- Estimated 2-3 week implementation for MVP
+- Estimated 2-3 week implementation
 - Additional 1-2 weeks for pattern learning and refinements
 
 ### Testing requirements
@@ -446,4 +440,4 @@ scaffolding regularly.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.0 | 2026-01-24 | Initial draft based on Goblin Tools gap analysis |
+| N/A | 2026-01-24 | Initial draft based on Goblin Tools gap analysis |

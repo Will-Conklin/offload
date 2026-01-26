@@ -1,15 +1,20 @@
 ---
 id: design-voice-capture-test-results
 type: design
-status: active
+status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - voice
   - capture
   - testing
 last_updated: 2026-01-17
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Day 3 Checkpoint (Jan 2, 2025); Test 1: First Launch - Permission Flow; Test 2: Simple Voice Capture; Test 3: Long Voice Note (30+ seconds); Test 4: Fast Speech Test; Test 5: Punctuation and Commands; Test 6: Cancel While Recording; Test 7: Edit After Transcription; Test 8: Manual Text + Voice; Test 9: Permission Denied Flow; Test 10: Offline Mode; Overall Accuracy Summary; Additional Tests (Optional); Day 3 Checkpoint Decision; Issues Discovered; Recommendations; Sign-Off."
   - "Keep the top-level section outline intact."

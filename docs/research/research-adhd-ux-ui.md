@@ -1,17 +1,24 @@
 ---
 id: research-adhd-ux-ui
 type: research
-status: informational
+status: completed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - adhd
   - ux
   - ui
 last_updated: 2026-01-17
-related: []
+related:
+  - prd-0001-product-requirements
+  - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
-  - "Section order: Research Highlights; Visual and Color Guidance; Navigation and Information Architecture; Interaction Patterns; Content and Microcopy; Accessibility Considerations; Recommendations for Offload; Implementation Priorities (90-day view)."
+  - "Section order: Research Highlights; Visual and Color Guidance; Navigation and Information Architecture; Interaction Patterns; Content and Microcopy; Accessibility Considerations; Recommendations for Offload."
   - "Keep the top-level section outline intact."
 ---
 
@@ -76,11 +83,3 @@ structure_notes:
 - **Design system (DesignSystem):** Define tokens for spacing, elevation, and color roles (base, accent, success, caution). Build focus states with both color and stroke weight. Keep iconography simple (stroke weight matching text weight) and pair with labels in navigation.
 - **Notifications and reminders (Services/Voice/Notifications):** If reminders are used, make them gentle and deferrable. Offer a daily digest option instead of multiple interrupts.
 - **Error handling:** Prefer inline, specific guidance (“Couldn’t save offline. Kept locally; will sync later.”) with retry and undo instead of modal alerts.
-
-## Implementation Priorities (90-day view)
-
-1. Add a persistent capture control and default “capture now, organize later” flow with automatic saving.
-2. Introduce undo banners for deletes/moves across Inbox and Organize.
-3. Establish color and spacing tokens that emphasize calm hierarchy and accessible focus states.
-4. Add gentle organization prompts (chips/cards) instead of blocking modals.
-5. Respect system accessibility settings for Dynamic Type and Reduce Motion; audit controls for minimum tap targets.

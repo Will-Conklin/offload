@@ -3,13 +3,18 @@ id: plan-archived-brain-dump-model
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - brain
   - dump
   - model
 last_updated: 2026-01-04
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Current State (January 2026); Updated Model Architecture; Terminology Alignment (adr-0002); ADHD-Friendly UX Guardrails (adr-0003); Implementation Status by Phase; Near-Term Milestones (post-2026-01-04 review); Remaining Work; Success Criteria."
   - "Keep the top-level section outline intact."

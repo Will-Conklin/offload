@@ -3,19 +3,20 @@ id: reference-test-runtime-baselines
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - testing
 last_updated: 2026-01-03
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Environment; Baselines."
   - "Keep top-level sections: Environment; Baselines."
 ---
-
-<!--
-Intent: Track local test runtime baselines to spot regressions over time.
--->
 
 # Test Runtime Baselines
 

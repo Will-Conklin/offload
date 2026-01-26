@@ -1,34 +1,39 @@
 ---
-id: plan-v1-roadmap
+id: plan-roadmap
 type: plan
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - v1-release
+  - launch-release
 last_updated: 2026-01-22
 related:
-  - plan-v1-testing-polish
-  - plan-v1-release-prep
-  - plan-v1-tag-relationship-refactor
-  - plan-v1-view-decomposition
-  - plan-v1-visual-timeline
-  - plan-v1-celebration-animations
-  - plan-v1-advanced-accessibility
-  - plan-v1-ai-organization-flows
-  - plan-v1-ai-pricing-limits
-  - plan-v1-backend-api-privacy
-priority: critical
+  - plan-testing-polish
+  - plan-release-prep
+  - plan-tag-relationship-refactor
+  - plan-view-decomposition
+  - plan-visual-timeline
+  - plan-celebration-animations
+  - plan-advanced-accessibility
+  - plan-ai-organization-flows
+  - plan-ai-pricing-limits
+  - plan-backend-api-privacy
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
-  - "Single source of truth for v1 release planning"
+  - "Single source of truth for launch planning"
   - "Supersedes plan-archived-master-plan.md"
+priority: critical
 ---
 
-# Offload v1 Roadmap
+# Offload Roadmap
 
 ## Executive Summary
 
-This document is the **single source of truth** for v1 release planning. It
+This document is the **single source of truth** for launch planning. It
 supersedes the original master plan (now archived) which became out of date
 after the January 13, 2026 UI overhaul.
 
@@ -92,23 +97,23 @@ handling work is effectively complete.
 - ✅ SwiftData @Query: Used throughout for reactive data
 - ✅ Repository mutations: All data changes go through repositories
 
-## Remaining Work for v1
+## Remaining Work for Launch
 
 ### Active execution plans
 
-- [Plan: V1 Testing & Polish](./plan-v1-testing-polish.md)
-- [Plan: V1 Release Prep](./plan-v1-release-prep.md)
+- [Plan: Testing & Polish](./plan-testing-polish.md)
+- [Plan: Release Prep](./plan-release-prep.md)
 
-### Pre-v1 candidate scope (requires PRD/ADR confirmation)
+### Proposed scope (requires PRD/ADR confirmation)
 
-- [Plan: Tag Relationship Refactor](./plan-v1-tag-relationship-refactor.md)
-- [Plan: View Decomposition](./plan-v1-view-decomposition.md)
-- [Plan: Visual Timeline](./plan-v1-visual-timeline.md)
-- [Plan: Celebration Animations](./plan-v1-celebration-animations.md)
-- [Plan: Advanced Accessibility Features](./plan-v1-advanced-accessibility.md)
-- [Plan: AI Organization Flows & Review Screen](./plan-v1-ai-organization-flows.md)
-- [Plan: AI Pricing & Limits](./plan-v1-ai-pricing-limits.md)
-- [Plan: Backend API + Privacy Constraints](./plan-v1-backend-api-privacy.md)
+- [Plan: Tag Relationship Refactor](./plan-tag-relationship-refactor.md)
+- [Plan: View Decomposition](./plan-view-decomposition.md)
+- [Plan: Visual Timeline](./plan-visual-timeline.md)
+- [Plan: Celebration Animations](./plan-celebration-animations.md)
+- [Plan: Advanced Accessibility Features](./plan-advanced-accessibility.md)
+- [Plan: AI Organization Flows & Review Screen](./plan-ai-organization-flows.md)
+- [Plan: AI Pricing & Limits](./plan-ai-pricing-limits.md)
+- [Plan: Backend API + Privacy Constraints](./plan-backend-api-privacy.md)
 
 ## File Sizes Reference
 
@@ -136,10 +141,10 @@ handling work is effectively complete.
 
 ## Decision Log
 
-| Decision     | Choice                                 | Date   |
-| ------------ | -------------------------------------- | ------ |
-| UI Direction | Flat design (not glassmorphism)        | Jan 13 |
-| Theme        | Single "Elijah" theme                  | Jan 13 |
-| v1 Scope     | Manual app only (no AI)                | Jan 19 |
-| Pagination   | Defer to v1.1+                         | Jan 19 |
-| ViewModels   | Not needed for v1 (@Query sufficient)  | Jan 19 |
+| Decision     | Choice                                    | Date   |
+| ------------ | ----------------------------------------- | ------ |
+| UI Direction | Flat design (not glassmorphism)           | Jan 13 |
+| Theme        | Single "Elijah" theme                     | Jan 13 |
+| Launch scope | Manual app only (no AI)                   | Jan 19 |
+| Pagination   | Defer to later release                    | Jan 19 |
+| ViewModels   | Not needed for launch (@Query sufficient) | Jan 19 |

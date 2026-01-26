@@ -3,7 +3,7 @@ id: adrs-readme
 type: architecture-decision
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - architecture
 last_updated: 2026-01-22
@@ -15,6 +15,11 @@ related:
   - adr-0005-collection-ordering-and-hierarchy-persistence
   - adr-0006-ci-provider-selection
   - adr-0007-context-aware-ci-workflow-strategy
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
@@ -75,12 +80,17 @@ id: adr-NNNN-{decision-title}
 type: architecture-decision
 status: proposed
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - architecture
 last_updated: YYYY-MM-DD
 related:
   - prd-0001-{feature-name}
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: YYYY-MM-DD

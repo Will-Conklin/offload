@@ -13,6 +13,9 @@ sections:
       - id: docs-agents
         title: Documentation Agent Guide — Offload
         path: AGENTS.md
+      - id: reference-agents
+        title: Reference Agent Guide
+        path: reference/AGENTS.md
       - id: reference-readme
         title: Reference
         path: reference/README.md
@@ -41,6 +44,9 @@ sections:
     title: Architecture Decisions
     description: Architecture and product decisions with rationale.
     documents:
+      - id: adrs-agents
+        title: ADR Agent Guide
+        path: adrs/AGENTS.md
       - id: adrs-readme
         title: ADRs
         path: adrs/README.md
@@ -69,31 +75,58 @@ sections:
     title: Product Requirements
     description: Product requirements, scope, goals, and success metrics.
     documents:
+      - id: prds-agents
+        title: PRD Agent Guide
+        path: prds/AGENTS.md
       - id: prds-readme
         title: PRDs
         path: prds/README.md
       - id: prd-0001-product-requirements
-        title: Offload — V1 Product Requirements Document (PRD)
+        title: Offload — Product Requirements Document (PRD)
         path: prds/prd-0001-product-requirements.md
       - id: prd-0002-persistent-bottom-tab-bar
-        title: Offload — V1.1 Persistent Bottom Tab Bar PRD
+        title: Offload — Persistent Bottom Tab Bar PRD
         path: prds/prd-0002-persistent-bottom-tab-bar.md
       - id: prd-0003-convert-plans-lists
-        title: Offload — V1.1 Convert Plans ↔ Lists PRD
+        title: Offload — Convert Plans ↔ Lists PRD
         path: prds/prd-0003-convert-plans-lists.md
       - id: prd-0004-drag-drop-ordering
-        title: Offload — V1.1 Drag & Drop Ordering PRD
+        title: Offload — Drag & Drop Ordering PRD
         path: prds/prd-0004-drag-drop-ordering.md
       - id: prd-0005-item-search-tags
-        title: Offload — V1.1 Item Search by Text or Tag PRD
+        title: Offload — Item Search by Text or Tag PRD
         path: prds/prd-0005-item-search-tags.md
       - id: prd-0006-context-aware-ci-pipeline
-        title: Offload — V1 Context-Aware CI Pipeline PRD
+        title: Offload — Context-Aware CI Pipeline PRD
         path: prds/prd-0006-context-aware-ci-pipeline.md
+      - id: prd-0007-smart-task-breakdown
+        title: Offload — Smart Task Breakdown PRD
+        path: prds/prd-0007-smart-task-breakdown.md
+      - id: prd-0008-brain-dump-compiler
+        title: Offload — Brain Dump Compiler Enhancement PRD
+        path: prds/prd-0008-brain-dump-compiler.md
+      - id: prd-0009-recurring-task-intelligence
+        title: Offload — Recurring Task Intelligence PRD
+        path: prds/prd-0009-recurring-task-intelligence.md
+      - id: prd-0010-tone-assistant
+        title: Offload — Tone Assistant PRD
+        path: prds/prd-0010-tone-assistant.md
+      - id: prd-0011-executive-function-prompts
+        title: Offload — Executive Function Prompts PRD
+        path: prds/prd-0011-executive-function-prompts.md
+      - id: prd-0012-decision-fatigue-reducer
+        title: Offload — Decision Fatigue Reducer PRD
+        path: prds/prd-0012-decision-fatigue-reducer.md
+      - id: prd-0013-pricing-limits
+        title: Offload — Pricing and Limits PRD
+        path: prds/prd-0013-pricing-limits.md
   - id: design
     title: Design
     description: Technical design and implementation guidance.
     documents:
+      - id: design-agents
+        title: Design Agent Guide
+        path: design/AGENTS.md
       - id: design-readme
         title: Design
         path: design/README.md
@@ -112,12 +145,12 @@ sections:
       - id: design-testing-readme
         title: Testing
         path: design/testing/README.md
-      - id: design-v1-manual-testing-checklist
-        title: V1 Manual Testing Checklist
-        path: design/testing/design-v1-manual-testing-checklist.md
-      - id: design-v1-manual-testing-results
-        title: V1 Manual Testing Results
-        path: design/testing/design-v1-manual-testing-results.md
+      - id: design-manual-testing-checklist
+        title: Manual Testing Checklist
+        path: design/testing/design-manual-testing-checklist.md
+      - id: design-manual-testing-results
+        title: Manual Testing Results
+        path: design/testing/design-manual-testing-results.md
       - id: design-voice-capture-test-results
         title: Voice Capture Test Results
         path: design/testing/design-voice-capture-test-results.md
@@ -131,6 +164,9 @@ sections:
     title: Implementation Plans
     description: Sequencing, milestones, execution strategy.
     documents:
+      - id: plans-agents
+        title: Plans Agent Guide
+        path: plans/AGENTS.md
       - id: plans-readme
         title: Plans
         path: plans/README.md
@@ -176,39 +212,39 @@ sections:
         title: Remediation Progress Tracking
         path: plans/_archived/plan-archived-remediation-tracking.md
         archived: true
-      - id: plan-v1-roadmap
-        title: Offload v1 Roadmap
-        path: plans/plan-v1-roadmap.md
-      - id: plan-v1-testing-polish
-        title: "Plan: V1 Testing & Polish"
-        path: plans/plan-v1-testing-polish.md
-      - id: plan-v1-release-prep
-        title: "Plan: V1 Release Prep"
-        path: plans/plan-v1-release-prep.md
-      - id: plan-v1-tag-relationship-refactor
+      - id: plan-roadmap
+        title: Offload Roadmap
+        path: plans/plan-roadmap.md
+      - id: plan-testing-polish
+        title: "Plan: Testing & Polish"
+        path: plans/plan-testing-polish.md
+      - id: plan-release-prep
+        title: "Plan: Release Prep"
+        path: plans/plan-release-prep.md
+      - id: plan-tag-relationship-refactor
         title: "Plan: Tag Relationship Refactor"
-        path: plans/plan-v1-tag-relationship-refactor.md
-      - id: plan-v1-view-decomposition
+        path: plans/plan-tag-relationship-refactor.md
+      - id: plan-view-decomposition
         title: "Plan: View Decomposition"
-        path: plans/plan-v1-view-decomposition.md
-      - id: plan-v1-visual-timeline
+        path: plans/plan-view-decomposition.md
+      - id: plan-visual-timeline
         title: "Plan: Visual Timeline"
-        path: plans/plan-v1-visual-timeline.md
-      - id: plan-v1-celebration-animations
+        path: plans/plan-visual-timeline.md
+      - id: plan-celebration-animations
         title: "Plan: Celebration Animations"
-        path: plans/plan-v1-celebration-animations.md
-      - id: plan-v1-advanced-accessibility
+        path: plans/plan-celebration-animations.md
+      - id: plan-advanced-accessibility
         title: "Plan: Advanced Accessibility Features"
-        path: plans/plan-v1-advanced-accessibility.md
-      - id: plan-v1-ai-organization-flows
+        path: plans/plan-advanced-accessibility.md
+      - id: plan-ai-organization-flows
         title: "Plan: AI Organization Flows & Review Screen"
-        path: plans/plan-v1-ai-organization-flows.md
-      - id: plan-v1-ai-pricing-limits
+        path: plans/plan-ai-organization-flows.md
+      - id: plan-ai-pricing-limits
         title: "Plan: AI Pricing & Limits"
-        path: plans/plan-v1-ai-pricing-limits.md
-      - id: plan-v1-backend-api-privacy
+        path: plans/plan-ai-pricing-limits.md
+      - id: plan-backend-api-privacy
         title: "Plan: Backend API + Privacy Constraints"
-        path: plans/plan-v1-backend-api-privacy.md
+        path: plans/plan-backend-api-privacy.md
       - id: plan-archived-error-handling-improvements
         title: Error Handling Improvements Plan
         path: plans/_archived/plan-archived-error-handling-improvements.md
@@ -233,10 +269,23 @@ sections:
         title: View Decomposition Plan
         path: plans/_archived/plan-archived-view-decomposition.md
         archived: true
+  - id: discovery
+    title: Discovery
+    description: Early feature discovery and context gathering.
+    documents:
+      - id: discovery-agents
+        title: Discovery Agent Guide
+        path: discovery/AGENTS.md
+      - id: discovery-readme
+        title: Discovery
+        path: discovery/README.md
   - id: research
     title: Research
     description: Exploratory work, spikes, benchmarks, reviews.
     documents:
+      - id: research-agents
+        title: Research Agent Guide
+        path: research/AGENTS.md
       - id: research-readme
         title: Research
         path: research/README.md
@@ -258,3 +307,12 @@ sections:
       - id: research-ios-ui-trends-2025
         title: iOS UI Trends Research & Recommendations for Offload
         path: research/research-ios-ui-trends-2025.md
+      - id: research-on-device-ai-feasibility
+        title: On-Device AI Feasibility for Offload
+        path: research/research-on-device-ai-feasibility.md
+      - id: research-offline-ai-quota-enforcement
+        title: Offline AI Quota Enforcement
+        path: research/research-offline-ai-quota-enforcement.md
+      - id: research-privacy-learning-user-data
+        title: Privacy Implications of Learning from User Data
+        path: research/research-privacy-learning-user-data.md

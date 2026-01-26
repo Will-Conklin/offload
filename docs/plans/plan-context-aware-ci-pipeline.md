@@ -12,6 +12,11 @@ related:
   - adr-0006-ci-provider-selection
   - adr-0007-context-aware-ci-workflow-strategy
   - design-context-aware-ci-pipeline
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---

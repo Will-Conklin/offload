@@ -3,7 +3,7 @@ id: reference-drag-drop-ordering
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - organize
 last_updated: 2026-01-22
@@ -12,6 +12,15 @@ related:
   - design-drag-drop-ordering
   - plan-drag-drop-ordering
   - adr-0005-collection-ordering-and-hierarchy-persistence
+depends_on:
+  - docs/prds/prd-0004-drag-drop-ordering.md
+  - docs/design/design-drag-drop-ordering.md
+  - docs/plans/plan-drag-drop-ordering.md
+  - docs/adrs/adr-0005-collection-ordering-and-hierarchy-persistence.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Definition; Schema; Invariants; Examples."
 ---

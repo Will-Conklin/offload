@@ -1,24 +1,29 @@
 ---
-id: plan-v1-visual-timeline
+id: plan-visual-timeline
 type: plan
-status: draft
+status: proposed
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - pre-v1-scope
+  - pending-confirmation
 last_updated: 2026-01-20
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---
 
-# Plan: Visual Timeline (Pre-v1 Candidate)
+# Plan: Visual Timeline (Pending Confirmation)
 
 ## Overview
 
 Execution plan for the optional visual timeline feature listed as additional
-pre-v1 scope in the v1 roadmap. Work should begin only after scope is confirmed
+proposed scope in the roadmap. Work should begin only after scope is confirmed
 via PRD/ADR updates.
 
 ## Goals
@@ -58,11 +63,11 @@ via PRD/ADR updates.
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| Scope adds complexity to v1 timeline | M | Keep work gated until scope approval. |
+| Scope adds complexity to launch timeline | M | Keep work gated until scope approval. |
 | Visuals conflict with design system | M | Align with design system before build. |
 
 ## Progress
 
 | Date | Update |
 | --- | --- |
-| 2026-01-20 | Plan created from v1 roadmap split. |
+| 2026-01-20 | Plan created from roadmap split. |

@@ -12,6 +12,11 @@ related:
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
   - adr-0003-adhd-focused-ux-ui-guardrails
   - design-persistent-bottom-tab-bar
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; Progress."
 ---

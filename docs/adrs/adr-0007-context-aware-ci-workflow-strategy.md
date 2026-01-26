@@ -3,7 +3,7 @@ id: adr-0007-context-aware-ci-workflow-strategy
 type: architecture-decision
 status: accepted
 owners:
-  - product
+  - Will-Conklin
   - ios
 applies_to:
   - ci
@@ -13,11 +13,17 @@ last_updated: 2026-01-22
 related:
   - prd-0006-context-aware-ci-pipeline
   - adr-0006-ci-provider-selection
+depends_on:
+  - docs/prds/prd-0006-context-aware-ci-pipeline.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: 2026-01-21
 decision-makers:
-  - product
+  - Will-Conklin
   - ios
 ---
 

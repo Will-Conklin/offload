@@ -3,7 +3,7 @@ id: adr-0005-collection-ordering-and-hierarchy-persistence
 type: architecture-decision
 status: accepted
 owners:
-  - product
+  - Will-Conklin
   - ios
 applies_to:
   - data-model
@@ -15,11 +15,18 @@ related:
   - prd-0003-convert-plans-lists
   - prd-0004-drag-drop-ordering
   - adr-0002-terminology-alignment-for-capture-and-organization
+depends_on:
+  - docs/prds/prd-0003-convert-plans-lists.md
+  - docs/prds/prd-0004-drag-drop-ordering.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Context; Decision; Consequences; Alternatives Considered; Implementation Notes; References; Revision History."
 decision-date: 2026-01-21
 decision-makers:
-  - product
+  - Will-Conklin
   - ios
 ---
 

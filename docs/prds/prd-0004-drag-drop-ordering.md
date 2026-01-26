@@ -3,21 +3,30 @@ id: prd-0004-drag-drop-ordering
 type: product-requirements
 status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - product
+  - organize
+  - ui
 last_updated: 2026-01-22
 related:
   - adr-0002-terminology-alignment-for-capture-and-organization
   - adr-0003-adhd-focused-ux-ui-guardrails
   - adr-0005-collection-ordering-and-hierarchy-persistence
+depends_on:
+  - docs/adrs/adr-0002-terminology-alignment-for-capture-and-organization.md
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+  - docs/adrs/adr-0005-collection-ordering-and-hierarchy-persistence.md
+supersedes: []
+accepted_by: Offload
+accepted_at: 2026-01-22
+related_issues: []
 structure_notes:
-  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals (V1); 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model (V1); 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
+  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (after deployment); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
 ---
 
-# Offload — V1.1 Drag & Drop Ordering PRD
+# Offload — Drag & Drop Ordering PRD
 
-**Version:** 1.1
 **Date:** 2026-01-22
 **Status:** Proposed
 **Owner:** Offload
@@ -44,7 +53,7 @@ harder to reflect priority and structure.
 
 ---
 
-## 3. Product goals (V1)
+## 3. Product goals
 
 - Support drag-and-drop ordering for lists and plans.
 - Allow nesting within plans via drag-to-parent.
@@ -66,7 +75,7 @@ harder to reflect priority and structure.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -97,7 +106,8 @@ harder to reflect priority and structure.
 
 ## 9. Pricing & limits (hybrid model)
 
-No pricing or limits changes.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -107,7 +117,7 @@ No new AI or backend requirements.
 
 ---
 
-## 11. Data model (V1)
+## 11. Data model
 
 Hierarchy uses existing collection item ordering and parent relationships;
 ordering changes must persist.
@@ -149,4 +159,4 @@ ordering changes must persist.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.1 | 2026-01-22 | Initial proposal. |
+| N/A | 2026-01-22 | Initial proposal. |

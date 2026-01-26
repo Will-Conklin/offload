@@ -1,19 +1,23 @@
 ---
 id: prds-readme
 type: product-requirements
-status: active
+status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - product
-last_updated: 2026-01-17
+last_updated: 2026-01-25
 related:
   - prd-0001-product-requirements
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
 ---
-
 
 # PRD
 
@@ -28,16 +32,15 @@ Below reference and adrs. PRDs define WHAT the product must do; they cannot intr
 ## Lifecycle
 
 ```text
-proposed → draft → review → active → deprecated
+proposed → accepted → implemented → archived
 ```
 
-| Status       | Meaning                                           |
-| ------------ | ------------------------------------------------- |
-| `proposed`   | Initial idea, not yet fully scoped or reviewed    |
-| `draft`      | Being written, not yet ready for review           |
-| `review`     | Under stakeholder review                          |
-| `active`     | Approved and authoritative                        |
-| `deprecated` | Superseded or no longer applicable                |
+| Status         | Meaning                                           |
+| -------------- | ------------------------------------------------- |
+| `proposed`     | Initial idea, not yet fully scoped or reviewed    |
+| `accepted`     | Approved for implementation                       |
+| `implemented`  | Delivered and authoritative                       |
+| `archived`     | Superseded or no longer applicable                |
 
 ## What belongs here
 
@@ -54,7 +57,8 @@ proposed → draft → review → active → deprecated
 
 ## Canonical documents
 
-- [Offload V1 PRD](./prd-0001-product-requirements.md)
+- [Offload Product Requirements](./prd-0001-product-requirements.md)
+- [Pricing and Limits PRD (Proposed)](./prd-0013-pricing-limits.md)
 
 ## Template
 
@@ -64,19 +68,24 @@ id: prd-NNNN-{feature-name}
 type: product-requirements
 status: proposed
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - product
 last_updated: YYYY-MM-DD
 related:
   - adr-0001-{decision-title}
+depends_on:
+  - docs/adrs/adr-0001-{decision-title}.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
-  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals (V1); 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model (V1); 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
+  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (after deployment); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
 ---
 
-# {Product Name} — V{major} Product Requirements Document (PRD)
+# {Product Name} — Product Requirements Document (PRD)
 
-**Version:** {major}.{minor}
 **Date:** YYYY-MM-DD
 **Status:** Proposed
 **Owner:** {name}
@@ -100,7 +109,7 @@ structure_notes:
 
 ---
 
-## 3. Product goals (V1)
+## 3. Product goals
 
 - {Goal 1}
 - {Goal 2}
@@ -121,7 +130,7 @@ structure_notes:
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric   | Baseline  | Target | Measurement |
 | --------- | -------- | --------- | ------ | ----------- |
@@ -156,7 +165,7 @@ structure_notes:
 
 ---
 
-## 11. Data model (V1)
+## 11. Data model
 
 {Key entities and relationships}
 
@@ -192,9 +201,9 @@ structure_notes:
 
 ## 16. Revision history
 
-| Version         | Date       | Notes         |
-| --------------- | ---------- | ------------- |
-| {major}.{minor} | YYYY-MM-DD | Initial proposal |
+| Version | Date | Notes |
+| --- | --- | --- |
+| N/A | YYYY-MM-DD | Initial proposal |
 ```
 
 ## Naming

@@ -3,12 +3,18 @@ id: reference-readme
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
+  - reference
 last_updated: 2026-01-17
 related:
   - reference-test-runtime-baselines
+depends_on:
+  - docs/reference/reference-test-runtime-baselines.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
@@ -66,11 +72,16 @@ id: reference-{topic}
 type: reference
 status: active
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Reference docs must avoid rationale or narrative."
 ---

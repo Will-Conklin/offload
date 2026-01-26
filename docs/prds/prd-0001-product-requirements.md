@@ -3,23 +3,32 @@ id: prd-0001-product-requirements
 type: product-requirements
 status: active
 owners:
-  - will-conklin
+  - Will-Conklin
 applies_to:
   - product
+  - capture
+  - organize
 last_updated: 2026-01-20
 related:
   - adr-0001-technology-stack-and-architecture
   - adr-0002-terminology-alignment-for-capture-and-organization
   - adr-0003-adhd-focused-ux-ui-guardrails
-  - plan-v1-roadmap
+  - plan-roadmap
+depends_on:
+  - docs/adrs/adr-0001-technology-stack-and-architecture.md
+  - docs/adrs/adr-0002-terminology-alignment-for-capture-and-organization.md
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
-  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals (V1); 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (30-day post-launch); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model (V1); 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
+  - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics (after deployment); 7. Core user flows; 8. Functional requirements; 9. Pricing & limits (hybrid model); 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions (tracked); 16. Revision history."
   - "Keep the top-level section outline intact."
 ---
 
-# Offload — V1 Product Requirements Document (PRD)
+# Offload — Product Requirements Document (PRD)
 
-**Version:** 1.4
 **Date:** 2026-01-20
 **Status:** Active
 **Owner:** Will Conklin
@@ -47,7 +56,7 @@ Users experience stress when ideas, tasks, or plans accumulate faster than they 
 
 ---
 
-## 3. Product goals (V1)
+## 3. Product goals
 
 - Enable instant thought capture with minimal friction
 - Provide optional, trustworthy AI-assisted organization
@@ -62,7 +71,7 @@ Users experience stress when ideas, tasks, or plans accumulate faster than they 
 - No calendar scheduling or reminders
 - No collaboration or sharing
 - No cross-platform support (iOS only; iPhone and iPad)
-- No multi-device sync in v1
+- No multi-device sync initially
 - No complex onboarding flows
 
 ---
@@ -77,20 +86,18 @@ Users experience stress when ideas, tasks, or plans accumulate faster than they 
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
-### V1 (Manual-only)
+### Manual-only (current scope)
 
 - ≥30% Day-30 retention for users who create ≥5 captures
 - ≥20% of users create at least one Plan
 - App Store rating ≥4.5
 - <2% crash-free session rate
 
-### Post-v1 (AI-enabled)
+### AI-enabled (future scope)
 
 - ≥25% Day-30 retention for users who complete ≥1 AI organize action
-- ≥40% of free users hit monthly AI limit
-- 8–12% conversion from free → paid after limit hit
 
 ---
 
@@ -152,7 +159,7 @@ Capture items are never auto-cleared; user controls retention.
 
 ---
 
-### 8.3 AI organization (Post-v1)
+### 8.3 AI organization (Future)
 
 Triggered only by user action.
 
@@ -172,7 +179,7 @@ AI analyzes Items and returns suggested organization such as:
 
 ---
 
-### 8.4 Review screen (Post-v1)
+### 8.4 Review screen (Future)
 
 User must be able to:
 
@@ -192,7 +199,7 @@ User must be able to:
 
 - `isStructured = true`
 - Ordered items with optional hierarchy
-- No due dates required in V1
+- No due dates required initially
 
 **List** (unstructured Collection)
 
@@ -204,44 +211,29 @@ User must be able to:
 - Tasks are Items with `type = "task"`
 - Links are Items with `type = "link"` pointing to a Collection
 
-No reminders in V1.
+No reminders initially.
 
 ---
 
 ## 9. Pricing & limits (hybrid model)
 
-### Free tier
-
-- 30 AI organization actions per month
-- Unlimited capture
-- Unlimited manual lists
-
-### Paid tier (single SKU)
-
-- Unlimited AI (soft caps enforced)
-- Faster processing
-- Early feature access
-
-### Enforcement
-
-- Limits enforced server-side
-- Graceful fallback messaging
-- No dark patterns
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
 ## 10. AI & backend requirements
 
-> **Note:** This section applies to post-v1 releases. V1 is manual-only with no backend dependency.
+> **Note:** This section applies to future releases. Current scope is
+> manual-only with no backend dependency.
 
-### Architecture (Post-v1)
+### Architecture (Future)
 
 iOS App → Backend API → LLM Provider
 
 ### Backend responsibilities
 
 - User/session identification
-- Quota enforcement
 - LLM request/response handling
 - JSON schema validation
 - Minimal logging
@@ -255,7 +247,7 @@ iOS App → Backend API → LLM Provider
 
 ---
 
-## 11. Data model (V1)
+## 11. Data model
 
 > See [adr-0001](../adrs/adr-0001-technology-stack-and-architecture.md) for implementation details and [adr-0002](../adrs/adr-0002-terminology-alignment-for-capture-and-organization.md) for terminology.
 
@@ -367,17 +359,16 @@ Plans and Lists are implemented as Collections: `isStructured = true` for plans,
 
 | Risk              | Mitigation                   |
 | ----------------- | ---------------------------- |
-| AI cost spikes    | Hard per-user caps           |
 | Misclassification | Review screen + confidence   |
 | User distrust     | Raw text preserved           |
-| Overbuilding      | Strict V1 scope lock         |
+| Overbuilding      | Strict initial scope lock    |
 
 ---
 
 ## 14. Implementation tracking
 
 > **Note:** Detailed implementation status is tracked in the
-> [v1 Roadmap](../plans/plan-v1-roadmap.md), which is the single source of
+> [roadmap](../plans/plan-roadmap.md), which is the single source of
 > truth for progress.
 
 ### Current status (Jan 19, 2026)
@@ -386,35 +377,34 @@ Plans and Lists are implemented as Collections: `isStructured = true` for plans,
 - ✅ **UI/UX Foundation** — Flat design system (Elijah theme), ADHD-focused UX
 - ✅ **Repository Pattern** — Environment injection, all views use repositories
 - ⏳ **Testing & Polish** — Manual testing, performance benchmarks
-- ⏸️ **AI Integration** — Deferred to post-v1
+- ⏸️ **AI Integration** — Deferred to future release
 
-See [plan-v1-roadmap.md](../plans/plan-v1-roadmap.md) for current status.
+See [roadmap](../plans/plan-roadmap.md) for current status.
 
 ---
 
 ## 15. Open decisions (tracked)
 
-> **Note:** See [plan-v1-roadmap.md](../plans/plan-v1-roadmap.md) decision log
+> **Note:** See the [roadmap](../plans/plan-roadmap.md) decision log
 > for resolution status.
 
-| Decision                   | Status  | Notes                                     |
-| -------------------------- | ------- | ----------------------------------------- |
-| Final app name             | Decided | "Offload"                                 |
-| v1 scope                   | Decided | Manual-only; AI in post-v1                |
-| Platform                   | Decided | iOS (iPhone and iPad)                     |
-| UI direction               | Decided | Flat design (Elijah theme) - Jan 13, 2026 |
-| AI provider/model          | Decided | Deferred to post-v1                       |
-| Paid tier soft cap numbers | Decided | Deferred to post-v1                       |
-| Sign in with Apple         | Decided | Not required for local-only v1            |
+| Decision              | Status  | Notes                                        |
+| --------------------- | ------- | -------------------------------------------- |
+| Final app name        | Decided | "Offload"                                    |
+| Initial scope         | Decided | Manual-only; AI deferred                     |
+| Platform              | Decided | iOS (iPhone and iPad)                        |
+| UI direction          | Decided | Flat design (Elijah theme) - Jan 13, 2026    |
+| AI provider/model     | Decided | Deferred                                     |
+| Sign in with Apple    | Decided | Not required for local-only launch           |
 
 ---
 
 ## 16. Revision history
 
-| Version | Date       | Changes                                                                              |
-| ------- | ---------- | ------------------------------------------------------------------------------------ |
-| 1.0     | 2025-12-30 | Initial PRD                                                                          |
-| 1.1     | 2026-01-09 | Terminology alignment, ADHD UX guardrails, updated data model                        |
-| 1.2     | 2026-01-09 | Clarified v1 scope (manual-only), split success metrics, marked AI as post-v1        |
-| 1.3     | 2026-01-19 | Updated platform to iPhone+iPad, resolved open decisions, linked to v1-roadmap       |
-| 1.4     | 2026-01-20 | Updated tag storage to relationship-based Tag entities                               |
+| Version | Date | Notes |
+| --- | --- | --- |
+| N/A | 2025-12-30 | Initial PRD |
+| N/A | 2026-01-09 | Terminology alignment, ADHD UX guardrails, updated data model |
+| N/A | 2026-01-09 | Clarified initial scope (manual-only), split success metrics, marked AI as future |
+| N/A | 2026-01-19 | Updated platform to iPhone+iPad, resolved open decisions, linked to roadmap |
+| N/A | 2026-01-20 | Updated tag storage to relationship-based Tag entities |

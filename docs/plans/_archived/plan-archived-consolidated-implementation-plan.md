@@ -3,7 +3,7 @@ id: plan-archived-consolidated-implementation-plan
 type: plan
 status: archived
 owners:
-  - tbd
+  - TBD
 applies_to:
   - consolidated
 last_updated: 2026-01-17
@@ -11,6 +11,11 @@ related:
   - plan-archived-remediation-plan
   - plan-archived-remediation-tracking
   - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Executive Summary; Work Stream Overview; Phase 1: Critical Stability (Weeks 1-3); Phase 2: UI Foundation (Weeks 2-4); Phase 3: Micro-Interactions & Polish (Weeks 4-5); Phase 4: ADHD-Specific Enhancements (Week 6); Phase 5: Integration & Testing (Week 7); Phase 6: Polish & Release Prep (Week 8); Resource Requirements; Risk Assessment & Mitigation; Success Metrics; Decision Log; Communication Plan; Rollback Strategy; Appendix A: Task Dependency Graph; Appendix B: File Change Inventory; Appendix C: Testing Checklist (Comprehensive); Appendix D: Code Review Checklist; Appendix E: Quick Reference; Sign-Off."
   - "Keep the top-level section outline intact."

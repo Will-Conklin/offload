@@ -3,21 +3,30 @@ id: prd-0011-executive-function-prompts
 type: product-requirements
 status: draft
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - product
+  - ai
+  - adhd
 last_updated: 2026-01-24
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
   - prd-0001-product-requirements
   - prd-0007-smart-task-breakdown
+depends_on:
+  - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+  - docs/prds/prd-0001-product-requirements.md
+  - docs/prds/prd-0007-smart-task-breakdown.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: 1. Product overview; 2. Problem statement; 3. Product goals; 4. Non-goals (explicit); 5. Target audience; 6. Success metrics; 7. Core user flows; 8. Functional requirements; 9. Pricing & limits; 10. AI & backend requirements; 11. Data model; 12. UX & tone requirements; 13. Risks & mitigations; 14. Implementation tracking; 15. Open decisions; 16. Revision history."
 ---
 
 # Offload — Executive Function Prompts PRD
 
-**Version:** 1.0
 **Date:** 2026-01-24
 **Status:** Draft
 **Owner:** Offload
@@ -25,7 +34,7 @@ structure_notes:
 **Related ADRs:**
 
 - [adr-0003: ADHD-Focused UX/UI Guardrails](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
-- [prd-0001: V1 Product Requirements](prd-0001-product-requirements.md)
+- [prd-0001: Product Requirements](prd-0001-product-requirements.md)
 
 **Related PRDs:**
 
@@ -108,7 +117,7 @@ motivation issues, and they benefit from specific prompting and scaffolding.
 
 ---
 
-## 6. Success metrics (30-day post-launch)
+## 6. Success metrics (after deployment)
 
 | Metric ID | Metric | Baseline | Target | Measurement |
 | --- | --- | --- | --- | --- |
@@ -221,23 +230,8 @@ motivation issues, and they benefit from specific prompting and scaffolding.
 
 ## 9. Pricing & limits (hybrid model)
 
-### Free tier
-
-- 10 prompt sessions per month
-- Basic challenge types (initiation, overwhelm)
-- Manual strategy invocation
-
-### Paid tier
-
-- Unlimited prompt sessions
-- Advanced challenge types (decision, time, energy)
-- Automatic strategy learning and suggestions
-- Historical strategy analytics
-- Priority response times
-
-**Rationale:** Executive function support is core to the neurodivergent value
-proposition. Free tier provides essential scaffolding; paid tier for users who
-rely heavily on prompting support.
+Pricing and limits are deferred; see
+[prd-0013: Pricing and Limits](prd-0013-pricing-limits.md).
 
 ---
 
@@ -428,7 +422,7 @@ rely heavily on prompting support.
 ### Complexity estimate
 
 - **Medium-high complexity** due to conversational AI and learning requirements
-- Estimated 3-4 week implementation for MVP
+- Estimated 3-4 week implementation
 - Additional 2 weeks for strategy learning and refinements
 
 ### Testing requirements
@@ -459,4 +453,4 @@ rely heavily on prompting support.
 
 | Version | Date | Notes |
 | --- | --- | --- |
-| 1.0 | 2026-01-24 | Initial draft based on Goblin Tools gap analysis |
+| N/A | 2026-01-24 | Initial draft based on Goblin Tools gap analysis |

@@ -3,7 +3,7 @@ id: reference-context-aware-ci-pipeline
 type: reference
 status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - ci
 last_updated: 2026-01-22
@@ -14,6 +14,17 @@ related:
   - adr-0006-ci-provider-selection
   - adr-0007-context-aware-ci-workflow-strategy
   - reference-ci-path-filters
+depends_on:
+  - docs/prds/prd-0006-context-aware-ci-pipeline.md
+  - docs/design/design-context-aware-ci-pipeline.md
+  - docs/plans/plan-context-aware-ci-pipeline.md
+  - docs/adrs/adr-0006-ci-provider-selection.md
+  - docs/adrs/adr-0007-context-aware-ci-workflow-strategy.md
+  - docs/reference/reference-ci-path-filters.md
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Definition; Schema; Invariants; Examples."
 ---

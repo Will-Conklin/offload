@@ -1,15 +1,20 @@
 ---
 id: plan-master-plan
 type: plan
-status: active
+status: archived
 owners:
-  - tbd
+  - TBD
 applies_to:
-  - Offload
+  - plans
 last_updated: 2026-01-17
 related:
   - research-ios-ui-trends-2025
   - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Document Purpose; Executive Summary; Current Status by Work Stream; Consolidated Timeline (8-10 Weeks); Implementation Priority Matrix; Decision Log; Work Breakdown by Phase; Testing Strategy; Risk Assessment & Mitigation; Success Metrics; Dependencies & Blockers; Resource Requirements; Appendix A: Quick Reference; Appendix B: Testing Checklist (Comprehensive); Appendix C: Code Review Checklist; Changelog; Sign-Off."
   - "Keep the top-level section outline intact."

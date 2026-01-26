@@ -3,11 +3,16 @@ id: plan-archived-polish-phase
 type: plan
 status: archived
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - polish
 last_updated: 2026-01-17
 related: []
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Audit Results; Phase 1: Design System Foundation (Week 1); Phase 2: Component Library (Week 1-2); Phase 3: Error Handling & UX (Week 2); Phase 4: Data Management (Week 3); Phase 5: Accessibility (Week 3); Phase 6: Polish & Refinement (Week 4); Success Criteria; Testing Plan; Implementation Order; Release Readiness."
   - "Keep the top-level section outline intact."

@@ -1,30 +1,35 @@
 ---
-id: design-v1-manual-testing-checklist
+id: design-manual-testing-checklist
 type: design
-status: active
+status: accepted
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
   - testing
-  - v1-release
+  - launch-release
 last_updated: 2026-01-19
 related:
-  - plan-v1-roadmap
+  - plan-roadmap
   - design-voice-capture-testing-guide
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Scope; Preconditions; Checklist; Evidence; Revision history."
   - "Keep top-level sections: Purpose; Scope; Preconditions; Checklist; Evidence; Revision history."
 ---
 
-# V1 Manual Testing Checklist
+# Launch Manual Testing Checklist
 
 ## Purpose
 
-Provide a lightweight, repeatable manual checklist for v1 readiness.
+Provide a lightweight, repeatable manual checklist for launch readiness.
 
 ## Scope
 
-- Manual-only v1 features (no AI flows, no pagination, no advanced accessibility
+- Manual-only launch features (no AI flows, no pagination, no advanced accessibility
   features).
 - Core capture, organize, and settings flows on iPhone and iPad.
 - Voice capture steps reference the dedicated voice capture testing guide.
@@ -98,4 +103,4 @@ Record results for each run:
 
 | Version | Date | Notes |
 | ------- | ---------- | ----- |
-| 1.0 | 2026-01-19 | Initial checklist |
+| N/A | 2026-01-19 | Initial checklist |

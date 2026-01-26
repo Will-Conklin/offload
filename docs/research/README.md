@@ -1,23 +1,27 @@
 ---
 id: research-readme
 type: research
-status: informational
+status: active
 owners:
-  - Offload
+  - Will-Conklin
 applies_to:
-  - Offload
-last_updated: 2026-01-04
+  - research
+last_updated: 2026-01-25
 related:
   - research-adhd-ux-ui
   - research-color-palettes
   - research-color-scheme-alternatives
   - research-ios-ui-trends-2025
   - research-2026-01-04-main-branch-review
+depends_on: []
+supersedes: []
+accepted_by: null
+accepted_at: null
+related_issues: []
 structure_notes:
   - "Section order: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
   - "Keep top-level sections: Purpose; Authority; Lifecycle; What belongs here; What does not belong here; Canonical documents; Template; Naming."
 ---
-
 
 # Research
 
@@ -32,14 +36,13 @@ Lowest authority. Research is non-authoritative and must not define requirements
 ## Lifecycle
 
 ```text
-in-progress → informational → stale
+active → completed
 ```
 
-| Status          | Meaning                                      |
-| --------------- | -------------------------------------------- |
-| `in-progress`   | Research actively being conducted            |
-| `informational` | Complete, available for reference            |
-| `stale`         | Outdated, may no longer reflect reality      |
+| Status      | Meaning                                      |
+| ----------- | -------------------------------------------- |
+| `active`    | Research actively being conducted            |
+| `completed` | Complete, available for reference            |
 
 ## What belongs here
 
@@ -58,6 +61,9 @@ in-progress → informational → stale
 - [Color Scheme Options for Offload](./research-color-palettes.md)
 - [Color Scheme Alternatives for Offload](./research-color-scheme-alternatives.md)
 - [iOS UI Trends Research & Recommendations for Offload](./research-ios-ui-trends-2025.md)
+- [On-Device AI Feasibility for Offload](./research-on-device-ai-feasibility.md)
+- [Offline AI Quota Enforcement](./research-offline-ai-quota-enforcement.md)
+- [Privacy Implications of Learning from User Data](./research-privacy-learning-user-data.md)
 - [Code Review: Main Branch - Comprehensive Analysis](./reviews/research-2026-01-04-main-branch-review.md)
 
 ## Template
@@ -66,9 +72,9 @@ in-progress → informational → stale
 ---
 id: research-{topic}
 type: research
-status: informational
+status: active
 owners:
-  - {name}
+  - TBD  # Never assume; use actual contributor name when known
 applies_to:
   - {area}
 last_updated: YYYY-MM-DD
