@@ -54,6 +54,7 @@ struct OrganizeView: View {
         NavigationStack {
             ZStack {
                 Theme.Colors.background(colorScheme, style: style)
+                    .pixelGrid(cellSize: 20, opacity: 0.02)
                     .ignoresSafeArea()
 
                 VStack(spacing: Theme.Spacing.sm) {

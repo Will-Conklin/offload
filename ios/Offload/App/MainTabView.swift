@@ -152,6 +152,7 @@ private struct FloatingTabBar: View {
         .background(
             Capsule()
                 .fill(Theme.Colors.surface(colorScheme, style: style))
+                .noiseOverlay(opacity: 0.03)
                 .overlay(
                     Capsule()
                         .stroke(Theme.Colors.primary(colorScheme, style: style).opacity(0.35), lineWidth: 1)

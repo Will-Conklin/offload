@@ -182,6 +182,26 @@ struct Theme {
         static func focusRing(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
             primary(colorScheme, style: style).opacity(0.5)
         }
+
+        // MARK: Retro Digital Warmth Colors
+
+        static func amber(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+            colorScheme == .dark
+                ? Color(hex: "FFB366") // Amber (dark mode)
+                : Color(hex: "FF9F40") // Amber (light mode)
+        }
+
+        static func terminalGreen(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+            colorScheme == .dark
+                ? Color(hex: "50FA7B") // Terminal green (dark mode)
+                : Color(hex: "3DD68C") // Terminal green (light mode)
+        }
+
+        static func crtBlue(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+            colorScheme == .dark
+                ? Color(hex: "8BE9FD") // CRT blue (dark mode)
+                : Color(hex: "5AC8FA") // CRT blue (light mode)
+        }
     }
 
     // MARK: - Surfaces
@@ -249,6 +269,11 @@ struct Theme {
 
         static let badge = system(.caption2, weight: .semibold)
         static let badgeEmphasis = system(.caption2, weight: .bold)
+
+        // Retro monospaced typography
+        static let timestampMono = Font.system(.caption2, design: .monospaced).weight(.semibold).monospacedDigit()
+        static let metadataMonospacedRetro = Font.system(.caption, design: .monospaced).weight(.medium).monospacedDigit()
+        static let bodyMonospaced = Font.system(.body, design: .monospaced).weight(.regular).monospacedDigit()
 
         // Line spacing
         static let lineSpacingTight: CGFloat = 2
@@ -405,6 +430,11 @@ struct Theme {
         static let springDefault = Animation.spring(response: 0.3, dampingFraction: 0.7, blendDuration: 0.1)
         static let springSnappy = Animation.spring(response: 0.25, dampingFraction: 0.8, blendDuration: 0.1)
         static let easeInOutShort = Animation.easeInOut(duration: 0.2)
+
+        // Retro mechanical animations
+        static let typewriterDing = Animation.spring(response: 0.25, dampingFraction: 0.5, blendDuration: 0.05)
+        static let crtFlicker = Animation.easeInOut(duration: 0.08)
+        static let mechanicalSlide = Animation.spring(response: 0.35, dampingFraction: 0.75, blendDuration: 0.1)
     }
 
     // MARK: - Hit Targets

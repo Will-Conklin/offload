@@ -39,6 +39,7 @@ struct CaptureView: View {
             ZStack(alignment: .bottomTrailing) {
                 // Background
                 Theme.Colors.background(colorScheme, style: style)
+                    .pixelGrid(cellSize: 20, opacity: 0.02)
                     .ignoresSafeArea()
 
                 ScrollView {
@@ -250,6 +251,7 @@ private struct ItemCard: View {
     let onMoveTo: (MoveDestination) -> Void
 
     @State private var offset: CGFloat = 0
+    @State private var crtFlickerOpacity: Double = 1
 
     var body: some View {
         CardSurface {
@@ -269,7 +271,7 @@ private struct ItemCard: View {
                     }
 
                     Text(item.createdAt, format: .relative(presentation: .named))
-                        .font(Theme.Typography.caption2)
+                        .font(Theme.Typography.timestampMono)
                         .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
                 }
 
@@ -281,6 +283,17 @@ private struct ItemCard: View {
                 )
             }
         }
+        .opacity(crtFlickerOpacity)
+        .onAppear {
+            withAnimation(Theme.Animations.crtFlicker.repeatCount(2, autoreverses: true)) {
+                crtFlickerOpacity = 0.7
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
+                withAnimation(Theme.Animations.crtFlicker) {
+                    crtFlickerOpacity = 1
+                }
+            }
+        }
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
         .overlay(
@@ -288,7 +301,7 @@ private struct ItemCard: View {
             HStack {
                 if offset > 0 {
                     AppIcon(name: Icons.checkCircleFilled, size: 18)
-                        .foregroundStyle(Theme.Colors.success(colorScheme, style: style))
+                        .foregroundStyle(Theme.Colors.terminalGreen(colorScheme, style: style))
                         .padding(.leading, Theme.Spacing.md)
                         .opacity(min(1, Double(offset / 120)))
                 }

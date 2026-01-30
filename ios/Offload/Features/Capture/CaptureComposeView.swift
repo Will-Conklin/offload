@@ -42,6 +42,7 @@ struct CaptureComposeView: View {
     @State private var showingPermissionAlert = false
     @State private var errorPresenter = ErrorPresenter()
     @State private var didTriggerQuickStart = false
+    @State private var captureConfirmed = false
 
     @FocusState private var isFocused: Bool
 
@@ -69,6 +70,16 @@ struct CaptureComposeView: View {
             bottomBar
         }
         .background(Theme.Colors.background(colorScheme, style: style))
+        .overlay(
+            Group {
+                if captureConfirmed {
+                    Theme.Colors.amber(colorScheme, style: style)
+                        .opacity(0.15)
+                        .ignoresSafeArea()
+                        .transition(.opacity)
+                }
+            }
+        )
         .navigationTitle("Capture")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -339,8 +350,18 @@ struct CaptureComposeView: View {
                 tags: selectedTags,
                 isStarred: isStarred
             )
-            NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
-            dismiss()
+
+            // Trigger typewriter ding animation
+            withAnimation(Theme.Animations.typewriterDing) {
+                captureConfirmed = true
+            }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+            // Dismiss after brief amber flash
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
+                dismiss()
+            }
         } catch {
             errorPresenter.present(error)
         }
