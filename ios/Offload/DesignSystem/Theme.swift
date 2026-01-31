@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 // MARK: - Theme Style
 
 /// Available color themes for the app
@@ -435,6 +434,27 @@ struct Theme {
         static let typewriterDing = Animation.spring(response: 0.25, dampingFraction: 0.5, blendDuration: 0.05)
         static let crtFlicker = Animation.easeInOut(duration: 0.08)
         static let mechanicalSlide = Animation.spring(response: 0.35, dampingFraction: 0.75, blendDuration: 0.1)
+
+        // Vibrant spring animations
+        static let springOvershoot = Animation.spring(
+            response: 0.4,
+            dampingFraction: 0.65,
+            blendDuration: 0.1
+        )
+
+        static let springBouncy = Animation.spring(
+            response: 0.5,
+            dampingFraction: 0.6,
+            blendDuration: 0.1
+        )
+
+        static let gradientShift = Animation.easeInOut(duration: 0.3)
+
+        static let scaleRotate = Animation.spring(
+            response: 0.3,
+            dampingFraction: 0.7,
+            blendDuration: 0.05
+        )
     }
 
     // MARK: - Hit Targets
@@ -494,6 +514,114 @@ struct Theme {
                 endRadius: 200
             )
         }
+
+        // MARK: - Vibrant Gradient Canvas System
+
+        // Primary gradients
+        static func electricBlueViolet(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: [Color(hex: "4F46E5"), Color(hex: "7C3AED")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        static func coralPink(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: [Color(hex: "F87171"), Color(hex: "EC4899")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        static func emeraldTeal(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: [Color(hex: "10B981"), Color(hex: "14B8A6")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        static func amberOrange(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: [Color(hex: "F59E0B"), Color(hex: "F97316")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        static func violetPink(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: [Color(hex: "A78BFA"), Color(hex: "EC4899")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        // Background gradient
+        static func deepBackground(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: colorScheme == .dark ? [
+                    Color(hex: "0F0A1E"), Color(hex: "1A0E2E")
+                ] : [
+                    Color(hex: "F8F7FF"), Color(hex: "FFF8FA")
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+
+        // Card gradients palette (cycling)
+        static func cardGradient(index: Int, _ colorScheme: ColorScheme) -> LinearGradient {
+            let gradients = [
+                electricBlueViolet(colorScheme),
+                coralPink(colorScheme),
+                emeraldTeal(colorScheme),
+                amberOrange(colorScheme),
+                violetPink(colorScheme)
+            ]
+            let i = ((index % gradients.count) + gradients.count) % gradients.count
+            return gradients[i]
+        }
+    }
+
+    // MARK: - Glass System
+
+    struct Glass {
+        static let blurRadius: CGFloat = DeviceCapability.supportsHighQualityBlur ? 20 : 10
+
+        static func surface(_ colorScheme: ColorScheme) -> Color {
+            colorScheme == .dark
+                ? Color.white.opacity(0.1)
+                : Color.white.opacity(0.7)
+        }
+
+        static func border(_ colorScheme: ColorScheme) -> LinearGradient {
+            LinearGradient(
+                colors: [Color.white.opacity(0.3), Color.white.opacity(0.1)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+
+        static let rainbowBorder = LinearGradient(
+            colors: [
+                Color(hex: "4F46E5"), Color(hex: "EC4899"),
+                Color(hex: "10B981"), Color(hex: "F59E0B"),
+                Color(hex: "4F46E5")
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+}
+
+// MARK: - Device Capability
+
+struct DeviceCapability {
+    static var supportsHighQualityBlur: Bool {
+        // iPhone 12 and newer (6 or more cores)
+        ProcessInfo.processInfo.processorCount >= 6
     }
 }
 

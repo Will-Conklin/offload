@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import UIKit
 
-
 struct CaptureView: View {
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.collectionRepository) private var collectionRepository
@@ -37,9 +36,8 @@ struct CaptureView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottomTrailing) {
-                // Background
-                Theme.Colors.background(colorScheme, style: style)
-                    .pixelGrid(cellSize: 20, opacity: 0.02)
+                // Vibrant gradient background
+                Theme.Gradients.deepBackground(colorScheme)
                     .ignoresSafeArea()
 
                 ScrollView {
@@ -254,7 +252,7 @@ private struct ItemCard: View {
     @State private var crtFlickerOpacity: Double = 1
 
     var body: some View {
-        CardSurface {
+        CardSurface(gradientIndex: index) {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text(item.content)
@@ -283,19 +281,12 @@ private struct ItemCard: View {
                 )
             }
         }
-        .opacity(crtFlickerOpacity)
-        .onAppear {
-            withAnimation(Theme.Animations.crtFlicker.repeatCount(2, autoreverses: true)) {
-                crtFlickerOpacity = 0.7
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
-                withAnimation(Theme.Animations.crtFlicker) {
-                    crtFlickerOpacity = 1
-                }
-            }
-        }
+        .optimizedGradients()
         .contentShape(Rectangle())
-        .onTapGesture(perform: onTap)
+        .onTapGesture {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            onTap()
+        }
         .overlay(
             // Swipe indicators
             HStack {

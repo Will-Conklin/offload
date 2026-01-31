@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import UIKit
 
-
 enum CaptureComposeMode: String, Identifiable {
     case write
     case voice
@@ -18,7 +17,6 @@ enum CaptureComposeMode: String, Identifiable {
     var shouldFocusOnAppear: Bool { self == .write }
     var shouldStartVoiceOnAppear: Bool { self == .voice }
 }
-
 
 struct CaptureComposeView: View {
     let mode: CaptureComposeMode
@@ -69,7 +67,7 @@ struct CaptureComposeView: View {
             Spacer()
             bottomBar
         }
-        .background(Theme.Colors.background(colorScheme, style: style))
+        .background(Theme.Gradients.deepBackground(colorScheme).ignoresSafeArea())
         .overlay(
             Group {
                 if captureConfirmed {
@@ -318,8 +316,7 @@ struct CaptureComposeView: View {
         } else {
             preRecordingText = text
             _Concurrency.Task {
-                do { try await voiceService.startRecording() }
-                catch { showingPermissionAlert = true }
+                do { try await voiceService.startRecording() } catch { showingPermissionAlert = true }
             }
         }
     }

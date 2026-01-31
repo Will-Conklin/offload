@@ -5,7 +5,6 @@
 
 import SwiftUI
 
-
 struct HomeView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
@@ -28,7 +27,7 @@ struct HomeView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Theme.Colors.background(colorScheme, style: style))
+            .background(Theme.Gradients.deepBackground(colorScheme).ignoresSafeArea())
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
         }

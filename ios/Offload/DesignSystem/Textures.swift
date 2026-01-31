@@ -6,7 +6,7 @@
 import SwiftUI
 import UIKit
 
-// MARK: - Textures
+// MARK: - Textures & Effects
 
 extension Theme {
     struct Textures {
@@ -42,7 +42,7 @@ extension Theme {
             let opacity: Double
 
             var body: some View {
-                GeometryReader { geometry in
+                GeometryReader { _ in
                     Canvas { context, size in
                         let width = Int(size.width)
                         let height = Int(size.height)
@@ -97,6 +97,30 @@ extension Theme {
             }
         }
     }
+
+    // MARK: - Glass Effects
+
+    struct Effects {
+        /// Subtle glass sparkle effect for glassmorphic surfaces
+        struct GlassNoise: View {
+            let opacity: Double
+
+            var body: some View {
+                Canvas { context, size in
+                    for _ in 0..<100 {
+                        let x = CGFloat.random(in: 0...size.width)
+                        let y = CGFloat.random(in: 0...size.height)
+                        let alpha = Double.random(in: 0...opacity)
+                        context.fill(
+                            Path(ellipseIn: CGRect(x: x, y: y, width: 2, height: 2)),
+                            with: .color(.white.opacity(alpha))
+                        )
+                    }
+                }
+                .blendMode(.overlay)
+            }
+        }
+    }
 }
 
 // MARK: - View Extensions
@@ -141,5 +165,22 @@ extension View {
                 }
             }
         )
+    }
+
+    /// Adds glass noise sparkle effect for glassmorphic surfaces
+    /// - Parameter opacity: Maximum opacity of sparkle points (default: 0.05)
+    func glassNoise(opacity: Double = 0.05) -> some View {
+        overlay(
+            Group {
+                if !UIAccessibility.isReduceMotionEnabled {
+                    Theme.Effects.GlassNoise(opacity: opacity)
+                }
+            }
+        )
+    }
+
+    /// Optimizes gradient rendering performance by caching into an offscreen buffer
+    func optimizedGradients() -> some View {
+        self.drawingGroup()
     }
 }

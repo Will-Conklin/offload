@@ -3,10 +3,8 @@
 // Governed by: AGENTS.md
 // Additional instructions: Preserve established theme defaults and component APIs.
 
-
 import SwiftUI
 import SwiftData
-
 
 // MARK: - Buttons
 
@@ -18,8 +16,13 @@ struct FloatingActionButton: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
 
+    @State private var isPressed = false
+
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            action()
+        }) {
             Label {
                 Text(title)
             } icon: {
@@ -31,10 +34,30 @@ struct FloatingActionButton: View {
                 .padding(.horizontal, Theme.Spacing.md)
                 .background(
                     Capsule()
-                        .fill(Theme.Colors.buttonDark(colorScheme))
+                        .fill(Theme.Gradients.electricBlueViolet(colorScheme))
+                        .overlay(
+                            Capsule().stroke(
+                                LinearGradient(
+                                    colors: [.white.opacity(0.3), .clear],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                ),
+                                lineWidth: 1
+                            )
+                        )
                 )
-                .shadow(color: Theme.Shadows.ambient(colorScheme), radius: Theme.Shadows.elevationSm, y: Theme.Shadows.offsetYSm)
+                .shadow(color: Color(hex: "4F46E5").opacity(0.5), radius: 20)
+                .shadow(color: Color(hex: "7C3AED").opacity(0.3), radius: 40)
+                .scaleEffect(isPressed ? 0.95 : 1.0)
+                .rotationEffect(.degrees(isPressed ? 2 : 0))
         }
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
+        .animation(Theme.Animations.scaleRotate, value: isPressed)
     }
 }
 
@@ -112,16 +135,20 @@ struct CardSurface<Content: View>: View {
     let showsEdge: Bool
     let showsBorder: Bool
     let contentPadding: EdgeInsets
+    let gradientIndex: Int?
     let content: Content
 
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
+
+    @State private var isPressed = false
 
     init(
         shape: AnyShape = AnyShape(Theme.Shapes.card()),
         fill: Color? = nil,
         showsEdge: Bool = true,
         showsBorder: Bool = true,
+        gradientIndex: Int? = nil,
         contentPadding: EdgeInsets = EdgeInsets(
             top: Theme.Cards.contentPadding,
             leading: Theme.Cards.contentPadding,
@@ -134,6 +161,7 @@ struct CardSurface<Content: View>: View {
         self.fill = fill
         self.showsEdge = showsEdge
         self.showsBorder = showsBorder
+        self.gradientIndex = gradientIndex
         self.contentPadding = contentPadding
         self.content = content()
     }
@@ -146,17 +174,44 @@ struct CardSurface<Content: View>: View {
             .padding(contentPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                shape
-                    .fill(cardFill)
-                    .overlay(edgeOverlay, alignment: .leading)
-                    .overlay(borderOverlay)
-                    .scanLineOverlay(opacity: 0.02, spacing: 2)
+                ZStack {
+                    if let gradientIndex = gradientIndex {
+                        // Vibrant glassmorphic card with gradient
+                        Theme.Glass.surface(colorScheme)
+                            .blur(radius: Theme.Glass.blurRadius)
+
+                        Theme.Gradients.cardGradient(index: gradientIndex, colorScheme)
+                            .opacity(0.15)
+
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.xl, style: .continuous)
+                            .stroke(Theme.Glass.border(colorScheme), lineWidth: 1.5)
+                    } else {
+                        // Legacy flat card
+                        shape
+                            .fill(cardFill)
+                            .overlay(edgeOverlay, alignment: .leading)
+                            .overlay(borderOverlay)
+                            .scanLineOverlay(opacity: 0.02, spacing: 2)
+                    }
+                }
+            )
+            .clipShape(gradientIndex != nil
+                ? AnyShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.xl, style: .continuous))
+                : shape)
+            .shadow(
+                color: gradientIndex != nil
+                    ? Color(hex: "4F46E5").opacity(0.2)
+                    : Theme.Shadows.ultraLight(colorScheme),
+                radius: gradientIndex != nil ? 16 : Theme.Shadows.elevationUltraLight,
+                y: gradientIndex != nil ? 8 : Theme.Shadows.offsetYUltraLight
             )
             .shadow(
-                color: Theme.Shadows.ultraLight(colorScheme),
-                radius: Theme.Shadows.elevationUltraLight,
-                y: Theme.Shadows.offsetYUltraLight
+                color: gradientIndex != nil ? Color(hex: "7C3AED").opacity(0.15) : .clear,
+                radius: gradientIndex != nil ? 24 : 0,
+                y: gradientIndex != nil ? 12 : 0
             )
+            .scaleEffect(isPressed ? 0.97 : 1.0)
+            .animation(Theme.Animations.springOvershoot, value: isPressed)
     }
 
     @ViewBuilder
@@ -179,6 +234,12 @@ struct CardSurface<Content: View>: View {
                 lineWidth: Theme.Cards.borderWidth
             )
         }
+    }
+
+    func onPress(_ pressed: Bool) -> Self {
+        var copy = self
+        copy.isPressed = pressed
+        return copy
     }
 }
 
@@ -290,21 +351,37 @@ struct TagPill: View {
     let color: Color
 
     @Environment(\.colorScheme) private var colorScheme
+    @State private var isPressed = false
 
     var body: some View {
         Text(name)
             .font(Theme.Typography.caption)
-            .foregroundStyle(color)
+            .foregroundStyle(.white)
             .padding(.horizontal, Theme.Spacing.pillHorizontal)
             .padding(.vertical, Theme.Spacing.pillVertical)
             .background(
                 Capsule()
-                    .fill(color.opacity(Theme.Opacity.tagFill(colorScheme)))
+                    .fill(
+                        LinearGradient(
+                            colors: [color, color.opacity(0.7)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .overlay(
+                        Capsule().stroke(
+                            LinearGradient(
+                                colors: [.white.opacity(0.4), .clear],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 1
+                        )
+                    )
             )
-            .overlay(
-                Capsule()
-                    .stroke(color.opacity(Theme.Opacity.tagStroke(colorScheme)), lineWidth: 1)
-            )
+            .shadow(color: color.opacity(0.4), radius: 8, x: 0, y: 4)
+            .scaleEffect(isPressed ? 0.92 : 1.0)
+            .animation(Theme.Animations.springBouncy, value: isPressed)
     }
 }
 

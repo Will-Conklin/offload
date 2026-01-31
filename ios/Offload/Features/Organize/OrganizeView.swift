@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-
 struct OrganizeView: View {
     enum Scope: String, CaseIterable, Identifiable {
         case plans, lists
@@ -53,8 +52,8 @@ struct OrganizeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.Colors.background(colorScheme, style: style)
-                    .pixelGrid(cellSize: 20, opacity: 0.02)
+                // Vibrant gradient background
+                Theme.Gradients.deepBackground(colorScheme)
                     .ignoresSafeArea()
 
                 VStack(spacing: Theme.Spacing.sm) {
@@ -294,7 +293,7 @@ private struct CollectionCard: View {
     }
 
     var body: some View {
-        CardSurface {
+        CardSurface(gradientIndex: paletteIndex) {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 HStack {
                     Text(collection.name)
@@ -334,6 +333,7 @@ private struct CollectionCard: View {
                 }
             }
         }
+        .optimizedGradients()
     }
 }
 

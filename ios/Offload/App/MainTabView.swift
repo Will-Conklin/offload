@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-
 struct MainTabView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
@@ -150,15 +149,20 @@ private struct FloatingTabBar: View {
         .padding(.horizontal, Theme.Spacing.sm)
         .padding(.vertical, 0)
         .background(
-            Capsule()
-                .fill(Theme.Colors.surface(colorScheme, style: style))
-                .noiseOverlay(opacity: 0.03)
-                .overlay(
-                    Capsule()
-                        .stroke(Theme.Colors.primary(colorScheme, style: style).opacity(0.35), lineWidth: 1)
-                )
-                .shadow(color: Theme.Shadows.ultraLight(colorScheme), radius: Theme.Shadows.elevationUltraLight, y: Theme.Shadows.offsetYUltraLight)
+            ZStack {
+                // Glassmorphic background
+                Capsule()
+                    .fill(Theme.Glass.surface(colorScheme))
+                    .blur(radius: Theme.Glass.blurRadius)
+
+                // Rainbow gradient border
+                Capsule()
+                    .stroke(Theme.Glass.rainbowBorder, lineWidth: 2)
+                    .shadow(color: Color(hex: "4F46E5").opacity(0.3), radius: 10)
+                    .shadow(color: Color(hex: "EC4899").opacity(0.2), radius: 20)
+            }
         )
+        .animation(Theme.Animations.springOvershoot, value: selectedTab)
     }
 }
 
