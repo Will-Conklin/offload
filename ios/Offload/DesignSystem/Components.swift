@@ -28,28 +28,15 @@ struct FloatingActionButton: View {
             } icon: {
                 AppIcon(name: iconName, size: 14)
             }
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(.system(.footnote, design: .default).weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(.vertical, Theme.Spacing.sm)
                 .padding(.horizontal, Theme.Spacing.md)
                 .background(
                     Capsule()
-                        .fill(Theme.Gradients.electricBlueViolet(colorScheme))
-                        .overlay(
-                            Capsule().stroke(
-                                LinearGradient(
-                                    colors: [.white.opacity(0.3), .clear],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                ),
-                                lineWidth: 1
-                            )
-                        )
+                        .fill(Theme.Colors.primary(colorScheme, style: themeManager.currentStyle))
                 )
-                .shadow(color: Color(hex: "E67E22").opacity(0.3), radius: 12, y: 4)
-                .shadow(color: Color(hex: "D35400").opacity(0.2), radius: 20, y: 6)
                 .scaleEffect(isPressed ? 0.95 : 1.0)
-                .rotationEffect(.degrees(isPressed ? 2 : 0))
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
@@ -199,18 +186,6 @@ struct CardSurface<Content: View>: View {
             .clipShape(gradientIndex != nil
                 ? AnyShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.xl, style: .continuous))
                 : shape)
-            .shadow(
-                color: gradientIndex != nil
-                    ? Color(hex: "E67E22").opacity(0.25)  // MCM burnt orange
-                    : Theme.Shadows.ultraLight(colorScheme),
-                radius: gradientIndex != nil ? 12 : Theme.Shadows.elevationUltraLight,
-                y: gradientIndex != nil ? 6 : Theme.Shadows.offsetYUltraLight
-            )
-            .shadow(
-                color: gradientIndex != nil ? Color(hex: "27AE60").opacity(0.2) : .clear,  // MCM avocado green
-                radius: gradientIndex != nil ? 16 : 0,
-                y: gradientIndex != nil ? 8 : 0
-            )
             .scaleEffect(isPressed ? 0.97 : 1.0)
             .animation(Theme.Animations.springOvershoot, value: isPressed)
     }
@@ -310,7 +285,6 @@ struct CardContainer<Content: View>: View {
             .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: themeManager.currentStyle))
             .background(Theme.Surface.card(colorScheme, style: themeManager.currentStyle))
             .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous))
-            .shadow(color: Theme.Shadows.ultraLight(colorScheme), radius: Theme.Shadows.elevationUltraLight, y: Theme.Shadows.offsetYUltraLight)
     }
 }
 
@@ -364,25 +338,12 @@ struct TagPill: View {
             .padding(.vertical, Theme.Spacing.pillVertical)
             .background(
                 Capsule()
-                    .fill(
-                        LinearGradient(
-                            colors: [color, color.opacity(0.7)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .fill(color.opacity(Theme.Opacity.tagFill(colorScheme)))
                     .overlay(
-                        Capsule().stroke(
-                            LinearGradient(
-                                colors: [.white.opacity(0.4), .clear],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
-                            lineWidth: 1
-                        )
+                        Capsule()
+                            .strokeBorder(color.opacity(Theme.Opacity.tagStroke(colorScheme)), lineWidth: 1)
                     )
             )
-            .shadow(color: color.opacity(0.4), radius: 8, x: 0, y: 4)
             .scaleEffect(isPressed ? 0.92 : 1.0)
             .animation(Theme.Animations.springBouncy, value: isPressed)
     }

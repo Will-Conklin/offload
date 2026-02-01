@@ -149,19 +149,13 @@ private struct FloatingTabBar: View {
         .padding(.horizontal, Theme.Spacing.sm)
         .padding(.vertical, 0)
         .background(
-            ZStack {
-                // Glassmorphic background (blur comes from Material backdrop)
-                Capsule()
-                    .fill(Theme.Glass.surface(colorScheme))
-
-                // Rainbow gradient border
-                Capsule()
-                    .stroke(Theme.Glass.rainbowBorder, lineWidth: 2)
-                    .shadow(color: Color(hex: "E67E22").opacity(0.3), radius: 10)
-                    .shadow(color: Color(hex: "27AE60").opacity(0.2), radius: 20)
-            }
+            Capsule()
+                .fill(Theme.Colors.surface(colorScheme, style: style))
+                .overlay(
+                    Capsule()
+                        .strokeBorder(Theme.Colors.borderMuted(colorScheme, style: style), lineWidth: 1)
+                )
         )
-        .background(.ultraThinMaterial)
         .animation(Theme.Animations.springOvershoot, value: selectedTab)
     }
 }
@@ -286,11 +280,6 @@ private struct OffloadMainButton: View {
                             .stroke(Theme.Colors.primary(colorScheme, style: style).opacity(0.5), lineWidth: 1.5)
                     )
                     .frame(width: size, height: size)
-                    .shadow(
-                        color: Theme.Shadows.ambient(colorScheme),
-                        radius: Theme.Shadows.elevationSm,
-                        y: Theme.Shadows.offsetYSm
-                    )
 
                 AppIcon(name: Icons.add, size: 22)
                     .foregroundStyle(.white)
