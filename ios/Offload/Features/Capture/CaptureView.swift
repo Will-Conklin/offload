@@ -89,7 +89,7 @@ struct CaptureView: View {
                 }
                 .accessibilityLabel("Add Item")
                 .padding(.trailing, Theme.Spacing.md)
-                .padding(.bottom, Theme.Spacing.md)
+                .padding(.bottom, floatingTabBarClearance + Theme.Spacing.md)
             }
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.large)

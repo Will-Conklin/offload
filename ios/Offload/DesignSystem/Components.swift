@@ -46,8 +46,8 @@ struct FloatingActionButton: View {
                             )
                         )
                 )
-                .shadow(color: Color(hex: "4F46E5").opacity(0.5), radius: 20)
-                .shadow(color: Color(hex: "7C3AED").opacity(0.3), radius: 40)
+                .shadow(color: Color(hex: "4F46E5").opacity(0.4), radius: 12, y: 4)
+                .shadow(color: Color(hex: "7C3AED").opacity(0.25), radius: 20, y: 6)
                 .scaleEffect(isPressed ? 0.95 : 1.0)
                 .rotationEffect(.degrees(isPressed ? 2 : 0))
         }
@@ -201,15 +201,15 @@ struct CardSurface<Content: View>: View {
                 : shape)
             .shadow(
                 color: gradientIndex != nil
-                    ? Color(hex: "4F46E5").opacity(0.2)
+                    ? Color(hex: "4F46E5").opacity(0.25)
                     : Theme.Shadows.ultraLight(colorScheme),
-                radius: gradientIndex != nil ? 16 : Theme.Shadows.elevationUltraLight,
-                y: gradientIndex != nil ? 8 : Theme.Shadows.offsetYUltraLight
+                radius: gradientIndex != nil ? 12 : Theme.Shadows.elevationUltraLight,
+                y: gradientIndex != nil ? 6 : Theme.Shadows.offsetYUltraLight
             )
             .shadow(
-                color: gradientIndex != nil ? Color(hex: "7C3AED").opacity(0.15) : .clear,
-                radius: gradientIndex != nil ? 24 : 0,
-                y: gradientIndex != nil ? 12 : 0
+                color: gradientIndex != nil ? Color(hex: "7C3AED").opacity(0.2) : .clear,
+                radius: gradientIndex != nil ? 16 : 0,
+                y: gradientIndex != nil ? 8 : 0
             )
             .scaleEffect(isPressed ? 0.97 : 1.0)
             .animation(Theme.Animations.springOvershoot, value: isPressed)
