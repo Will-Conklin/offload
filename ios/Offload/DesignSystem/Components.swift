@@ -46,8 +46,8 @@ struct FloatingActionButton: View {
                             )
                         )
                 )
-                .shadow(color: Color(hex: "4F46E5").opacity(0.4), radius: 12, y: 4)
-                .shadow(color: Color(hex: "7C3AED").opacity(0.25), radius: 20, y: 6)
+                .shadow(color: Color(hex: "E67E22").opacity(0.3), radius: 12, y: 4)
+                .shadow(color: Color(hex: "D35400").opacity(0.2), radius: 20, y: 6)
                 .scaleEffect(isPressed ? 0.95 : 1.0)
                 .rotationEffect(.degrees(isPressed ? 2 : 0))
         }
@@ -688,7 +688,7 @@ struct TagSelectionSheet: View {
 
 #Preview("Components") {
     let previewScheme: ColorScheme = .light
-    return VStack(spacing: Theme.Spacing.md) {
+    VStack(spacing: Theme.Spacing.md) {
         FloatingActionButton(title: "Add Capture", iconName: Icons.addCircleFilled) {}
 
         HStack(spacing: Theme.Spacing.md) {
@@ -696,12 +696,12 @@ struct TagSelectionSheet: View {
                 iconName: Icons.settings,
                 iconSize: 18,
                 tileSize: 36,
-                style: .secondaryOutlined(Theme.Colors.primary(previewScheme, style: .elijah))
+                style: .secondaryOutlined(Theme.Colors.primary(previewScheme, style: .midCenturyModern))
             )
 
             TagPill(
                 name: "Personal",
-                color: Theme.Colors.tagColor(for: "Personal", previewScheme, style: .elijah)
+                color: Theme.Colors.tagColor(for: "Personal", previewScheme, style: .midCenturyModern)
             )
 
             TypeChip(type: "task")
@@ -709,12 +709,12 @@ struct TagSelectionSheet: View {
 
         ItemActionButton(
             iconName: Icons.starFilled,
-            tint: Theme.Colors.primary(previewScheme, style: .elijah),
+            tint: Theme.Colors.primary(previewScheme, style: .midCenturyModern),
             variant: .primaryFilled
         ) {}
     }
     .padding(Theme.Spacing.lg)
-    .background(Theme.Colors.background(previewScheme, style: .elijah))
+    .background(Theme.Colors.background(previewScheme, style: .midCenturyModern))
     .environment(\.colorScheme, previewScheme)
     .environmentObject(ThemeManager.shared)
 }

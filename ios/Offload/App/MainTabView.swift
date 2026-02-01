@@ -157,8 +157,8 @@ private struct FloatingTabBar: View {
                 // Rainbow gradient border
                 Capsule()
                     .stroke(Theme.Glass.rainbowBorder, lineWidth: 2)
-                    .shadow(color: Color(hex: "4F46E5").opacity(0.3), radius: 10)
-                    .shadow(color: Color(hex: "EC4899").opacity(0.2), radius: 20)
+                    .shadow(color: Color(hex: "E67E22").opacity(0.3), radius: 10)
+                    .shadow(color: Color(hex: "27AE60").opacity(0.2), radius: 20)
             }
         )
         .background(.ultraThinMaterial)
