@@ -37,6 +37,7 @@ struct OrganizeView: View {
     @State private var showingCreate = false
     @State private var showingSettings = false
     @State private var selectedCollection: Collection?
+    @State private var tagPickerCollection: Collection?
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = OrganizeListViewModel()
 
@@ -94,6 +95,10 @@ struct OrganizeView: View {
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
             }
+            .sheet(item: $tagPickerCollection) { collection in
+                CollectionTagPickerSheet(collection: collection)
+                    .presentationDetents([.medium])
+            }
             .navigationDestination(item: $selectedCollection) { collection in
                 CollectionDetailView(collectionID: collection.id)
             }
@@ -123,7 +128,14 @@ struct OrganizeView: View {
                 Button {
                     selectedCollection = collection
                 } label: {
-                    CollectionCard(paletteIndex: index, collection: collection, colorScheme: colorScheme, style: style)
+                    CollectionCard(
+                        paletteIndex: index,
+                        collection: collection,
+                        colorScheme: colorScheme,
+                        style: style,
+                        onAddTag: { tagPickerCollection = collection },
+                        onToggleStar: { toggleStar(collection) }
+                    )
                 }
                 .buttonStyle(.plain)
                 .cardButtonStyle()
@@ -245,6 +257,14 @@ struct OrganizeView: View {
         }
     }
 
+    private func toggleStar(_ collection: Collection) {
+        do {
+            try collectionRepository.toggleStar(collection)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
     private func loadScopeIfNeeded() {
         guard !viewModel.hasLoaded else { return }
         updateScope()
@@ -282,22 +302,15 @@ private struct CollectionCard: View {
     let collection: Collection
     let colorScheme: ColorScheme
     let style: ThemeStyle
-
-    private var tags: [Tag] {
-        let tags = collection.collectionItems?
-            .compactMap { $0.item?.tags }
-            .flatMap { $0 } ?? []
-        return Dictionary(uniqueKeysWithValues: tags.map { ($0.id, $0) })
-            .values
-            .sorted { $0.name < $1.name }
-    }
+    let onAddTag: () -> Void
+    let onToggleStar: () -> Void
 
     var body: some View {
         CardSurface(gradientIndex: paletteIndex) {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 HStack {
                     Text(collection.name)
-                        .font(Theme.Typography.cardTitle)
+                        .font(Theme.Typography.body)
                         .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
 
                     Spacer()
@@ -305,7 +318,7 @@ private struct CollectionCard: View {
 
                 HStack {
                     Text(collection.createdAt, format: .dateTime.month(.abbreviated).day())
-                        .font(Theme.Typography.metadata)
+                        .font(Theme.Typography.timestampMono)
                         .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
 
                     Spacer()
@@ -317,20 +330,12 @@ private struct CollectionCard: View {
                     }
                 }
 
-                if !tags.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: Theme.Spacing.xs) {
-                            ForEach(tags) { tag in
-                                TagPill(
-                                    name: tag.name,
-                                    color: tag.color
-                                        .map { Color(hex: $0) }
-                                        ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
-                                )
-                            }
-                        }
-                    }
-                }
+                ItemActionRow(
+                    tags: collection.tags,
+                    isStarred: collection.isStarred,
+                    onAddTag: onAddTag,
+                    onToggleStar: onToggleStar
+                )
             }
         }
         .optimizedGradients()
@@ -364,6 +369,97 @@ private struct CollectionFormSheet: View {
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
+        }
+    }
+}
+
+// MARK: - Collection Tag Picker Sheet
+
+private struct CollectionTagPickerSheet: View {
+    let collection: Collection
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.collectionRepository) private var collectionRepository
+    @Environment(\.tagRepository) private var tagRepository
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @Query(sort: \Tag.name) private var allTags: [Tag]
+
+    @State private var newTagName = ""
+    @State private var errorPresenter = ErrorPresenter()
+    @FocusState private var focused: Bool
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Create New Tag") {
+                    HStack {
+                        TextField("Tag name", text: $newTagName)
+                            .focused($focused)
+                        Button("Add") {
+                            createTag()
+                        }
+                        .disabled(newTagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+
+                Section("Select Tags") {
+                    ForEach(allTags) { tag in
+                        Button {
+                            toggleTag(tag)
+                        } label: {
+                            HStack {
+                                Text(tag.name)
+                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                Spacer()
+                                if collection.tags.contains(where: { $0.id == tag.id }) {
+                                    AppIcon(name: Icons.check, size: 12)
+                                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Tags")
+            .navigationBarTitleDisplayMode(.large)
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.Colors.background(colorScheme, style: style))
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .errorToasts(errorPresenter)
+    }
+
+    private func createTag() {
+        let trimmed = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        do {
+            let tag = try tagRepository.fetchOrCreate(trimmed)
+            try collectionRepository.addTag(collection, tag: tag)
+            newTagName = ""
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func toggleTag(_ tag: Tag) {
+        do {
+            if collection.tags.contains(where: { $0.id == tag.id }) {
+                try collectionRepository.removeTag(collection, tag: tag)
+            } else {
+                try collectionRepository.addTag(collection, tag: tag)
+            }
+        } catch {
+            errorPresenter.present(error)
         }
     }
 }
