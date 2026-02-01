@@ -3,7 +3,7 @@
 // Governed by: AGENTS.md
 // Additional instructions: Preserve established theme defaults and component APIs.
 
-//  Elijah lavender/cream design system
+//  Mid-Century Modern design system
 
 import SwiftUI
 
@@ -11,13 +11,13 @@ import SwiftUI
 
 /// Available color themes for the app
 enum ThemeStyle: String, CaseIterable, Identifiable {
-    case elijah
+    case midCenturyModern
 
     var id: String { rawValue }
 
-    var displayName: String { "Elijah" }
+    var displayName: String { "Mid-Century Modern" }
 
-    var description: String { "Lavender + cream calm" }
+    var description: String { "Warm atomic age optimism" }
 }
 
 // MARK: - Theme
@@ -31,32 +31,32 @@ struct Theme {
 
         // MARK: Primary Accent
 
-        static func primary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func primary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "C4B5FD") // Lavender (dark mode)
-                : Color(hex: "DDD6FE") // Lavender (light mode)
+                ? Color(hex: "E67E22") // Burnt orange (dark mode)
+                : Color(hex: "D35400") // Burnt orange (light mode)
         }
 
         // MARK: Secondary Accent
 
-        static func secondary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func secondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "FDE68A") // Cream (dark mode)
-                : Color(hex: "FEF3C7") // Cream (light mode)
+                ? Color(hex: "27AE60") // Avocado green (dark mode)
+                : Color(hex: "229954") // Avocado green (light mode)
         }
 
         // MARK: Backgrounds
 
-        static func background(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func background(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "0E1116") // Soft dark
-                : Color(hex: "FAF5FF") // Lavender-tinted light
+                ? Color(hex: "2C1810") // Chocolate brown
+                : Color(hex: "F5F0E8") // Warm beige
         }
 
-        static func surface(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func surface(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "161A22") // Deep slate
-                : Color(hex: "FFFFFF") // Clean white
+                ? Color(hex: "3E2723") // Chocolate
+                : Color(hex: "FFF9F0") // Cream
         }
 
         static func buttonDark(_ colorScheme: ColorScheme) -> Color {
@@ -67,136 +67,136 @@ struct Theme {
 
         // MARK: Card (tinted backgrounds)
 
-        static func card(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func card(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             cardPalette(colorScheme, style: style).first ?? surface(colorScheme, style: style)
         }
 
         // MARK: Multi-accent palette (for varied card surfaces)
 
-        static func cardPalette(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> [Color] {
+        static func cardPalette(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> [Color] {
             if colorScheme == .dark {
                 return [
-                    Color(hex: "2B2248"), // Deep lavender
-                    Color(hex: "3B2F1A"), // Deep cream
-                    Color(hex: "3B1F2F"), // Deep pink
-                    Color(hex: "1E2A44"), // Deep blue
-                    Color(hex: "0F3D2E")  // Deep mint
+                    Color(hex: "D84315"), // Burnt orange
+                    Color(hex: "7D5229"), // Goldenrod brown
+                    Color(hex: "1F5C47"), // Teal green
+                    Color(hex: "795548"), // Warm brown
+                    Color(hex: "00695C")  // Teal blue
                 ]
             }
 
             return [
-                Color(hex: "EDE9FE"), // Lavender tint
-                Color(hex: "FEF3C7"), // Cream/yellow tint
-                Color(hex: "FCE7F3"), // Soft pink
-                Color(hex: "DBEAFE"), // Soft blue
-                Color(hex: "D1FAE5")  // Soft mint
+                Color(hex: "FFE0B2"), // Pale orange
+                Color(hex: "FFF3D6"), // Goldenrod cream
+                Color(hex: "B2DFDB"), // Soft teal
+                Color(hex: "D7CCC8"), // Warm taupe
+                Color(hex: "80CBC4")  // Light teal
             ]
         }
 
-        static func cardColor(index: Int, _ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func cardColor(index: Int, _ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             let palette = cardPalette(colorScheme, style: style)
             guard !palette.isEmpty else { return card(colorScheme, style: style) }
             let i = ((index % palette.count) + palette.count) % palette.count
             return palette[i]
         }
 
-        static func tagColor(for name: String, _ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func tagColor(for name: String, _ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             primary(colorScheme, style: style)
         }
 
         // MARK: Text
 
-        static func textPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func textPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "F5F5F5") // Off white
-                : Color(hex: "1B1B1B") // Charcoal
+                ? Color(hex: "FFF8E1") // Warm cream
+                : Color(hex: "3E2723") // Chocolate brown
         }
 
-        static func cardTextPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func cardTextPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             textPrimary(colorScheme, style: style)
         }
 
-        static func textSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func textSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "9CA3AF") // Muted gray
-                : Color(hex: "6B7280") // Cool gray
+                ? Color(hex: "BCAAA4") // Warm gray
+                : Color(hex: "8D6E63") // Taupe gray
         }
 
-        static func cardTextSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func cardTextSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             textSecondary(colorScheme, style: style)
         }
 
-        static func icon(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func icon(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             textSecondary(colorScheme, style: style)
         }
 
         // MARK: Borders
 
-        static func border(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func border(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "232830") // Soft dark border
-                : Color(hex: "E5E7EB") // Neutral light border
+                ? Color(hex: "4E342E") // Deep brown
+                : Color(hex: "D7CCC8") // Soft taupe
         }
 
-        static func borderMuted(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func borderMuted(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "1A1F27") // Subtle dark border
-                : Color(hex: "EEF2F7") // Neutral muted border
+                ? Color(hex: "4E342E") // Deep brown
+                : Color(hex: "D7CCC8") // Soft taupe
         }
 
         // MARK: Semantic Colors
 
-        static func success(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func success(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "22C55E") // Green
-                : Color(hex: "16A34A") // Dark green
+                ? Color(hex: "66BB6A") // Mint green
+                : Color(hex: "388E3C") // Dark mint
         }
 
-        static func caution(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func caution(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "FACC15") // Yellow
-                : Color(hex: "CA8A04") // Dark yellow
+                ? Color(hex: "FFB300") // Goldenrod
+                : Color(hex: "F57C00") // Amber
         }
 
-        static func destructive(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func destructive(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
-                ? Color(hex: "EF4444") // Red
-                : Color(hex: "DC2626") // Dark red
+                ? Color(hex: "E57373") // Coral red
+                : Color(hex: "D32F2F") // Dark red
         }
 
         // MARK: Compatibility
 
-        static func accentPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func accentPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             primary(colorScheme, style: style)
         }
 
-        static func accentSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func accentSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             secondary(colorScheme, style: style)
         }
 
-        static func cardBackground(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func cardBackground(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             card(colorScheme, style: style)
         }
 
-        static func focusRing(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func focusRing(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             primary(colorScheme, style: style).opacity(0.5)
         }
 
         // MARK: Retro Digital Warmth Colors
 
-        static func amber(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func amber(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "FFB366") // Amber (dark mode)
                 : Color(hex: "FF9F40") // Amber (light mode)
         }
 
-        static func terminalGreen(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func terminalGreen(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "50FA7B") // Terminal green (dark mode)
                 : Color(hex: "3DD68C") // Terminal green (light mode)
         }
 
-        static func crtBlue(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func crtBlue(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "8BE9FD") // CRT blue (dark mode)
                 : Color(hex: "5AC8FA") // CRT blue (light mode)
@@ -206,15 +206,15 @@ struct Theme {
     // MARK: - Surfaces
 
     struct Surface {
-        static func background(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func background(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             Colors.background(colorScheme, style: style)
         }
 
-        static func card(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func card(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             Colors.card(colorScheme, style: style)
         }
 
-        static func highlight(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func highlight(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             Colors.card(colorScheme, style: style)
         }
     }
@@ -222,7 +222,7 @@ struct Theme {
     // MARK: - Content
 
     struct Content {
-        static func secondary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+        static func secondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             Colors.textSecondary(colorScheme, style: style)
         }
     }
@@ -232,7 +232,7 @@ struct Theme {
     struct Typography {
         // Base builder (keeps Dynamic Type)
         private static func system(_ style: Font.TextStyle, weight: Font.Weight = .regular) -> Font {
-            Font.system(style, design: .rounded).weight(weight)
+            Font.system(style, design: .default).weight(weight)
         }
 
         // Standard text styles (rounded)
@@ -306,12 +306,12 @@ struct Theme {
     // MARK: - Corner Radius
 
     struct CornerRadius {
-        static let sm: CGFloat = 12
-        static let md: CGFloat = 16
-        static let lg: CGFloat = 20
-        static let xl: CGFloat = 28
-        static let cardSoft: CGFloat = 24
-        static let iconTile: CGFloat = 16
+        static let sm: CGFloat = 16
+        static let md: CGFloat = 20
+        static let lg: CGFloat = 24
+        static let xl: CGFloat = 32
+        static let cardSoft: CGFloat = 32
+        static let iconTile: CGFloat = 12
         static let button: CGFloat = 20
         static let pill: CGFloat = 100
     }
@@ -319,13 +319,15 @@ struct Theme {
     // MARK: - Shapes
 
     struct Shapes {
-        static func card(_ radius: CGFloat = CornerRadius.cardSoft) -> UnevenRoundedRectangle {
-            UnevenRoundedRectangle(
+        static func card(_ radius: CGFloat? = nil, style: ThemeStyle = .midCenturyModern) -> UnevenRoundedRectangle {
+            // MCM: kidney shape - all corners evenly rounded
+            let r = radius ?? CornerRadius.cardSoft
+            return UnevenRoundedRectangle(
                 cornerRadii: RectangleCornerRadii(
-                    topLeading: 0,
-                    bottomLeading: 0,
-                    bottomTrailing: radius,
-                    topTrailing: radius
+                    topLeading: r,
+                    bottomLeading: r,
+                    bottomTrailing: r,
+                    topTrailing: r
                 ),
                 style: .continuous
             )
@@ -426,35 +428,28 @@ struct Theme {
     // MARK: - Animations
 
     struct Animations {
-        static let springDefault = Animation.spring(response: 0.3, dampingFraction: 0.7, blendDuration: 0.1)
-        static let springSnappy = Animation.spring(response: 0.25, dampingFraction: 0.8, blendDuration: 0.1)
+        // MCM mechanical animations - smooth and satisfying
+        static let springDefault = Animation.easeInOut(duration: 0.3)
+        static let springSnappy = Animation.easeInOut(duration: 0.2)
         static let easeInOutShort = Animation.easeInOut(duration: 0.2)
 
-        // Retro mechanical animations
-        static let typewriterDing = Animation.spring(response: 0.25, dampingFraction: 0.5, blendDuration: 0.05)
-        static let crtFlicker = Animation.easeInOut(duration: 0.08)
-        static let mechanicalSlide = Animation.spring(response: 0.35, dampingFraction: 0.75, blendDuration: 0.1)
+        // MCM-specific smooth slide (analog clock movement)
+        static let mechanicalSlide = Animation.easeInOut(duration: 0.4)
 
-        // Vibrant spring animations
-        static let springOvershoot = Animation.spring(
-            response: 0.4,
-            dampingFraction: 0.65,
-            blendDuration: 0.1
+        // Satisfying snap-to-grid
+        static let snapToGrid = Animation.spring(
+            response: 0.25,
+            dampingFraction: 0.98,  // Almost no bounce
+            blendDuration: 0
         )
 
-        static let springBouncy = Animation.spring(
-            response: 0.5,
-            dampingFraction: 0.6,
-            blendDuration: 0.1
-        )
-
+        // Compatibility with existing usage
+        static let springOvershoot = Animation.easeInOut(duration: 0.3)
+        static let springBouncy = Animation.easeInOut(duration: 0.3)
         static let gradientShift = Animation.easeInOut(duration: 0.3)
-
-        static let scaleRotate = Animation.spring(
-            response: 0.3,
-            dampingFraction: 0.7,
-            blendDuration: 0.05
-        )
+        static let scaleRotate = Animation.easeInOut(duration: 0.3)
+        static let typewriterDing = Animation.easeInOut(duration: 0.2)
+        static let crtFlicker = Animation.easeInOut(duration: 0.08)
     }
 
     // MARK: - Hit Targets
@@ -479,7 +474,7 @@ struct Theme {
 
     struct Gradients {
         // Only use when needed for visual interest
-        static func accentPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> LinearGradient {
+        static func accentPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> LinearGradient {
             let color = Colors.buttonDark(colorScheme)
             return LinearGradient(
                 colors: [
@@ -492,7 +487,7 @@ struct Theme {
         }
 
         // Subtle background - nearly flat
-        static func appBackground(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> LinearGradient {
+        static func appBackground(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> LinearGradient {
             LinearGradient(
                 colors: [
                     Colors.background(colorScheme, style: style),
@@ -503,7 +498,7 @@ struct Theme {
             )
         }
 
-        static func surfaceGlow(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> RadialGradient {
+        static func surfaceGlow(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> RadialGradient {
             RadialGradient(
                 colors: [
                     Colors.primary(colorScheme, style: style).opacity(0.08),

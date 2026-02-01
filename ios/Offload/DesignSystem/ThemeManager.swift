@@ -32,22 +32,23 @@ class ThemeManager: ObservableObject {
     /// - Parameter loadFromUserDefaults: Whether to load saved theme from UserDefaults (default: true)
     init(loadFromUserDefaults: Bool = true) {
         if loadFromUserDefaults {
-            // Load saved theme from UserDefaults, default to Elijah.
+            // Load saved theme from UserDefaults, default to Mid-Century Modern.
             if let savedStyleString = UserDefaults.standard.string(forKey: Keys.selectedThemeStyle) {
-                if savedStyleString == "cooper" {
-                    self.currentStyle = .elijah
-                    UserDefaults.standard.set(ThemeStyle.elijah.rawValue, forKey: Keys.selectedThemeStyle)
+                // Migrate old theme names to Mid-Century Modern
+                if savedStyleString == "cooper" || savedStyleString == "elijah" {
+                    self.currentStyle = .midCenturyModern
+                    UserDefaults.standard.set(ThemeStyle.midCenturyModern.rawValue, forKey: Keys.selectedThemeStyle)
                 } else if let savedStyle = ThemeStyle(rawValue: savedStyleString) {
                     self.currentStyle = savedStyle
                 } else {
-                    self.currentStyle = .elijah
+                    self.currentStyle = .midCenturyModern
                 }
             } else {
-                self.currentStyle = .elijah
+                self.currentStyle = .midCenturyModern
             }
         } else {
             // For testing: use default theme without persisting.
-            self.currentStyle = .elijah
+            self.currentStyle = .midCenturyModern
         }
     }
 
