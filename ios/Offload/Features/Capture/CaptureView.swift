@@ -260,7 +260,8 @@ private struct ItemCard: View {
                 timestamp: item.createdAt.formatted(.relative(presentation: .named)),
                 image: item.attachmentData.flatMap { UIImage(data: $0) },
                 tags: item.tags,
-                onAddTag: onAddTag
+                onAddTag: onAddTag,
+                size: .compact  // Compact size for item cards
             )
         }
         .overlay(alignment: .bottomTrailing) {

@@ -503,6 +503,11 @@ struct ItemActionButton: View {
 
 /// Mid-Century Modern asymmetric two-column card content layout
 struct MCMCardContent: View {
+    enum Size {
+        case standard  // For collections - bold, prominent
+        case compact   // For items - smaller, de-emphasized
+    }
+
     let icon: String?
     let title: String
     let bodyText: String?
@@ -511,6 +516,7 @@ struct MCMCardContent: View {
     let image: UIImage?
     let tags: [Tag]
     let onAddTag: (() -> Void)?
+    let size: Size
 
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
@@ -525,7 +531,8 @@ struct MCMCardContent: View {
         timestamp: String? = nil,
         image: UIImage? = nil,
         tags: [Tag] = [],
-        onAddTag: (() -> Void)? = nil
+        onAddTag: (() -> Void)? = nil,
+        size: Size = .standard
     ) {
         self.icon = icon
         self.title = title
@@ -535,6 +542,36 @@ struct MCMCardContent: View {
         self.image = image
         self.tags = tags
         self.onAddTag = onAddTag
+        self.size = size
+    }
+
+    // Size-dependent values
+    private var iconSize: CGFloat {
+        size == .compact ? 32 : 42
+    }
+
+    private var iconGlyphSize: CGFloat {
+        size == .compact ? 14 : 18
+    }
+
+    private var titleSize: CGFloat {
+        size == .compact ? 18 : 26
+    }
+
+    private var titleWeight: Font.Weight {
+        size == .compact ? .bold : .heavy
+    }
+
+    private var bodySize: CGFloat {
+        size == .compact ? 14 : 15
+    }
+
+    private var columnSpacing: CGFloat {
+        size == .compact ? Theme.Spacing.sm : Theme.Spacing.md
+    }
+
+    private var showIconGradient: Bool {
+        size == .standard
     }
 
     var body: some View {
@@ -542,79 +579,94 @@ struct MCMCardContent: View {
             // Left column (narrow - metadata gutter with bold icon)
             VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                 if let icon = icon {
-                    // Bold geometric icon container with gradient
+                    // Icon container - gradient for standard, simple for compact
                     ZStack {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Theme.Colors.primary(colorScheme, style: style).opacity(0.2),
-                                        Theme.Colors.secondary(colorScheme, style: style).opacity(0.15)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
+                        if showIconGradient {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Theme.Colors.primary(colorScheme, style: style).opacity(0.2),
+                                            Theme.Colors.secondary(colorScheme, style: style).opacity(0.15)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
                                 )
-                            )
-                            .frame(width: 42, height: 42)
+                                .frame(width: iconSize, height: iconSize)
+                        } else {
+                            Circle()
+                                .fill(Theme.Colors.primary(colorScheme, style: style).opacity(0.1))
+                                .frame(width: iconSize, height: iconSize)
+                        }
 
-                        AppIcon(name: icon, size: 18)
-                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                        AppIcon(name: icon, size: iconGlyphSize)
+                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style).opacity(size == .compact ? 0.7 : 1.0))
                     }
                 }
 
                 if let typeLabel = typeLabel {
                     Text(typeLabel.uppercased())
-                        .font(.system(size: 9, weight: .bold, design: .default))
+                        .font(.system(size: size == .compact ? 8 : 9, weight: .bold, design: .default))
                         .tracking(0.5)
-                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style).opacity(0.7))
+                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style).opacity(0.6))
                 }
 
                 if let timestamp = timestamp {
                     Text(timestamp)
-                        .font(.system(size: 9, weight: .medium, design: .default))
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        .font(.system(size: size == .compact ? 8 : 9, weight: .medium, design: .default))
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.8))
                 }
             }
-            .frame(width: 60, alignment: .leading)
+            .frame(width: size == .compact ? 50 : 60, alignment: .leading)
 
-            // Right column (wide - dramatic content hierarchy)
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                // Title with dramatic MCM scale
+            // Right column (wide - content hierarchy)
+            VStack(alignment: .leading, spacing: columnSpacing) {
+                // Title - dramatic for collections, moderate for items
                 Text(title)
-                    .font(.system(size: 26, weight: .heavy, design: .default))
+                    .font(.system(size: titleSize, weight: titleWeight, design: .default))
                     .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                Theme.Colors.textPrimary(colorScheme, style: style),
-                                Theme.Colors.textPrimary(colorScheme, style: style).opacity(0.8)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+                        size == .standard
+                            ? LinearGradient(
+                                colors: [
+                                    Theme.Colors.textPrimary(colorScheme, style: style),
+                                    Theme.Colors.textPrimary(colorScheme, style: style).opacity(0.8)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                            : LinearGradient(
+                                colors: [
+                                    Theme.Colors.textPrimary(colorScheme, style: style),
+                                    Theme.Colors.textPrimary(colorScheme, style: style)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
                     )
                     .lineLimit(3)
-                    .lineSpacing(2)
+                    .lineSpacing(size == .compact ? 1 : 2)
 
                 if let bodyText = bodyText {
                     Text(bodyText)
-                        .font(.system(size: 15, weight: .regular, design: .default))
+                        .font(.system(size: bodySize, weight: .regular, design: .default))
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                        .lineLimit(4)
-                        .lineSpacing(4)
+                        .lineLimit(size == .compact ? 3 : 4)
+                        .lineSpacing(size == .compact ? 2 : 4)
                 }
 
                 if let image = image {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
-                        .frame(maxHeight: 140)
+                        .frame(maxHeight: size == .compact ? 100 : 140)
                         .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
                                 .stroke(
                                     LinearGradient(
                                         colors: [
-                                            Color.white.opacity(0.2),
+                                            Color.white.opacity(size == .compact ? 0.1 : 0.2),
                                             Color.clear
                                         ],
                                         startPoint: .topLeading,
@@ -625,20 +677,20 @@ struct MCMCardContent: View {
                         )
                 }
 
-                // Tags with bold MCM pill design
+                // Tags - smaller for compact cards
                 if !tags.isEmpty {
-                    FlowLayout(spacing: 8) {
+                    FlowLayout(spacing: size == .compact ? 6 : 8) {
                         ForEach(tags) { tag in
                             let tagColor = tag.color
                                 .map { Color(hex: $0) }
                                 ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
 
                             Text(tag.name.uppercased())
-                                .font(.system(size: 10, weight: .bold, design: .default))
+                                .font(.system(size: size == .compact ? 8 : 10, weight: .bold, design: .default))
                                 .tracking(0.5)
                                 .foregroundStyle(.white)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
+                                .padding(.horizontal, size == .compact ? 8 : 10)
+                                .padding(.vertical, size == .compact ? 4 : 6)
                                 .background(
                                     Capsule()
                                         .fill(
@@ -657,19 +709,19 @@ struct MCMCardContent: View {
                         if let onAddTag = onAddTag {
                             Button(action: onAddTag) {
                                 HStack(spacing: 4) {
-                                    AppIcon(name: Icons.add, size: 10)
+                                    AppIcon(name: Icons.add, size: size == .compact ? 8 : 10)
                                     Text("TAG")
-                                        .font(.system(size: 10, weight: .bold, design: .default))
+                                        .font(.system(size: size == .compact ? 8 : 10, weight: .bold, design: .default))
                                         .tracking(0.5)
                                 }
                                 .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
+                                .padding(.horizontal, size == .compact ? 8 : 10)
+                                .padding(.vertical, size == .compact ? 4 : 6)
                                 .background(
                                     Capsule()
                                         .strokeBorder(
                                             Theme.Colors.primary(colorScheme, style: style),
-                                            lineWidth: 1.5
+                                            lineWidth: size == .compact ? 1 : 1.5
                                         )
                                 )
                             }
@@ -678,7 +730,7 @@ struct MCMCardContent: View {
                     }
                 }
             }
-            .padding(.leading, 16)  // Generous left margin
+            .padding(.leading, size == .compact ? 12 : 16)  // Less margin for compact
         }
     }
 }
