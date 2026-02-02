@@ -175,41 +175,16 @@ private struct AtomicBarBackground: View {
     let style: ThemeStyle
 
     var body: some View {
-        ZStack {
-            // Lighter, more readable background
-            UnevenRoundedRectangle(
-                cornerRadii: RectangleCornerRadii(
-                    topLeading: 24,
-                    bottomLeading: 0,
-                    bottomTrailing: 0,
-                    topTrailing: 24
-                ),
-                style: .continuous
-            )
-            .fill(Theme.Colors.surface(colorScheme, style: style))
-
-            // Subtle top border accent
-            UnevenRoundedRectangle(
-                cornerRadii: RectangleCornerRadii(
-                    topLeading: 24,
-                    bottomLeading: 0,
-                    bottomTrailing: 0,
-                    topTrailing: 24
-                ),
-                style: .continuous
-            )
-            .strokeBorder(
-                LinearGradient(
-                    colors: [
-                        Theme.Colors.primary(colorScheme, style: style).opacity(0.3),
-                        Theme.Colors.secondary(colorScheme, style: style).opacity(0.2)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ),
-                lineWidth: 2
-            )
-        }
+        UnevenRoundedRectangle(
+            cornerRadii: RectangleCornerRadii(
+                topLeading: 24,
+                bottomLeading: 0,
+                bottomTrailing: 0,
+                topTrailing: 24
+            ),
+            style: .continuous
+        )
+        .fill(Theme.Colors.surface(colorScheme, style: style))
         .shadow(color: Color.black.opacity(0.1), radius: 12, y: -2)
     }
 }
@@ -432,18 +407,31 @@ private struct TabButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: 6) {
                 ZStack {
-                    // Kidney-shaped active indicator
+                    // Circular background with gradient for active
                     if isSelected {
-                        Capsule()
-                            .fill(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
-                            .frame(width: 44, height: 32)
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Theme.Colors.primary(colorScheme, style: style).opacity(0.2),
+                                        Theme.Colors.primary(colorScheme, style: style).opacity(0.1)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 48, height: 48)
                             .transition(.scale.combined(with: .opacity))
+                    } else {
+                        Circle()
+                            .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.08))
+                            .frame(width: 48, height: 48)
                     }
 
-                    // Icon
-                    AppIcon(name: isSelected ? tab.selectedIcon : tab.icon, size: 22)
+                    // Larger icon
+                    AppIcon(name: isSelected ? tab.selectedIcon : tab.icon, size: 24)
                         .foregroundStyle(
                             isSelected
                                 ? Theme.Colors.primary(colorScheme, style: style)
@@ -452,10 +440,9 @@ private struct TabButton: View {
                         .scaleEffect(isSelected ? 1.05 : 1.0)
                 }
 
-                // Readable label
-                Text(tab.label.uppercased())
-                    .font(.system(size: 10, weight: .semibold, design: .default))
-                    .tracking(0.5)
+                // Label
+                Text(tab.label)
+                    .font(.system(size: 10, weight: .medium, design: .default))
                     .foregroundStyle(
                         isSelected
                             ? Theme.Colors.primary(colorScheme, style: style)
