@@ -19,6 +19,19 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                // Appearance section
+                Section {
+                    Picker("Appearance", selection: $themeManager.appearancePreference) {
+                        ForEach(AppearancePreference.allCases) { preference in
+                            Text(preference.displayName).tag(preference)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .rowStyle(.card)
+                } header: {
+                    Text("Appearance")
+                }
+
                 // Tags section
                 Section {
                     NavigationLink {

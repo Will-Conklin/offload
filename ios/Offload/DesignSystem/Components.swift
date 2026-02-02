@@ -19,22 +19,49 @@ struct FloatingActionButton: View {
     @State private var isPressed = false
 
     var body: some View {
+        let style = themeManager.currentStyle
+
         Button(action: {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             action()
         }) {
             Label {
-                Text(title)
+                Text(title.uppercased())
             } icon: {
                 AppIcon(name: iconName, size: 14)
             }
-                .font(.system(.footnote, design: .default).weight(.semibold))
+                .font(.system(.footnote, design: .default).weight(.black))
+                .tracking(0.8)
                 .foregroundStyle(.white)
-                .padding(.vertical, Theme.Spacing.sm)
-                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.sm + 2)
+                .padding(.horizontal, Theme.Spacing.md + 4)
                 .background(
                     Capsule()
-                        .fill(Theme.Colors.primary(colorScheme, style: themeManager.currentStyle))
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Theme.Colors.primary(colorScheme, style: style),
+                                    Theme.Colors.secondary(colorScheme, style: style)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.3),
+                                            Color.clear
+                                        ],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    ),
+                                    lineWidth: 1
+                                )
+                                .padding(1)
+                        )
                 )
                 .scaleEffect(isPressed ? 0.95 : 1.0)
         }
@@ -44,7 +71,7 @@ struct FloatingActionButton: View {
                 .onChanged { _ in isPressed = true }
                 .onEnded { _ in isPressed = false }
         )
-        .animation(Theme.Animations.scaleRotate, value: isPressed)
+        .animation(Theme.Animations.mechanicalSlide, value: isPressed)
     }
 }
 
@@ -174,10 +201,20 @@ struct CardSurface<Content: View>: View {
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.xl, style: .continuous)
                             .stroke(Theme.Glass.border(colorScheme), lineWidth: 1.5)
                     } else {
-                        // Legacy flat card
+                        // MCM: Bold gradient backgrounds instead of flat
                         shape
-                            .fill(cardFill)
-                            .overlay(edgeOverlay, alignment: .leading)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        cardFill,
+                                        cardFill.opacity(0.7)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .overlay(retroDiagonalPattern, alignment: .topTrailing)
+                            .overlay(organicAccentBlob, alignment: .leading)
                             .overlay(borderOverlay)
                             .cardTexture(colorScheme)
                     }
@@ -187,17 +224,47 @@ struct CardSurface<Content: View>: View {
                 ? AnyShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.xl, style: .continuous))
                 : shape)
             .scaleEffect(isPressed ? 0.97 : 1.0)
-            .animation(Theme.Animations.springOvershoot, value: isPressed)
+            .animation(Theme.Animations.mechanicalSlide, value: isPressed)
     }
 
     @ViewBuilder
-    private var edgeOverlay: some View {
+    private var retroDiagonalPattern: some View {
         if showsEdge {
-            // MCM: Organic kidney-shaped accent bar instead of straight edge
-            Capsule()
-                .fill(Color.black.opacity(Theme.Opacity.cardEdge(colorScheme)))
-                .frame(width: Theme.Cards.edgeWidth, height: 60)
-                .offset(y: -8)  // Slight asymmetric offset for organic feel
+            // Retro atomic-age diagonal stripe pattern in corner
+            GeometryReader { geo in
+                ZStack {
+                    ForEach(0..<3, id: \.self) { index in
+                        Rectangle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(width: 2, height: 80)
+                            .rotationEffect(.degrees(45))
+                            .offset(x: CGFloat(index) * 12, y: -20)
+                    }
+                }
+                .frame(width: 80, height: 80)
+                .offset(x: geo.size.width - 40, y: -20)
+                .clipShape(shape)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var organicAccentBlob: some View {
+        if showsEdge {
+            // Organic kidney-shaped blob accent - bold MCM style
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.black.opacity(0.15),
+                            Color.black.opacity(0.05)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 120, height: 120)
+                .offset(x: -40, y: 20)
                 .blendMode(.multiply)
                 .clipShape(shape)
         }
@@ -206,11 +273,27 @@ struct CardSurface<Content: View>: View {
     @ViewBuilder
     private var borderOverlay: some View {
         if showsBorder {
-            shape.stroke(
-                Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle)
-                    .opacity(Theme.Opacity.borderMuted(colorScheme)),
-                lineWidth: Theme.Cards.borderWidth
-            )
+            // Bold border with subtle inner highlight
+            ZStack {
+                shape.stroke(
+                    Theme.Colors.borderMuted(colorScheme, style: themeManager.currentStyle),
+                    lineWidth: 2
+                )
+
+                // Inner highlight for depth
+                shape.stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.15),
+                            Color.clear
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+                .padding(1)
+            }
         }
     }
 
@@ -331,21 +414,27 @@ struct TagPill: View {
     @State private var isPressed = false
 
     var body: some View {
-        Text(name)
-            .font(Theme.Typography.caption)
+        Text(name.uppercased())
+            .font(.system(size: 10, weight: .bold, design: .default))
+            .tracking(0.5)
             .foregroundStyle(.white)
-            .padding(.horizontal, Theme.Spacing.pillHorizontal)
-            .padding(.vertical, Theme.Spacing.pillVertical)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
             .background(
                 Capsule()
-                    .fill(color.opacity(Theme.Opacity.tagFill(colorScheme)))
-                    .overlay(
-                        Capsule()
-                            .strokeBorder(color.opacity(Theme.Opacity.tagStroke(colorScheme)), lineWidth: 1)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                color,
+                                color.opacity(0.8)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
                     )
             )
-            .scaleEffect(isPressed ? 0.92 : 1.0)
-            .animation(Theme.Animations.springBouncy, value: isPressed)
+            .scaleEffect(isPressed ? 0.95 : 1.0)
+            .animation(Theme.Animations.mechanicalSlide, value: isPressed)
     }
 }
 
@@ -450,43 +539,68 @@ struct MCMCardContent: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            // Left column (narrow - metadata gutter)
+            // Left column (narrow - metadata gutter with bold icon)
             VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                 if let icon = icon {
-                    IconTile(
-                        iconName: icon,
-                        iconSize: 16,
-                        tileSize: 36,
-                        style: .none(Theme.Colors.icon(colorScheme, style: style))
-                    )
+                    // Bold geometric icon container with gradient
+                    ZStack {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Theme.Colors.primary(colorScheme, style: style).opacity(0.2),
+                                        Theme.Colors.secondary(colorScheme, style: style).opacity(0.15)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 42, height: 42)
+
+                        AppIcon(name: icon, size: 18)
+                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                    }
                 }
 
                 if let typeLabel = typeLabel {
-                    Text(typeLabel)
-                        .font(Theme.Typography.caption)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    Text(typeLabel.uppercased())
+                        .font(.system(size: 9, weight: .bold, design: .default))
+                        .tracking(0.5)
+                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style).opacity(0.7))
                 }
 
                 if let timestamp = timestamp {
                     Text(timestamp)
-                        .font(Theme.Typography.caption)
+                        .font(.system(size: 9, weight: .medium, design: .default))
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                 }
             }
             .frame(width: 60, alignment: .leading)
 
-            // Right column (wide - main content)
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            // Right column (wide - dramatic content hierarchy)
+            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                // Title with dramatic MCM scale
                 Text(title)
-                    .font(.system(.title2, design: .default).weight(.bold))  // MCM: Much larger title
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                    .font(.system(size: 26, weight: .heavy, design: .default))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [
+                                Theme.Colors.textPrimary(colorScheme, style: style),
+                                Theme.Colors.textPrimary(colorScheme, style: style).opacity(0.8)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                     .lineLimit(3)
+                    .lineSpacing(2)
 
                 if let bodyText = bodyText {
                     Text(bodyText)
-                        .font(Theme.Typography.body)
+                        .font(.system(size: 15, weight: .regular, design: .default))
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         .lineLimit(4)
+                        .lineSpacing(4)
                 }
 
                 if let image = image {
@@ -494,36 +608,68 @@ struct MCMCardContent: View {
                         .resizable()
                         .scaledToFit()
                         .frame(maxHeight: 140)
-                        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.2),
+                                            Color.clear
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
+                        )
                 }
 
-                // Tags in flow layout (scattered organically)
+                // Tags with bold MCM pill design
                 if !tags.isEmpty {
-                    FlowLayout(spacing: Theme.Spacing.xs) {
+                    FlowLayout(spacing: 8) {
                         ForEach(tags) { tag in
-                            TagPill(
-                                name: tag.name,
-                                color: tag.color
-                                    .map { Color(hex: $0) }
-                                    ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
-                            )
+                            let tagColor = tag.color
+                                .map { Color(hex: $0) }
+                                ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
+
+                            Text(tag.name.uppercased())
+                                .font(.system(size: 10, weight: .bold, design: .default))
+                                .tracking(0.5)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(
+                                    Capsule()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [
+                                                    tagColor,
+                                                    tagColor.opacity(0.8)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                )
                         }
 
                         if let onAddTag = onAddTag {
                             Button(action: onAddTag) {
                                 HStack(spacing: 4) {
                                     AppIcon(name: Icons.add, size: 10)
-                                    Text("Tag")
-                                        .font(Theme.Typography.caption)
+                                    Text("TAG")
+                                        .font(.system(size: 10, weight: .bold, design: .default))
+                                        .tracking(0.5)
                                 }
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                                .padding(.horizontal, Theme.Spacing.pillHorizontal)
-                                .padding(.vertical, Theme.Spacing.pillVertical)
+                                .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
                                 .background(
                                     Capsule()
                                         .strokeBorder(
-                                            Theme.Colors.borderMuted(colorScheme, style: style),
-                                            lineWidth: 1
+                                            Theme.Colors.primary(colorScheme, style: style),
+                                            lineWidth: 1.5
                                         )
                                 )
                             }
@@ -532,7 +678,7 @@ struct MCMCardContent: View {
                     }
                 }
             }
-            .padding(.leading, 12)  // Generous left margin for right column
+            .padding(.leading, 16)  // Generous left margin
         }
     }
 }

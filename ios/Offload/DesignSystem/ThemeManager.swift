@@ -7,12 +7,37 @@
 import SwiftUI
 import Combine
 
+/// Appearance preference options
+enum AppearancePreference: String, CaseIterable, Identifiable {
+    case system
+    case light
+    case dark
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .system: return "Match System"
+        case .light: return "Light"
+        case .dark: return "Dark"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+}
 
 /// Manages the app's color theme selection and persistence
 @MainActor
 class ThemeManager: ObservableObject {
     private enum Keys {
         static let selectedThemeStyle = "selectedThemeStyle"
+        static let appearancePreference = "appearancePreference"
     }
 
     /// The currently selected theme style
@@ -22,6 +47,14 @@ class ThemeManager: ObservableObject {
             withAnimation(.easeInOut(duration: 0.25)) {
                 UserDefaults.standard.set(currentStyle.rawValue, forKey: Keys.selectedThemeStyle)
             }
+        }
+    }
+
+    /// The currently selected appearance preference
+    @Published var appearancePreference: AppearancePreference {
+        didSet {
+            guard oldValue.rawValue != appearancePreference.rawValue else { return }
+            UserDefaults.standard.set(appearancePreference.rawValue, forKey: Keys.appearancePreference)
         }
     }
 
@@ -46,9 +79,18 @@ class ThemeManager: ObservableObject {
             } else {
                 self.currentStyle = .midCenturyModern
             }
+
+            // Load saved appearance preference, default to system.
+            if let savedAppearanceString = UserDefaults.standard.string(forKey: Keys.appearancePreference),
+               let savedAppearance = AppearancePreference(rawValue: savedAppearanceString) {
+                self.appearancePreference = savedAppearance
+            } else {
+                self.appearancePreference = .system
+            }
         } else {
             // For testing: use default theme without persisting.
             self.currentStyle = .midCenturyModern
+            self.appearancePreference = .system
         }
     }
 

@@ -11,6 +11,7 @@ import os
 
 struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         let repositories = RepositoryBundle.make(modelContext: modelContext)
@@ -20,6 +21,7 @@ struct AppRootView: View {
             .environment(\.collectionRepository, repositories.collectionRepository)
             .environment(\.collectionItemRepository, repositories.collectionItemRepository)
             .environment(\.tagRepository, repositories.tagRepository)
+            .preferredColorScheme(themeManager.appearancePreference.colorScheme)
             .withToast()
             .task {
                 do {
