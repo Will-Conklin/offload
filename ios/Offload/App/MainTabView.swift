@@ -99,58 +99,71 @@ private struct FloatingTabBar: View {
     let onQuickVoice: () -> Void
 
     var body: some View {
-        HStack(spacing: 0) {
-            TabButton(
-                tab: .home,
-                isSelected: selectedTab == .home,
-                colorScheme: colorScheme,
-                style: style
-            ) { selectedTab = .home }
+        ZStack {
+            // Bar connects to bottom
+            AtomicBarBackground(colorScheme: colorScheme, style: style)
+                .ignoresSafeArea(edges: .bottom)
 
-            DiagonalDivider(colorScheme: colorScheme, style: style)
+            HStack(spacing: 0) {
+                TabButton(
+                    tab: .home,
+                    isSelected: selectedTab == .home,
+                    colorScheme: colorScheme,
+                    style: style
+                ) { selectedTab = .home }
 
-            TabButton(
-                tab: .review,
-                isSelected: selectedTab == .review,
-                colorScheme: colorScheme,
-                style: style
-            ) { selectedTab = .review }
+                Rectangle()
+                    .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.3))
+                    .frame(width: 1, height: 24)
 
-            DiagonalDivider(colorScheme: colorScheme, style: style)
+                TabButton(
+                    tab: .review,
+                    isSelected: selectedTab == .review,
+                    colorScheme: colorScheme,
+                    style: style
+                ) { selectedTab = .review }
 
-            Spacer().frame(width: 80) // CTA space
+                Rectangle()
+                    .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.3))
+                    .frame(width: 1, height: 24)
 
-            DiagonalDivider(colorScheme: colorScheme, style: style)
+                Spacer().frame(width: 80) // CTA space
 
-            TabButton(
-                tab: .organize,
-                isSelected: selectedTab == .organize,
-                colorScheme: colorScheme,
-                style: style
-            ) { selectedTab = .organize }
+                Rectangle()
+                    .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.3))
+                    .frame(width: 1, height: 24)
 
-            DiagonalDivider(colorScheme: colorScheme, style: style)
+                TabButton(
+                    tab: .organize,
+                    isSelected: selectedTab == .organize,
+                    colorScheme: colorScheme,
+                    style: style
+                ) { selectedTab = .organize }
 
-            TabButton(
-                tab: .account,
-                isSelected: selectedTab == .account,
-                colorScheme: colorScheme,
-                style: style
-            ) { selectedTab = .account }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 60)
-        .padding(.horizontal, 12)
-        .background(AtomicBarBackground(colorScheme: colorScheme, style: style))
-        .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.3))
+                    .frame(width: 1, height: 24)
+
+                TabButton(
+                    tab: .account,
+                    isSelected: selectedTab == .account,
+                    colorScheme: colorScheme,
+                    style: style
+                ) { selectedTab = .account }
+            }
+            .frame(height: 60)
+            .padding(.horizontal, 8)
+
+            // CTA integrated closer to bar
             OffloadCTA(
                 colorScheme: colorScheme,
                 style: style,
                 onQuickWrite: onQuickWrite,
                 onQuickVoice: onQuickVoice
             )
-            .offset(y: -32)
+            .offset(y: -24)
         }
+        .frame(height: 60)
         .animation(Theme.Animations.mechanicalSlide, value: selectedTab)
     }
 }
@@ -163,59 +176,44 @@ private struct AtomicBarBackground: View {
 
     var body: some View {
         ZStack {
-            // Warm gradient background
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(hex: "3E2723"),
-                            Color(hex: "4E342E")
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
+            // Lighter, more readable background
+            UnevenRoundedRectangle(
+                cornerRadii: RectangleCornerRadii(
+                    topLeading: 24,
+                    bottomLeading: 0,
+                    bottomTrailing: 0,
+                    topTrailing: 24
+                ),
+                style: .continuous
+            )
+            .fill(Theme.Colors.surface(colorScheme, style: style))
 
-            // Linen texture overlay
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
-                .fill(Color.white.opacity(0.03))
-                .linenOverlay(opacity: 0.03)
-
-            // Double border
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [
-                            Theme.Colors.primary(colorScheme, style: style).opacity(0.2),
-                            Color.clear
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 1
-                )
-
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
-                .strokeBorder(Color(hex: "8D6E63").opacity(0.6), lineWidth: 0.5)
-                .padding(1)
+            // Subtle top border accent
+            UnevenRoundedRectangle(
+                cornerRadii: RectangleCornerRadii(
+                    topLeading: 24,
+                    bottomLeading: 0,
+                    bottomTrailing: 0,
+                    topTrailing: 24
+                ),
+                style: .continuous
+            )
+            .strokeBorder(
+                LinearGradient(
+                    colors: [
+                        Theme.Colors.primary(colorScheme, style: style).opacity(0.3),
+                        Theme.Colors.secondary(colorScheme, style: style).opacity(0.2)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                ),
+                lineWidth: 2
+            )
         }
-        .shadow(color: Theme.Colors.primary(colorScheme, style: style).opacity(0.15), radius: 8, y: 4)
+        .shadow(color: Color.black.opacity(0.1), radius: 12, y: -2)
     }
 }
 
-// MARK: - Diagonal Divider
-
-private struct DiagonalDivider: View {
-    let colorScheme: ColorScheme
-    let style: ThemeStyle
-
-    var body: some View {
-        Rectangle()
-            .fill(Color(hex: "FFB300").opacity(0.3))
-            .frame(width: 1, height: 24)
-            .rotationEffect(.degrees(20))
-    }
-}
 
 
 // MARK: - Offload CTA
@@ -311,76 +309,39 @@ private struct OffloadMainButton: View {
     let size: CGFloat
     let isExpanded: Bool
     let action: () -> Void
-    @State private var continuousRotation: Double = 0
-    @State private var pulseScale: CGFloat = 1.0
 
     var body: some View {
         Button(action: action) {
             ZStack {
-                // 8-point starburst atomic symbol
-                ForEach(0..<8) { i in
-                    Capsule()
-                        .fill(
-                            RadialGradient(
-                                colors: [
-                                    Theme.Colors.primary(colorScheme, style: style),
-                                    Theme.Colors.secondary(colorScheme, style: style)
-                                ],
-                                center: .center,
-                                startRadius: 0,
-                                endRadius: 32
-                            )
+                // Subtle outer glow
+                Circle()
+                    .fill(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
+                    .frame(width: size + 8, height: size + 8)
+
+                // Main circle with gradient
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Theme.Colors.primary(colorScheme, style: style),
+                                Theme.Colors.primary(colorScheme, style: style).opacity(0.9)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
-                        .frame(width: 8, height: 32)
-                        .offset(y: -16)
-                        .rotationEffect(.degrees(Double(i) * 45))
-                }
-                .rotationEffect(.degrees(isExpanded ? 45 : 0))
-                .rotationEffect(.degrees(continuousRotation))
-                .animation(.easeInOut(duration: 0.4), value: isExpanded)
-
-                // Pulsing glow
-                Circle()
-                    .fill(Theme.Colors.primary(colorScheme, style: style).opacity(0.3))
-                    .frame(width: size + 16, height: size + 16)
-                    .scaleEffect(pulseScale)
-
-                // Center circle
-                Circle()
-                    .fill(Theme.Colors.primary(colorScheme, style: style))
-                    .frame(width: 48, height: 48)
+                    )
+                    .frame(width: size, height: size)
 
                 // Plus icon
-                AppIcon(name: Icons.add, size: 22)
+                AppIcon(name: Icons.add, size: 24)
                     .foregroundStyle(.white)
                     .rotationEffect(.degrees(isExpanded ? 45 : 0))
             }
         }
         .buttonStyle(.plain)
-        .onAppear {
-            // Continuous gentle rotation
-            withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
-                continuousRotation = 360
-            }
-
-            // Pulse every 3 seconds
-            startPulsing()
-        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isExpanded)
         .accessibilityLabel(isExpanded ? "Close Offload actions" : "Offload")
         .accessibilityHint("Shows quick capture actions")
-    }
-
-    private func startPulsing() {
-        Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
-            withAnimation(.easeInOut(duration: 0.6)) {
-                pulseScale = 1.2
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                withAnimation(.easeInOut(duration: 0.6)) {
-                    pulseScale = 1.0
-                }
-            }
-        }
     }
 }
 
@@ -476,49 +437,30 @@ private struct TabButton: View {
                     // Kidney-shaped active indicator
                     if isSelected {
                         Capsule()
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Theme.Colors.primary(colorScheme, style: style),
-                                        Theme.Colors.primary(colorScheme, style: style).opacity(0.8)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+                            .fill(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
                             .frame(width: 44, height: 32)
                             .transition(.scale.combined(with: .opacity))
                     }
 
                     // Icon
-                    AppIcon(name: isSelected ? tab.selectedIcon : tab.icon, size: 20)
+                    AppIcon(name: isSelected ? tab.selectedIcon : tab.icon, size: 22)
                         .foregroundStyle(
                             isSelected
-                                ? Color(hex: "FFF8E1")
-                                : Color(hex: "8D6E63").opacity(0.7)
+                                ? Theme.Colors.primary(colorScheme, style: style)
+                                : Theme.Colors.textSecondary(colorScheme, style: style)
                         )
-                        .scaleEffect(isSelected ? 1.1 : 1.0)
-                        .rotationEffect(.degrees(isSelected ? 5 : 0))
+                        .scaleEffect(isSelected ? 1.05 : 1.0)
                 }
 
-                // MCM all-caps label (Bebas Neue style)
+                // Readable label
                 Text(tab.label.uppercased())
-                    .font(.custom("BebasNeue-Regular", size: 11))
-                    .tracking(0.8)
+                    .font(.system(size: 10, weight: .semibold, design: .default))
+                    .tracking(0.5)
                     .foregroundStyle(
                         isSelected
                             ? Theme.Colors.primary(colorScheme, style: style)
-                            : Color(hex: "BCAAA4").opacity(0.6)
+                            : Theme.Colors.textSecondary(colorScheme, style: style)
                     )
-
-                // Top accent line for active
-                if isSelected {
-                    Rectangle()
-                        .fill(Color(hex: "FFB300"))
-                        .frame(width: 16, height: 2)
-                        .offset(y: -2)
-                        .transition(.scale.combined(with: .opacity))
-                }
             }
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
