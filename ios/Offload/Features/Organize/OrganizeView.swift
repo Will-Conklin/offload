@@ -307,9 +307,8 @@ private struct CollectionCard: View {
 
     var body: some View {
         CardSurface(fill: Theme.Colors.cardColor(index: paletteIndex, colorScheme, style: style)) {
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                // MCM card content with custom metadata for collections
-                HStack(alignment: .top, spacing: 0) {
+            // MCM card content with custom metadata for collections
+            HStack(alignment: .top, spacing: 0) {
                     // Left column (narrow - metadata gutter)
                     VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                         IconTile(
@@ -376,15 +375,23 @@ private struct CollectionCard: View {
                         }
                     }
                     .padding(.leading, 12)
-                }
-
-                ItemActionRow(
-                    tags: collection.tags,
-                    isStarred: collection.isStarred,
-                    onAddTag: onAddTag,
-                    onToggleStar: onToggleStar
-                )
             }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            Button(action: onToggleStar) {
+                AppIcon(
+                    name: collection.isStarred ? Icons.starFilled : Icons.star,
+                    size: 18
+                )
+                .foregroundStyle(
+                    collection.isStarred
+                        ? Theme.Colors.caution(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style)
+                )
+                .padding(Theme.Spacing.md)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(collection.isStarred ? "Unstar collection" : "Star collection")
         }
     }
 }

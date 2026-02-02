@@ -244,24 +244,31 @@ private struct ItemRow: View {
 
     var body: some View {
         CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                MCMCardContent(
-                    icon: item.itemType?.icon,
-                    title: displayTitle,
-                    typeLabel: item.type?.uppercased(),
-                    timestamp: item.createdAt.formatted(.relative(presentation: .named)),
-                    image: item.attachmentData.flatMap { UIImage(data: $0) },
-                    tags: item.tags,
-                    onAddTag: onAddTag
+            MCMCardContent(
+                icon: item.itemType?.icon,
+                title: displayTitle,
+                typeLabel: item.type?.uppercased(),
+                timestamp: item.createdAt.formatted(.relative(presentation: .named)),
+                image: item.attachmentData.flatMap { UIImage(data: $0) },
+                tags: item.tags,
+                onAddTag: onAddTag
+            )
+        }
+        .overlay(alignment: .bottomTrailing) {
+            Button(action: toggleStar) {
+                AppIcon(
+                    name: item.isStarred ? Icons.starFilled : Icons.star,
+                    size: 18
                 )
-
-                ItemActionRow(
-                    tags: item.tags,
-                    isStarred: item.isStarred,
-                    onAddTag: onAddTag,
-                    onToggleStar: toggleStar
+                .foregroundStyle(
+                    item.isStarred
+                        ? Theme.Colors.caution(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style)
                 )
+                .padding(Theme.Spacing.md)
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel(item.isStarred ? "Unstar item" : "Star item")
         }
         .overlay(alignment: .topTrailing) {
             Button {
