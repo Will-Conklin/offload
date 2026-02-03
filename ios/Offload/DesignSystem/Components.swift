@@ -349,12 +349,6 @@ struct CardContainer<Content: View>: View {
     }
 }
 
-extension View {
-    func cardButtonStyle() -> some View {
-        buttonStyle(CardButtonStyle())
-    }
-}
-
 enum RowStyle {
     case card
 }
