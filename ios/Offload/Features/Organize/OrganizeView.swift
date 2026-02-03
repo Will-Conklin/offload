@@ -88,7 +88,6 @@ struct OrganizeView: View {
                         )
                     }
                     .accessibilityLabel("Add \(selectedScope == .plans ? "Plan" : "List")")
-
                     Button {
                         showingSearch = true
                     } label: {
@@ -122,6 +121,11 @@ struct OrganizeView: View {
             .sheet(isPresented: $showingSearch) {
                 OrganizeSearchView(searchQuery: $searchQuery)
                     .environmentObject(themeManager)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+            }
+            .sheet(isPresented: $showingSearch) {
+                OrganizeSearchView(searchQuery: $searchQuery)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
             }
@@ -843,7 +847,6 @@ private struct OrganizeSearchView: View {
                         }
                         .padding(.bottom, Theme.Spacing.sm)
                     }
-
                     // Results
                     ScrollView {
                         LazyVStack(spacing: Theme.Spacing.md) {
