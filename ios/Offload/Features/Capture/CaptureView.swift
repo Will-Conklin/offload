@@ -19,6 +19,8 @@ struct CaptureView: View {
 
     let navigationTitle: String
     @State private var showingSettings = false
+    @State private var showingSearch = false
+    @State private var searchQuery = ""
     @State private var selectedItem: Item?
     @State private var tagPickerItem: Item?
     @State private var moveItem: Item?
@@ -89,6 +91,18 @@ struct CaptureView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {
+                        showingSearch = true
+                    } label: {
+                        IconTile(
+                            iconName: Icons.search,
+                            iconSize: 18,
+                            tileSize: 32,
+                            style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
+                        )
+                    }
+                    .accessibilityLabel("Search")
+
+                    Button {
                         showingSettings = true
                     } label: {
                         IconTile(
@@ -100,6 +114,11 @@ struct CaptureView: View {
                     }
                     .accessibilityLabel("Settings")
                 }
+            }
+            .sheet(isPresented: $showingSearch) {
+                CaptureSearchView(searchQuery: $searchQuery)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
@@ -631,6 +650,139 @@ private struct MoveToListSheet: View {
             onComplete()
         } catch {
             errorPresenter.present(error)
+        }
+    }
+}
+
+// MARK: - Capture Search View
+
+private struct CaptureSearchView: View {
+    @Binding var searchQuery: String
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+    @State private var searchResults: [Item] = []
+    @State private var errorPresenter = ErrorPresenter()
+    @FocusState private var isSearchFocused: Bool
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Theme.Gradients.deepBackground(colorScheme)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    // Search bar
+                    HStack(spacing: Theme.Spacing.sm) {
+                        HStack(spacing: Theme.Spacing.sm) {
+                            AppIcon(name: Icons.search, size: 16)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+
+                            TextField("Search captures...", text: $searchQuery)
+                                .font(Theme.Typography.body)
+                                .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                .focused($isSearchFocused)
+                                .onChange(of: searchQuery) { _, newValue in
+                                    performSearch(newValue)
+                                }
+                        }
+                        .padding(Theme.Spacing.sm)
+                        .background(Theme.Colors.surface(colorScheme, style: style))
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+
+                        if !searchQuery.isEmpty {
+                            Button {
+                                searchQuery = ""
+                                searchResults = []
+                            } label: {
+                                AppIcon(name: Icons.closeCircleFilled, size: 20)
+                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(Theme.Spacing.md)
+
+                    // Results
+                    if searchQuery.isEmpty {
+                        Spacer()
+                        VStack(spacing: Theme.Spacing.sm) {
+                            AppIcon(name: Icons.search, size: 48)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.5))
+                            Text("Search your captures")
+                                .font(Theme.Typography.title3)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        }
+                        Spacer()
+                    } else if searchResults.isEmpty {
+                        Spacer()
+                        VStack(spacing: Theme.Spacing.sm) {
+                            AppIcon(name: Icons.search, size: 48)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.5))
+                            Text("No results found")
+                                .font(Theme.Typography.title3)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        }
+                        Spacer()
+                    } else {
+                        ScrollView {
+                            LazyVStack(spacing: Theme.Spacing.md) {
+                                ForEach(Array(searchResults.enumerated()), id: \.element.id) { index, item in
+                                    CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+                                        MCMCardContent(
+                                            icon: item.itemType?.icon,
+                                            title: item.content,
+                                            typeLabel: item.type?.uppercased(),
+                                            timestamp: item.createdAt.formatted(.relative(presentation: .named)),
+                                            image: item.attachmentData.flatMap { UIImage(data: $0) },
+                                            tags: item.tags,
+                                            onAddTag: {},
+                                            size: .compact
+                                        )
+                                    }
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        dismiss()
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, Theme.Spacing.md)
+                            .padding(.bottom, Theme.Spacing.lg)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                isSearchFocused = true
+            }
+        }
+        .errorToasts(errorPresenter)
+    }
+
+    private func performSearch(_ query: String) {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            searchResults = []
+            return
+        }
+
+        do {
+            searchResults = try itemRepository.searchByContent(trimmed)
+        } catch {
+            errorPresenter.present(error)
+            searchResults = []
         }
     }
 }
