@@ -152,7 +152,7 @@ private struct FloatingTabBar: View {
                 onQuickWrite: onQuickWrite,
                 onQuickVoice: onQuickVoice
             )
-            .offset(y: -8)
+            .offset(y: 0)
         }
         .frame(height: 60)
         .animation(Theme.Animations.mechanicalSlide, value: selectedTab)
