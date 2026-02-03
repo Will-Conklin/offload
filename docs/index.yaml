@@ -323,3 +323,6 @@ sections:
       - id: research-privacy-learning-user-data
         title: Privacy Implications of Learning from User Data
         path: research/research-privacy-learning-user-data.md
+      - id: research-ios-quick-entry
+        title: iOS Quick Entry Mechanisms
+        path: research/research-ios-quick-entry.md
