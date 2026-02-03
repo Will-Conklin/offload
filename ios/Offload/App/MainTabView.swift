@@ -422,11 +422,13 @@ private struct TabButton: View {
                     // SF Symbol icon
                     Image(systemName: tab.iconName)
                         .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                        .symbolRenderingMode(.hierarchical)
                         .foregroundStyle(
                             isSelected
                                 ? Theme.Colors.primary(colorScheme, style: style)
                                 : Theme.Colors.textSecondary(colorScheme, style: style)
                         )
+                        .frame(width: 24, height: 24)
                         .scaleEffect(isSelected ? 1.05 : 1.0)
                 }
 
