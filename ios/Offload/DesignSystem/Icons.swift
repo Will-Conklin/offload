@@ -29,7 +29,7 @@ struct Icons {
 
     static let add = "plus"
     static let addCircleFilled = "plus.circle.fill"
-    static let write = "pencil.circle.fill"
+    static let write = "pencil"
     static let deleteFilled = "trash.fill"
     static let more = "ellipsis"
     static let externalLink = "arrow.up.right.square"
@@ -38,7 +38,7 @@ struct Icons {
     static let checkCircleFilled = "checkmark.circle.fill"
     static let warningFilled = "exclamationmark.triangle.fill"
     static let infoCircleFilled = "info.circle.fill"
-    static let microphone = "mic.circle.fill"
+    static let microphone = "mic"
     static let stopFilled = "stop.fill"
     static let camera = "camera"
     static let cameraFilled = "camera.fill"
