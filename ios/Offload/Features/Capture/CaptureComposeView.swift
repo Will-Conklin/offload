@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import OSLog
 
 enum CaptureComposeMode: String, Identifiable {
     case write
@@ -312,11 +313,18 @@ struct CaptureComposeView: View {
 
     private func handleVoice() {
         if voiceService.isRecording {
+            AppLogger.workflow.info("CaptureCompose voice stop requested")
             voiceService.stopRecording()
         } else {
+            AppLogger.workflow.info("CaptureCompose voice start requested")
             preRecordingText = text
             _Concurrency.Task {
-                do { try await voiceService.startRecording() } catch { showingPermissionAlert = true }
+                do {
+                    try await voiceService.startRecording()
+                } catch {
+                    AppLogger.workflow.warning("CaptureCompose voice start failed - permission required")
+                    showingPermissionAlert = true
+                }
             }
         }
     }
@@ -332,21 +340,29 @@ struct CaptureComposeView: View {
     }
 
     private func save() {
-        if voiceService.isRecording { voiceService.stopRecording() }
+        if voiceService.isRecording {
+            AppLogger.workflow.debug("CaptureCompose save - stopping active recording")
+            voiceService.stopRecording()
+        }
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedText.isEmpty else {
+            AppLogger.workflow.warning("CaptureCompose save blocked - empty content")
             errorPresenter.present(ValidationError("Capture content cannot be empty."))
             return
         }
 
         do {
-            _ = try itemRepository.create(
+            AppLogger.workflow.info(
+                "CaptureCompose save requested - textLength: \(trimmedText.count, privacy: .public), tags: \(self.selectedTags.count, privacy: .public), attachment: \(self.attachmentData != nil, privacy: .public), starred: \(self.isStarred, privacy: .public)"
+            )
+            let item = try itemRepository.create(
                 type: nil, // Uncategorized capture
                 content: trimmedText,
                 attachmentData: attachmentData,
                 tags: selectedTags,
                 isStarred: isStarred
             )
+            AppLogger.workflow.info("CaptureCompose save completed - id: \(item.id, privacy: .public)")
 
             // Trigger typewriter ding animation
             withAnimation(Theme.Animations.typewriterDing) {
@@ -360,6 +376,7 @@ struct CaptureComposeView: View {
                 dismiss()
             }
         } catch {
+            AppLogger.workflow.error("CaptureCompose save failed - error: \(error.localizedDescription, privacy: .public)")
             errorPresenter.present(error)
         }
     }

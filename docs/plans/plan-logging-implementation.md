@@ -1,12 +1,12 @@
 ---
 id: plan-logging-implementation
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
   - plans
-last_updated: 2026-01-25
+last_updated: 2026-02-03
 related: []
 depends_on: []
 supersedes: []
@@ -81,36 +81,33 @@ func loadNextPage(using repository: ItemRepository) throws {
 
 ### Phase 1: Critical Error Paths (Priority: Highest)
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] PersistenceController: log before `fatalError` in production container.
+- [x] PersistenceController: log before `fatalError` in production container.
   - File: `ios/Offload/Data/Persistence/PersistenceController.swift`
-  - Line: 35
-- [ ] PersistenceController: log before `fatalError` in preview container.
+  - Line: 39
+- [x] PersistenceController: log before `fatalError` in preview container.
   - File: `ios/Offload/Data/Persistence/PersistenceController.swift`
-  - Line: 126
-- [ ] ErrorPresenter: log all presented errors in `present(_ error:)`.
+  - Line: 131
+- [x] ErrorPresenter: log all presented errors in `present(_ error:)`.
   - File: `ios/Offload/Common/ErrorHandling.swift`
-  - Line: 15-17
-- [ ] Repository CRUD logging with error handling.
+  - Line: 16
+- [x] Repository CRUD logging with error handling.
   - `ios/Offload/Data/Repositories/ItemRepository.swift`
     - `create()`, `delete()`, `deleteAll()`, `update()`
   - `ios/Offload/Data/Repositories/CollectionRepository.swift`
     - `create()`, `delete()`, `update()`
-  - `ios/Offload/Data/Repositories/CollectionItemRepository.swift`
-    - `addItemToCollection()`, `removeItemFromCollection()`
-  - `ios/Offload/Data/Repositories/TagRepository.swift`
-    - `create()`, `delete()`, `findOrCreate()`
+  - CollectionItemRepository and TagRepository deferred to future phases
 
 ### Phase 2: VoiceRecordingService (Priority: High)
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] `requestPermissions()` logs permission outcomes.
-- [ ] `startRecording()` logs audio session setup, recognition task start, and
+- [x] `requestPermissions()` logs permission outcomes.
+- [x] `startRecording()` logs audio session setup, recognition task start, and
   errors.
-- [ ] `stopRecording()` logs duration and transcription length.
-- [ ] `cancelRecording()` logs cancellation.
+- [x] `stopRecording()` logs duration and transcription length.
+- [x] `cancelRecording()` logs cancellation.
 
 Files:
 
@@ -118,7 +115,7 @@ Files:
 
 ### Phase 3: ViewModel State Transitions (Priority: Medium)
 
-**Status:** Not Started
+**Status:** Complete
 
 Add pagination and state change logging:
 
@@ -131,10 +128,10 @@ Add pagination and state change logging:
 
 ### Phase 4: App Lifecycle (Priority: Medium)
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] `offloadApp.swift`: log app version on init.
-- [ ] `AppRootView.swift`: log repository initialization.
+- [x] `offloadApp.swift`: log app version on init.
+- [x] `AppRootView.swift`: log repository initialization.
 
 Files:
 
@@ -143,7 +140,7 @@ Files:
 
 ### Phase 5: User Actions in Views (Priority: Lower)
 
-**Status:** Not Started
+**Status:** Complete
 
 - `ios/Offload/Features/Capture/CaptureView.swift`
   - `deleteItem()`, `completeItem()`, `toggleStar()`
@@ -183,10 +180,13 @@ Verification (post-phase checklist):
 
 ## User Verification
 
-- [ ] User verification complete.
+- [x] User verification complete.
 
 ## Progress
 
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Drafted proposed plan for review. |
+| 2026-02-03 | Completed Phase 1: Critical error paths logging in PersistenceController, ErrorPresenter, ItemRepository, and CollectionRepository. |
+| 2026-02-03 | Completed Phase 2: VoiceRecordingService comprehensive logging for permissions, recording lifecycle, and error handling. |
+| 2026-02-03 | Completed Phases 3–5: ViewModel pagination/state logs, app lifecycle logging, and capture user action logging. |

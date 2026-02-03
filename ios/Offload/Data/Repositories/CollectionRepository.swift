@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftData
+import OSLog
 
 @MainActor
 final class CollectionRepository {
@@ -19,13 +20,20 @@ final class CollectionRepository {
         name: String,
         isStructured: Bool = false
     ) throws -> Collection {
+        AppLogger.persistence.debug("Creating collection - name: \(name, privacy: .public), isStructured: \(isStructured, privacy: .public)")
         let collection = Collection(
             name: name,
             isStructured: isStructured
         )
         modelContext.insert(collection)
-        try modelContext.save()
-        return collection
+        do {
+            try modelContext.save()
+            AppLogger.persistence.info("Collection created - id: \(collection.id, privacy: .public)")
+            return collection
+        } catch {
+            AppLogger.persistence.error("Collection create failed - error: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     // MARK: - Fetch
@@ -88,7 +96,15 @@ final class CollectionRepository {
 
     // MARK: - Update
     func update(_ collection: Collection) throws {
-        try modelContext.save()
+        let collectionId = collection.id
+        AppLogger.persistence.debug("Updating collection - id: \(collectionId, privacy: .public)")
+        do {
+            try modelContext.save()
+            AppLogger.persistence.info("Collection updated - id: \(collectionId, privacy: .public)")
+        } catch {
+            AppLogger.persistence.error("Collection update failed - id: \(collectionId, privacy: .public), error: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     func updateName(_ collection: Collection, name: String) throws {
@@ -160,8 +176,16 @@ final class CollectionRepository {
 
     // MARK: - Delete
     func delete(_ collection: Collection) throws {
+        let collectionId = collection.id
+        AppLogger.persistence.debug("Deleting collection - id: \(collectionId, privacy: .public)")
         modelContext.delete(collection)
-        try modelContext.save()
+        do {
+            try modelContext.save()
+            AppLogger.persistence.info("Collection deleted - id: \(collectionId, privacy: .public)")
+        } catch {
+            AppLogger.persistence.error("Collection delete failed - id: \(collectionId, privacy: .public), error: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     // MARK: - Helper methods

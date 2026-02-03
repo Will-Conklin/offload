@@ -35,16 +35,25 @@ final class VoiceRecordingService: @unchecked Sendable {
 
     func requestPermissions() async -> Bool {
         if checkPermissions() {
+            AppLogger.voice.debug("Permissions already granted")
             return true
         }
 
+        AppLogger.voice.info("Requesting voice recording permissions")
         let microphoneAuthorized = await requestMicrophonePermission()
         let speechAuthorized = await requestSpeechRecognitionPermission()
 
         cachedMicrophonePermission = microphoneAuthorized
         cachedSpeechPermission = speechAuthorized
 
-        return microphoneAuthorized && speechAuthorized
+        let granted = microphoneAuthorized && speechAuthorized
+        if granted {
+            AppLogger.voice.info("Voice recording permissions granted")
+        } else {
+            AppLogger.voice.warning("Voice recording permissions denied - microphone: \(microphoneAuthorized, privacy: .public), speech: \(speechAuthorized, privacy: .public)")
+        }
+
+        return granted
     }
 
     func checkPermissions() -> Bool {
@@ -81,6 +90,8 @@ final class VoiceRecordingService: @unchecked Sendable {
     // MARK: - Recording Controls
 
     func startRecording() async throws {
+        AppLogger.voice.info("Starting voice recording")
+
         // Reset state
         transcribedText = ""
         errorMessage = nil
@@ -89,34 +100,46 @@ final class VoiceRecordingService: @unchecked Sendable {
         // Check permissions
         let hasPermissions = await requestPermissions()
         guard hasPermissions else {
+            AppLogger.voice.error("Recording failed - permissions denied")
             errorMessage = "Microphone and speech recognition permissions are required"
             throw RecordingError.permissionDenied
         }
 
         // Check speech recognizer availability
         guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
+            AppLogger.voice.error("Recording failed - speech recognizer not available")
             errorMessage = "Speech recognition is not available"
             throw RecordingError.recognizerNotAvailable
         }
 
         // Configure audio session
+        AppLogger.voice.debug("Configuring audio session")
         let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
-        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        do {
+            try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+            AppLogger.voice.debug("Audio session configured successfully")
+        } catch {
+            AppLogger.voice.error("Audio session setup failed: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
 
         // Create and configure recognition request
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         guard let recognitionRequest = recognitionRequest else {
+            AppLogger.voice.error("Failed to create recognition request")
             errorMessage = "Unable to create recognition request"
             throw RecordingError.failedToCreateRequest
         }
 
         recognitionRequest.shouldReportPartialResults = true
         recognitionRequest.requiresOnDeviceRecognition = true // Offline-first
+        AppLogger.voice.debug("Recognition request created - onDevice: true")
 
         // Create audio engine
         audioEngine = AVAudioEngine()
         guard let audioEngine = audioEngine else {
+            AppLogger.voice.error("Failed to create audio engine")
             errorMessage = "Unable to create audio engine"
             throw RecordingError.failedToCreateAudioEngine
         }
@@ -129,7 +152,13 @@ final class VoiceRecordingService: @unchecked Sendable {
         }
 
         audioEngine.prepare()
-        try audioEngine.start()
+        do {
+            try audioEngine.start()
+            AppLogger.voice.debug("Audio engine started successfully")
+        } catch {
+            AppLogger.voice.error("Audio engine start failed: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
 
         // Start recognition task
         isTranscribing = true
@@ -140,7 +169,8 @@ final class VoiceRecordingService: @unchecked Sendable {
                 self.transcribedText = result.bestTranscription.formattedString
             }
 
-            if error != nil {
+            if let error = error {
+                AppLogger.voice.error("Recognition task error: \(error.localizedDescription, privacy: .public)")
                 self.stopRecording()
             }
         }
@@ -150,9 +180,15 @@ final class VoiceRecordingService: @unchecked Sendable {
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             self?.recordingDuration += 0.1
         }
+
+        AppLogger.voice.info("Voice recording started - recognition task active")
     }
 
     func stopRecording() {
+        let duration = recordingDuration
+        let transcriptionLength = transcribedText.count
+        AppLogger.voice.info("Stopping voice recording - duration: \(String(format: "%.1f", duration), privacy: .public)s, transcription length: \(transcriptionLength, privacy: .public)")
+
         // Stop timer
         recordingTimer?.invalidate()
         recordingTimer = nil
@@ -181,9 +217,12 @@ final class VoiceRecordingService: @unchecked Sendable {
         audioEngine = nil
         recognitionRequest = nil
         recognitionTask = nil
+
+        AppLogger.voice.debug("Voice recording stopped and cleaned up")
     }
 
     func cancelRecording() {
+        AppLogger.voice.info("Voice recording cancelled by user")
         transcribedText = ""
         stopRecording()
     }

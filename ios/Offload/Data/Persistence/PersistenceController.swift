@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import OSLog
 
 /// Simplified persistence controller for all SwiftData models
 struct PersistenceController {
@@ -36,6 +37,7 @@ struct PersistenceController {
                 configurations: [configuration]
             )
         } catch {
+            AppLogger.persistence.critical("Failed to create production ModelContainer: \(error.localizedDescription, privacy: .public)")
             fatalError("Failed to create ModelContainer: \(error)")
         }
     }()
@@ -127,6 +129,7 @@ struct PersistenceController {
 
             return container
         } catch {
+            AppLogger.persistence.critical("Failed to create preview ModelContainer: \(error.localizedDescription, privacy: .public)")
             fatalError("Failed to create preview ModelContainer: \(error)")
         }
     }()

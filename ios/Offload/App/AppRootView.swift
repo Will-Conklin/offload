@@ -12,6 +12,7 @@ import os
 struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var themeManager: ThemeManager
+    @State private var didLogRepositories = false
 
     var body: some View {
         let repositories = RepositoryBundle.make(modelContext: modelContext)
@@ -24,6 +25,10 @@ struct AppRootView: View {
             .preferredColorScheme(themeManager.appearancePreference.colorScheme)
             .withToast()
             .task {
+                if !didLogRepositories {
+                    AppLogger.general.info("Repository bundle initialized")
+                    didLogRepositories = true
+                }
                 do {
                     try TagMigration.runIfNeeded(modelContext: modelContext)
                 } catch {

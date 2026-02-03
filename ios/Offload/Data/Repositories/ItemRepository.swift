@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftData
+import OSLog
 
 
 @MainActor
@@ -26,6 +27,7 @@ final class ItemRepository {
         isStarred: Bool = false,
         followUpDate: Date? = nil
     ) throws -> Item {
+        AppLogger.persistence.debug("Creating item - type: \(type ?? "nil", privacy: .public)")
         let item = Item(
             type: type,
             content: content,
@@ -38,8 +40,14 @@ final class ItemRepository {
         )
         item.tags = tags
         modelContext.insert(item)
-        try modelContext.save()
-        return item
+        do {
+            try modelContext.save()
+            AppLogger.persistence.info("Item created - id: \(item.id, privacy: .public), type: \(type ?? "nil", privacy: .public)")
+            return item
+        } catch {
+            AppLogger.persistence.error("Item create failed - error: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     // MARK: - Fetch
@@ -139,7 +147,15 @@ final class ItemRepository {
 
     // MARK: - Update
     func update(_ item: Item) throws {
-        try modelContext.save()
+        let itemId = item.id
+        AppLogger.persistence.debug("Updating item - id: \(itemId, privacy: .public)")
+        do {
+            try modelContext.save()
+            AppLogger.persistence.info("Item updated - id: \(itemId, privacy: .public)")
+        } catch {
+            AppLogger.persistence.error("Item update failed - id: \(itemId, privacy: .public), error: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     func updateType(_ item: Item, type: String?) throws {
@@ -216,10 +232,18 @@ final class ItemRepository {
     // MARK: - Bulk Operations
     func deleteAll(_ items: [Item]) throws {
         guard !items.isEmpty else { return }
+        let count = items.count
+        AppLogger.persistence.debug("Deleting multiple items - count: \(count, privacy: .public)")
         for item in items {
             modelContext.delete(item)
         }
-        try modelContext.save()
+        do {
+            try modelContext.save()
+            AppLogger.persistence.info("Items deleted - count: \(count, privacy: .public)")
+        } catch {
+            AppLogger.persistence.error("Bulk delete failed - count: \(count, privacy: .public), error: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     func markAllCompleted(_ items: [Item]) throws {
@@ -238,8 +262,16 @@ final class ItemRepository {
 
     // MARK: - Delete
     func delete(_ item: Item) throws {
+        let itemId = item.id
+        AppLogger.persistence.debug("Deleting item - id: \(itemId, privacy: .public)")
         modelContext.delete(item)
-        try modelContext.save()
+        do {
+            try modelContext.save()
+            AppLogger.persistence.info("Item deleted - id: \(itemId, privacy: .public)")
+        } catch {
+            AppLogger.persistence.error("Item delete failed - id: \(itemId, privacy: .public), error: \(error.localizedDescription, privacy: .public)")
+            throw error
+        }
     }
 
     func deleteMultiple(_ items: [Item]) throws {

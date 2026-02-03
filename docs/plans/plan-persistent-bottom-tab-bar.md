@@ -1,12 +1,12 @@
 ---
 id: plan-persistent-bottom-tab-bar
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
   - navigation
-last_updated: 2026-01-25
+last_updated: 2026-02-03
 related:
   - prd-0002-persistent-bottom-tab-bar
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
@@ -80,7 +80,7 @@ preserving ADHD-friendly navigation patterns.
 
 ## User Verification
 
-- [ ] User verification complete.
+- [x] User verification complete.
 
 ## Progress
 
@@ -88,3 +88,4 @@ preserving ADHD-friendly navigation patterns.
 | ---------- | ------------------------------------------------ |
 | 2026-01-21 | Draft plan created.                              |
 | 2026-01-22 | Shipped the persistent tab shell and CTA layout. |
+| 2026-02-03 | Added MCM redesign with atomic age aesthetic, custom fonts, flat design. Merged via PR #123. |

@@ -1,12 +1,12 @@
 ---
 id: plan-context-aware-ci-pipeline
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
   - ci
-last_updated: 2026-01-25
+last_updated: 2026-02-03
 related:
   - prd-0006-context-aware-ci-pipeline
   - adr-0006-ci-provider-selection
@@ -64,9 +64,9 @@ run override, and a scheduled full CI run per PRD-0006.
 
 ### Phase 4: Validation
 
-**Status:** In Progress
+**Status:** Complete
 
-- [ ] Verify docs-only, iOS-only, mixed, manual full run, and scheduled run
+- [x] Verify docs-only, iOS-only, mixed, manual full run, and scheduled run
       scenarios.
 
 ## Dependencies
@@ -87,7 +87,7 @@ run override, and a scheduled full CI run per PRD-0006.
 
 ## User Verification
 
-- [ ] User verification complete.
+- [x] User verification complete.
 
 ## Progress
 
@@ -95,3 +95,4 @@ run override, and a scheduled full CI run per PRD-0006.
 | ---------- | ------------------------------------------------------- |
 | 2026-01-22 | Draft plan created.                                     |
 | 2026-01-22 | Implemented workflow gating, lanes, and docs reference. |
+| 2026-02-03 | Validated through multiple successful PR runs. Plan complete. |

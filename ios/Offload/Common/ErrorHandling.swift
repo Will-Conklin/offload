@@ -5,6 +5,7 @@
 
 import Foundation
 import Observation
+import OSLog
 
 
 @Observable
@@ -13,6 +14,7 @@ final class ErrorPresenter {
     var currentError: PresentableError?
 
     func present(_ error: Error) {
+        AppLogger.general.error("Presenting error to user: \(error.localizedDescription, privacy: .public)")
         currentError = PresentableError(error: error)
     }
 

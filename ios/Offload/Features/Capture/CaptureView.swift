@@ -8,6 +8,7 @@
 import SwiftData
 import SwiftUI
 import UIKit
+import OSLog
 
 struct CaptureView: View {
     @Environment(\.itemRepository) private var itemRepository
@@ -164,27 +165,45 @@ struct CaptureView: View {
     // MARK: - Actions
 
     private func deleteItem(_ item: Item) {
+        let itemId = item.id
+        AppLogger.workflow.info("CaptureView delete requested - id: \(itemId, privacy: .public)")
         do {
             try itemRepository.delete(item)
             viewModel.remove(item)
+            AppLogger.workflow.info("CaptureView delete completed - id: \(itemId, privacy: .public)")
         } catch {
+            AppLogger.workflow.error(
+                "CaptureView delete failed - id: \(itemId, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
+            )
             errorPresenter.present(error)
         }
     }
 
     private func completeItem(_ item: Item) {
+        let itemId = item.id
+        AppLogger.workflow.info("CaptureView complete requested - id: \(itemId, privacy: .public)")
         do {
             try itemRepository.complete(item)
             viewModel.remove(item)
+            AppLogger.workflow.info("CaptureView complete completed - id: \(itemId, privacy: .public)")
         } catch {
+            AppLogger.workflow.error(
+                "CaptureView complete failed - id: \(itemId, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
+            )
             errorPresenter.present(error)
         }
     }
 
     private func toggleStar(_ item: Item) {
+        let itemId = item.id
+        AppLogger.workflow.info("CaptureView star toggle requested - id: \(itemId, privacy: .public)")
         do {
             try itemRepository.toggleStar(item)
+            AppLogger.workflow.info("CaptureView star toggle completed - id: \(itemId, privacy: .public)")
         } catch {
+            AppLogger.workflow.error(
+                "CaptureView star toggle failed - id: \(itemId, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
+            )
             errorPresenter.present(error)
         }
     }
