@@ -1,7 +1,7 @@
 ---
 id: plan-item-search-tags
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
@@ -54,18 +54,18 @@ chips for scoped searches and minimal disruption to existing flows.
 
 ### Phase 3: Tag Chips
 
-**Status:** In Progress
+**Status:** Complete
 
-- [ ] Surface matching tag chips below the search bar.
-- [ ] Implement selected chip state and scoped filtering.
+- [x] Surface matching tag chips below the search bar.
+- [x] Implement selected chip state and scoped filtering.
 
 ### Phase 4: QA
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Verify results update as text changes.
-- [ ] Confirm tag chip selection narrows results.
-- [ ] Validate layout and interaction on small screens.
+- [x] Verify results update as text changes.
+- [x] Confirm tag chip selection narrows results.
+- [x] Validate layout and interaction on small screens.
 
 ## Dependencies
 
@@ -92,4 +92,5 @@ chips for scoped searches and minimal disruption to existing flows.
 | 2026-01-21 | Draft plan created.                                          |
 | 2026-02-03 | Phase 1 complete: Search UI implemented for CaptureView.    |
 | 2026-02-03 | Phase 2 complete: Search UI implemented for OrganizeView.   |
-| 2026-02-03 | Phase 3 started: Implementing tag chip filtering.           |
+| 2026-02-03 | Phase 3 complete: Tag chip filtering implemented.           |
+| 2026-02-03 | Phase 4 complete: All phases finished.                      |
