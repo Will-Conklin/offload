@@ -357,7 +357,7 @@ private struct OffloadQuickActionTray: View {
     let onQuickVoice: () -> Void
 
     var body: some View {
-        HStack(spacing: 20) {
+        HStack(alignment: .top, spacing: 20) {
             OffloadQuickActionButton(
                 title: "Write",
                 iconName: Icons.write,
