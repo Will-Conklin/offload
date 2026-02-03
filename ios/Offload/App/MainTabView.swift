@@ -43,10 +43,10 @@ struct MainTabView: View {
 
         var iconName: String {
             switch self {
-            case .home: "house.fill"
-            case .review: "tray.fill"
-            case .organize: "folder.fill"
-            case .account: "person.fill"
+            case .home: "house.circle.fill"
+            case .review: "list.bullet.clipboard.fill"
+            case .organize: "tray.2.fill"
+            case .account: "person.crop.circle.fill"
             }
         }
 
