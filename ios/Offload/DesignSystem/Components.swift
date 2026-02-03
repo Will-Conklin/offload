@@ -37,16 +37,7 @@ struct FloatingActionButton: View {
                 .padding(.horizontal, Theme.Spacing.md + 4)
                 .background(
                     Capsule()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Theme.Colors.primary(colorScheme, style: style),
-                                    Theme.Colors.secondary(colorScheme, style: style)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .fill(Theme.Colors.primary(colorScheme, style: style))
                         .overlay(
                             Capsule()
                                 .stroke(

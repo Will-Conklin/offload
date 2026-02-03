@@ -30,7 +30,7 @@ struct MainTabView: View {
             }
             .sheet(item: $quickCaptureMode) { mode in
                 CaptureComposeView(mode: mode)
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
             }
     }
@@ -210,12 +210,6 @@ private struct OffloadCTA: View {
             ) {
                 toggleExpanded()
             }
-            .overlay(alignment: .bottom) {
-                Text("Offload")
-                    .font(Theme.Typography.caption)
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                    .offset(y: 14)
-            }
             .offset(y: mainButtonYOffset)
         }
         .frame(width: slotWidth, height: mainButtonSize)
@@ -317,31 +311,23 @@ private struct OffloadQuickActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
-                // Kidney-shaped button with gradient
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: gradient,
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+            // Kidney-shaped button with solid color
+            ZStack {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: gradient,
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
-                        .frame(width: 56, height: 56)
-
-                    ZStack {
-                        AppIcon(name: iconName, size: 24)
-                            .foregroundStyle(.white)
-                    }
+                    )
                     .frame(width: 56, height: 56)
-                }
 
-                // Bebas Neue label
-                Text(title.uppercased())
-                    .font(.custom("BebasNeue-Regular", size: 12))
-                    .tracking(0.6)
-                    .foregroundStyle(.white)
+                ZStack {
+                    AppIcon(name: iconName, size: 24)
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 56, height: 56)
             }
         }
         .buttonStyle(.plain)
@@ -363,7 +349,7 @@ private struct OffloadQuickActionTray: View {
                 iconName: Icons.write,
                 gradient: [
                     Theme.Colors.primary(colorScheme, style: style),
-                    Color(hex: "FFB300"),
+                    Theme.Colors.primary(colorScheme, style: style),
                 ],
                 action: onQuickWrite
             )
@@ -373,7 +359,7 @@ private struct OffloadQuickActionTray: View {
                 iconName: Icons.microphone,
                 gradient: [
                     Theme.Colors.secondary(colorScheme, style: style),
-                    Color(hex: "00695C"),
+                    Theme.Colors.secondary(colorScheme, style: style),
                 ],
                 action: onQuickVoice
             )
