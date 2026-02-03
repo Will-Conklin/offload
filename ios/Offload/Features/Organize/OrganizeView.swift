@@ -715,15 +715,13 @@ private struct OrganizeSearchView: View {
             } label: {
                 CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
                     MCMCardContent(
+                        icon: collection.isStructured ? Icons.plans : Icons.lists,
                         title: collection.name,
-                        metadata: [
-                            collection.isStructured ? "PLAN" : "LIST",
-                            collection.createdAt.formatted(.dateTime.month(.abbreviated).day())
-                        ],
+                        typeLabel: collection.isStructured ? "PLAN" : "LIST",
+                        timestamp: collection.createdAt.formatted(.dateTime.month(.abbreviated).day()),
                         tags: collection.tags,
-                        iconName: collection.isStructured ? Icons.plans : Icons.lists,
-                        colorScheme: colorScheme,
-                        style: style
+                        onAddTag: nil,
+                        size: .standard
                     )
                 }
             }
