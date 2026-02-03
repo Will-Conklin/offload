@@ -330,9 +330,11 @@ private struct OffloadQuickActionButton: View {
                         )
                         .frame(width: 56, height: 56)
 
-                    AppIcon(name: iconName, size: 24)
-                        .foregroundStyle(.white)
-                        .frame(width: 56, height: 56)
+                    ZStack {
+                        AppIcon(name: iconName, size: 24)
+                            .foregroundStyle(.white)
+                    }
+                    .frame(width: 56, height: 56)
                 }
 
                 // Bebas Neue label
