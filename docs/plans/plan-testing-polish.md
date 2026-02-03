@@ -1,12 +1,12 @@
 ---
 id: plan-testing-polish
 type: plan
-status: accepted
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-01-26
+last_updated: 2026-01-25
 related:
   - plan-roadmap
 depends_on: []

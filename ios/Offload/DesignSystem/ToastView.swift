@@ -25,7 +25,7 @@ enum ToastType {
         }
     }
 
-    func color(_ colorScheme: ColorScheme, style: ThemeStyle = .elijah) -> Color {
+    func color(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
         switch self {
         case .success: return Theme.Colors.success(colorScheme, style: style)
         case .error: return Theme.Colors.destructive(colorScheme, style: style)

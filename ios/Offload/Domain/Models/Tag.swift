@@ -6,8 +6,6 @@
 import Foundation
 import SwiftData
 
-
-
 @Model
 final class Tag {
     var id: UUID
@@ -15,6 +13,7 @@ final class Tag {
     var color: String?
     var createdAt: Date
     var items: [Item]
+    var collections: [Collection]
 
     init(
         id: UUID = UUID(),
@@ -27,5 +26,6 @@ final class Tag {
         self.color = color
         self.createdAt = createdAt
         self.items = []
+        self.collections = []
     }
 }

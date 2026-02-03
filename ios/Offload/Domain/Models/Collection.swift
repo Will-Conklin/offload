@@ -6,29 +6,36 @@
 import Foundation
 import SwiftData
 
-
-
 @Model
 final class Collection {
     var id: UUID
     var name: String
     var isStructured: Bool // false = simple list, true = plan with order/hierarchy
     var createdAt: Date
+    var isStarred: Bool
 
     // Relationship to items through CollectionItem
     @Relationship(deleteRule: .cascade, inverse: \CollectionItem.collection)
     var collectionItems: [CollectionItem]?
 
+    // Tags for collections
+    @Relationship(deleteRule: .nullify)
+    var tags: [Tag]
+
     init(
         id: UUID = UUID(),
         name: String,
         isStructured: Bool = false,
-        createdAt: Date = Date()
+        createdAt: Date = Date(),
+        isStarred: Bool = false,
+        tags: [Tag] = []
     ) {
         self.id = id
         self.name = name
         self.isStructured = isStructured
         self.createdAt = createdAt
+        self.isStarred = isStarred
+        self.tags = tags
     }
 
     // Helper computed property to get all items sorted by position

@@ -1,12 +1,12 @@
 ---
 id: plan-context-aware-ci-pipeline
 type: plan
-status: in-progress
+status: accepted
 owners:
   - Will-Conklin
 applies_to:
   - ci
-last_updated: 2026-01-26
+last_updated: 2026-01-25
 related:
   - prd-0006-context-aware-ci-pipeline
   - adr-0006-ci-provider-selection
@@ -95,4 +95,3 @@ run override, and a scheduled full CI run per PRD-0006.
 | ---------- | ------------------------------------------------------- |
 | 2026-01-22 | Draft plan created.                                     |
 | 2026-01-22 | Implemented workflow gating, lanes, and docs reference. |
-| 2026-01-26 | Validation scenarios in progress.                       |

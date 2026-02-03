@@ -10,6 +10,10 @@ import SwiftUI
 struct Icons {
     // MARK: - Navigation
 
+    static let home = "house"
+    static let homeSelected = "house.fill"
+    static let review = "tray"
+    static let reviewSelected = "tray.fill"
     static let captureList = "tray"
     static let captureListSelected = "tray.fill"
     static let capture = "lightbulb.fill"
@@ -17,6 +21,7 @@ struct Icons {
     static let organizeSelected = "folder.fill"
     static let settings = "gearshape"
     static let account = "person.circle"
+    static let accountSelected = "person.circle.fill"
     static let plans = "folder"
     static let lists = "list.bullet"
 
@@ -24,6 +29,7 @@ struct Icons {
 
     static let add = "plus"
     static let addCircleFilled = "plus.circle.fill"
+    static let write = "pencil"
     static let deleteFilled = "trash.fill"
     static let more = "ellipsis"
     static let externalLink = "arrow.up.right.square"

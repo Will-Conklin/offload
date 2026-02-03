@@ -1,12 +1,12 @@
 ---
 id: plan-persistent-bottom-tab-bar
 type: plan
-status: in-progress
+status: accepted
 owners:
   - Will-Conklin
 applies_to:
   - navigation
-last_updated: 2026-01-26
+last_updated: 2026-01-25
 related:
   - prd-0002-persistent-bottom-tab-bar
   - adr-0004-tab-bar-navigation-shell-and-offload-cta
@@ -84,7 +84,7 @@ preserving ADHD-friendly navigation patterns.
 
 ## Progress
 
-| Date       | Update                                                   |
-| ---------- | -------------------------------------------------------- |
-| 2026-01-21 | Draft plan created.                                      |
-| 2026-01-22 | Implementation complete; awaiting user verification.     |
+| Date       | Update                                           |
+| ---------- | ------------------------------------------------ |
+| 2026-01-21 | Draft plan created.                              |
+| 2026-01-22 | Shipped the persistent tab shell and CTA layout. |

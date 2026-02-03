@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import UIKit
 
-
 enum CaptureComposeMode: String, Identifiable {
     case write
     case voice
@@ -18,7 +17,6 @@ enum CaptureComposeMode: String, Identifiable {
     var shouldFocusOnAppear: Bool { self == .write }
     var shouldStartVoiceOnAppear: Bool { self == .voice }
 }
-
 
 struct CaptureComposeView: View {
     let mode: CaptureComposeMode
@@ -42,6 +40,7 @@ struct CaptureComposeView: View {
     @State private var showingPermissionAlert = false
     @State private var errorPresenter = ErrorPresenter()
     @State private var didTriggerQuickStart = false
+    @State private var captureConfirmed = false
 
     @FocusState private var isFocused: Bool
 
@@ -68,7 +67,17 @@ struct CaptureComposeView: View {
             Spacer()
             bottomBar
         }
-        .background(Theme.Colors.background(colorScheme, style: style))
+        .background(Theme.Gradients.deepBackground(colorScheme).ignoresSafeArea())
+        .overlay(
+            Group {
+                if captureConfirmed {
+                    Theme.Colors.amber(colorScheme, style: style)
+                        .opacity(0.15)
+                        .ignoresSafeArea()
+                        .transition(.opacity)
+                }
+            }
+        )
         .navigationTitle("Capture")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -307,8 +316,7 @@ struct CaptureComposeView: View {
         } else {
             preRecordingText = text
             _Concurrency.Task {
-                do { try await voiceService.startRecording() }
-                catch { showingPermissionAlert = true }
+                do { try await voiceService.startRecording() } catch { showingPermissionAlert = true }
             }
         }
     }
@@ -339,8 +347,18 @@ struct CaptureComposeView: View {
                 tags: selectedTags,
                 isStarred: isStarred
             )
-            NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
-            dismiss()
+
+            // Trigger typewriter ding animation
+            withAnimation(Theme.Animations.typewriterDing) {
+                captureConfirmed = true
+            }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+            // Dismiss after brief amber flash
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
+                dismiss()
+            }
         } catch {
             errorPresenter.present(error)
         }

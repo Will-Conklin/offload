@@ -98,6 +98,13 @@ enum ItemType: String, Codable, CaseIterable {
         case .link: return "Link"
         }
     }
+
+    var icon: String {
+        switch self {
+        case .task: return Icons.checkCircleFilled
+        case .link: return Icons.externalLink
+        }
+    }
 }
 
 extension Item {

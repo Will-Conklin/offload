@@ -5,10 +5,9 @@
 
 //  Flat design capture list with inline tagging and swipe actions
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 import UIKit
-
 
 struct CaptureView: View {
     @Environment(\.itemRepository) private var itemRepository
@@ -18,9 +17,8 @@ struct CaptureView: View {
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = CaptureListViewModel()
 
+    let navigationTitle: String
     @State private var showingSettings = false
-    @State private var showingAccount = false
-    @State private var showingAddItem = false
     @State private var selectedItem: Item?
     @State private var tagPickerItem: Item?
     @State private var moveItem: Item?
@@ -30,16 +28,21 @@ struct CaptureView: View {
     private var floatingTabBarClearance: CGFloat {
         Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
     }
+
+    init(navigationTitle: String = "Capture") {
+        self.navigationTitle = navigationTitle
+    }
+
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .bottomTrailing) {
-                // Background
-                Theme.Colors.background(colorScheme, style: style)
+            ZStack {
+                // Vibrant gradient background
+                Theme.Gradients.deepBackground(colorScheme)
                     .ignoresSafeArea()
 
                 ScrollView {
                     LazyVStack(spacing: Theme.Spacing.md) {
-                        if viewModel.items.isEmpty && viewModel.isLoading {
+                        if viewModel.items.isEmpty, viewModel.isLoading {
                             ProgressView()
                                 .padding(.vertical, Theme.Spacing.sm)
                         }
@@ -67,7 +70,7 @@ struct CaptureView: View {
                             }
                         }
 
-                        if viewModel.isLoading && !viewModel.items.isEmpty {
+                        if viewModel.isLoading, !viewModel.items.isEmpty {
                             ProgressView()
                                 .padding(.vertical, Theme.Spacing.sm)
                         }
@@ -80,30 +83,11 @@ struct CaptureView: View {
                     Color.clear
                         .frame(height: floatingTabBarClearance)
                 }
-
-                FloatingActionButton(title: "Add Item", iconName: Icons.addCircleFilled) {
-                    showingAddItem = true
-                }
-                .accessibilityLabel("Add Item")
-                .padding(.trailing, Theme.Spacing.md)
-                .padding(.bottom, Theme.Spacing.md)
             }
-            .navigationTitle("Capture")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        showingAccount = true
-                    } label: {
-                        IconTile(
-                            iconName: Icons.account,
-                            iconSize: 18,
-                            tileSize: 32,
-                            style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
-                        )
-                    }
-                    .accessibilityLabel("Account")
-
                     Button {
                         showingSettings = true
                     } label: {
@@ -119,14 +103,6 @@ struct CaptureView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
-            }
-            .sheet(isPresented: $showingAccount) {
-                AccountView()
-            }
-            .sheet(isPresented: $showingAddItem, onDismiss: refreshItems) {
-                CaptureComposeView()
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
             }
             .sheet(item: $selectedItem) { item in
                 CaptureDetailView(item: item)
@@ -261,45 +237,48 @@ private struct ItemCard: View {
     let onMoveTo: (MoveDestination) -> Void
 
     @State private var offset: CGFloat = 0
+    @State private var crtFlickerOpacity: Double = 1
 
     var body: some View {
-        CardSurface {
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                    Text(item.content)
-                        .font(Theme.Typography.body)
-                        .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
-
-                    if let attachmentData = item.attachmentData,
-                       let uiImage = UIImage(data: attachmentData) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 140)
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
-                    }
-
-                    Text(item.createdAt, format: .relative(presentation: .named))
-                        .font(Theme.Typography.caption2)
-                        .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
-                }
-
-                ItemActionRow(
-                    tags: item.tags,
-                    isStarred: item.isStarred,
-                    onAddTag: onAddTag,
-                    onToggleStar: onToggleStar
+        CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+            MCMCardContent(
+                icon: item.itemType?.icon,
+                title: item.content,
+                typeLabel: item.type?.uppercased(),
+                timestamp: item.createdAt.formatted(.relative(presentation: .named)),
+                image: item.attachmentData.flatMap { UIImage(data: $0) },
+                tags: item.tags,
+                onAddTag: onAddTag,
+                size: .compact // Compact size for item cards
+            )
+        }
+        .overlay(alignment: .bottomTrailing) {
+            Button(action: onToggleStar) {
+                AppIcon(
+                    name: item.isStarred ? Icons.starFilled : Icons.star,
+                    size: 18
                 )
+                .foregroundStyle(
+                    item.isStarred
+                        ? Theme.Colors.caution(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style)
+                )
+                .padding(Theme.Spacing.md)
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel(item.isStarred ? "Unstar item" : "Star item")
         }
         .contentShape(Rectangle())
-        .onTapGesture(perform: onTap)
+        .onTapGesture {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            onTap()
+        }
         .overlay(
             // Swipe indicators
             HStack {
                 if offset > 0 {
                     AppIcon(name: Icons.checkCircleFilled, size: 18)
-                        .foregroundStyle(Theme.Colors.success(colorScheme, style: style))
+                        .foregroundStyle(Theme.Colors.terminalGreen(colorScheme, style: style))
                         .padding(.leading, Theme.Spacing.md)
                         .opacity(min(1, Double(offset / 120)))
                 }
@@ -459,7 +438,7 @@ private struct MoveToPlanSheet: View {
                         } icon: {
                             AppIcon(name: Icons.addCircleFilled, size: 16)
                         }
-                                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
+                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
                     }
                 }
             }
@@ -581,7 +560,7 @@ private struct MoveToListSheet: View {
                         } icon: {
                             AppIcon(name: Icons.addCircleFilled, size: 16)
                         }
-                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
                     }
                 }
             }

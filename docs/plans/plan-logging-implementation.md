@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - plans
-last_updated: 2026-01-26
+last_updated: 2026-01-25
 related: []
 depends_on: []
 supersedes: []
@@ -17,11 +17,11 @@ structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
 
-# Plan: Comprehensive Logging Implementation
+# Plan: Comprehensive Logging Implementation (Proposed)
 
 ## Overview
 
-Plan to expand OSLog coverage to diagnose crashes on physical devices
+Proposed plan to expand OSLog coverage to diagnose crashes on physical devices
 using the existing `wc.Offload` subsystem. This plan focuses on sequencing and
 execution for logging coverage across critical paths and user workflows.
 
@@ -190,4 +190,3 @@ Verification (post-phase checklist):
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Drafted proposed plan for review. |
-| 2026-01-26 | Plan accepted; execution pending. |

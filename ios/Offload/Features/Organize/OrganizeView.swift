@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-
 struct OrganizeView: View {
     enum Scope: String, CaseIterable, Identifiable {
         case plans, lists
@@ -37,8 +36,8 @@ struct OrganizeView: View {
     @AppStorage("organize.scope") private var selectedScopeRaw = Scope.plans.rawValue
     @State private var showingCreate = false
     @State private var showingSettings = false
-    @State private var showingAccount = false
     @State private var selectedCollection: Collection?
+    @State private var tagPickerCollection: Collection?
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = OrganizeListViewModel()
 
@@ -54,7 +53,8 @@ struct OrganizeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.Colors.background(colorScheme, style: style)
+                // Vibrant gradient background
+                Theme.Gradients.deepBackground(colorScheme)
                     .ignoresSafeArea()
 
                 VStack(spacing: Theme.Spacing.sm) {
@@ -78,18 +78,6 @@ struct OrganizeView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        showingAccount = true
-                    } label: {
-                        IconTile(
-                            iconName: Icons.account,
-                            iconSize: 18,
-                            tileSize: 32,
-                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
-                        )
-                    }
-                    .accessibilityLabel("Account")
-
                     Button { showingSettings = true } label: {
                         IconTile(
                             iconName: Icons.settings,
@@ -107,8 +95,9 @@ struct OrganizeView: View {
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
             }
-            .sheet(isPresented: $showingAccount) {
-                AccountView()
+            .sheet(item: $tagPickerCollection) { collection in
+                CollectionTagPickerSheet(collection: collection)
+                    .presentationDetents([.medium])
             }
             .navigationDestination(item: $selectedCollection) { collection in
                 CollectionDetailView(collectionID: collection.id)
@@ -139,10 +128,16 @@ struct OrganizeView: View {
                 Button {
                     selectedCollection = collection
                 } label: {
-                    CollectionCard(paletteIndex: index, collection: collection, colorScheme: colorScheme, style: style)
+                    CollectionCard(
+                        paletteIndex: index,
+                        collection: collection,
+                        colorScheme: colorScheme,
+                        style: style,
+                        onAddTag: { tagPickerCollection = collection },
+                        onToggleStar: { toggleStar(collection) }
+                    )
                 }
                 .buttonStyle(.plain)
-                .cardButtonStyle()
                 .onAppear {
                     if index == viewModel.collections.count - 1 {
                         loadNextPage()
@@ -261,6 +256,14 @@ struct OrganizeView: View {
         }
     }
 
+    private func toggleStar(_ collection: Collection) {
+        do {
+            try collectionRepository.toggleStar(collection)
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
     private func loadScopeIfNeeded() {
         guard !viewModel.hasLoaded else { return }
         updateScope()
@@ -298,56 +301,96 @@ private struct CollectionCard: View {
     let collection: Collection
     let colorScheme: ColorScheme
     let style: ThemeStyle
-
-    private var tags: [Tag] {
-        let tags = collection.collectionItems?
-            .compactMap { $0.item?.tags }
-            .flatMap { $0 } ?? []
-        return Dictionary(uniqueKeysWithValues: tags.map { ($0.id, $0) })
-            .values
-            .sorted { $0.name < $1.name }
-    }
+    let onAddTag: () -> Void
+    let onToggleStar: () -> Void
 
     var body: some View {
-        CardSurface {
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                HStack {
-                    Text(collection.name)
-                        .font(Theme.Typography.cardTitle)
-                        .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+        CardSurface(fill: Theme.Colors.cardColor(index: paletteIndex, colorScheme, style: style)) {
+            // MCM card content with custom metadata for collections
+            HStack(alignment: .top, spacing: 0) {
+                    // Left column (narrow - metadata gutter)
+                    VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                        IconTile(
+                            iconName: collection.isStructured ? Icons.plans : Icons.lists,
+                            iconSize: 16,
+                            tileSize: 36,
+                            style: .none(Theme.Colors.icon(colorScheme, style: style))
+                        )
 
-                    Spacer()
-                }
+                        Text(collection.isStructured ? "PLAN" : "LIST")
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
 
-                HStack {
-                    Text(collection.createdAt, format: .dateTime.month(.abbreviated).day())
-                        .font(Theme.Typography.metadata)
-                        .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+                        Text(collection.createdAt, format: .dateTime.month(.abbreviated).day())
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
 
-                    Spacer()
-
-                    if let count = collection.collectionItems?.count, count > 0 {
-                        Text("\(count) item\(count == 1 ? "" : "s")")
-                            .font(Theme.Typography.metadata)
-                            .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+                        if let count = collection.collectionItems?.count, count > 0 {
+                            Text("\(count) item\(count == 1 ? "" : "s")")
+                                .font(Theme.Typography.caption)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                        }
                     }
-                }
+                    .frame(width: 60, alignment: .leading)
 
-                if !tags.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: Theme.Spacing.xs) {
-                            ForEach(tags) { tag in
-                                TagPill(
-                                    name: tag.name,
-                                    color: tag.color
-                                        .map { Color(hex: $0) }
-                                        ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
-                                )
+                    // Right column (wide - main content)
+                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                        Text(collection.name)
+                            .font(.system(.title2, design: .default).weight(.bold))
+                            .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                            .lineLimit(3)
+
+                        // Tags in flow layout
+                        if !collection.tags.isEmpty {
+                            FlowLayout(spacing: Theme.Spacing.xs) {
+                                ForEach(collection.tags) { tag in
+                                    TagPill(
+                                        name: tag.name,
+                                        color: tag.color
+                                            .map { Color(hex: $0) }
+                                            ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
+                                    )
+                                }
+
+                                Button(action: onAddTag) {
+                                    HStack(spacing: 4) {
+                                        AppIcon(name: Icons.add, size: 10)
+                                        Text("Tag")
+                                            .font(Theme.Typography.caption)
+                                    }
+                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                    .padding(.horizontal, Theme.Spacing.pillHorizontal)
+                                    .padding(.vertical, Theme.Spacing.pillVertical)
+                                    .background(
+                                        Capsule()
+                                            .strokeBorder(
+                                                Theme.Colors.borderMuted(colorScheme, style: style),
+                                                lineWidth: 1
+                                            )
+                                    )
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
-                }
+                    .padding(.leading, 12)
             }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            Button(action: onToggleStar) {
+                AppIcon(
+                    name: collection.isStarred ? Icons.starFilled : Icons.star,
+                    size: 18
+                )
+                .foregroundStyle(
+                    collection.isStarred
+                        ? Theme.Colors.caution(colorScheme, style: style)
+                        : Theme.Colors.textSecondary(colorScheme, style: style)
+                )
+                .padding(Theme.Spacing.md)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(collection.isStarred ? "Unstar collection" : "Star collection")
         }
     }
 }
@@ -379,6 +422,97 @@ private struct CollectionFormSheet: View {
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
+        }
+    }
+}
+
+// MARK: - Collection Tag Picker Sheet
+
+private struct CollectionTagPickerSheet: View {
+    let collection: Collection
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.collectionRepository) private var collectionRepository
+    @Environment(\.tagRepository) private var tagRepository
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    @Query(sort: \Tag.name) private var allTags: [Tag]
+
+    @State private var newTagName = ""
+    @State private var errorPresenter = ErrorPresenter()
+    @FocusState private var focused: Bool
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Create New Tag") {
+                    HStack {
+                        TextField("Tag name", text: $newTagName)
+                            .focused($focused)
+                        Button("Add") {
+                            createTag()
+                        }
+                        .disabled(newTagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+
+                Section("Select Tags") {
+                    ForEach(allTags) { tag in
+                        Button {
+                            toggleTag(tag)
+                        } label: {
+                            HStack {
+                                Text(tag.name)
+                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                Spacer()
+                                if collection.tags.contains(where: { $0.id == tag.id }) {
+                                    AppIcon(name: Icons.check, size: 12)
+                                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Tags")
+            .navigationBarTitleDisplayMode(.large)
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.Colors.background(colorScheme, style: style))
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .errorToasts(errorPresenter)
+    }
+
+    private func createTag() {
+        let trimmed = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        do {
+            let tag = try tagRepository.fetchOrCreate(trimmed)
+            try collectionRepository.addTag(collection, tag: tag)
+            newTagName = ""
+        } catch {
+            errorPresenter.present(error)
+        }
+    }
+
+    private func toggleTag(_ tag: Tag) {
+        do {
+            if collection.tags.contains(where: { $0.id == tag.id }) {
+                try collectionRepository.removeTag(collection, tag: tag)
+            } else {
+                try collectionRepository.addTag(collection, tag: tag)
+            }
+        } catch {
+            errorPresenter.present(error)
         }
     }
 }

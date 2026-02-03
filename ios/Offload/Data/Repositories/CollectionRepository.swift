@@ -6,8 +6,6 @@
 import Foundation
 import SwiftData
 
-
-
 @MainActor
 final class CollectionRepository {
     private let modelContext: ModelContext
@@ -138,6 +136,25 @@ final class CollectionRepository {
                 collectionItem.position = index
             }
         }
+        try modelContext.save()
+    }
+
+    // MARK: - Star
+    func toggleStar(_ collection: Collection) throws {
+        collection.isStarred.toggle()
+        try modelContext.save()
+    }
+
+    // MARK: - Tags
+    func addTag(_ collection: Collection, tag: Tag) throws {
+        if !collection.tags.contains(where: { $0.id == tag.id }) {
+            collection.tags.append(tag)
+            try modelContext.save()
+        }
+    }
+
+    func removeTag(_ collection: Collection, tag: Tag) throws {
+        collection.tags.removeAll { $0.id == tag.id }
         try modelContext.save()
     }
 

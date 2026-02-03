@@ -29,9 +29,22 @@
 		34B95EDC2F04D5710005166B /* OffloadUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OffloadUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		345C23112F306E9A00DEBE66 /* Exceptions for "Offload" folder in "Offload" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 34B95EC22F04D56F0005166B /* Offload */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		34B95EC52F04D56F0005166B /* Offload */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				345C23112F306E9A00DEBE66 /* Exceptions for "Offload" folder in "Offload" target */,
+			);
 			path = Offload;
 			sourceTree = "<group>";
 		};
@@ -401,6 +414,7 @@
 				DEVELOPMENT_TEAM = K86HVH894Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Offload/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Offload uses the camera to capture attachments for your items.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Offload uses the microphone to capture your thoughts via voice recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Offload uses your photo library to attach images to your items.";
@@ -439,6 +453,7 @@
 				DEVELOPMENT_TEAM = K86HVH894Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Offload/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Offload uses the camera to capture attachments for your items.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Offload uses the microphone to capture your thoughts via voice recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Offload uses your photo library to attach images to your items.";

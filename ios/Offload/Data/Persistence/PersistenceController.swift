@@ -8,8 +8,6 @@
 import Foundation
 import SwiftData
 
-
-
 /// Simplified persistence controller for all SwiftData models
 struct PersistenceController {
 
@@ -19,16 +17,22 @@ struct PersistenceController {
             Item.self,
             Collection.self,
             CollectionItem.self,
-            Tag.self,
+            Tag.self
         ])
+
+        // Create migration plan for schema changes
         let configuration = ModelConfiguration(
             schema: schema,
-            isStoredInMemoryOnly: false
+            isStoredInMemoryOnly: false,
+            allowsSave: true
         )
 
         do {
+            // SwiftData will perform lightweight migration automatically
+            // for adding properties with default values
             return try ModelContainer(
                 for: schema,
+                migrationPlan: nil, // Automatic lightweight migration
                 configurations: [configuration]
             )
         } catch {
@@ -42,7 +46,7 @@ struct PersistenceController {
             Item.self,
             Collection.self,
             CollectionItem.self,
-            Tag.self,
+            Tag.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,
