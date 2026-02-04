@@ -27,6 +27,7 @@ struct CollectionDetailView: View {
     @State private var tagPickerItem: Item?
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = CollectionDetailViewModel()
+    @State private var editMode: EditMode = .inactive
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -44,41 +45,84 @@ struct CollectionDetailView: View {
                         collectionHeader(collection)
 
                         // Items list
-                        LazyVStack(spacing: Theme.Spacing.md) {
-                            if viewModel.items.isEmpty && viewModel.isLoading {
-                                ProgressView()
-                                    .padding(.vertical, Theme.Spacing.sm)
-                            }
+                        if collection.isStructured {
+                            // Structured collections (plans) - will support drag-to-parent later
+                            LazyVStack(spacing: Theme.Spacing.md) {
+                                if viewModel.items.isEmpty && viewModel.isLoading {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
 
-                            ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
-                                if let item = collectionItem.item {
-                                    ItemRow(
-                                        index: index,
-                                        item: item,
-                                        collectionItem: collectionItem,
-                                        isStructured: collection.isStructured,
-                                        colorScheme: colorScheme,
-                                        style: style,
-                                        onAddTag: { tagPickerItem = item },
-                                        onDelete: { deleteItem(collectionItem) },
-                                        onEdit: { editingItem = item },
-                                        onOpenLink: { openLinkedCollection($0) },
-                                        onError: { errorPresenter.present($0) }
-                                    )
-                                    .onAppear {
-                                        if index == viewModel.items.count - 1 {
-                                            loadNextPage()
+                                ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
+                                    if let item = collectionItem.item {
+                                        ItemRow(
+                                            index: index,
+                                            item: item,
+                                            collectionItem: collectionItem,
+                                            isStructured: collection.isStructured,
+                                            colorScheme: colorScheme,
+                                            style: style,
+                                            onAddTag: { tagPickerItem = item },
+                                            onDelete: { deleteItem(collectionItem) },
+                                            onEdit: { editingItem = item },
+                                            onOpenLink: { openLinkedCollection($0) },
+                                            onError: { errorPresenter.present($0) }
+                                        )
+                                        .onAppear {
+                                            if index == viewModel.items.count - 1 {
+                                                loadNextPage()
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            if viewModel.isLoading && !viewModel.items.isEmpty {
-                                ProgressView()
-                                    .padding(.vertical, Theme.Spacing.sm)
+                                if viewModel.isLoading && !viewModel.items.isEmpty {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
                             }
+                            .padding(.horizontal, Theme.Spacing.md)
+                        } else {
+                            // Unstructured collections (lists) - support basic reordering
+                            LazyVStack(spacing: Theme.Spacing.md) {
+                                if viewModel.items.isEmpty && viewModel.isLoading {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
+
+                                ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
+                                    if let item = collectionItem.item {
+                                        ItemRow(
+                                            index: index,
+                                            item: item,
+                                            collectionItem: collectionItem,
+                                            isStructured: collection.isStructured,
+                                            colorScheme: colorScheme,
+                                            style: style,
+                                            onAddTag: { tagPickerItem = item },
+                                            onDelete: { deleteItem(collectionItem) },
+                                            onEdit: { editingItem = item },
+                                            onOpenLink: { openLinkedCollection($0) },
+                                            onError: { errorPresenter.present($0) }
+                                        )
+                                        .onAppear {
+                                            if index == viewModel.items.count - 1 {
+                                                loadNextPage()
+                                            }
+                                        }
+                                    }
+                                }
+                                .onMove { fromOffsets, toOffset in
+                                    reorderItems(from: fromOffsets, to: toOffset)
+                                }
+
+                                if viewModel.isLoading && !viewModel.items.isEmpty {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
+                            }
+                            .padding(.horizontal, Theme.Spacing.md)
                         }
-                        .padding(.horizontal, Theme.Spacing.md)
 
                         quickAddButton
                             .padding(.top, Theme.Spacing.sm)
@@ -98,12 +142,18 @@ struct CollectionDetailView: View {
         .navigationTitle(collection?.name ?? "Collection")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if collection?.isStructured == false {
+                    EditButton()
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { showingEdit = true } label: {
                     Text("Edit")
                 }
             }
         }
+        .environment(\.editMode, $editMode)
         .sheet(isPresented: $showingAddItem) {
             AddItemSheet(collectionID: collectionID, collection: collection)
                 .presentationDetents([.medium, .large])
@@ -172,6 +222,9 @@ struct CollectionDetailView: View {
     private func loadCollection() {
         do {
             if let fetchedCollection = try collectionRepository.fetchById(collectionID) {
+                // Backfill positions for any items missing them
+                try collectionRepository.backfillPositions(fetchedCollection)
+
                 self.collection = fetchedCollection
                 try viewModel.setCollection(
                     id: fetchedCollection.id,
@@ -214,6 +267,30 @@ struct CollectionDetailView: View {
             linkedCollection = try collectionRepository.fetchById(collectionID)
         } catch {
             errorPresenter.present(error)
+        }
+    }
+
+    private func reorderItems(from source: IndexSet, to destination: Int) {
+        guard let collection = collection, !collection.isStructured else {
+            AppLogger.general.warning("Attempted reorder on structured collection, ignoring", privacy: .public)
+            return
+        }
+
+        AppLogger.general.info("Reordering items from \(source.description) to \(destination)", privacy: .public)
+
+        // Reorder in view model
+        viewModel.items.move(fromOffsets: source, toOffset: destination)
+
+        // Persist the new order
+        do {
+            let itemIds = viewModel.items.map { $0.itemId }
+            try collectionItemRepository.reorderItems(collection.id, itemIds: itemIds)
+            AppLogger.general.info("Items reordered successfully", privacy: .public)
+        } catch {
+            AppLogger.general.error("Failed to persist item reorder: \(error.localizedDescription)", privacy: .public)
+            errorPresenter.present(error)
+            // Refresh to restore correct order
+            refreshItems()
         }
     }
 }

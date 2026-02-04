@@ -197,4 +197,49 @@ final class CollectionRepository {
         guard let collectionItems = collection.collectionItems else { return [] }
         return collectionItems.compactMap { $0.item }
     }
+
+    func backfillPositions(_ collection: Collection) throws {
+        AppLogger.general.info("Backfilling positions for collection \(collection.name)", privacy: .public)
+
+        guard let collectionItems = collection.collectionItems else {
+            AppLogger.general.info("No items to backfill", privacy: .public)
+            return
+        }
+
+        var itemsNeedingPosition: [CollectionItem] = []
+        for collectionItem in collectionItems {
+            if collectionItem.position == nil {
+                itemsNeedingPosition.append(collectionItem)
+            }
+        }
+
+        if itemsNeedingPosition.isEmpty {
+            AppLogger.general.info("All items already have positions", privacy: .public)
+            return
+        }
+
+        AppLogger.general.info("Found \(itemsNeedingPosition.count) items needing positions", privacy: .public)
+
+        // Sort items needing position by creation date to maintain chronological order
+        let sortedItems = itemsNeedingPosition.sorted { item1, item2 in
+            guard let date1 = item1.item?.createdAt,
+                  let date2 = item2.item?.createdAt else {
+                return false
+            }
+            return date1 < date2
+        }
+
+        // Get the highest existing position, or start at 0
+        let maxPosition = collectionItems.compactMap { $0.position }.max() ?? -1
+        var nextPosition = maxPosition + 1
+
+        // Assign positions
+        for item in sortedItems {
+            item.position = nextPosition
+            nextPosition += 1
+        }
+
+        try modelContext.save()
+        AppLogger.general.info("Backfilled \(sortedItems.count) positions", privacy: .public)
+    }
 }
