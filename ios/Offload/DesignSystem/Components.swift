@@ -267,7 +267,7 @@ struct CardSurface<Content: View>: View {
     }
 
     func onPress(_ pressed: Bool) -> Self {
-        var copy = self
+        let copy = self
         copy.isPressed = pressed
         return copy
     }

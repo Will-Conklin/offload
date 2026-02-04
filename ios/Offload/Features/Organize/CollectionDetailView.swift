@@ -28,7 +28,6 @@ struct CollectionDetailView: View {
     @State private var tagPickerItem: Item?
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = CollectionDetailViewModel()
-    @State private var editMode: EditMode = .inactive
     @State private var expandedItems: Set<UUID> = [] // Track which parent items are expanded
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -121,18 +120,20 @@ struct CollectionDetailView: View {
 
                                 ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
                                     if let item = collectionItem.item {
-                                        ItemRow(
+                                        DraggableItemRow(
                                             index: index,
                                             item: item,
                                             collectionItem: collectionItem,
-                                            isStructured: collection.isStructured,
                                             colorScheme: colorScheme,
                                             style: style,
                                             onAddTag: { tagPickerItem = item },
                                             onDelete: { deleteItem(collectionItem) },
                                             onEdit: { editingItem = item },
                                             onOpenLink: { openLinkedCollection($0) },
-                                            onError: { errorPresenter.present($0) }
+                                            onError: { errorPresenter.present($0) },
+                                            onDrop: { droppedId, targetId in
+                                                handleListReorder(droppedId: droppedId, targetId: targetId)
+                                            }
                                         )
                                         .onAppear {
                                             if index == viewModel.items.count - 1 {
@@ -140,9 +141,6 @@ struct CollectionDetailView: View {
                                             }
                                         }
                                     }
-                                }
-                                .onMove { fromOffsets, toOffset in
-                                    reorderItems(from: fromOffsets, to: toOffset)
                                 }
 
                                 if viewModel.isLoading && !viewModel.items.isEmpty {
@@ -171,18 +169,12 @@ struct CollectionDetailView: View {
         .navigationTitle(collection?.name ?? "Collection")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                if collection?.isStructured == false {
-                    EditButton()
-                }
-            }
             ToolbarItem(placement: .primaryAction) {
                 Button { showingEdit = true } label: {
                     Text("Edit")
                 }
             }
         }
-        .environment(\.editMode, $editMode)
         .sheet(isPresented: $showingAddItem) {
             AddItemSheet(collectionID: collectionID, collection: collection)
                 .presentationDetents([.medium, .large])
@@ -299,27 +291,41 @@ struct CollectionDetailView: View {
         }
     }
 
-    private func reorderItems(from source: IndexSet, to destination: Int) {
+    private func handleListReorder(droppedId: UUID, targetId: UUID) {
         guard let collection = collection, !collection.isStructured else {
-            AppLogger.general.warning("Attempted reorder on structured collection, ignoring")
+            AppLogger.general.warning("Attempted list reorder on structured collection, ignoring")
             return
         }
 
-        AppLogger.general.info("Reordering items from \(source.description) to \(destination)")
+        AppLogger.general.info("List reorder: \(droppedId) to position of \(targetId)")
 
-        // Reorder in view model
-        viewModel.reorder(from: source, to: destination)
-
-        // Persist the new order
         do {
-            let itemIds = viewModel.items.map { $0.itemId }
-            try collectionItemRepository.reorderItems(collection.id, itemIds: itemIds)
-            AppLogger.general.info("Items reordered successfully")
-        } catch {
-            AppLogger.general.error("Failed to persist item reorder: \(error.localizedDescription)")
-            errorPresenter.present(error)
-            // Refresh to restore correct order
+            // Find the dropped and target items in the list
+            guard let droppedIndex = viewModel.items.firstIndex(where: { $0.id == droppedId }),
+                  let targetIndex = viewModel.items.firstIndex(where: { $0.id == targetId }) else {
+                AppLogger.general.error("Could not find dropped or target item in list")
+                return
+            }
+
+            // Reorder in view model
+            let droppedItem = viewModel.items[droppedIndex]
+            var newItems = viewModel.items
+            newItems.remove(at: droppedIndex)
+            newItems.insert(droppedItem, at: targetIndex)
+
+            // Update all positions
+            for (index, item) in newItems.enumerated() {
+                item.position = index
+            }
+
+            try collectionItemRepository.modelContext.save()
+            AppLogger.general.info("List items reordered successfully")
+
+            // Refresh to show new order
             refreshItems()
+        } catch {
+            AppLogger.general.error("Failed to handle list reorder: \(error.localizedDescription)")
+            errorPresenter.present(error)
         }
     }
 
@@ -332,45 +338,29 @@ struct CollectionDetailView: View {
         AppLogger.general.info("Plan drop: \(droppedId) onto \(targetId), nesting: \(isNesting)")
 
         do {
-            guard let droppedItem = try collectionItemRepository.fetchById(droppedId) else {
-                AppLogger.general.error("Dropped item not found: \(droppedId)")
+            // Find the dropped and target items in the view model
+            guard let droppedIndex = viewModel.items.firstIndex(where: { $0.id == droppedId }),
+                  let targetIndex = viewModel.items.firstIndex(where: { $0.id == targetId }) else {
+                AppLogger.general.error("Could not find dropped or target item")
                 return
             }
 
-            if isNesting {
-                // Make droppedItem a child of targetId
-                try collectionItemRepository.updateParent(droppedItem, parentId: targetId)
-                AppLogger.general.info("Item nested under parent \(targetId)")
-            } else {
-                // Reorder at the same level as targetId
-                guard let targetItem = try collectionItemRepository.fetchById(targetId) else {
-                    AppLogger.general.error("Target item not found: \(targetId)")
-                    return
-                }
+            // For now, just reorder without nesting
+            // TODO: Add nesting support with modifier key or gesture
+            let droppedItem = viewModel.items[droppedIndex]
+            var newItems = viewModel.items
+            newItems.remove(at: droppedIndex)
+            newItems.insert(droppedItem, at: targetIndex)
 
-                // Get current root items
-                let rootItems = try collectionItemRepository.fetchRootItems(collection.id)
-                guard let targetIndex = rootItems.firstIndex(where: { $0.id == targetId }) else {
-                    AppLogger.general.error("Target item not in root items")
-                    return
-                }
-
-                // Update parent to match target (could be nil for root or a parent UUID)
-                try collectionItemRepository.updateParent(droppedItem, parentId: targetItem.parentId)
-
-                // Reorder positions
-                var updatedItems = rootItems.filter { $0.id != droppedId }
-                updatedItems.insert(droppedItem, at: targetIndex)
-
-                for (index, item) in updatedItems.enumerated() {
-                    item.position = index
-                }
-
-                try collectionItemRepository.modelContext.save()
-                AppLogger.general.info("Items reordered at same level")
+            // Update all positions
+            for (index, item) in newItems.enumerated() {
+                item.position = index
             }
 
-            // Refresh to show new hierarchy
+            try collectionItemRepository.modelContext.save()
+            AppLogger.general.info("Plan items reordered successfully")
+
+            // Refresh to show new order
             refreshItems()
         } catch {
             AppLogger.general.error("Failed to handle plan drop: \(error.localizedDescription)")
@@ -508,21 +498,95 @@ private struct HierarchicalItemRow: View {
         var level = 0
         var currentParentId = collectionItem.parentId
 
+        // Log if item has a parentId
+        if let parentId = currentParentId {
+            AppLogger.general.debug("Item \(collectionItem.id) has parentId: \(parentId)")
+        }
+
         while let parentId = currentParentId, level < 10 { // Max depth of 10 to prevent infinite loops
             level += 1
             do {
                 if let parent = try collectionItemRepository.fetchById(parentId) {
                     currentParentId = parent.parentId
                 } else {
+                    AppLogger.general.warning("Parent \(parentId) not found, breaking nesting calculation")
                     break
                 }
             } catch {
+                AppLogger.general.error("Error fetching parent: \(error.localizedDescription)")
                 onError(error)
                 break
             }
         }
 
+        if level > 0 {
+            AppLogger.general.debug("Item \(collectionItem.id) calculated nesting level: \(level)")
+        }
         nestingLevel = level
+    }
+}
+
+// MARK: - Draggable Item Row (for Lists)
+
+private struct DraggableItemRow: View {
+    let index: Int
+    let item: Item
+    let collectionItem: CollectionItem
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
+    let onAddTag: () -> Void
+    let onDelete: () -> Void
+    let onEdit: () -> Void
+    let onOpenLink: (UUID) -> Void
+    let onError: (Error) -> Void
+    let onDrop: (UUID, UUID) -> Void
+
+    @State private var isDropTarget = false
+
+    var body: some View {
+        ItemRow(
+            index: index,
+            item: item,
+            collectionItem: collectionItem,
+            isStructured: false,
+            colorScheme: colorScheme,
+            style: style,
+            onAddTag: onAddTag,
+            onDelete: onDelete,
+            onEdit: onEdit,
+            onOpenLink: onOpenLink,
+            onError: onError
+        )
+        .draggable(collectionItem.id.uuidString) {
+            // Preview while dragging
+            Text(item.content)
+                .font(Theme.Typography.caption)
+                .padding(Theme.Spacing.sm)
+                .background(Theme.Colors.cardColor(index: index, colorScheme, style: style))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+        }
+        .dropDestination(for: String.self) { droppedIds, _ in
+            guard let droppedIdString = droppedIds.first,
+                  let droppedId = UUID(uuidString: droppedIdString) else {
+                return false
+            }
+
+            // Prevent dropping on self
+            if droppedId == collectionItem.id {
+                return false
+            }
+
+            // Handle the drop
+            onDrop(droppedId, collectionItem.id)
+            return true
+        } isTargeted: { isTargeted in
+            isDropTarget = isTargeted
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                .stroke(Theme.Colors.primary(colorScheme, style: style), lineWidth: 2)
+                .opacity(isDropTarget ? 0.5 : 0)
+        )
     }
 }
 
