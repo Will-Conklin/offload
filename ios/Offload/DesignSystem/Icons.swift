@@ -46,4 +46,5 @@ struct Icons {
     static let starFilled = "star.fill"
     static let tag = "tag"
     static let tagFilled = "tag.fill"
+    static let search = "magnifyingglass"
 }

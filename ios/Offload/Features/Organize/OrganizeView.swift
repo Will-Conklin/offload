@@ -40,6 +40,10 @@ struct OrganizeView: View {
     @State private var tagPickerCollection: Collection?
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = OrganizeListViewModel()
+    @State private var showingSearch = false
+    @State private var searchQuery = ""
+    @State private var collectionToConvert: Collection?
+    @State private var showConversionConfirmation = false
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -57,27 +61,37 @@ struct OrganizeView: View {
                 Theme.Gradients.deepBackground(colorScheme)
                     .ignoresSafeArea()
 
-                VStack(spacing: Theme.Spacing.sm) {
-                    scopePicker
+                ScrollView {
+                    LazyVStack(spacing: Theme.Spacing.md) {
+                        scopePicker
+                            .padding(.top, Theme.Spacing.sm)
 
-                    ScrollView {
-                        LazyVStack(spacing: Theme.Spacing.md) {
-                            collectionsContent
-                        }
-                        .padding(.horizontal, Theme.Spacing.md)
-                        .padding(.top, Theme.Spacing.sm)
-                        .padding(.bottom, Theme.Spacing.lg)
+                        collectionsContent
                     }
-                    .safeAreaInset(edge: .bottom) {
-                        Color.clear
-                            .frame(height: floatingTabBarClearance)
-                    }
+                    .padding(.horizontal, Theme.Spacing.md)
+                    .padding(.bottom, Theme.Spacing.lg)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    Color.clear
+                        .frame(height: floatingTabBarClearance)
                 }
             }
             .navigationTitle("Organize")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                        showingSearch = true
+                    } label: {
+                        IconTile(
+                            iconName: Icons.search,
+                            iconSize: 18,
+                            tileSize: 32,
+                            style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
+                        )
+                    }
+                    .accessibilityLabel("Search")
+
                     Button { showingSettings = true } label: {
                         IconTile(
                             iconName: Icons.settings,
@@ -95,12 +109,29 @@ struct OrganizeView: View {
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
             }
+            .sheet(isPresented: $showingSearch) {
+                OrganizeSearchView(searchQuery: $searchQuery)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+            }
             .sheet(item: $tagPickerCollection) { collection in
                 CollectionTagPickerSheet(collection: collection)
                     .presentationDetents([.medium])
             }
             .navigationDestination(item: $selectedCollection) { collection in
                 CollectionDetailView(collectionID: collection.id)
+            }
+            .alert("Convert to List?", isPresented: $showConversionConfirmation) {
+                Button("Cancel", role: .cancel) {
+                    collectionToConvert = nil
+                }
+                Button("Convert", role: .destructive) {
+                    if let collection = collectionToConvert {
+                        performConversion(collection)
+                    }
+                }
+            } message: {
+                Text("This will flatten the plan's hierarchy. All items will be preserved but parent-child relationships will be lost.")
             }
             .errorToasts(errorPresenter)
         }
@@ -138,6 +169,16 @@ struct OrganizeView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .contextMenu {
+                    Button {
+                        handleConvert(collection)
+                    } label: {
+                        Label(
+                            collection.isStructured ? "Convert to List" : "Convert to Plan",
+                            systemImage: collection.isStructured ? Icons.lists : Icons.plans
+                        )
+                    }
+                }
                 .onAppear {
                     if index == viewModel.collections.count - 1 {
                         loadNextPage()
@@ -208,8 +249,6 @@ struct OrganizeView: View {
             radius: Theme.Shadows.elevationUltraLight,
             y: Theme.Shadows.offsetYUltraLight
         )
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.top, Theme.Spacing.sm)
     }
 
     private func scopeButton(_ scope: Scope) -> some View {
@@ -290,6 +329,29 @@ struct OrganizeView: View {
             try viewModel.refresh(using: collectionRepository)
         } catch {
             errorPresenter.present(error)
+        }
+    }
+
+    private func handleConvert(_ collection: Collection) {
+        // If converting from plan to list, show confirmation
+        if collection.isStructured {
+            collectionToConvert = collection
+            showConversionConfirmation = true
+        } else {
+            // List to plan conversion is non-destructive, proceed directly
+            performConversion(collection)
+        }
+    }
+
+    private func performConversion(_ collection: Collection) {
+        do {
+            let newStructure = !collection.isStructured
+            try collectionRepository.convertCollection(collection, toStructured: newStructure)
+            refreshCollections()
+            collectionToConvert = nil
+        } catch {
+            errorPresenter.present(error)
+            collectionToConvert = nil
         }
     }
 }
@@ -514,6 +576,245 @@ private struct CollectionTagPickerSheet: View {
         } catch {
             errorPresenter.present(error)
         }
+    }
+}
+
+// MARK: - Organize Search View
+
+private struct OrganizeSearchView: View {
+    @Binding var searchQuery: String
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.collectionRepository) private var collectionRepository
+    @Environment(\.tagRepository) private var tagRepository
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+    @State private var searchResults: [Collection] = []
+    @State private var matchingTags: [Tag] = []
+    @State private var selectedTags: Set<UUID> = []
+    @State private var errorPresenter = ErrorPresenter()
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Theme.Gradients.deepBackground(colorScheme)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    // Search bar
+                    HStack(spacing: Theme.Spacing.sm) {
+                        HStack(spacing: Theme.Spacing.xs) {
+                            AppIcon(name: Icons.search, size: 16)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+
+                            TextField("Search collections...", text: $searchQuery)
+                                .font(Theme.Typography.body)
+                                .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+
+                            if !searchQuery.isEmpty {
+                                Button {
+                                    searchQuery = ""
+                                    searchResults = []
+                                } label: {
+                                    AppIcon(name: Icons.closeCircleFilled, size: 16)
+                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, Theme.Spacing.md)
+                        .padding(.vertical, Theme.Spacing.sm)
+                        .background(
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)
+                                .fill(Theme.Colors.surface(colorScheme, style: style))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)
+                                        .stroke(
+                                            Theme.Colors.borderMuted(colorScheme, style: style)
+                                                .opacity(Theme.Opacity.borderMuted(colorScheme)),
+                                            lineWidth: 0.6
+                                        )
+                                )
+                        )
+                    }
+                    .padding(.horizontal, Theme.Spacing.md)
+                    .padding(.top, Theme.Spacing.md)
+
+                    // Tag chips
+                    if !matchingTags.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: Theme.Spacing.xs) {
+                                ForEach(matchingTags) { tag in
+                                    Button {
+                                        toggleTagSelection(tag)
+                                    } label: {
+                                        HStack(spacing: 4) {
+                                            Text(tag.name)
+                                                .font(Theme.Typography.caption)
+                                            if selectedTags.contains(tag.id) {
+                                                AppIcon(name: Icons.closeCircleFilled, size: 12)
+                                            }
+                                        }
+                                        .foregroundStyle(
+                                            selectedTags.contains(tag.id)
+                                                ? Theme.Colors.cardTextPrimary(colorScheme, style: style)
+                                                : Theme.Colors.textSecondary(colorScheme, style: style)
+                                        )
+                                        .padding(.horizontal, Theme.Spacing.pillHorizontal)
+                                        .padding(.vertical, Theme.Spacing.pillVertical)
+                                        .background(
+                                            Capsule()
+                                                .fill(
+                                                    selectedTags.contains(tag.id)
+                                                        ? (tag.color.flatMap { Color(hex: $0) } ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style))
+                                                        : Theme.Colors.surface(colorScheme, style: style)
+                                                )
+                                        )
+                                        .overlay(
+                                            Capsule()
+                                                .strokeBorder(
+                                                    selectedTags.contains(tag.id)
+                                                        ? Color.clear
+                                                        : Theme.Colors.borderMuted(colorScheme, style: style),
+                                                    lineWidth: 1
+                                                )
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.horizontal, Theme.Spacing.md)
+                        }
+                        .padding(.bottom, Theme.Spacing.sm)
+                    }
+
+                    // Results
+                    ScrollView {
+                        LazyVStack(spacing: Theme.Spacing.md) {
+                            if searchQuery.isEmpty {
+                                emptyQueryState
+                            } else if searchResults.isEmpty {
+                                noResultsState
+                            } else {
+                                resultsContent
+                            }
+                        }
+                        .padding(.horizontal, Theme.Spacing.md)
+                        .padding(.vertical, Theme.Spacing.md)
+                    }
+                }
+            }
+            .navigationTitle("Search Collections")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+            .onChange(of: searchQuery) { _, newValue in
+                performSearch(newValue)
+            }
+            .errorToasts(errorPresenter)
+        }
+    }
+
+    @ViewBuilder
+    private var emptyQueryState: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            AppIcon(name: Icons.search, size: 34)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+            Text("Start typing to search collections")
+                .font(Theme.Typography.body)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.xxl)
+    }
+
+    @ViewBuilder
+    private var noResultsState: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            AppIcon(name: Icons.search, size: 34)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+            Text("No collections found")
+                .font(Theme.Typography.body)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+            Text("Try a different search term")
+                .font(Theme.Typography.caption)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.xxl)
+    }
+
+    @ViewBuilder
+    private var resultsContent: some View {
+        ForEach(Array(searchResults.enumerated()), id: \.element.id) { index, collection in
+            NavigationLink {
+                CollectionDetailView(collectionID: collection.id)
+            } label: {
+                CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+                    MCMCardContent(
+                        icon: collection.isStructured ? Icons.plans : Icons.lists,
+                        title: collection.name,
+                        typeLabel: collection.isStructured ? "PLAN" : "LIST",
+                        timestamp: collection.createdAt.formatted(.dateTime.month(.abbreviated).day()),
+                        tags: collection.tags,
+                        onAddTag: nil,
+                        size: .standard
+                    )
+                }
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private func performSearch(_ query: String) {
+        guard !query.isEmpty else {
+            searchResults = []
+            matchingTags = []
+            selectedTags.removeAll()
+            return
+        }
+
+        do {
+            // Search for matching tags
+            matchingTags = try tagRepository.searchByName(query)
+
+            // If tags are selected, show ALL collections with those tags (not just matching search text)
+            if !selectedTags.isEmpty {
+                // Get all collections that have the selected tags
+                let allCollections = try collectionRepository.fetchAll()
+                let taggedCollections = allCollections.filter { collection in
+                    selectedTags.contains { tagId in
+                        collection.tags.contains(where: { $0.id == tagId })
+                    }
+                }
+                // Don't combine with name search - just show tagged collections
+                searchResults = taggedCollections.sorted { $0.createdAt > $1.createdAt }
+            } else {
+                // No tags selected, just show name search results
+                searchResults = try collectionRepository.searchByName(query)
+            }
+        } catch {
+            errorPresenter.present(error)
+            searchResults = []
+            matchingTags = []
+        }
+    }
+
+    private func toggleTagSelection(_ tag: Tag) {
+        if selectedTags.contains(tag.id) {
+            selectedTags.remove(tag.id)
+        } else {
+            selectedTags.insert(tag.id)
+        }
+
+        // Re-run search with updated filters
+        performSearch(searchQuery)
     }
 }
 

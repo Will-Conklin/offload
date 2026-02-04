@@ -58,6 +58,11 @@ final class TagRepository {
         return try modelContext.fetch(descriptor)
     }
 
+    /// Search tags by name (alias for search)
+    func searchByName(_ query: String) throws -> [Tag] {
+        try search(query: query)
+    }
+
     /// Find or create a tag by name
     func findOrCreate(name: String, color: String? = nil) throws -> Tag {
         if let existing = try fetchByName(name) {

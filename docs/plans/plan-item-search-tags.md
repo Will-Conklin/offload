@@ -1,13 +1,13 @@
 ---
 id: plan-item-search-tags
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
   - capture
   - organize
-last_updated: 2026-01-25
+last_updated: 2026-02-03
 related:
   - prd-0005-item-search-tags
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -39,33 +39,33 @@ chips for scoped searches and minimal disruption to existing flows.
 
 ### Phase 1: UI Entry Point
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add a search icon to Capture and Organize toolbars.
-- [ ] Implement the custom floating search bar presentation.
+- [x] Add a search icon to Capture and Organize toolbars.
+- [x] Implement the custom floating search bar presentation.
 
 ### Phase 2: Querying and Results
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add repository queries for text and tag matching.
-- [ ] Integrate search state into view models for Capture and Organize.
-  - [ ] Ensure tag matching uses `tagLinks` and does not depend on `legacyTags`.
+- [x] Add repository queries for text and tag matching.
+- [x] Integrate search state into view models for Capture and Organize.
+  - [x] Ensure tag matching uses `tagLinks` and does not depend on `legacyTags`.
 
 ### Phase 3: Tag Chips
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Surface matching tag chips below the search bar.
-- [ ] Implement selected chip state and scoped filtering.
+- [x] Surface matching tag chips below the search bar.
+- [x] Implement selected chip state and scoped filtering.
 
 ### Phase 4: QA
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Verify results update as text changes.
-- [ ] Confirm tag chip selection narrows results.
-- [ ] Validate layout and interaction on small screens.
+- [x] Verify results update as text changes.
+- [x] Confirm tag chip selection narrows results.
+- [x] Validate layout and interaction on small screens.
 
 ## Dependencies
 
@@ -87,6 +87,10 @@ chips for scoped searches and minimal disruption to existing flows.
 
 ## Progress
 
-| Date       | Update                |
-| ---------- | --------------------- |
-| 2026-01-21 | Draft plan created.   |
+| Date       | Update                                                       |
+| ---------- | ------------------------------------------------------------ |
+| 2026-01-21 | Draft plan created.                                          |
+| 2026-02-03 | Phase 1 complete: Search UI implemented for CaptureView.    |
+| 2026-02-03 | Phase 2 complete: Search UI implemented for OrganizeView.   |
+| 2026-02-03 | Phase 3 complete: Tag chip filtering implemented.           |
+| 2026-02-03 | Phase 4 complete: All phases finished.                      |
