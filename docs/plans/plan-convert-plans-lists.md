@@ -1,12 +1,12 @@
 ---
 id: plan-convert-plans-lists
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
   - organize
-last_updated: 2026-01-25
+last_updated: 2026-02-04
 related:
   - prd-0003-convert-plans-lists
   - adr-0005-collection-ordering-and-hierarchy-persistence
@@ -15,7 +15,8 @@ depends_on: []
 supersedes: []
 accepted_by: null
 accepted_at: null
-related_issues: []
+related_issues:
+  - https://github.com/Will-Conklin/Offload/pull/129
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -38,32 +39,32 @@ ADR-0005.
 
 ### Phase 1: UX and Entry Points
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add a context menu action on collection cards for conversion.
-- [ ] Define concise warning copy for plan-to-list conversion.
+- [x] Add a context menu action on collection cards for conversion.
+- [x] Define concise warning copy for plan-to-list conversion.
 
 ### Phase 2: Conversion Logic
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add repository support for toggling `Collection.isStructured`.
-- [ ] Flatten hierarchy for plan-to-list by clearing `parentId` and preserving
+- [x] Add repository support for toggling `Collection.isStructured`.
+- [x] Flatten hierarchy for plan-to-list by clearing `parentId` and preserving
       order.
-- [ ] Preserve ordering for list-to-plan conversion.
-- [ ] Backfill `CollectionItem.position` for unstructured lists to ensure
+- [x] Preserve ordering for list-to-plan conversion.
+- [x] Backfill `CollectionItem.position` for unstructured lists to ensure
       consistent ordering post-conversion.
 
 ### Phase 3: UI Wiring
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Wire confirmation dialog for plan-to-list conversion.
-- [ ] Refresh Organize and detail views after conversion.
+- [x] Wire confirmation dialog for plan-to-list conversion.
+- [x] Refresh Organize and detail views after conversion.
 
 ### Phase 4: QA
 
-**Status:** Not Started
+**Status:** Pending User Verification
 
 - [ ] Verify items remain linked after conversion.
 - [ ] Confirm plan-to-list warning appears only when required.
@@ -89,6 +90,7 @@ ADR-0005.
 
 ## Progress
 
-| Date       | Update                |
-| ---------- | --------------------- |
-| 2026-01-21 | Draft plan created.   |
+| Date       | Update                                                    |
+| ---------- | --------------------------------------------------------- |
+| 2026-01-21 | Draft plan created.                                       |
+| 2026-02-04 | Implementation complete. PR #129 created for review.      |
