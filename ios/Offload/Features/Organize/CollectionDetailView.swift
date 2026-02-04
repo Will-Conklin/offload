@@ -46,7 +46,7 @@ struct CollectionDetailView: View {
 
                         // Items list
                         if collection.isStructured {
-                            // Structured collections (plans) - will support drag-to-parent later
+                            // Structured collections (plans) - support drag-to-parent and reordering
                             LazyVStack(spacing: Theme.Spacing.md) {
                                 if viewModel.items.isEmpty && viewModel.isLoading {
                                     ProgressView()
@@ -55,18 +55,20 @@ struct CollectionDetailView: View {
 
                                 ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
                                     if let item = collectionItem.item {
-                                        ItemRow(
+                                        HierarchicalItemRow(
                                             index: index,
                                             item: item,
                                             collectionItem: collectionItem,
-                                            isStructured: collection.isStructured,
                                             colorScheme: colorScheme,
                                             style: style,
                                             onAddTag: { tagPickerItem = item },
                                             onDelete: { deleteItem(collectionItem) },
                                             onEdit: { editingItem = item },
                                             onOpenLink: { openLinkedCollection($0) },
-                                            onError: { errorPresenter.present($0) }
+                                            onError: { errorPresenter.present($0) },
+                                            onDrop: { droppedId, targetId, isNesting in
+                                                handlePlanDrop(droppedId: droppedId, targetId: targetId, isNesting: isNesting)
+                                            }
                                         )
                                         .onAppear {
                                             if index == viewModel.items.count - 1 {
@@ -292,6 +294,133 @@ struct CollectionDetailView: View {
             // Refresh to restore correct order
             refreshItems()
         }
+    }
+
+    private func handlePlanDrop(droppedId: UUID, targetId: UUID, isNesting: Bool) {
+        guard let collection = collection, collection.isStructured else {
+            AppLogger.general.warning("Attempted plan drop on unstructured collection, ignoring", privacy: .public)
+            return
+        }
+
+        AppLogger.general.info("Plan drop: \(droppedId) onto \(targetId), nesting: \(isNesting)", privacy: .public)
+
+        do {
+            guard let droppedItem = try collectionItemRepository.fetchById(droppedId) else {
+                AppLogger.general.error("Dropped item not found: \(droppedId)", privacy: .public)
+                return
+            }
+
+            if isNesting {
+                // Make droppedItem a child of targetId
+                try collectionItemRepository.updateParent(droppedItem, parentId: targetId)
+                AppLogger.general.info("Item nested under parent \(targetId)", privacy: .public)
+            } else {
+                // Reorder at the same level as targetId
+                guard let targetItem = try collectionItemRepository.fetchById(targetId) else {
+                    AppLogger.general.error("Target item not found: \(targetId)", privacy: .public)
+                    return
+                }
+
+                // Get current root items
+                let rootItems = try collectionItemRepository.fetchRootItems(collection.id)
+                guard let targetIndex = rootItems.firstIndex(where: { $0.id == targetId }) else {
+                    AppLogger.general.error("Target item not in root items", privacy: .public)
+                    return
+                }
+
+                // Update parent to match target (could be nil for root or a parent UUID)
+                try collectionItemRepository.updateParent(droppedItem, parentId: targetItem.parentId)
+
+                // Reorder positions
+                var updatedItems = rootItems.filter { $0.id != droppedId }
+                updatedItems.insert(droppedItem, at: targetIndex)
+
+                for (index, item) in updatedItems.enumerated() {
+                    item.position = index
+                }
+
+                try collectionItemRepository.modelContext.save()
+                AppLogger.general.info("Items reordered at same level", privacy: .public)
+            }
+
+            // Refresh to show new hierarchy
+            refreshItems()
+        } catch {
+            AppLogger.general.error("Failed to handle plan drop: \(error.localizedDescription)", privacy: .public)
+            errorPresenter.present(error)
+        }
+    }
+}
+
+// MARK: - Hierarchical Item Row (for Plans)
+
+private struct HierarchicalItemRow: View {
+    let index: Int
+    let item: Item
+    let collectionItem: CollectionItem
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
+    let onAddTag: () -> Void
+    let onDelete: () -> Void
+    let onEdit: () -> Void
+    let onOpenLink: (UUID) -> Void
+    let onError: (Error) -> Void
+    let onDrop: (UUID, UUID, Bool) -> Void
+
+    @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.collectionRepository) private var collectionRepository
+    @State private var showingMenu = false
+    @State private var linkedCollectionName: String?
+    @State private var isDropTarget = false
+
+    private var isLink: Bool {
+        item.itemType == .link
+    }
+
+    var body: some View {
+        ItemRow(
+            index: index,
+            item: item,
+            collectionItem: collectionItem,
+            isStructured: true,
+            colorScheme: colorScheme,
+            style: style,
+            onAddTag: onAddTag,
+            onDelete: onDelete,
+            onEdit: onEdit,
+            onOpenLink: onOpenLink,
+            onError: onError
+        )
+        .draggable(collectionItem.id.uuidString) {
+            // Preview while dragging
+            Text(item.content)
+                .font(Theme.Typography.caption)
+                .padding(Theme.Spacing.sm)
+                .background(Theme.Colors.cardColor(index: index, colorScheme, style: style))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+        }
+        .dropDestination(for: String.self) { droppedIds, _ in
+            guard let droppedIdString = droppedIds.first,
+                  let droppedId = UUID(uuidString: droppedIdString) else {
+                return false
+            }
+
+            // Prevent dropping on self
+            if droppedId == collectionItem.id {
+                return false
+            }
+
+            // Handle the drop (nesting: true means drop onto this item as child)
+            onDrop(droppedId, collectionItem.id, false)
+            return true
+        } isTargeted: { isTargeted in
+            isDropTarget = isTargeted
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                .stroke(Theme.Colors.primary(colorScheme, style: style), lineWidth: 2)
+                .opacity(isDropTarget ? 0.5 : 0)
+        )
     }
 }
 
