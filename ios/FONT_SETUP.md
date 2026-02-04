@@ -1,8 +1,8 @@
-# Font Setup - RESOLVED ✅
+# Font Setup Issue - NEEDS MANUAL FIX
 
-## Problem (RESOLVED)
+## Problem
 
-~~The app showed these errors in the console logs:~~
+The app shows these errors in the console logs:
 ```
 GSFont: invalid font file - "file:///.../BebasNeue-Regular.ttf"
 GSFont: invalid font file - "file:///.../SpaceGrotesk-Bold.ttf"
@@ -11,26 +11,46 @@ GSFont: invalid font file - "file:///.../SpaceGrotesk-Regular.ttf"
 
 ## Root Cause
 
-The font files existed in `ios/Offload/Resources/Fonts/` and were declared in `Info.plist` under `UIAppFonts`, but they were not added to the Xcode project's build target. This meant they weren't being copied into the app bundle at build time.
+The font files exist in `ios/Offload/Resources/Fonts/` and are declared in `Info.plist` under `UIAppFonts`, but they are **not in the "Copy Bundle Resources" build phase**. Target membership alone is not sufficient - the files must be explicitly added to the Copy Bundle Resources phase to be included in the app bundle.
 
-## Solution Applied ✅
+## Solution - Manual Steps Required
 
-The font files have been added to the Xcode project target:
+You need to add the fonts to the Copy Bundle Resources build phase in Xcode:
 
-1. ✅ Opened `Offload.xcodeproj` in Xcode
-2. ✅ Selected all three font files:
+### Method 1: Via Build Phases
+1. Open `Offload.xcodeproj` in Xcode
+2. Select the "Offload" target in the project navigator
+3. Go to "Build Phases" tab
+4. Expand "Copy Bundle Resources"
+5. Click the "+" button
+6. Add all three font files:
    - `BebasNeue-Regular.ttf`
    - `SpaceGrotesk-Bold.ttf`
    - `SpaceGrotesk-Regular.ttf`
-3. ✅ In File Inspector, enabled "Target Membership" for "Offload"
+7. Rebuild the project
 
-## Status
+### Method 2: Via File Inspector
+1. Open `Offload.xcodeproj` in Xcode
+2. Select all three font files in the Project Navigator:
+   - `ios/Offload/Resources/Fonts/BebasNeue-Regular.ttf`
+   - `ios/Offload/Resources/Fonts/SpaceGrotesk-Bold.ttf`
+   - `ios/Offload/Resources/Fonts/SpaceGrotesk-Regular.ttf`
+3. Open File Inspector (⌘⌥1)
+4. Check "Target Membership" for "Offload" (if not already checked)
+5. The files should automatically be added to Copy Bundle Resources
+6. If they're not added automatically, use Method 1 above
 
-**FIXED** - The fonts are now properly included in the app bundle and should load correctly. The MCM design system typography will display as intended.
+## Current Impact
+
+- App falls back to system fonts (San Francisco)
+- Typography doesn't match MCM design specifications
+- No crashes or functional issues
 
 ## Verification
 
-To verify the fix worked:
-- Run the app and check console logs - no GSFont errors should appear
-- Fonts should display using the custom typefaces (Space Grotesk, Bebas Neue)
-- Typography should match the MCM design system specifications
+After adding fonts to Copy Bundle Resources:
+1. Clean build folder (⇧⌘K)
+2. Rebuild (⌘B)
+3. Run app
+4. Check console - GSFont errors should be gone
+5. Custom fonts should display correctly
