@@ -215,6 +215,56 @@ final class CollectionRepository {
 
     // MARK: - Delete
 
+    func convertCollection(_ collection: Collection, toStructured: Bool) throws {
+        AppLogger.general.info("Converting collection \(collection.name) to \(toStructured ? "structured (plan)" : "unstructured (list)", privacy: .public)")
+
+        // If converting from plan to list, flatten hierarchy
+        if collection.isStructured && !toStructured {
+            AppLogger.general.info("Flattening hierarchy for plan-to-list conversion", privacy: .public)
+
+            // Get all collection items
+            guard let collectionItems = collection.collectionItems else {
+                AppLogger.general.warning("No collection items found during conversion", privacy: .public)
+                collection.isStructured = toStructured
+                try modelContext.save()
+                return
+            }
+
+            // Clear parentId from all items and ensure position is set
+            for (index, collectionItem) in collectionItems.enumerated() {
+                collectionItem.parentId = nil
+                // Backfill position if not set
+                if collectionItem.position == nil {
+                    collectionItem.position = index
+                }
+            }
+        }
+
+        // If converting from list to plan, ensure all items have position set
+        if !collection.isStructured && toStructured {
+            AppLogger.general.info("Ensuring positions for list-to-plan conversion", privacy: .public)
+
+            guard let collectionItems = collection.collectionItems else {
+                collection.isStructured = toStructured
+                try modelContext.save()
+                return
+            }
+
+            // Backfill positions for items that don't have them
+            for (index, collectionItem) in collectionItems.enumerated() {
+                if collectionItem.position == nil {
+                    collectionItem.position = index
+                }
+            }
+        }
+
+        // Update the isStructured flag
+        collection.isStructured = toStructured
+        try modelContext.save()
+
+        AppLogger.general.info("Collection converted successfully", privacy: .public)
+    }
+
     func delete(_ collection: Collection) throws {
         let collectionId = collection.id
         AppLogger.persistence.debug("Deleting collection - id: \(collectionId, privacy: .public)")
