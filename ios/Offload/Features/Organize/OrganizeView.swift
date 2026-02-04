@@ -59,21 +59,19 @@ struct OrganizeView: View {
                 Theme.Gradients.deepBackground(colorScheme)
                     .ignoresSafeArea()
 
-                VStack(spacing: Theme.Spacing.sm) {
-                    scopePicker
+                ScrollView {
+                    LazyVStack(spacing: Theme.Spacing.md) {
+                        scopePicker
+                            .padding(.top, Theme.Spacing.sm)
 
-                    ScrollView {
-                        LazyVStack(spacing: Theme.Spacing.md) {
-                            collectionsContent
-                        }
-                        .padding(.horizontal, Theme.Spacing.md)
-                        .padding(.top, Theme.Spacing.sm)
-                        .padding(.bottom, Theme.Spacing.lg)
+                        collectionsContent
                     }
-                    .safeAreaInset(edge: .bottom) {
-                        Color.clear
-                            .frame(height: floatingTabBarClearance)
-                    }
+                    .padding(.horizontal, Theme.Spacing.md)
+                    .padding(.bottom, Theme.Spacing.lg)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    Color.clear
+                        .frame(height: floatingTabBarClearance)
                 }
             }
             .navigationTitle("Organize")
@@ -227,8 +225,6 @@ struct OrganizeView: View {
             radius: Theme.Shadows.elevationUltraLight,
             y: Theme.Shadows.offsetYUltraLight
         )
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.top, Theme.Spacing.sm)
     }
 
     private func scopeButton(_ scope: Scope) -> some View {
