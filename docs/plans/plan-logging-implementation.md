@@ -1,7 +1,7 @@
 ---
 id: plan-logging-implementation
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
