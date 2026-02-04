@@ -42,6 +42,8 @@ struct OrganizeView: View {
     @State private var viewModel = OrganizeListViewModel()
     @State private var showingSearch = false
     @State private var searchQuery = ""
+    @State private var collectionToConvert: Collection?
+    @State private var showConversionConfirmation = false
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -119,6 +121,18 @@ struct OrganizeView: View {
             .navigationDestination(item: $selectedCollection) { collection in
                 CollectionDetailView(collectionID: collection.id)
             }
+            .alert("Convert to List?", isPresented: $showConversionConfirmation) {
+                Button("Cancel", role: .cancel) {
+                    collectionToConvert = nil
+                }
+                Button("Convert", role: .destructive) {
+                    if let collection = collectionToConvert {
+                        performConversion(collection)
+                    }
+                }
+            } message: {
+                Text("This will flatten the plan's hierarchy. All items will be preserved but parent-child relationships will be lost.")
+            }
             .errorToasts(errorPresenter)
         }
         .onAppear {
@@ -155,6 +169,16 @@ struct OrganizeView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .contextMenu {
+                    Button {
+                        handleConvert(collection)
+                    } label: {
+                        Label(
+                            collection.isStructured ? "Convert to List" : "Convert to Plan",
+                            systemImage: collection.isStructured ? Icons.lists : Icons.plans
+                        )
+                    }
+                }
                 .onAppear {
                     if index == viewModel.collections.count - 1 {
                         loadNextPage()
@@ -305,6 +329,29 @@ struct OrganizeView: View {
             try viewModel.refresh(using: collectionRepository)
         } catch {
             errorPresenter.present(error)
+        }
+    }
+
+    private func handleConvert(_ collection: Collection) {
+        // If converting from plan to list, show confirmation
+        if collection.isStructured {
+            collectionToConvert = collection
+            showConversionConfirmation = true
+        } else {
+            // List to plan conversion is non-destructive, proceed directly
+            performConversion(collection)
+        }
+    }
+
+    private func performConversion(_ collection: Collection) {
+        do {
+            let newStructure = !collection.isStructured
+            try collectionRepository.convertCollection(collection, toStructured: newStructure)
+            refreshCollections()
+            collectionToConvert = nil
+        } catch {
+            errorPresenter.present(error)
+            collectionToConvert = nil
         }
     }
 }
