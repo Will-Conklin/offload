@@ -5,9 +5,8 @@
 
 import SwiftUI
 
-
 /// Centralized icon definitions using SF Symbols
-struct Icons {
+enum Icons {
     // MARK: - Navigation
 
     static let home = "house"

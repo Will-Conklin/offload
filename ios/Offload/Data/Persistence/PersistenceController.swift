@@ -6,19 +6,18 @@
 //  Registers schema and provides shared/preview containers.
 
 import Foundation
-import SwiftData
 import OSLog
+import SwiftData
 
 /// Simplified persistence controller for all SwiftData models
-struct PersistenceController {
-
+enum PersistenceController {
     /// Shared persistent container for production use
     static let shared: ModelContainer = {
         let schema = Schema([
             Item.self,
             Collection.self,
             CollectionItem.self,
-            Tag.self
+            Tag.self,
         ])
 
         // Create migration plan for schema changes
@@ -48,7 +47,7 @@ struct PersistenceController {
             Item.self,
             Collection.self,
             CollectionItem.self,
-            Tag.self
+            Tag.self,
         ])
         let configuration = ModelConfiguration(
             schema: schema,

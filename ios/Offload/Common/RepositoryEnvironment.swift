@@ -3,10 +3,9 @@
 // Governed by: AGENTS.md
 // Additional instructions: All views should access repositories through environment, not create them directly.
 
-import SwiftUI
-import SwiftData
 import OSLog
-
+import SwiftData
+import SwiftUI
 
 // MARK: - Environment Keys
 
@@ -25,7 +24,6 @@ private struct CollectionItemRepositoryKey: EnvironmentKey {
 private struct TagRepositoryKey: EnvironmentKey {
     static let defaultValue: TagRepository? = nil
 }
-
 
 // MARK: - Environment Values Extension
 
@@ -102,32 +100,31 @@ struct RepositoryBundle {
     }
 
     #if DEBUG
-    static func preview(from container: ModelContainer) -> RepositoryBundle {
-        make(modelContext: container.mainContext)
-    }
+        static func preview(from container: ModelContainer) -> RepositoryBundle {
+            make(modelContext: container.mainContext)
+        }
     #endif
 }
-
 
 // MARK: - Preview Helpers
 
 #if DEBUG
-extension EnvironmentValues {
-    /// Create repositories from a preview ModelContainer
-    @MainActor
-    static func previewRepositories(from container: ModelContainer) -> (
-        itemRepository: ItemRepository,
-        collectionRepository: CollectionRepository,
-        collectionItemRepository: CollectionItemRepository,
-        tagRepository: TagRepository
-    ) {
-        let repositories = RepositoryBundle.preview(from: container)
-        return (
-            itemRepository: repositories.itemRepository,
-            collectionRepository: repositories.collectionRepository,
-            collectionItemRepository: repositories.collectionItemRepository,
-            tagRepository: repositories.tagRepository
-        )
+    extension EnvironmentValues {
+        /// Create repositories from a preview ModelContainer
+        @MainActor
+        static func previewRepositories(from container: ModelContainer) -> (
+            itemRepository: ItemRepository,
+            collectionRepository: CollectionRepository,
+            collectionItemRepository: CollectionItemRepository,
+            tagRepository: TagRepository
+        ) {
+            let repositories = RepositoryBundle.preview(from: container)
+            return (
+                itemRepository: repositories.itemRepository,
+                collectionRepository: repositories.collectionRepository,
+                collectionItemRepository: repositories.collectionItemRepository,
+                tagRepository: repositories.tagRepository
+            )
+        }
     }
-}
 #endif

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct AppIcon: View {
     let name: String
     var size: CGFloat

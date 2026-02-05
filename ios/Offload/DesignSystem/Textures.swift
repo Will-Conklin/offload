@@ -9,8 +9,7 @@ import UIKit
 // MARK: - Textures & Effects
 
 extension Theme {
-    struct Textures {
-
+    enum Textures {
         // MARK: Scan Lines
 
         struct ScanLines: View {
@@ -49,7 +48,7 @@ extension Theme {
 
                         for x in stride(from: 0, to: width, by: 2) {
                             for y in stride(from: 0, to: height, by: 2) {
-                                let noise = Double.random(in: 0...1)
+                                let noise = Double.random(in: 0 ... 1)
                                 let alpha = noise * opacity
                                 context.fill(
                                     Path(CGRect(x: x, y: y, width: 2, height: 2)),
@@ -168,17 +167,17 @@ extension Theme {
 
     // MARK: - Glass Effects
 
-    struct Effects {
+    enum Effects {
         /// Subtle glass sparkle effect for glassmorphic surfaces
         struct GlassNoise: View {
             let opacity: Double
 
             var body: some View {
                 Canvas { context, size in
-                    for _ in 0..<100 {
-                        let x = CGFloat.random(in: 0...size.width)
-                        let y = CGFloat.random(in: 0...size.height)
-                        let alpha = Double.random(in: 0...opacity)
+                    for _ in 0 ..< 100 {
+                        let x = CGFloat.random(in: 0 ... size.width)
+                        let y = CGFloat.random(in: 0 ... size.height)
+                        let alpha = Double.random(in: 0 ... opacity)
                         context.fill(
                             Path(ellipseIn: CGRect(x: x, y: y, width: 2, height: 2)),
                             with: .color(.white.opacity(alpha))
@@ -194,7 +193,6 @@ extension Theme {
 // MARK: - View Extensions
 
 extension View {
-
     /// Adds scan-line overlay texture
     /// - Parameters:
     ///   - opacity: Opacity of the scan lines (default: 0.02)
@@ -249,7 +247,7 @@ extension View {
 
     /// Optimizes gradient rendering performance by caching into an offscreen buffer
     func optimizedGradients() -> some View {
-        self.drawingGroup()
+        drawingGroup()
     }
 
     // MARK: - MCM Textures

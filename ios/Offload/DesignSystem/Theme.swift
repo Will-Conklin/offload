@@ -23,15 +23,13 @@ enum ThemeStyle: String, CaseIterable, Identifiable {
 // MARK: - Theme
 
 /// App-wide theme configuration - flat design with bold colors
-struct Theme {
-
+enum Theme {
     // MARK: - Colors
 
-    struct Colors {
-
+    enum Colors {
         // MARK: Primary Accent
 
-        static func primary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func primary(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "E67E22") // Burnt orange (dark mode)
                 : Color(hex: "D35400") // Burnt orange (light mode)
@@ -39,7 +37,7 @@ struct Theme {
 
         // MARK: Secondary Accent
 
-        static func secondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func secondary(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "27AE60") // Avocado green (dark mode)
                 : Color(hex: "229954") // Avocado green (light mode)
@@ -47,13 +45,13 @@ struct Theme {
 
         // MARK: Backgrounds
 
-        static func background(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func background(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "2C1810") // Chocolate brown
                 : Color(hex: "F5F0E8") // Warm beige
         }
 
-        static func surface(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func surface(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "3E2723") // Chocolate
                 : Color(hex: "FFF9F0") // Cream
@@ -73,14 +71,14 @@ struct Theme {
 
         // MARK: Multi-accent palette (for varied card surfaces)
 
-        static func cardPalette(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> [Color] {
+        static func cardPalette(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> [Color] {
             if colorScheme == .dark {
                 return [
                     Color(hex: "D84315"), // Burnt orange
                     Color(hex: "7D5229"), // Goldenrod brown
                     Color(hex: "1F5C47"), // Teal green
                     Color(hex: "795548"), // Warm brown
-                    Color(hex: "00695C")  // Teal blue
+                    Color(hex: "00695C"), // Teal blue
                 ]
             }
 
@@ -89,7 +87,7 @@ struct Theme {
                 Color(hex: "FFF3D6"), // Goldenrod cream
                 Color(hex: "B2DFDB"), // Soft teal
                 Color(hex: "D7CCC8"), // Warm taupe
-                Color(hex: "80CBC4")  // Light teal
+                Color(hex: "80CBC4"), // Light teal
             ]
         }
 
@@ -100,13 +98,13 @@ struct Theme {
             return palette[i]
         }
 
-        static func tagColor(for name: String, _ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func tagColor(for _: String, _ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             primary(colorScheme, style: style)
         }
 
         // MARK: Text
 
-        static func textPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func textPrimary(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "FFF8E1") // Warm cream
                 : Color(hex: "3E2723") // Chocolate brown
@@ -116,7 +114,7 @@ struct Theme {
             textPrimary(colorScheme, style: style)
         }
 
-        static func textSecondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func textSecondary(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "BCAAA4") // Warm gray
                 : Color(hex: "8D6E63") // Taupe gray
@@ -132,13 +130,13 @@ struct Theme {
 
         // MARK: Borders
 
-        static func border(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func border(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "4E342E") // Deep brown
                 : Color(hex: "D7CCC8") // Soft taupe
         }
 
-        static func borderMuted(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func borderMuted(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "4E342E") // Deep brown
                 : Color(hex: "D7CCC8") // Soft taupe
@@ -146,19 +144,19 @@ struct Theme {
 
         // MARK: Semantic Colors
 
-        static func success(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func success(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "66BB6A") // Mint green
                 : Color(hex: "388E3C") // Dark mint
         }
 
-        static func caution(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func caution(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "FFB300") // Goldenrod
                 : Color(hex: "F57C00") // Amber
         }
 
-        static func destructive(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func destructive(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "E57373") // Coral red
                 : Color(hex: "D32F2F") // Dark red
@@ -184,19 +182,19 @@ struct Theme {
 
         // MARK: Retro Digital Warmth Colors
 
-        static func amber(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func amber(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "FFB366") // Amber (dark mode)
                 : Color(hex: "FF9F40") // Amber (light mode)
         }
 
-        static func terminalGreen(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func terminalGreen(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "50FA7B") // Terminal green (dark mode)
                 : Color(hex: "3DD68C") // Terminal green (light mode)
         }
 
-        static func crtBlue(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+        static func crtBlue(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "8BE9FD") // CRT blue (dark mode)
                 : Color(hex: "5AC8FA") // CRT blue (light mode)
@@ -205,7 +203,7 @@ struct Theme {
 
     // MARK: - Surfaces
 
-    struct Surface {
+    enum Surface {
         static func background(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             Colors.background(colorScheme, style: style)
         }
@@ -221,7 +219,7 @@ struct Theme {
 
     // MARK: - Content
 
-    struct Content {
+    enum Content {
         static func secondary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
             Colors.textSecondary(colorScheme, style: style)
         }
@@ -229,7 +227,7 @@ struct Theme {
 
     // MARK: - Typography
 
-    struct Typography {
+    enum Typography {
         // MCM Custom Fonts
         private static func bebas(size: CGFloat) -> Font {
             Font.custom("BebasNeue-Regular", size: size)
@@ -237,12 +235,11 @@ struct Theme {
 
         private static func spaceGrotesk(size: CGFloat, weight: Font.Weight = .regular) -> Font {
             // Space Grotesk weight mapping
-            let fontName: String
-            switch weight {
+            let fontName = switch weight {
             case .bold, .semibold, .heavy, .black:
-                fontName = "SpaceGrotesk-Bold"
+                "SpaceGrotesk-Bold"
             default:
-                fontName = "SpaceGrotesk-Regular"
+                "SpaceGrotesk-Regular"
             }
             return Font.custom(fontName, size: size)
         }
@@ -270,12 +267,12 @@ struct Theme {
         static let monospacedBody = Font.system(.body, design: .monospaced).monospacedDigit()
 
         // Semantic styles (use these in components)
-        static let cardTitle = bebas(size: 22)  // Bold geometric display
-        static let cardTitleEmphasis = bebas(size: 26)  // Extra large for emphasis
+        static let cardTitle = bebas(size: 22) // Bold geometric display
+        static let cardTitleEmphasis = bebas(size: 26) // Extra large for emphasis
         static let cardBody = spaceGrotesk(size: 16)
         static let cardBodyEmphasis = spaceGrotesk(size: 16, weight: .bold)
 
-        static let buttonLabel = bebas(size: 17)  // Strong geometric buttons
+        static let buttonLabel = bebas(size: 17) // Strong geometric buttons
         static let buttonLabelEmphasis = bebas(size: 18)
 
         static let inputLabel = spaceGrotesk(size: 15, weight: .semibold)
@@ -301,7 +298,7 @@ struct Theme {
 
     // MARK: - Spacing (simplified scale)
 
-    struct Spacing {
+    enum Spacing {
         static let xs: CGFloat = 4
         static let sm: CGFloat = 8
         static let md: CGFloat = 18
@@ -324,7 +321,7 @@ struct Theme {
 
     // MARK: - Corner Radius
 
-    struct CornerRadius {
+    enum CornerRadius {
         static let sm: CGFloat = 16
         static let md: CGFloat = 20
         static let lg: CGFloat = 24
@@ -337,8 +334,8 @@ struct Theme {
 
     // MARK: - Shapes
 
-    struct Shapes {
-        static func card(_ radius: CGFloat? = nil, style: ThemeStyle = .midCenturyModern) -> UnevenRoundedRectangle {
+    enum Shapes {
+        static func card(_ radius: CGFloat? = nil, style _: ThemeStyle = .midCenturyModern) -> UnevenRoundedRectangle {
             // MCM: kidney shape - all corners evenly rounded
             let r = radius ?? CornerRadius.cardSoft
             return UnevenRoundedRectangle(
@@ -355,7 +352,7 @@ struct Theme {
 
     // MARK: - Opacity
 
-    struct Opacity {
+    enum Opacity {
         /// Card edge strip (left accent bar on cards)
         static func cardEdge(_ colorScheme: ColorScheme) -> Double {
             colorScheme == .dark ? 0.22 : 0.08
@@ -409,7 +406,7 @@ struct Theme {
 
     // MARK: - Cards
 
-    struct Cards {
+    enum Cards {
         static let rowHeight: CGFloat = 80
         static let pressScale: CGFloat = 0.98
         static let horizontalInset: CGFloat = Spacing.md
@@ -421,7 +418,7 @@ struct Theme {
 
     // MARK: - Shadows (minimal for flat design)
 
-    struct Shadows {
+    enum Shadows {
         // Use sparingly - prefer borders for flat design
         static let elevationUltraLight: CGFloat = 8
         static let elevationXs: CGFloat = 2
@@ -446,7 +443,7 @@ struct Theme {
 
     // MARK: - Animations
 
-    struct Animations {
+    enum Animations {
         // MCM mechanical animations - smooth and satisfying
         static let springDefault = Animation.easeInOut(duration: 0.3)
         static let springSnappy = Animation.easeInOut(duration: 0.2)
@@ -458,7 +455,7 @@ struct Theme {
         // Satisfying snap-to-grid
         static let snapToGrid = Animation.spring(
             response: 0.25,
-            dampingFraction: 0.98,  // Almost no bounce
+            dampingFraction: 0.98, // Almost no bounce
             blendDuration: 0
         )
 
@@ -473,13 +470,13 @@ struct Theme {
 
     // MARK: - Hit Targets
 
-    struct HitTarget {
+    enum HitTarget {
         static let minimum = CGSize(width: 44, height: 44)
     }
 
     // MARK: - Materials (kept but simplified)
 
-    struct Materials {
+    enum Materials {
         static let glass = Material.ultraThin
         static let glassStrong = Material.thin
         static let glassOverlayOpacity: Double = 0.6
@@ -491,14 +488,14 @@ struct Theme {
 
     // MARK: - Gradients (minimal - solid colors preferred)
 
-    struct Gradients {
+    enum Gradients {
         // Only use when needed for visual interest
-        static func accentPrimary(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> LinearGradient {
+        static func accentPrimary(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> LinearGradient {
             let color = Colors.buttonDark(colorScheme)
             return LinearGradient(
                 colors: [
                     color,
-                    color
+                    color,
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -510,7 +507,7 @@ struct Theme {
             LinearGradient(
                 colors: [
                     Colors.background(colorScheme, style: style),
-                    Colors.background(colorScheme, style: style)
+                    Colors.background(colorScheme, style: style),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -521,7 +518,7 @@ struct Theme {
             RadialGradient(
                 colors: [
                     Colors.primary(colorScheme, style: style).opacity(0.08),
-                    Color.clear
+                    Color.clear,
                 ],
                 center: .topTrailing,
                 startRadius: 0,
@@ -532,41 +529,41 @@ struct Theme {
         // MARK: - MCM Gradient System
 
         // MCM earth tone gradients
-        static func electricBlueViolet(_ colorScheme: ColorScheme) -> LinearGradient {
+        static func electricBlueViolet(_: ColorScheme) -> LinearGradient {
             LinearGradient(
-                colors: [Color(hex: "E67E22"), Color(hex: "D35400")],  // Burnt orange
+                colors: [Color(hex: "E67E22"), Color(hex: "D35400")], // Burnt orange
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         }
 
-        static func coralPink(_ colorScheme: ColorScheme) -> LinearGradient {
+        static func coralPink(_: ColorScheme) -> LinearGradient {
             LinearGradient(
-                colors: [Color(hex: "27AE60"), Color(hex: "229954")],  // Avocado green
+                colors: [Color(hex: "27AE60"), Color(hex: "229954")], // Avocado green
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         }
 
-        static func emeraldTeal(_ colorScheme: ColorScheme) -> LinearGradient {
+        static func emeraldTeal(_: ColorScheme) -> LinearGradient {
             LinearGradient(
-                colors: [Color(hex: "00695C"), Color(hex: "1F5C47")],  // Teal
+                colors: [Color(hex: "00695C"), Color(hex: "1F5C47")], // Teal
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         }
 
-        static func amberOrange(_ colorScheme: ColorScheme) -> LinearGradient {
+        static func amberOrange(_: ColorScheme) -> LinearGradient {
             LinearGradient(
-                colors: [Color(hex: "FFB300"), Color(hex: "F57C00")],  // Goldenrod/amber
+                colors: [Color(hex: "FFB300"), Color(hex: "F57C00")], // Goldenrod/amber
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         }
 
-        static func violetPink(_ colorScheme: ColorScheme) -> LinearGradient {
+        static func violetPink(_: ColorScheme) -> LinearGradient {
             LinearGradient(
-                colors: [Color(hex: "795548"), Color(hex: "7D5229")],  // Warm brown/goldenrod
+                colors: [Color(hex: "795548"), Color(hex: "7D5229")], // Warm brown/goldenrod
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -576,9 +573,9 @@ struct Theme {
         static func deepBackground(_ colorScheme: ColorScheme) -> LinearGradient {
             LinearGradient(
                 colors: colorScheme == .dark ? [
-                    Color(hex: "2C1810"), Color(hex: "1F1108")  // Chocolate brown gradient
+                    Color(hex: "2C1810"), Color(hex: "1F1108"), // Chocolate brown gradient
                 ] : [
-                    Color(hex: "F5F0E8"), Color(hex: "FFF9F0")  // Warm beige to cream
+                    Color(hex: "F5F0E8"), Color(hex: "FFF9F0"), // Warm beige to cream
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -592,7 +589,7 @@ struct Theme {
                 coralPink(colorScheme),
                 emeraldTeal(colorScheme),
                 amberOrange(colorScheme),
-                violetPink(colorScheme)
+                violetPink(colorScheme),
             ]
             let i = ((index % gradients.count) + gradients.count) % gradients.count
             return gradients[i]
@@ -601,7 +598,7 @@ struct Theme {
 
     // MARK: - Glass System
 
-    struct Glass {
+    enum Glass {
         static let blurRadius: CGFloat = DeviceCapability.supportsHighQualityBlur ? 20 : 10
 
         static func surface(_ colorScheme: ColorScheme) -> Color {
@@ -610,7 +607,7 @@ struct Theme {
                 : Color.white.opacity(0.7)
         }
 
-        static func border(_ colorScheme: ColorScheme) -> LinearGradient {
+        static func border(_: ColorScheme) -> LinearGradient {
             LinearGradient(
                 colors: [Color.white.opacity(0.3), Color.white.opacity(0.1)],
                 startPoint: .topLeading,
@@ -622,7 +619,7 @@ struct Theme {
             colors: [
                 Color(hex: "E67E22"), Color(hex: "27AE60"),
                 Color(hex: "D35400"), Color(hex: "229954"),
-                Color(hex: "E67E22")
+                Color(hex: "E67E22"),
             ],
             startPoint: .leading,
             endPoint: .trailing
@@ -632,7 +629,7 @@ struct Theme {
 
 // MARK: - Device Capability
 
-struct DeviceCapability {
+enum DeviceCapability {
     static var supportsHighQualityBlur: Bool {
         // iPhone 12 and newer (6 or more cores)
         ProcessInfo.processInfo.processorCount >= 6

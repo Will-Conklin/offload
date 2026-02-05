@@ -8,7 +8,6 @@ import Observation
 import OSLog
 import SwiftUI
 
-
 @Observable
 @MainActor
 final class CollectionDetailViewModel {
@@ -39,7 +38,7 @@ final class CollectionDetailViewModel {
         if !hasLoaded {
             try loadNextPage(using: repository)
             hasLoaded = true
-            AppLogger.workflow.info("CollectionDetail initial load completed - count: \(self.items.count, privacy: .public)")
+            AppLogger.workflow.info("CollectionDetail initial load completed - count: \(items.count, privacy: .public)")
         }
     }
 
@@ -60,7 +59,7 @@ final class CollectionDetailViewModel {
         defer { isLoading = false }
 
         AppLogger.workflow.debug(
-            "CollectionDetail loadNextPage fetching - id: \(collectionId, privacy: .public), offset: \(self.offset, privacy: .public), limit: \(self.pageSize, privacy: .public)"
+            "CollectionDetail loadNextPage fetching - id: \(collectionId, privacy: .public), offset: \(offset, privacy: .public), limit: \(pageSize, privacy: .public)"
         )
         do {
             let page = try repository.fetchPage(
@@ -73,11 +72,11 @@ final class CollectionDetailViewModel {
             offset += page.count
             hasMore = page.count == pageSize
             AppLogger.workflow.info(
-                "CollectionDetail loadNextPage completed - fetched: \(page.count, privacy: .public), offset: \(self.offset, privacy: .public), hasMore: \(self.hasMore, privacy: .public)"
+                "CollectionDetail loadNextPage completed - fetched: \(page.count, privacy: .public), offset: \(offset, privacy: .public), hasMore: \(hasMore, privacy: .public)"
             )
         } catch {
             AppLogger.workflow.error(
-                "CollectionDetail loadNextPage failed - offset: \(self.offset, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
+                "CollectionDetail loadNextPage failed - offset: \(offset, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
             )
             throw error
         }
@@ -92,7 +91,7 @@ final class CollectionDetailViewModel {
         reset()
         try loadNextPage(using: repository)
         hasLoaded = true
-        AppLogger.workflow.info("CollectionDetail refresh completed - count: \(self.items.count, privacy: .public)")
+        AppLogger.workflow.info("CollectionDetail refresh completed - count: \(items.count, privacy: .public)")
     }
 
     func remove(_ collectionItem: CollectionItem) {
@@ -103,7 +102,7 @@ final class CollectionDetailViewModel {
             offset = max(0, offset - removedCount)
         }
         AppLogger.workflow.debug(
-            "CollectionDetail remove completed - removed: \(removedCount, privacy: .public), offset: \(self.offset, privacy: .public)"
+            "CollectionDetail remove completed - removed: \(removedCount, privacy: .public), offset: \(offset, privacy: .public)"
         )
     }
 

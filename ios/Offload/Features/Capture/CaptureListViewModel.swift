@@ -7,7 +7,6 @@ import Foundation
 import Observation
 import OSLog
 
-
 @Observable
 @MainActor
 final class CaptureListViewModel {
@@ -24,7 +23,7 @@ final class CaptureListViewModel {
         reset()
         try loadNextPage(using: repository)
         hasLoaded = true
-        AppLogger.workflow.info("CaptureList loadInitial completed - count: \(self.items.count, privacy: .public)")
+        AppLogger.workflow.info("CaptureList loadInitial completed - count: \(items.count, privacy: .public)")
     }
 
     func loadNextPage(using repository: ItemRepository) throws {
@@ -39,18 +38,18 @@ final class CaptureListViewModel {
         isLoading = true
         defer { isLoading = false }
 
-        AppLogger.workflow.debug("CaptureList loadNextPage fetching - offset: \(self.offset, privacy: .public), limit: \(self.pageSize, privacy: .public)")
+        AppLogger.workflow.debug("CaptureList loadNextPage fetching - offset: \(offset, privacy: .public), limit: \(pageSize, privacy: .public)")
         do {
             let page = try repository.fetchCaptureItems(limit: pageSize, offset: offset)
             items.append(contentsOf: page)
             offset += page.count
             hasMore = page.count == pageSize
             AppLogger.workflow.info(
-                "CaptureList loadNextPage completed - fetched: \(page.count, privacy: .public), offset: \(self.offset, privacy: .public), hasMore: \(self.hasMore, privacy: .public)"
+                "CaptureList loadNextPage completed - fetched: \(page.count, privacy: .public), offset: \(offset, privacy: .public), hasMore: \(hasMore, privacy: .public)"
             )
         } catch {
             AppLogger.workflow.error(
-                "CaptureList loadNextPage failed - offset: \(self.offset, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
+                "CaptureList loadNextPage failed - offset: \(offset, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
             )
             throw error
         }
@@ -61,7 +60,7 @@ final class CaptureListViewModel {
         reset()
         try loadNextPage(using: repository)
         hasLoaded = true
-        AppLogger.workflow.info("CaptureList refresh completed - count: \(self.items.count, privacy: .public)")
+        AppLogger.workflow.info("CaptureList refresh completed - count: \(items.count, privacy: .public)")
     }
 
     func remove(_ item: Item) {
@@ -72,7 +71,7 @@ final class CaptureListViewModel {
             offset = max(0, offset - removedCount)
         }
         AppLogger.workflow.debug(
-            "CaptureList remove completed - removed: \(removedCount, privacy: .public), offset: \(self.offset, privacy: .public)"
+            "CaptureList remove completed - removed: \(removedCount, privacy: .public), offset: \(offset, privacy: .public)"
         )
     }
 

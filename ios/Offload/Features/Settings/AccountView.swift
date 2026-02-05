@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct AccountView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var themeManager: ThemeManager
@@ -51,6 +50,7 @@ struct AccountView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+                    .environmentObject(themeManager)
             }
         }
     }

@@ -3,11 +3,9 @@
 // Governed by: AGENTS.md
 // Additional instructions: Keep navigation flow consistent with MainTabView -> NavigationStack -> sheets.
 
-import SwiftUI
-import SwiftData
 import os
-
-
+import SwiftData
+import SwiftUI
 
 struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext

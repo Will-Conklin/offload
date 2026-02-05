@@ -3,10 +3,9 @@
 // Governed by: AGENTS.md
 // Additional instructions: Keep tests deterministic and avoid relying on network or time.
 
-import XCTest
-import SwiftData
 @testable import Offload
-
+import SwiftData
+import XCTest
 
 @MainActor
 final class CollectionItemRepositoryTests: XCTestCase {

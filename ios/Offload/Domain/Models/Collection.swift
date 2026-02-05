@@ -47,11 +47,22 @@ final class Collection {
             // For unstructured lists, sort by creation date of the item
             return items.sorted { item1, item2 in
                 guard let date1 = item1.item?.createdAt,
-                      let date2 = item2.item?.createdAt else {
+                      let date2 = item2.item?.createdAt
+                else {
                     return false
                 }
                 return date1 < date2
             }
         }
+    }
+
+    /// Stable color index based on collection ID for consistent visual representation
+    var stableColorIndex: Int {
+        abs(id.hashValue) % 8 // Use 8 color palette
+    }
+
+    /// Formatted creation date (e.g., "Jan 15")
+    var formattedDate: String {
+        createdAt.formatted(.dateTime.month(.abbreviated).day())
     }
 }

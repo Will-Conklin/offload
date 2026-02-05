@@ -5,10 +5,10 @@
 
 //  Minimal capture: text + mic + attachment, optional tags/starred
 
-import SwiftUI
-import SwiftData
-import UIKit
 import OSLog
+import SwiftData
+import SwiftUI
+import UIKit
 
 enum CaptureComposeMode: String, Identifiable {
     case write
@@ -149,7 +149,7 @@ struct CaptureComposeView: View {
                     .focused($isFocused)
                     .scrollContentBackground(.hidden)
                     .overlay(alignment: .topLeading) {
-                        if text.isEmpty && !isFocused {
+                        if text.isEmpty, !isFocused {
                             Text("What's on your mind?")
                                 .font(Theme.Typography.body)
                                 .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
@@ -353,7 +353,7 @@ struct CaptureComposeView: View {
 
         do {
             AppLogger.workflow.info(
-                "CaptureCompose save requested - textLength: \(trimmedText.count, privacy: .public), tags: \(self.selectedTags.count, privacy: .public), attachment: \(self.attachmentData != nil, privacy: .public), starred: \(self.isStarred, privacy: .public)"
+                "CaptureCompose save requested - textLength: \(trimmedText.count, privacy: .public), tags: \(selectedTags.count, privacy: .public), attachment: \(attachmentData != nil, privacy: .public), starred: \(isStarred, privacy: .public)"
             )
             let item = try itemRepository.create(
                 type: nil, // Uncategorized capture

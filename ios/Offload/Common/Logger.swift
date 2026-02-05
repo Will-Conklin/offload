@@ -3,10 +3,7 @@
 // Governed by: AGENTS.md
 // Additional instructions: Prefer small, reusable helpers and avoid feature-specific coupling.
 
-
 import OSLog
-
-
 
 enum AppLogger {
     static let subsystem = "wc.Offload"

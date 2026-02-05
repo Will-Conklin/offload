@@ -5,9 +5,8 @@
 
 //  Simple flat settings: theme picker, tags/categories, basic info
 
-import SwiftUI
 import SwiftData
-
+import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme

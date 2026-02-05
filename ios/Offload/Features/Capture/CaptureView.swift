@@ -5,10 +5,10 @@
 
 //  Flat design capture list with inline tagging and swipe actions
 
+import OSLog
 import SwiftData
 import SwiftUI
 import UIKit
-import OSLog
 
 struct CaptureView: View {
     @Environment(\.itemRepository) private var itemRepository
@@ -52,7 +52,6 @@ struct CaptureView: View {
 
                         ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, item in
                             ItemCard(
-                                index: index,
                                 item: item,
                                 colorScheme: colorScheme,
                                 style: style,
@@ -123,6 +122,7 @@ struct CaptureView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+                    .environmentObject(themeManager)
             }
             .sheet(item: $selectedItem) { item in
                 CaptureDetailView(item: item)
@@ -131,6 +131,7 @@ struct CaptureView: View {
             }
             .sheet(item: $tagPickerItem) { item in
                 ItemTagPickerSheet(item: item)
+                    .environmentObject(themeManager)
                     .presentationDetents([.medium, .large])
             }
             .sheet(isPresented:
@@ -263,7 +264,6 @@ enum MoveDestination {
 // MARK: - Item Card
 
 private struct ItemCard: View {
-    let index: Int
     let item: Item
     let colorScheme: ColorScheme
     let style: ThemeStyle
@@ -278,12 +278,12 @@ private struct ItemCard: View {
     @State private var crtFlickerOpacity: Double = 1
 
     var body: some View {
-        CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+        CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
             MCMCardContent(
                 icon: item.itemType?.icon,
                 title: item.content,
                 typeLabel: item.type?.uppercased(),
-                timestamp: item.createdAt.formatted(.relative(presentation: .named)),
+                timestamp: item.relativeTimestamp,
                 image: item.attachmentData.flatMap { UIImage(data: $0) },
                 tags: item.tags,
                 onAddTag: onAddTag,
@@ -291,20 +291,7 @@ private struct ItemCard: View {
             )
         }
         .overlay(alignment: .bottomTrailing) {
-            Button(action: onToggleStar) {
-                AppIcon(
-                    name: item.isStarred ? Icons.starFilled : Icons.star,
-                    size: 18
-                )
-                .foregroundStyle(
-                    item.isStarred
-                        ? Theme.Colors.caution(colorScheme, style: style)
-                        : Theme.Colors.textSecondary(colorScheme, style: style)
-                )
-                .padding(Theme.Spacing.md)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(item.isStarred ? "Unstar item" : "Star item")
+            StarButton(isStarred: item.isStarred, action: onToggleStar)
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -788,25 +775,20 @@ private struct CaptureSearchView: View {
                         }
                         Spacer()
                     } else if searchResults.isEmpty {
-                        Spacer()
-                        VStack(spacing: Theme.Spacing.sm) {
-                            AppIcon(name: Icons.search, size: 48)
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.5))
-                            Text("No results found")
-                                .font(Theme.Typography.title3)
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                        }
-                        Spacer()
+                        EmptyStateView(
+                            iconName: Icons.search,
+                            message: "No results found"
+                        )
                     } else {
                         ScrollView {
                             LazyVStack(spacing: Theme.Spacing.md) {
-                                ForEach(Array(searchResults.enumerated()), id: \.element.id) { index, item in
-                                    CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+                                ForEach(Array(searchResults.enumerated()), id: \.element.id) { _, item in
+                                    CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
                                         MCMCardContent(
                                             icon: item.itemType?.icon,
                                             title: item.content,
                                             typeLabel: item.type?.uppercased(),
-                                            timestamp: item.createdAt.formatted(.relative(presentation: .named)),
+                                            timestamp: item.relativeTimestamp,
                                             image: item.attachmentData.flatMap { UIImage(data: $0) },
                                             tags: item.tags,
                                             onAddTag: {},
@@ -860,7 +842,7 @@ private struct CaptureSearchView: View {
                 for tagId in selectedTags {
                     // Fetch tag directly by ID to get all items, not just those matching search
                     if let tag = try tagRepository.fetchById(tagId) {
-                        taggedItems.append(contentsOf: try itemRepository.fetchByTag(tag))
+                        try taggedItems.append(contentsOf: itemRepository.fetchByTag(tag))
                     }
                 }
                 // Don't combine with text search - just show tagged items

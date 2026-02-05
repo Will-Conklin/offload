@@ -7,7 +7,6 @@ import Foundation
 import Observation
 import OSLog
 
-
 @Observable
 @MainActor
 final class OrganizeListViewModel {
@@ -30,7 +29,7 @@ final class OrganizeListViewModel {
         if !hasLoaded {
             try loadNextPage(using: repository)
             hasLoaded = true
-            AppLogger.workflow.info("OrganizeList initial load completed - count: \(self.collections.count, privacy: .public)")
+            AppLogger.workflow.info("OrganizeList initial load completed - count: \(collections.count, privacy: .public)")
         }
     }
 
@@ -51,7 +50,7 @@ final class OrganizeListViewModel {
         defer { isLoading = false }
 
         AppLogger.workflow.debug(
-            "OrganizeList loadNextPage fetching - isStructured: \(currentScopeIsStructured, privacy: .public), offset: \(self.offset, privacy: .public), limit: \(self.pageSize, privacy: .public)"
+            "OrganizeList loadNextPage fetching - isStructured: \(currentScopeIsStructured, privacy: .public), offset: \(offset, privacy: .public), limit: \(pageSize, privacy: .public)"
         )
         do {
             let page = try repository.fetchPage(
@@ -63,11 +62,11 @@ final class OrganizeListViewModel {
             offset += page.count
             hasMore = page.count == pageSize
             AppLogger.workflow.info(
-                "OrganizeList loadNextPage completed - fetched: \(page.count, privacy: .public), offset: \(self.offset, privacy: .public), hasMore: \(self.hasMore, privacy: .public)"
+                "OrganizeList loadNextPage completed - fetched: \(page.count, privacy: .public), offset: \(offset, privacy: .public), hasMore: \(hasMore, privacy: .public)"
             )
         } catch {
             AppLogger.workflow.error(
-                "OrganizeList loadNextPage failed - offset: \(self.offset, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
+                "OrganizeList loadNextPage failed - offset: \(offset, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
             )
             throw error
         }
@@ -82,7 +81,7 @@ final class OrganizeListViewModel {
         reset()
         try loadNextPage(using: repository)
         hasLoaded = true
-        AppLogger.workflow.info("OrganizeList refresh completed - count: \(self.collections.count, privacy: .public)")
+        AppLogger.workflow.info("OrganizeList refresh completed - count: \(collections.count, privacy: .public)")
     }
 
     private func reset() {

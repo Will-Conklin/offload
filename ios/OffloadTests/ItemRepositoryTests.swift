@@ -5,10 +5,9 @@
 
 //  OffloadTests
 
-import XCTest
-import SwiftData
 @testable import Offload
-
+import SwiftData
+import XCTest
 
 @MainActor
 final class ItemRepositoryTests: XCTestCase {
@@ -149,7 +148,7 @@ final class ItemRepositoryTests: XCTestCase {
 
         let starred = try repository.fetchStarred()
         XCTAssertEqual(starred.count, 2)
-        XCTAssertTrue(starred.allSatisfy { $0.isStarred })
+        XCTAssertTrue(starred.allSatisfy(\.isStarred))
     }
 
     func testFetchWithFollowUp() throws {

@@ -5,10 +5,10 @@
 
 //  Unified detail view for both structured (plans) and unstructured (lists) collections
 
-import SwiftUI
-import SwiftData
-import UIKit
 import OSLog
+import SwiftData
+import SwiftUI
+import UIKit
 
 struct CollectionDetailView: View {
     let collectionID: UUID
@@ -54,22 +54,25 @@ struct CollectionDetailView: View {
         addVisibleItems(parentId: nil) // Start with root items
         return visible
     }
+
+    private var planHasHierarchy: Bool {
+        guard collection?.isStructured == true else { return false }
+        return viewModel.items.contains { $0.parentId != nil }
+    }
+
     var body: some View {
         ZStack {
             Theme.Colors.background(colorScheme, style: style)
                 .ignoresSafeArea()
 
-            if let collection = collection {
+            if let collection {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.md) {
-                        // Collection header
-                        collectionHeader(collection)
-
                         // Items list
                         if collection.isStructured {
                             // Structured collections (plans) - support drag-to-parent and reordering
                             LazyVStack(spacing: Theme.Spacing.md) {
-                                if viewModel.items.isEmpty && viewModel.isLoading {
+                                if viewModel.items.isEmpty, viewModel.isLoading {
                                     ProgressView()
                                         .padding(.vertical, Theme.Spacing.sm)
                                 }
@@ -77,11 +80,11 @@ struct CollectionDetailView: View {
                                 ForEach(Array(visiblePlanItems.enumerated()), id: \.element.id) { index, collectionItem in
                                     if let item = collectionItem.item {
                                         HierarchicalItemRow(
-                                            index: index,
                                             item: item,
                                             collectionItem: collectionItem,
                                             isExpanded: expandedItems.contains(collectionItem.id),
                                             hasChildren: collectionItem.hasChildren(in: collectionItemRepository.modelContext),
+                                            showChevronSpace: planHasHierarchy,
                                             colorScheme: colorScheme,
                                             style: style,
                                             onAddTag: { tagPickerItem = item },
@@ -101,19 +104,21 @@ struct CollectionDetailView: View {
                                                 loadNextPage()
                                             }
                                         }
+                                        .transition(.move(edge: .top).combined(with: .opacity))
                                     }
                                 }
 
-                                if viewModel.isLoading && !viewModel.items.isEmpty {
+                                if viewModel.isLoading, !viewModel.items.isEmpty {
                                     ProgressView()
                                         .padding(.vertical, Theme.Spacing.sm)
                                 }
                             }
                             .padding(.horizontal, Theme.Spacing.md)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: visiblePlanItems.map(\.id))
                         } else {
                             // Unstructured collections (lists) - support basic reordering
                             LazyVStack(spacing: Theme.Spacing.md) {
-                                if viewModel.items.isEmpty && viewModel.isLoading {
+                                if viewModel.items.isEmpty, viewModel.isLoading {
                                     ProgressView()
                                         .padding(.vertical, Theme.Spacing.sm)
                                 }
@@ -121,7 +126,6 @@ struct CollectionDetailView: View {
                                 ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
                                     if let item = collectionItem.item {
                                         DraggableItemRow(
-                                            index: index,
                                             item: item,
                                             collectionItem: collectionItem,
                                             colorScheme: colorScheme,
@@ -140,15 +144,17 @@ struct CollectionDetailView: View {
                                                 loadNextPage()
                                             }
                                         }
+                                        .transition(.move(edge: .top).combined(with: .opacity))
                                     }
                                 }
 
-                                if viewModel.isLoading && !viewModel.items.isEmpty {
+                                if viewModel.isLoading, !viewModel.items.isEmpty {
                                     ProgressView()
                                         .padding(.vertical, Theme.Spacing.sm)
                                 }
                             }
                             .padding(.horizontal, Theme.Spacing.md)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.items.map(\.id))
                         }
 
                         quickAddButton
@@ -169,6 +175,18 @@ struct CollectionDetailView: View {
         .navigationTitle(collection?.name ?? "Collection")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                if let collection {
+                    VStack(spacing: 2) {
+                        Text(collection.name)
+                            .font(Theme.Typography.subheadlineSemibold)
+                            .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                        Text(collection.isStructured ? "PLAN" : "LIST")
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    }
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { showingEdit = true } label: {
                     Text("Edit")
@@ -177,11 +195,12 @@ struct CollectionDetailView: View {
         }
         .sheet(isPresented: $showingAddItem) {
             AddItemSheet(collectionID: collectionID, collection: collection)
+                .environmentObject(themeManager)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingEdit) {
-            if let collection = collection {
+            if let collection {
                 EditCollectionSheet(collection: collection)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
@@ -194,10 +213,12 @@ struct CollectionDetailView: View {
         }
         .sheet(item: $tagPickerItem) { item in
             ItemTagPickerSheet(item: item)
+                .environmentObject(themeManager)
                 .presentationDetents([.medium, .large])
         }
         .navigationDestination(item: $linkedCollection) { collection in
             CollectionDetailView(collectionID: collection.id)
+                .environmentObject(themeManager)
         }
         .onChange(of: showingAddItem) { _, isPresented in
             if !isPresented {
@@ -208,26 +229,6 @@ struct CollectionDetailView: View {
             loadCollection()
         }
         .errorToasts(errorPresenter)
-    }
-
-    // MARK: - Collection Header
-
-    private func collectionHeader(_ collection: Collection) -> some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            HStack {
-                Text(collection.name)
-                    .font(Theme.Typography.title2)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-
-                Spacer()
-            }
-
-            Text("\(viewModel.items.count) item\(viewModel.items.count == 1 ? "" : "s")")
-                .font(Theme.Typography.metadata)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-        }
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.sm)
     }
 
     // MARK: - Quick Add Button
@@ -246,7 +247,7 @@ struct CollectionDetailView: View {
                 // Backfill positions for any items missing them
                 try collectionRepository.backfillPositions(fetchedCollection)
 
-                self.collection = fetchedCollection
+                collection = fetchedCollection
                 try viewModel.setCollection(
                     id: fetchedCollection.id,
                     isStructured: fetchedCollection.isStructured,
@@ -292,7 +293,7 @@ struct CollectionDetailView: View {
     }
 
     private func handleListReorder(droppedId: UUID, targetId: UUID) {
-        guard let collection = collection, !collection.isStructured else {
+        guard let collection, !collection.isStructured else {
             AppLogger.general.warning("Attempted list reorder on structured collection, ignoring")
             return
         }
@@ -302,7 +303,8 @@ struct CollectionDetailView: View {
         do {
             // Find the dropped and target items in the list
             guard let droppedIndex = viewModel.items.firstIndex(where: { $0.id == droppedId }),
-                  let targetIndex = viewModel.items.firstIndex(where: { $0.id == targetId }) else {
+                  let targetIndex = viewModel.items.firstIndex(where: { $0.id == targetId })
+            else {
                 AppLogger.general.error("Could not find dropped or target item in list")
                 return
             }
@@ -311,12 +313,15 @@ struct CollectionDetailView: View {
             let droppedItem = viewModel.items[droppedIndex]
             var newItems = viewModel.items
             newItems.remove(at: droppedIndex)
-            newItems.insert(droppedItem, at: targetIndex)
+
+            // Adjust target index if item was removed before target position
+            let adjustedTargetIndex = droppedIndex < targetIndex ? targetIndex - 1 : targetIndex
+            newItems.insert(droppedItem, at: adjustedTargetIndex)
 
             // Update all positions and clear parent relationships (flat hierarchy)
             for (index, item) in newItems.enumerated() {
                 item.position = index
-                item.parentId = nil  // Clear any parent relationship for flat ordering
+                item.parentId = nil // Clear any parent relationship for flat ordering
             }
 
             try collectionItemRepository.modelContext.save()
@@ -331,7 +336,7 @@ struct CollectionDetailView: View {
     }
 
     private func handlePlanDrop(droppedId: UUID, targetId: UUID, isNesting: Bool) {
-        guard let collection = collection, collection.isStructured else {
+        guard let collection, collection.isStructured else {
             AppLogger.general.warning("Attempted plan drop on unstructured collection, ignoring")
             return
         }
@@ -339,28 +344,69 @@ struct CollectionDetailView: View {
         AppLogger.general.info("Plan drop: \(droppedId) onto \(targetId), nesting: \(isNesting)")
 
         do {
-            // Find the dropped and target items in the view model
-            guard let droppedIndex = viewModel.items.firstIndex(where: { $0.id == droppedId }),
-                  let targetIndex = viewModel.items.firstIndex(where: { $0.id == targetId }) else {
+            guard let droppedItem = viewModel.items.first(where: { $0.id == droppedId }),
+                  let targetItem = viewModel.items.first(where: { $0.id == targetId })
+            else {
                 AppLogger.general.error("Could not find dropped or target item")
                 return
             }
 
-            // For now, just reorder without nesting
-            // TODO: Add nesting support with modifier key or gesture
-            let droppedItem = viewModel.items[droppedIndex]
-            var newItems = viewModel.items
-            newItems.remove(at: droppedIndex)
-            newItems.insert(droppedItem, at: targetIndex)
+            // Prevent nesting into self or descendants
+            if isNesting, wouldCreateCycle(droppedId: droppedId, targetId: targetId) {
+                AppLogger.general.warning("Cannot nest item into itself or its descendants")
+                return
+            }
 
-            // Update all positions and clear parent relationships (flat hierarchy)
-            for (index, item) in newItems.enumerated() {
-                item.position = index
-                item.parentId = nil  // Clear any parent relationship for flat ordering
+            if isNesting {
+                // Nest as child of target
+                droppedItem.parentId = targetId
+
+                // Find position as last child of target
+                let targetChildren = viewModel.items.filter { $0.parentId == targetId }
+                droppedItem.position = targetChildren.count
+
+                // Expand the target to show the new child
+                expandedItems.insert(targetId)
+
+                AppLogger.general.info("Nested item \(droppedId) under \(targetId)")
+            } else {
+                // Reorder at same level as target (sibling)
+                let targetParentId = targetItem.parentId
+                droppedItem.parentId = targetParentId
+
+                // Get all siblings at this level
+                let siblings = viewModel.items.filter { $0.parentId == targetParentId }
+                    .sorted { ($0.position ?? 0) < ($1.position ?? 0) }
+
+                // Find target position
+                guard let targetIndex = siblings.firstIndex(where: { $0.id == targetId }) else {
+                    AppLogger.general.error("Could not find target in siblings")
+                    return
+                }
+
+                // Check if dropped item was already in this sibling list
+                let droppedIndex = siblings.firstIndex(where: { $0.id == droppedId })
+
+                // Reorder siblings
+                var reordered = siblings.filter { $0.id != droppedId }
+
+                // Adjust target index if the dropped item was removed before target position
+                var adjustedTargetIndex = targetIndex
+                if let droppedIndex, droppedIndex < targetIndex {
+                    adjustedTargetIndex = targetIndex - 1
+                }
+
+                reordered.insert(droppedItem, at: adjustedTargetIndex)
+
+                // Update positions for all siblings
+                for (index, sibling) in reordered.enumerated() {
+                    sibling.position = index
+                }
+
+                AppLogger.general.info("Reordered item \(droppedId) to position \(targetIndex) at level \(targetParentId?.uuidString ?? "root")")
             }
 
             try collectionItemRepository.modelContext.save()
-            AppLogger.general.info("Plan items reordered successfully")
 
             // Refresh to show new order
             refreshItems()
@@ -368,6 +414,18 @@ struct CollectionDetailView: View {
             AppLogger.general.error("Failed to handle plan drop: \(error.localizedDescription)")
             errorPresenter.present(error)
         }
+    }
+
+    private func wouldCreateCycle(droppedId: UUID, targetId: UUID) -> Bool {
+        // Check if target is a descendant of dropped item
+        var currentId: UUID? = targetId
+        while let checkId = currentId {
+            if checkId == droppedId {
+                return true
+            }
+            currentId = viewModel.items.first(where: { $0.id == checkId })?.parentId
+        }
+        return false
     }
 
     private func toggleExpanded(_ itemId: UUID) {
@@ -382,11 +440,11 @@ struct CollectionDetailView: View {
 // MARK: - Hierarchical Item Row (for Plans)
 
 private struct HierarchicalItemRow: View {
-    let index: Int
     let item: Item
     let collectionItem: CollectionItem
     let isExpanded: Bool
     let hasChildren: Bool
+    let showChevronSpace: Bool
     let colorScheme: ColorScheme
     let style: ThemeStyle
     let onAddTag: () -> Void
@@ -427,28 +485,30 @@ private struct HierarchicalItemRow: View {
                     .padding(.trailing, Theme.Spacing.sm)
             }
 
-            // Expand/collapse button for parent items
-            if hasChildren {
+            // Expand/collapse button for parent items (or spacer for consistency)
+            if showChevronSpace {
                 Button {
-                    onToggleExpand()
+                    if hasChildren {
+                        onToggleExpand()
+                    }
                 } label: {
-                    AppIcon(
-                        name: isExpanded ? Icons.chevronDown : Icons.chevronRight,
-                        size: 16
-                    )
-                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                    .frame(width: 24, height: 24)
+                    if hasChildren {
+                        AppIcon(
+                            name: isExpanded ? Icons.chevronDown : Icons.chevronRight,
+                            size: 16
+                        )
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    } else {
+                        Color.clear
+                    }
                 }
+                .frame(width: 24, height: 24)
                 .buttonStyle(.plain)
+                .disabled(!hasChildren)
                 .padding(.trailing, Theme.Spacing.xs)
-            } else {
-                Color.clear
-                    .frame(width: 24)
-                    .padding(.trailing, Theme.Spacing.xs)
             }
 
             ItemRow(
-                index: index,
                 item: item,
                 collectionItem: collectionItem,
                 isStructured: true,
@@ -462,16 +522,22 @@ private struct HierarchicalItemRow: View {
             )
         }
         .draggable(collectionItem.id.uuidString) {
-            // Preview while dragging
+            // Preview while dragging - simple view without environment objects
             Text(item.content)
                 .font(Theme.Typography.caption)
+                .lineLimit(2)
+                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
                 .padding(Theme.Spacing.sm)
-                .background(Theme.Colors.cardColor(index: index, colorScheme, style: style))
-                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+                .frame(width: 200)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                        .fill(Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style))
+                )
         }
         .dropDestination(for: String.self) { droppedIds, _ in
             guard let droppedIdString = droppedIds.first,
-                  let droppedId = UUID(uuidString: droppedIdString) else {
+                  let droppedId = UUID(uuidString: droppedIdString)
+            else {
                 return false
             }
 
@@ -480,17 +546,26 @@ private struct HierarchicalItemRow: View {
                 return false
             }
 
-            // Handle the drop (nesting: true means drop onto this item as child)
+            // Determine if this is a nesting drop (center) or reorder drop (edge)
+            // For now, always reorder (nesting can be added with long-press in future)
             onDrop(droppedId, collectionItem.id, false)
             return true
         } isTargeted: { isTargeted in
-            isDropTarget = isTargeted
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isDropTarget = isTargeted
+            }
         }
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-                .stroke(Theme.Colors.primary(colorScheme, style: style), lineWidth: 2)
-                .opacity(isDropTarget ? 0.5 : 0)
-        )
+        .overlay(alignment: .top) {
+            // Show insertion line between cards when dropping
+            if isDropTarget {
+                Rectangle()
+                    .fill(Theme.Colors.primary(colorScheme, style: style))
+                    .frame(height: 3)
+                    .offset(y: -(Theme.Spacing.md / 2 + 1.5)) // Center in the gap between cards
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isDropTarget)
         .onAppear {
             calculateNestingLevel()
         }
@@ -531,7 +606,6 @@ private struct HierarchicalItemRow: View {
 // MARK: - Draggable Item Row (for Lists)
 
 private struct DraggableItemRow: View {
-    let index: Int
     let item: Item
     let collectionItem: CollectionItem
     let colorScheme: ColorScheme
@@ -547,7 +621,6 @@ private struct DraggableItemRow: View {
 
     var body: some View {
         ItemRow(
-            index: index,
             item: item,
             collectionItem: collectionItem,
             isStructured: false,
@@ -560,16 +633,22 @@ private struct DraggableItemRow: View {
             onError: onError
         )
         .draggable(collectionItem.id.uuidString) {
-            // Preview while dragging
+            // Preview while dragging - simple view without environment objects
             Text(item.content)
                 .font(Theme.Typography.caption)
+                .lineLimit(2)
+                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
                 .padding(Theme.Spacing.sm)
-                .background(Theme.Colors.cardColor(index: index, colorScheme, style: style))
-                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+                .frame(width: 200)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                        .fill(Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style))
+                )
         }
         .dropDestination(for: String.self) { droppedIds, _ in
             guard let droppedIdString = droppedIds.first,
-                  let droppedId = UUID(uuidString: droppedIdString) else {
+                  let droppedId = UUID(uuidString: droppedIdString)
+            else {
                 return false
             }
 
@@ -582,20 +661,27 @@ private struct DraggableItemRow: View {
             onDrop(droppedId, collectionItem.id)
             return true
         } isTargeted: { isTargeted in
-            isDropTarget = isTargeted
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isDropTarget = isTargeted
+            }
         }
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-                .stroke(Theme.Colors.primary(colorScheme, style: style), lineWidth: 2)
-                .opacity(isDropTarget ? 0.5 : 0)
-        )
+        .overlay(alignment: .top) {
+            // Show insertion line between cards when dropping
+            if isDropTarget {
+                Rectangle()
+                    .fill(Theme.Colors.primary(colorScheme, style: style))
+                    .frame(height: 3)
+                    .offset(y: -(Theme.Spacing.md / 2 + 1.5)) // Center in the gap between cards
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isDropTarget)
     }
 }
 
 // MARK: - Item Row
 
 private struct ItemRow: View {
-    let index: Int
     let item: Item
     let collectionItem: CollectionItem
     let isStructured: Bool
@@ -617,33 +703,20 @@ private struct ItemRow: View {
     }
 
     var body: some View {
-        CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+        CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
             MCMCardContent(
                 icon: item.itemType?.icon,
                 title: displayTitle,
                 typeLabel: item.type?.uppercased(),
-                timestamp: item.createdAt.formatted(.relative(presentation: .named)),
+                timestamp: item.relativeTimestamp,
                 image: item.attachmentData.flatMap { UIImage(data: $0) },
                 tags: item.tags,
                 onAddTag: onAddTag,
-                size: .compact  // Compact size for item cards
+                size: .compact // Compact size for item cards
             )
         }
         .overlay(alignment: .bottomTrailing) {
-            Button(action: toggleStar) {
-                AppIcon(
-                    name: item.isStarred ? Icons.starFilled : Icons.star,
-                    size: 18
-                )
-                .foregroundStyle(
-                    item.isStarred
-                        ? Theme.Colors.caution(colorScheme, style: style)
-                        : Theme.Colors.textSecondary(colorScheme, style: style)
-                )
-                .padding(Theme.Spacing.md)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(item.isStarred ? "Unstar item" : "Star item")
+            StarButton(isStarred: item.isStarred, action: toggleStar)
         }
         .overlay(alignment: .topTrailing) {
             Button {
@@ -680,7 +753,7 @@ private struct ItemRow: View {
     }
 
     private var displayTitle: String {
-        if isLink, let linkedCollectionName = linkedCollectionName {
+        if isLink, let linkedCollectionName {
             return linkedCollectionName
         }
         if isLink, item.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -743,7 +816,8 @@ private struct ItemEditSheet: View {
                 }
 
                 if let attachmentData = item.attachmentData,
-                   let uiImage = UIImage(data: attachmentData) {
+                   let uiImage = UIImage(data: attachmentData)
+                {
                     Section("Attachment") {
                         Image(uiImage: uiImage)
                             .resizable()
@@ -832,6 +906,7 @@ private struct AddItemSheet: View {
             }
             .sheet(isPresented: $showingTags) {
                 TagSelectionSheet(selectedTags: $selectedTags)
+                    .environmentObject(themeManager)
                     .presentationDetents([.medium])
             }
             .confirmationDialog("Add Attachment", isPresented: $showingAttachmentSource) {
@@ -912,7 +987,7 @@ private struct AddItemSheet: View {
                         .focused($isFocused)
                         .scrollContentBackground(.hidden)
                         .overlay(alignment: .topLeading) {
-                            if content.isEmpty && !isFocused {
+                            if content.isEmpty, !isFocused {
                                 Text("Add details...")
                                     .font(Theme.Typography.body)
                                     .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
