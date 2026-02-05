@@ -7,7 +7,6 @@ import Foundation
 import Observation
 import OSLog
 
-
 @Observable
 @MainActor
 final class OrganizeListViewModel {

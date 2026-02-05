@@ -5,8 +5,9 @@
 
 //  Unified detail view for both structured (plans) and unstructured (lists) collections
 
-import SwiftUI
+import OSLog
 import SwiftData
+import SwiftUI
 import UIKit
 
 struct CollectionDetailView: View {
@@ -27,58 +28,134 @@ struct CollectionDetailView: View {
     @State private var tagPickerItem: Item?
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = CollectionDetailViewModel()
+    @State private var expandedItems: Set<UUID> = [] // Track which parent items are expanded
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
         Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
     }
+
+    private var visiblePlanItems: [CollectionItem] {
+        guard collection?.isStructured == true else { return viewModel.items }
+
+        var visible: [CollectionItem] = []
+
+        func addVisibleItems(parentId: UUID?) {
+            let itemsAtLevel = viewModel.items.filter { $0.parentId == parentId }
+            for item in itemsAtLevel {
+                visible.append(item)
+                // Only show children if parent is expanded
+                if expandedItems.contains(item.id) {
+                    addVisibleItems(parentId: item.id)
+                }
+            }
+        }
+
+        addVisibleItems(parentId: nil) // Start with root items
+        return visible
+    }
+
+    private var planHasHierarchy: Bool {
+        guard collection?.isStructured == true else { return false }
+        return viewModel.items.contains { $0.parentId != nil }
+    }
+
     var body: some View {
         ZStack {
             Theme.Colors.background(colorScheme, style: style)
                 .ignoresSafeArea()
 
-            if let collection = collection {
+            if let collection {
                 ScrollView {
                     VStack(spacing: Theme.Spacing.md) {
-                        // Collection header
-                        collectionHeader(collection)
-
                         // Items list
-                        LazyVStack(spacing: Theme.Spacing.md) {
-                            if viewModel.items.isEmpty && viewModel.isLoading {
-                                ProgressView()
-                                    .padding(.vertical, Theme.Spacing.sm)
-                            }
+                        if collection.isStructured {
+                            // Structured collections (plans) - support drag-to-parent and reordering
+                            LazyVStack(spacing: Theme.Spacing.md) {
+                                if viewModel.items.isEmpty, viewModel.isLoading {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
 
-                            ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
-                                if let item = collectionItem.item {
-                                    ItemRow(
-                                        index: index,
-                                        item: item,
-                                        collectionItem: collectionItem,
-                                        isStructured: collection.isStructured,
-                                        colorScheme: colorScheme,
-                                        style: style,
-                                        onAddTag: { tagPickerItem = item },
-                                        onDelete: { deleteItem(collectionItem) },
-                                        onEdit: { editingItem = item },
-                                        onOpenLink: { openLinkedCollection($0) },
-                                        onError: { errorPresenter.present($0) }
-                                    )
-                                    .onAppear {
-                                        if index == viewModel.items.count - 1 {
-                                            loadNextPage()
+                                ForEach(Array(visiblePlanItems.enumerated()), id: \.element.id) { index, collectionItem in
+                                    if let item = collectionItem.item {
+                                        HierarchicalItemRow(
+                                            item: item,
+                                            collectionItem: collectionItem,
+                                            isExpanded: expandedItems.contains(collectionItem.id),
+                                            hasChildren: collectionItem.hasChildren(in: collectionItemRepository.modelContext),
+                                            showChevronSpace: planHasHierarchy,
+                                            colorScheme: colorScheme,
+                                            style: style,
+                                            onAddTag: { tagPickerItem = item },
+                                            onDelete: { deleteItem(collectionItem) },
+                                            onEdit: { editingItem = item },
+                                            onOpenLink: { openLinkedCollection($0) },
+                                            onError: { errorPresenter.present($0) },
+                                            onDrop: { droppedId, targetId, isNesting in
+                                                handlePlanDrop(droppedId: droppedId, targetId: targetId, isNesting: isNesting)
+                                            },
+                                            onToggleExpand: {
+                                                toggleExpanded(collectionItem.id)
+                                            }
+                                        )
+                                        .onAppear {
+                                            if index == visiblePlanItems.count - 1 {
+                                                loadNextPage()
+                                            }
                                         }
+                                        .transition(.move(edge: .top).combined(with: .opacity))
                                     }
                                 }
-                            }
 
-                            if viewModel.isLoading && !viewModel.items.isEmpty {
-                                ProgressView()
-                                    .padding(.vertical, Theme.Spacing.sm)
+                                if viewModel.isLoading, !viewModel.items.isEmpty {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
                             }
+                            .padding(.horizontal, Theme.Spacing.md)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: visiblePlanItems.map(\.id))
+                        } else {
+                            // Unstructured collections (lists) - support basic reordering
+                            LazyVStack(spacing: Theme.Spacing.md) {
+                                if viewModel.items.isEmpty, viewModel.isLoading {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
+
+                                ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, collectionItem in
+                                    if let item = collectionItem.item {
+                                        DraggableItemRow(
+                                            item: item,
+                                            collectionItem: collectionItem,
+                                            colorScheme: colorScheme,
+                                            style: style,
+                                            onAddTag: { tagPickerItem = item },
+                                            onDelete: { deleteItem(collectionItem) },
+                                            onEdit: { editingItem = item },
+                                            onOpenLink: { openLinkedCollection($0) },
+                                            onError: { errorPresenter.present($0) },
+                                            onDrop: { droppedId, targetId in
+                                                handleListReorder(droppedId: droppedId, targetId: targetId)
+                                            }
+                                        )
+                                        .onAppear {
+                                            if index == viewModel.items.count - 1 {
+                                                loadNextPage()
+                                            }
+                                        }
+                                        .transition(.move(edge: .top).combined(with: .opacity))
+                                    }
+                                }
+
+                                if viewModel.isLoading, !viewModel.items.isEmpty {
+                                    ProgressView()
+                                        .padding(.vertical, Theme.Spacing.sm)
+                                }
+                            }
+                            .padding(.horizontal, Theme.Spacing.md)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.items.map(\.id))
                         }
-                        .padding(.horizontal, Theme.Spacing.md)
 
                         quickAddButton
                             .padding(.top, Theme.Spacing.sm)
@@ -98,6 +175,18 @@ struct CollectionDetailView: View {
         .navigationTitle(collection?.name ?? "Collection")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                if let collection {
+                    VStack(spacing: 2) {
+                        Text(collection.name)
+                            .font(Theme.Typography.subheadlineSemibold)
+                            .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                        Text(collection.isStructured ? "PLAN" : "LIST")
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    }
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { showingEdit = true } label: {
                     Text("Edit")
@@ -106,11 +195,12 @@ struct CollectionDetailView: View {
         }
         .sheet(isPresented: $showingAddItem) {
             AddItemSheet(collectionID: collectionID, collection: collection)
+                .environmentObject(themeManager)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingEdit) {
-            if let collection = collection {
+            if let collection {
                 EditCollectionSheet(collection: collection)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
@@ -123,10 +213,12 @@ struct CollectionDetailView: View {
         }
         .sheet(item: $tagPickerItem) { item in
             ItemTagPickerSheet(item: item)
+                .environmentObject(themeManager)
                 .presentationDetents([.medium, .large])
         }
         .navigationDestination(item: $linkedCollection) { collection in
             CollectionDetailView(collectionID: collection.id)
+                .environmentObject(themeManager)
         }
         .onChange(of: showingAddItem) { _, isPresented in
             if !isPresented {
@@ -137,26 +229,6 @@ struct CollectionDetailView: View {
             loadCollection()
         }
         .errorToasts(errorPresenter)
-    }
-
-    // MARK: - Collection Header
-
-    private func collectionHeader(_ collection: Collection) -> some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            HStack {
-                Text(collection.name)
-                    .font(Theme.Typography.title2)
-                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-
-                Spacer()
-            }
-
-            Text("\(viewModel.items.count) item\(viewModel.items.count == 1 ? "" : "s")")
-                .font(Theme.Typography.metadata)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-        }
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.sm)
     }
 
     // MARK: - Quick Add Button
@@ -172,7 +244,10 @@ struct CollectionDetailView: View {
     private func loadCollection() {
         do {
             if let fetchedCollection = try collectionRepository.fetchById(collectionID) {
-                self.collection = fetchedCollection
+                // Backfill positions for any items missing them
+                try collectionRepository.backfillPositions(fetchedCollection)
+
+                collection = fetchedCollection
                 try viewModel.setCollection(
                     id: fetchedCollection.id,
                     isStructured: fetchedCollection.isStructured,
@@ -216,12 +291,397 @@ struct CollectionDetailView: View {
             errorPresenter.present(error)
         }
     }
+
+    private func handleListReorder(droppedId: UUID, targetId: UUID) {
+        guard let collection, !collection.isStructured else {
+            AppLogger.general.warning("Attempted list reorder on structured collection, ignoring")
+            return
+        }
+
+        AppLogger.general.info("List reorder: \(droppedId) to position of \(targetId)")
+
+        do {
+            // Find the dropped and target items in the list
+            guard let droppedIndex = viewModel.items.firstIndex(where: { $0.id == droppedId }),
+                  let targetIndex = viewModel.items.firstIndex(where: { $0.id == targetId })
+            else {
+                AppLogger.general.error("Could not find dropped or target item in list")
+                return
+            }
+
+            // Reorder in view model
+            let droppedItem = viewModel.items[droppedIndex]
+            var newItems = viewModel.items
+            newItems.remove(at: droppedIndex)
+
+            // Adjust target index if item was removed before target position
+            let adjustedTargetIndex = droppedIndex < targetIndex ? targetIndex - 1 : targetIndex
+            newItems.insert(droppedItem, at: adjustedTargetIndex)
+
+            // Update all positions and clear parent relationships (flat hierarchy)
+            for (index, item) in newItems.enumerated() {
+                item.position = index
+                item.parentId = nil // Clear any parent relationship for flat ordering
+            }
+
+            try collectionItemRepository.modelContext.save()
+            AppLogger.general.info("List items reordered successfully")
+
+            // Refresh to show new order
+            refreshItems()
+        } catch {
+            AppLogger.general.error("Failed to handle list reorder: \(error.localizedDescription)")
+            errorPresenter.present(error)
+        }
+    }
+
+    private func handlePlanDrop(droppedId: UUID, targetId: UUID, isNesting: Bool) {
+        guard let collection, collection.isStructured else {
+            AppLogger.general.warning("Attempted plan drop on unstructured collection, ignoring")
+            return
+        }
+
+        AppLogger.general.info("Plan drop: \(droppedId) onto \(targetId), nesting: \(isNesting)")
+
+        do {
+            guard let droppedItem = viewModel.items.first(where: { $0.id == droppedId }),
+                  let targetItem = viewModel.items.first(where: { $0.id == targetId })
+            else {
+                AppLogger.general.error("Could not find dropped or target item")
+                return
+            }
+
+            // Prevent nesting into self or descendants
+            if isNesting, wouldCreateCycle(droppedId: droppedId, targetId: targetId) {
+                AppLogger.general.warning("Cannot nest item into itself or its descendants")
+                return
+            }
+
+            if isNesting {
+                // Nest as child of target
+                droppedItem.parentId = targetId
+
+                // Find position as last child of target
+                let targetChildren = viewModel.items.filter { $0.parentId == targetId }
+                droppedItem.position = targetChildren.count
+
+                // Expand the target to show the new child
+                expandedItems.insert(targetId)
+
+                AppLogger.general.info("Nested item \(droppedId) under \(targetId)")
+            } else {
+                // Reorder at same level as target (sibling)
+                let targetParentId = targetItem.parentId
+                droppedItem.parentId = targetParentId
+
+                // Get all siblings at this level
+                let siblings = viewModel.items.filter { $0.parentId == targetParentId }
+                    .sorted { ($0.position ?? 0) < ($1.position ?? 0) }
+
+                // Find target position
+                guard let targetIndex = siblings.firstIndex(where: { $0.id == targetId }) else {
+                    AppLogger.general.error("Could not find target in siblings")
+                    return
+                }
+
+                // Check if dropped item was already in this sibling list
+                let droppedIndex = siblings.firstIndex(where: { $0.id == droppedId })
+
+                // Reorder siblings
+                var reordered = siblings.filter { $0.id != droppedId }
+
+                // Adjust target index if the dropped item was removed before target position
+                var adjustedTargetIndex = targetIndex
+                if let droppedIndex, droppedIndex < targetIndex {
+                    adjustedTargetIndex = targetIndex - 1
+                }
+
+                reordered.insert(droppedItem, at: adjustedTargetIndex)
+
+                // Update positions for all siblings
+                for (index, sibling) in reordered.enumerated() {
+                    sibling.position = index
+                }
+
+                AppLogger.general.info("Reordered item \(droppedId) to position \(targetIndex) at level \(targetParentId?.uuidString ?? "root")")
+            }
+
+            try collectionItemRepository.modelContext.save()
+
+            // Refresh to show new order
+            refreshItems()
+        } catch {
+            AppLogger.general.error("Failed to handle plan drop: \(error.localizedDescription)")
+            errorPresenter.present(error)
+        }
+    }
+
+    private func wouldCreateCycle(droppedId: UUID, targetId: UUID) -> Bool {
+        // Check if target is a descendant of dropped item
+        var currentId: UUID? = targetId
+        while let checkId = currentId {
+            if checkId == droppedId {
+                return true
+            }
+            currentId = viewModel.items.first(where: { $0.id == checkId })?.parentId
+        }
+        return false
+    }
+
+    private func toggleExpanded(_ itemId: UUID) {
+        if expandedItems.contains(itemId) {
+            expandedItems.remove(itemId)
+        } else {
+            expandedItems.insert(itemId)
+        }
+    }
+}
+
+// MARK: - Hierarchical Item Row (for Plans)
+
+private struct HierarchicalItemRow: View {
+    let item: Item
+    let collectionItem: CollectionItem
+    let isExpanded: Bool
+    let hasChildren: Bool
+    let showChevronSpace: Bool
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
+    let onAddTag: () -> Void
+    let onDelete: () -> Void
+    let onEdit: () -> Void
+    let onOpenLink: (UUID) -> Void
+    let onError: (Error) -> Void
+    let onDrop: (UUID, UUID, Bool) -> Void
+    let onToggleExpand: () -> Void
+
+    @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.collectionRepository) private var collectionRepository
+    @Environment(\.collectionItemRepository) private var collectionItemRepository
+    @State private var showingMenu = false
+    @State private var linkedCollectionName: String?
+    @State private var isDropTarget = false
+    @State private var nestingLevel: Int = 0
+
+    private var isLink: Bool {
+        item.itemType == .link
+    }
+
+    private var indentation: CGFloat {
+        CGFloat(nestingLevel) * Theme.Spacing.xl
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            // Indentation for nested items
+            if nestingLevel > 0 {
+                Color.clear
+                    .frame(width: indentation)
+
+                // Visual indicator for nesting
+                Rectangle()
+                    .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.3))
+                    .frame(width: 2)
+                    .padding(.trailing, Theme.Spacing.sm)
+            }
+
+            // Expand/collapse button for parent items (or spacer for consistency)
+            if showChevronSpace {
+                Button {
+                    if hasChildren {
+                        onToggleExpand()
+                    }
+                } label: {
+                    if hasChildren {
+                        AppIcon(
+                            name: isExpanded ? Icons.chevronDown : Icons.chevronRight,
+                            size: 16
+                        )
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    } else {
+                        Color.clear
+                    }
+                }
+                .frame(width: 24, height: 24)
+                .buttonStyle(.plain)
+                .disabled(!hasChildren)
+                .padding(.trailing, Theme.Spacing.xs)
+            }
+
+            ItemRow(
+                item: item,
+                collectionItem: collectionItem,
+                isStructured: true,
+                colorScheme: colorScheme,
+                style: style,
+                onAddTag: onAddTag,
+                onDelete: onDelete,
+                onEdit: onEdit,
+                onOpenLink: onOpenLink,
+                onError: onError
+            )
+        }
+        .draggable(collectionItem.id.uuidString) {
+            // Preview while dragging - simple view without environment objects
+            Text(item.content)
+                .font(Theme.Typography.caption)
+                .lineLimit(2)
+                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+                .padding(Theme.Spacing.sm)
+                .frame(width: 200)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                        .fill(Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style))
+                )
+        }
+        .dropDestination(for: String.self) { droppedIds, _ in
+            guard let droppedIdString = droppedIds.first,
+                  let droppedId = UUID(uuidString: droppedIdString)
+            else {
+                return false
+            }
+
+            // Prevent dropping on self
+            if droppedId == collectionItem.id {
+                return false
+            }
+
+            // Determine if this is a nesting drop (center) or reorder drop (edge)
+            // For now, always reorder (nesting can be added with long-press in future)
+            onDrop(droppedId, collectionItem.id, false)
+            return true
+        } isTargeted: { isTargeted in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isDropTarget = isTargeted
+            }
+        }
+        .overlay(alignment: .top) {
+            // Show insertion line between cards when dropping
+            if isDropTarget {
+                Rectangle()
+                    .fill(Theme.Colors.primary(colorScheme, style: style))
+                    .frame(height: 3)
+                    .offset(y: -(Theme.Spacing.md / 2 + 1.5)) // Center in the gap between cards
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isDropTarget)
+        .onAppear {
+            calculateNestingLevel()
+        }
+    }
+
+    private func calculateNestingLevel() {
+        var level = 0
+        var currentParentId = collectionItem.parentId
+
+        // Log if item has a parentId
+        if let parentId = currentParentId {
+            AppLogger.general.debug("Item \(collectionItem.id) has parentId: \(parentId)")
+        }
+
+        while let parentId = currentParentId, level < 10 { // Max depth of 10 to prevent infinite loops
+            level += 1
+            do {
+                if let parent = try collectionItemRepository.fetchById(parentId) {
+                    currentParentId = parent.parentId
+                } else {
+                    AppLogger.general.warning("Parent \(parentId) not found, breaking nesting calculation")
+                    break
+                }
+            } catch {
+                AppLogger.general.error("Error fetching parent: \(error.localizedDescription)")
+                onError(error)
+                break
+            }
+        }
+
+        if level > 0 {
+            AppLogger.general.debug("Item \(collectionItem.id) calculated nesting level: \(level)")
+        }
+        nestingLevel = level
+    }
+}
+
+// MARK: - Draggable Item Row (for Lists)
+
+private struct DraggableItemRow: View {
+    let item: Item
+    let collectionItem: CollectionItem
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
+    let onAddTag: () -> Void
+    let onDelete: () -> Void
+    let onEdit: () -> Void
+    let onOpenLink: (UUID) -> Void
+    let onError: (Error) -> Void
+    let onDrop: (UUID, UUID) -> Void
+
+    @State private var isDropTarget = false
+
+    var body: some View {
+        ItemRow(
+            item: item,
+            collectionItem: collectionItem,
+            isStructured: false,
+            colorScheme: colorScheme,
+            style: style,
+            onAddTag: onAddTag,
+            onDelete: onDelete,
+            onEdit: onEdit,
+            onOpenLink: onOpenLink,
+            onError: onError
+        )
+        .draggable(collectionItem.id.uuidString) {
+            // Preview while dragging - simple view without environment objects
+            Text(item.content)
+                .font(Theme.Typography.caption)
+                .lineLimit(2)
+                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+                .padding(Theme.Spacing.sm)
+                .frame(width: 200)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                        .fill(Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style))
+                )
+        }
+        .dropDestination(for: String.self) { droppedIds, _ in
+            guard let droppedIdString = droppedIds.first,
+                  let droppedId = UUID(uuidString: droppedIdString)
+            else {
+                return false
+            }
+
+            // Prevent dropping on self
+            if droppedId == collectionItem.id {
+                return false
+            }
+
+            // Handle the drop
+            onDrop(droppedId, collectionItem.id)
+            return true
+        } isTargeted: { isTargeted in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isDropTarget = isTargeted
+            }
+        }
+        .overlay(alignment: .top) {
+            // Show insertion line between cards when dropping
+            if isDropTarget {
+                Rectangle()
+                    .fill(Theme.Colors.primary(colorScheme, style: style))
+                    .frame(height: 3)
+                    .offset(y: -(Theme.Spacing.md / 2 + 1.5)) // Center in the gap between cards
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isDropTarget)
+    }
 }
 
 // MARK: - Item Row
 
 private struct ItemRow: View {
-    let index: Int
     let item: Item
     let collectionItem: CollectionItem
     let isStructured: Bool
@@ -243,33 +703,20 @@ private struct ItemRow: View {
     }
 
     var body: some View {
-        CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+        CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
             MCMCardContent(
                 icon: item.itemType?.icon,
                 title: displayTitle,
                 typeLabel: item.type?.uppercased(),
-                timestamp: item.createdAt.formatted(.relative(presentation: .named)),
+                timestamp: item.relativeTimestamp,
                 image: item.attachmentData.flatMap { UIImage(data: $0) },
                 tags: item.tags,
                 onAddTag: onAddTag,
-                size: .compact  // Compact size for item cards
+                size: .compact // Compact size for item cards
             )
         }
         .overlay(alignment: .bottomTrailing) {
-            Button(action: toggleStar) {
-                AppIcon(
-                    name: item.isStarred ? Icons.starFilled : Icons.star,
-                    size: 18
-                )
-                .foregroundStyle(
-                    item.isStarred
-                        ? Theme.Colors.caution(colorScheme, style: style)
-                        : Theme.Colors.textSecondary(colorScheme, style: style)
-                )
-                .padding(Theme.Spacing.md)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(item.isStarred ? "Unstar item" : "Star item")
+            StarButton(isStarred: item.isStarred, action: toggleStar)
         }
         .overlay(alignment: .topTrailing) {
             Button {
@@ -306,7 +753,7 @@ private struct ItemRow: View {
     }
 
     private var displayTitle: String {
-        if isLink, let linkedCollectionName = linkedCollectionName {
+        if isLink, let linkedCollectionName {
             return linkedCollectionName
         }
         if isLink, item.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -369,7 +816,8 @@ private struct ItemEditSheet: View {
                 }
 
                 if let attachmentData = item.attachmentData,
-                   let uiImage = UIImage(data: attachmentData) {
+                   let uiImage = UIImage(data: attachmentData)
+                {
                     Section("Attachment") {
                         Image(uiImage: uiImage)
                             .resizable()
@@ -458,6 +906,7 @@ private struct AddItemSheet: View {
             }
             .sheet(isPresented: $showingTags) {
                 TagSelectionSheet(selectedTags: $selectedTags)
+                    .environmentObject(themeManager)
                     .presentationDetents([.medium])
             }
             .confirmationDialog("Add Attachment", isPresented: $showingAttachmentSource) {
@@ -538,7 +987,7 @@ private struct AddItemSheet: View {
                         .focused($isFocused)
                         .scrollContentBackground(.hidden)
                         .overlay(alignment: .topLeading) {
-                            if content.isEmpty && !isFocused {
+                            if content.isEmpty, !isFocused {
                                 Text("Add details...")
                                     .font(Theme.Typography.body)
                                     .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))

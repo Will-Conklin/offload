@@ -5,10 +5,7 @@
 
 import XCTest
 
-
-
 final class OffloadUITestsLaunchTests: XCTestCase {
-
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }

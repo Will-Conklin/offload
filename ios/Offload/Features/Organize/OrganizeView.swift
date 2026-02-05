@@ -5,8 +5,8 @@
 
 //  Simplified design for Plans and Lists tabs using Collections
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct OrganizeView: View {
     enum Scope: String, CaseIterable, Identifiable {
@@ -16,15 +16,15 @@ struct OrganizeView: View {
 
         var title: String {
             switch self {
-            case .plans: return "Plans"
-            case .lists: return "Lists"
+            case .plans: "Plans"
+            case .lists: "Lists"
             }
         }
 
         var isStructured: Bool {
             switch self {
-            case .plans: return true
-            case .lists: return false
+            case .plans: true
+            case .lists: false
             }
         }
     }
@@ -106,18 +106,22 @@ struct OrganizeView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+                    .environmentObject(themeManager)
             }
             .sheet(isPresented: $showingSearch) {
                 OrganizeSearchView(searchQuery: $searchQuery)
+                    .environmentObject(themeManager)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
             }
             .sheet(item: $tagPickerCollection) { collection in
                 CollectionTagPickerSheet(collection: collection)
+                    .environmentObject(themeManager)
                     .presentationDetents([.medium])
             }
             .navigationDestination(item: $selectedCollection) { collection in
                 CollectionDetailView(collectionID: collection.id)
+                    .environmentObject(themeManager)
             }
             .errorToasts(errorPresenter)
         }
@@ -146,7 +150,6 @@ struct OrganizeView: View {
                     selectedCollection = collection
                 } label: {
                     CollectionCard(
-                        paletteIndex: index,
                         collection: collection,
                         colorScheme: colorScheme,
                         style: style,
@@ -175,17 +178,12 @@ struct OrganizeView: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            AppIcon(name: selectedScope == .plans ? Icons.plans : Icons.lists, size: 34)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Text("No \(selectedScope.title.lowercased()) yet")
-                .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            addCollectionButton
-                .padding(.top, Theme.Spacing.sm)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, Theme.Spacing.xxl)
+        EmptyStateView(
+            iconName: selectedScope == .plans ? Icons.plans : Icons.lists,
+            message: "No \(selectedScope.title.lowercased()) yet",
+            actionTitle: "Add \(selectedScope == .plans ? "Plan" : "List")",
+            action: { showingCreate = true }
+        )
     }
 
     private var addCollectionButton: some View {
@@ -312,7 +310,6 @@ struct OrganizeView: View {
 // MARK: - Collection Card
 
 private struct CollectionCard: View {
-    let paletteIndex: Int
     let collection: Collection
     let colorScheme: ColorScheme
     let style: ThemeStyle
@@ -320,92 +317,79 @@ private struct CollectionCard: View {
     let onToggleStar: () -> Void
 
     var body: some View {
-        CardSurface(fill: Theme.Colors.cardColor(index: paletteIndex, colorScheme, style: style)) {
+        CardSurface(fill: Theme.Colors.cardColor(index: collection.stableColorIndex, colorScheme, style: style)) {
             // MCM card content with custom metadata for collections
             HStack(alignment: .top, spacing: 0) {
-                    // Left column (narrow - metadata gutter)
-                    VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                        IconTile(
-                            iconName: collection.isStructured ? Icons.plans : Icons.lists,
-                            iconSize: 16,
-                            tileSize: 36,
-                            style: .none(Theme.Colors.icon(colorScheme, style: style))
-                        )
+                // Left column (narrow - metadata gutter)
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    IconTile(
+                        iconName: collection.isStructured ? Icons.plans : Icons.lists,
+                        iconSize: 16,
+                        tileSize: 36,
+                        style: .none(Theme.Colors.icon(colorScheme, style: style))
+                    )
 
-                        Text(collection.isStructured ? "PLAN" : "LIST")
+                    Text(collection.isStructured ? "PLAN" : "LIST")
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+
+                    Text(collection.formattedDate)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+
+                    if let count = collection.collectionItems?.count, count > 0 {
+                        Text("\(count) item\(count == 1 ? "" : "s")")
                             .font(Theme.Typography.caption)
                             .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-
-                        Text(collection.createdAt, format: .dateTime.month(.abbreviated).day())
-                            .font(Theme.Typography.caption)
-                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-
-                        if let count = collection.collectionItems?.count, count > 0 {
-                            Text("\(count) item\(count == 1 ? "" : "s")")
-                                .font(Theme.Typography.caption)
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                        }
                     }
-                    .frame(width: 60, alignment: .leading)
+                }
+                .frame(width: 60, alignment: .leading)
 
-                    // Right column (wide - main content)
-                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                        Text(collection.name)
-                            .font(.system(.title2, design: .default).weight(.bold))
-                            .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                            .lineLimit(3)
+                // Right column (wide - main content)
+                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                    Text(collection.name)
+                        .font(.system(.title2, design: .default).weight(.bold))
+                        .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                        .lineLimit(3)
 
-                        // Tags in flow layout
-                        if !collection.tags.isEmpty {
-                            FlowLayout(spacing: Theme.Spacing.xs) {
-                                ForEach(collection.tags) { tag in
-                                    TagPill(
-                                        name: tag.name,
-                                        color: tag.color
-                                            .map { Color(hex: $0) }
-                                            ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
-                                    )
-                                }
-
-                                Button(action: onAddTag) {
-                                    HStack(spacing: 4) {
-                                        AppIcon(name: Icons.add, size: 10)
-                                        Text("Tag")
-                                            .font(Theme.Typography.caption)
-                                    }
-                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                                    .padding(.horizontal, Theme.Spacing.pillHorizontal)
-                                    .padding(.vertical, Theme.Spacing.pillVertical)
-                                    .background(
-                                        Capsule()
-                                            .strokeBorder(
-                                                Theme.Colors.borderMuted(colorScheme, style: style),
-                                                lineWidth: 1
-                                            )
-                                    )
-                                }
-                                .buttonStyle(.plain)
+                    // Tags in flow layout
+                    if !collection.tags.isEmpty {
+                        FlowLayout(spacing: Theme.Spacing.xs) {
+                            ForEach(collection.tags) { tag in
+                                TagPill(
+                                    name: tag.name,
+                                    color: tag.color
+                                        .map { Color(hex: $0) }
+                                        ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
+                                )
                             }
+
+                            Button(action: onAddTag) {
+                                HStack(spacing: 4) {
+                                    AppIcon(name: Icons.add, size: 10)
+                                    Text("Tag")
+                                        .font(Theme.Typography.caption)
+                                }
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                .padding(.horizontal, Theme.Spacing.pillHorizontal)
+                                .padding(.vertical, Theme.Spacing.pillVertical)
+                                .background(
+                                    Capsule()
+                                        .strokeBorder(
+                                            Theme.Colors.borderMuted(colorScheme, style: style),
+                                            lineWidth: 1
+                                        )
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    .padding(.leading, 12)
+                }
+                .padding(.leading, 12)
             }
         }
         .overlay(alignment: .bottomTrailing) {
-            Button(action: onToggleStar) {
-                AppIcon(
-                    name: collection.isStarred ? Icons.starFilled : Icons.star,
-                    size: 18
-                )
-                .foregroundStyle(
-                    collection.isStarred
-                        ? Theme.Colors.caution(colorScheme, style: style)
-                        : Theme.Colors.textSecondary(colorScheme, style: style)
-                )
-                .padding(Theme.Spacing.md)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(collection.isStarred ? "Unstar collection" : "Star collection")
+            StarButton(isStarred: collection.isStarred, action: onToggleStar)
         }
     }
 }
@@ -676,45 +660,34 @@ private struct OrganizeSearchView: View {
 
     @ViewBuilder
     private var emptyQueryState: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            AppIcon(name: Icons.search, size: 34)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Text("Start typing to search collections")
-                .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, Theme.Spacing.xxl)
+        EmptyStateView(
+            iconName: Icons.search,
+            message: "Start typing to search collections"
+        )
     }
 
     @ViewBuilder
     private var noResultsState: some View {
-        VStack(spacing: Theme.Spacing.md) {
-            AppIcon(name: Icons.search, size: 34)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Text("No collections found")
-                .font(Theme.Typography.body)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-            Text("Try a different search term")
-                .font(Theme.Typography.caption)
-                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, Theme.Spacing.xxl)
+        EmptyStateView(
+            iconName: Icons.search,
+            message: "No collections found",
+            subtitle: "Try a different search term"
+        )
     }
 
     @ViewBuilder
     private var resultsContent: some View {
-        ForEach(Array(searchResults.enumerated()), id: \.element.id) { index, collection in
+        ForEach(Array(searchResults.enumerated()), id: \.element.id) { _, collection in
             NavigationLink {
                 CollectionDetailView(collectionID: collection.id)
+                    .environmentObject(themeManager)
             } label: {
-                CardSurface(fill: Theme.Colors.cardColor(index: index, colorScheme, style: style)) {
+                CardSurface(fill: Theme.Colors.cardColor(index: collection.stableColorIndex, colorScheme, style: style)) {
                     MCMCardContent(
                         icon: collection.isStructured ? Icons.plans : Icons.lists,
                         title: collection.name,
                         typeLabel: collection.isStructured ? "PLAN" : "LIST",
-                        timestamp: collection.createdAt.formatted(.dateTime.month(.abbreviated).day()),
+                        timestamp: collection.formattedDate,
                         tags: collection.tags,
                         onAddTag: nil,
                         size: .standard

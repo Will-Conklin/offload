@@ -3,8 +3,8 @@
 // Governed by: AGENTS.md
 // Additional instructions: Preserve established theme defaults and component APIs.
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 // MARK: - Buttons
 
@@ -30,31 +30,31 @@ struct FloatingActionButton: View {
             } icon: {
                 AppIcon(name: iconName, size: 14)
             }
-                .font(.system(.footnote, design: .default).weight(.black))
-                .tracking(0.8)
-                .foregroundStyle(.white)
-                .padding(.vertical, Theme.Spacing.sm + 2)
-                .padding(.horizontal, Theme.Spacing.md + 4)
-                .background(
-                    Capsule()
-                        .fill(Theme.Colors.primary(colorScheme, style: style))
-                        .overlay(
-                            Capsule()
-                                .stroke(
-                                    LinearGradient(
-                                        colors: [
-                                            Color.white.opacity(0.3),
-                                            Color.clear
-                                        ],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    ),
-                                    lineWidth: 1
-                                )
-                                .padding(1)
-                        )
-                )
-                .scaleEffect(isPressed ? 0.95 : 1.0)
+            .font(.system(.footnote, design: .default).weight(.black))
+            .tracking(0.8)
+            .foregroundStyle(.white)
+            .padding(.vertical, Theme.Spacing.sm + 2)
+            .padding(.horizontal, Theme.Spacing.md + 4)
+            .background(
+                Capsule()
+                    .fill(Theme.Colors.primary(colorScheme, style: style))
+                    .overlay(
+                        Capsule()
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Color.white.opacity(0.3),
+                                        Color.clear,
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                ),
+                                lineWidth: 1
+                            )
+                            .padding(1)
+                    )
+            )
+            .scaleEffect(isPressed ? 0.95 : 1.0)
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
@@ -63,6 +63,79 @@ struct FloatingActionButton: View {
                 .onEnded { _ in isPressed = false }
         )
         .animation(Theme.Animations.mechanicalSlide, value: isPressed)
+    }
+}
+
+/// Reusable star/favorite button component
+struct StarButton: View {
+    let isStarred: Bool
+    let action: () -> Void
+
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    var body: some View {
+        Button(action: action) {
+            AppIcon(
+                name: isStarred ? Icons.starFilled : Icons.star,
+                size: 18
+            )
+            .foregroundStyle(
+                isStarred
+                    ? Theme.Colors.caution(colorScheme, style: style)
+                    : Theme.Colors.textSecondary(colorScheme, style: style)
+            )
+            .padding(Theme.Spacing.md)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isStarred ? "Unstar" : "Star")
+    }
+}
+
+/// Reusable empty state view
+struct EmptyStateView: View {
+    let iconName: String
+    let message: String
+    let subtitle: String?
+    let actionTitle: String?
+    let action: (() -> Void)?
+
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    private var style: ThemeStyle { themeManager.currentStyle }
+
+    init(iconName: String, message: String, subtitle: String? = nil, actionTitle: String? = nil, action: (() -> Void)? = nil) {
+        self.iconName = iconName
+        self.message = message
+        self.subtitle = subtitle
+        self.actionTitle = actionTitle
+        self.action = action
+    }
+
+    var body: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            AppIcon(name: iconName, size: 34)
+                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+            VStack(spacing: Theme.Spacing.xs) {
+                Text(message)
+                    .font(Theme.Typography.body)
+                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                if let subtitle {
+                    Text(subtitle)
+                        .font(Theme.Typography.caption)
+                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                }
+            }
+            if let actionTitle, let action {
+                FloatingActionButton(title: actionTitle, iconName: Icons.addCircleFilled, action: action)
+                    .padding(.top, Theme.Spacing.sm)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, Theme.Spacing.xxl)
     }
 }
 
@@ -158,7 +231,7 @@ struct CardSurface<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 ZStack {
-                    if let gradientIndex = gradientIndex {
+                    if let gradientIndex {
                         // Vibrant glassmorphic card with gradient
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.xl, style: .continuous)
                             .fill(Theme.Glass.surface(colorScheme))
@@ -176,7 +249,7 @@ struct CardSurface<Content: View>: View {
                                 LinearGradient(
                                     colors: [
                                         cardFill,
-                                        cardFill.opacity(0.7)
+                                        cardFill.opacity(0.7),
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
@@ -202,7 +275,7 @@ struct CardSurface<Content: View>: View {
             // Retro atomic-age diagonal stripe pattern in corner
             GeometryReader { geo in
                 ZStack {
-                    ForEach(0..<3, id: \.self) { index in
+                    ForEach(0 ..< 3, id: \.self) { index in
                         Rectangle()
                             .fill(Color.white.opacity(0.08))
                             .frame(width: 2, height: 80)
@@ -226,7 +299,7 @@ struct CardSurface<Content: View>: View {
                     LinearGradient(
                         colors: [
                             Color.black.opacity(0.15),
-                            Color.black.opacity(0.05)
+                            Color.black.opacity(0.05),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -254,7 +327,7 @@ struct CardSurface<Content: View>: View {
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.15),
-                            Color.clear
+                            Color.clear,
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -267,7 +340,7 @@ struct CardSurface<Content: View>: View {
     }
 
     func onPress(_ pressed: Bool) -> Self {
-        var copy = self
+        let copy = self
         copy.isPressed = pressed
         return copy
     }
@@ -389,7 +462,7 @@ struct TagPill: View {
                         LinearGradient(
                             colors: [
                                 color,
-                                color.opacity(0.8)
+                                color.opacity(0.8),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -467,8 +540,8 @@ struct ItemActionButton: View {
 /// Mid-Century Modern asymmetric two-column card content layout
 struct MCMCardContent: View {
     enum Size {
-        case standard  // For collections - bold, prominent
-        case compact   // For items - smaller, de-emphasized
+        case standard // For collections - bold, prominent
+        case compact // For items - smaller, de-emphasized
     }
 
     let icon: String?
@@ -541,7 +614,7 @@ struct MCMCardContent: View {
         HStack(alignment: .top, spacing: 0) {
             // Left column (narrow - metadata gutter with bold icon)
             VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                if let icon = icon {
+                if let icon {
                     // Icon container - gradient for standard, simple for compact
                     ZStack {
                         if showIconGradient {
@@ -550,7 +623,7 @@ struct MCMCardContent: View {
                                     LinearGradient(
                                         colors: [
                                             Theme.Colors.primary(colorScheme, style: style).opacity(0.2),
-                                            Theme.Colors.secondary(colorScheme, style: style).opacity(0.15)
+                                            Theme.Colors.secondary(colorScheme, style: style).opacity(0.15),
                                         ],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
@@ -568,14 +641,14 @@ struct MCMCardContent: View {
                     }
                 }
 
-                if let typeLabel = typeLabel {
+                if let typeLabel {
                     Text(typeLabel.uppercased())
                         .font(.system(size: size == .compact ? 8 : 9, weight: .bold, design: .default))
                         .tracking(0.5)
                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style).opacity(0.6))
                 }
 
-                if let timestamp = timestamp {
+                if let timestamp {
                     Text(timestamp)
                         .font(.system(size: size == .compact ? 8 : 9, weight: .medium, design: .default))
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.8))
@@ -593,7 +666,7 @@ struct MCMCardContent: View {
                             ? LinearGradient(
                                 colors: [
                                     Theme.Colors.textPrimary(colorScheme, style: style),
-                                    Theme.Colors.textPrimary(colorScheme, style: style).opacity(0.8)
+                                    Theme.Colors.textPrimary(colorScheme, style: style).opacity(0.8),
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -601,7 +674,7 @@ struct MCMCardContent: View {
                             : LinearGradient(
                                 colors: [
                                     Theme.Colors.textPrimary(colorScheme, style: style),
-                                    Theme.Colors.textPrimary(colorScheme, style: style)
+                                    Theme.Colors.textPrimary(colorScheme, style: style),
                                 ],
                                 startPoint: .top,
                                 endPoint: .bottom
@@ -610,7 +683,7 @@ struct MCMCardContent: View {
                     .lineLimit(3)
                     .lineSpacing(size == .compact ? 1 : 2)
 
-                if let bodyText = bodyText {
+                if let bodyText {
                     Text(bodyText)
                         .font(.system(size: bodySize, weight: .regular, design: .default))
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
@@ -618,7 +691,7 @@ struct MCMCardContent: View {
                         .lineSpacing(size == .compact ? 2 : 4)
                 }
 
-                if let image = image {
+                if let image {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
@@ -630,7 +703,7 @@ struct MCMCardContent: View {
                                     LinearGradient(
                                         colors: [
                                             Color.white.opacity(size == .compact ? 0.1 : 0.2),
-                                            Color.clear
+                                            Color.clear,
                                         ],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
@@ -660,7 +733,7 @@ struct MCMCardContent: View {
                                             LinearGradient(
                                                 colors: [
                                                     tagColor,
-                                                    tagColor.opacity(0.8)
+                                                    tagColor.opacity(0.8),
                                                 ],
                                                 startPoint: .topLeading,
                                                 endPoint: .bottomTrailing
@@ -669,7 +742,7 @@ struct MCMCardContent: View {
                                 )
                         }
 
-                        if let onAddTag = onAddTag {
+                        if let onAddTag {
                             Button(action: onAddTag) {
                                 HStack(spacing: 4) {
                                     AppIcon(name: Icons.add, size: size == .compact ? 8 : 10)
@@ -693,7 +766,7 @@ struct MCMCardContent: View {
                     }
                 }
             }
-            .padding(.leading, size == .compact ? 12 : 16)  // Less margin for compact
+            .padding(.leading, size == .compact ? 12 : 16) // Less margin for compact
         }
     }
 }
@@ -702,7 +775,7 @@ struct MCMCardContent: View {
 struct FlowLayout: Layout {
     var spacing: CGFloat = 8
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache _: inout ()) -> CGSize {
         let result = FlowResult(
             in: proposal.replacingUnspecifiedDimensions().width,
             subviews: subviews,
@@ -711,7 +784,7 @@ struct FlowLayout: Layout {
         return result.size
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    func placeSubviews(in bounds: CGRect, proposal _: ProposedViewSize, subviews: Subviews, cache _: inout ()) {
         let result = FlowResult(
             in: bounds.width,
             subviews: subviews,
@@ -757,6 +830,7 @@ struct FlowLayout: Layout {
 }
 
 // MARK: - Item Actions
+
 // MARK: - Tag Sheets
 
 struct ItemTagPickerSheet: View {

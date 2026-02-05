@@ -3,9 +3,8 @@
 // Governed by: AGENTS.md
 // Additional instructions: Preserve established theme defaults and component APIs.
 
-
-import SwiftUI
 import Combine
+import SwiftUI
 
 /// Appearance preference options
 enum AppearancePreference: String, CaseIterable, Identifiable {
@@ -17,17 +16,17 @@ enum AppearancePreference: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .system: return "Match System"
-        case .light: return "Light"
-        case .dark: return "Dark"
+        case .system: "Match System"
+        case .light: "Light"
+        case .dark: "Dark"
         }
     }
 
     var colorScheme: ColorScheme? {
         switch self {
-        case .system: return nil
-        case .light: return .light
-        case .dark: return .dark
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
         }
     }
 }
@@ -69,28 +68,29 @@ class ThemeManager: ObservableObject {
             if let savedStyleString = UserDefaults.standard.string(forKey: Keys.selectedThemeStyle) {
                 // Migrate old theme names to Mid-Century Modern
                 if savedStyleString == "cooper" || savedStyleString == "elijah" {
-                    self.currentStyle = .midCenturyModern
+                    currentStyle = .midCenturyModern
                     UserDefaults.standard.set(ThemeStyle.midCenturyModern.rawValue, forKey: Keys.selectedThemeStyle)
                 } else if let savedStyle = ThemeStyle(rawValue: savedStyleString) {
-                    self.currentStyle = savedStyle
+                    currentStyle = savedStyle
                 } else {
-                    self.currentStyle = .midCenturyModern
+                    currentStyle = .midCenturyModern
                 }
             } else {
-                self.currentStyle = .midCenturyModern
+                currentStyle = .midCenturyModern
             }
 
             // Load saved appearance preference, default to system.
             if let savedAppearanceString = UserDefaults.standard.string(forKey: Keys.appearancePreference),
-               let savedAppearance = AppearancePreference(rawValue: savedAppearanceString) {
-                self.appearancePreference = savedAppearance
+               let savedAppearance = AppearancePreference(rawValue: savedAppearanceString)
+            {
+                appearancePreference = savedAppearance
             } else {
-                self.appearancePreference = .system
+                appearancePreference = .system
             }
         } else {
             // For testing: use default theme without persisting.
-            self.currentStyle = .midCenturyModern
-            self.appearancePreference = .system
+            currentStyle = .midCenturyModern
+            appearancePreference = .system
         }
     }
 

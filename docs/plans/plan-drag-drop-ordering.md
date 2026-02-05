@@ -1,12 +1,12 @@
 ---
 id: plan-drag-drop-ordering
 type: plan
-status: accepted
+status: complete
 owners:
   - Will-Conklin
 applies_to:
   - organize
-last_updated: 2026-01-25
+last_updated: 2026-02-04
 related:
   - prd-0004-drag-drop-ordering
   - adr-0005-collection-ordering-and-hierarchy-persistence
@@ -16,7 +16,8 @@ depends_on: []
 supersedes: []
 accepted_by: null
 accepted_at: null
-related_issues: []
+related_issues:
+  - https://github.com/Will-Conklin/Offload/pull/130
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -40,29 +41,29 @@ and persistence.
 
 ### Phase 1: Flat Reordering
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Implement drag-and-drop or `onMove` reordering for unstructured lists.
-- [ ] Persist new positions via `CollectionItemRepository`.
-- [ ] Backfill `CollectionItem.position` for existing unstructured list items.
+- [x] Implement drag-and-drop or `onMove` reordering for unstructured lists.
+- [x] Persist new positions via `CollectionItemRepository`.
+- [x] Backfill `CollectionItem.position` for existing unstructured list items.
 
 ### Phase 2: Plan Nesting
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add drag-to-parent support for structured collections.
-- [ ] Update `parentId` and sibling positions after nesting changes.
+- [x] Add drag-to-parent support for structured collections.
+- [x] Update `parentId` and sibling positions after nesting changes.
 
 ### Phase 3: UI Feedback
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add insertion indicators and indentation previews.
-- [ ] Add expand/collapse affordances for parent items (session-only state).
+- [x] Add insertion indicators and indentation previews.
+- [x] Add expand/collapse affordances for parent items (session-only state).
 
 ### Phase 4: QA
 
-**Status:** Not Started
+**Status:** Pending User Verification
 
 - [ ] Validate ordering persistence across relaunch.
 - [ ] Confirm nested items render under parent with indentation.
@@ -88,6 +89,7 @@ and persistence.
 
 ## Progress
 
-| Date       | Update                |
-| ---------- | --------------------- |
-| 2026-01-21 | Draft plan created.   |
+| Date       | Update                                                        |
+| ---------- | ------------------------------------------------------------- |
+| 2026-01-21 | Draft plan created.                                           |
+| 2026-02-04 | All phases implemented. PR #130 created for user verification.|

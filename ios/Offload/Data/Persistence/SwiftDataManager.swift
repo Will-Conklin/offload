@@ -6,8 +6,6 @@
 import Foundation
 import SwiftData
 
-
-
 /// Manages SwiftData model container configuration and setup
 final class SwiftDataManager {
     static let shared = SwiftDataManager()

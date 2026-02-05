@@ -30,6 +30,7 @@ struct MainTabView: View {
             }
             .sheet(item: $quickCaptureMode) { mode in
                 CaptureComposeView(mode: mode)
+                    .environmentObject(themeManager)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
             }

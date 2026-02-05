@@ -3,10 +3,9 @@
 // Governed by: AGENTS.md
 // Additional instructions: Keep tests deterministic and avoid relying on network or time.
 
-import XCTest
-import SwiftData
 @testable import Offload
-
+import SwiftData
+import XCTest
 
 @MainActor
 final class PerformanceBenchmarkTests: XCTestCase {
@@ -27,7 +26,7 @@ final class PerformanceBenchmarkTests: XCTestCase {
         configure: ((Item, Int) -> Void)? = nil
     ) throws {
         guard count > 0 else { return }
-        for index in 0..<count {
+        for index in 0 ..< count {
             let item = Item(content: "Item \(index)")
             configure?(item, index)
             modelContext.insert(item)
@@ -151,11 +150,11 @@ final class PerformanceBenchmarkTests: XCTestCase {
     }
 
     func testFetchAllPerformance1000Items() throws {
-        try benchmarkFetchAll(count: 1_000)
+        try benchmarkFetchAll(count: 1000)
     }
 
     func testFetchAllPerformance10000Items() throws {
-        try benchmarkFetchAll(count: 10_000)
+        try benchmarkFetchAll(count: 10000)
     }
 
     func testFetchCaptureItemsPerformance100Items() throws {
@@ -163,11 +162,11 @@ final class PerformanceBenchmarkTests: XCTestCase {
     }
 
     func testFetchCaptureItemsPerformance1000Items() throws {
-        try benchmarkFetchCaptureItems(count: 1_000)
+        try benchmarkFetchCaptureItems(count: 1000)
     }
 
     func testFetchCaptureItemsPerformance10000Items() throws {
-        try benchmarkFetchCaptureItems(count: 10_000)
+        try benchmarkFetchCaptureItems(count: 10000)
     }
 
     func testFetchByTagPerformance100Items() throws {
@@ -175,11 +174,11 @@ final class PerformanceBenchmarkTests: XCTestCase {
     }
 
     func testFetchByTagPerformance1000Items() throws {
-        try benchmarkFetchByTag(count: 1_000, tag: "work")
+        try benchmarkFetchByTag(count: 1000, tag: "work")
     }
 
     func testFetchByTagPerformance10000Items() throws {
-        try benchmarkFetchByTag(count: 10_000, tag: "work")
+        try benchmarkFetchByTag(count: 10000, tag: "work")
     }
 
     func testFetchStarredPerformance100Items() throws {
@@ -187,11 +186,11 @@ final class PerformanceBenchmarkTests: XCTestCase {
     }
 
     func testFetchStarredPerformance1000Items() throws {
-        try benchmarkFetchStarred(count: 1_000)
+        try benchmarkFetchStarred(count: 1000)
     }
 
     func testFetchStarredPerformance10000Items() throws {
-        try benchmarkFetchStarred(count: 10_000)
+        try benchmarkFetchStarred(count: 10000)
     }
 
     func testFetchWithFollowUpPerformance100Items() throws {
@@ -199,10 +198,10 @@ final class PerformanceBenchmarkTests: XCTestCase {
     }
 
     func testFetchWithFollowUpPerformance1000Items() throws {
-        try benchmarkFetchWithFollowUp(count: 1_000)
+        try benchmarkFetchWithFollowUp(count: 1000)
     }
 
     func testFetchWithFollowUpPerformance10000Items() throws {
-        try benchmarkFetchWithFollowUp(count: 10_000)
+        try benchmarkFetchWithFollowUp(count: 10000)
     }
 }

@@ -6,7 +6,6 @@
 import Foundation
 import SwiftData
 
-
 @Model
 final class Item {
     var id: UUID
@@ -47,8 +46,8 @@ final class Item {
         self.metadata = metadata
         self.attachmentData = attachmentData
         self.linkedCollectionId = linkedCollectionId
-        self.legacyTags = tags
-        self.tagLinks = []
+        legacyTags = tags
+        tagLinks = []
         self.isStarred = isStarred
         self.followUpDate = followUpDate
         self.completedAt = completedAt
@@ -58,7 +57,7 @@ final class Item {
     // Computed properties for type-safe access
     var itemType: ItemType? {
         get {
-            guard let type = type else { return nil }
+            guard let type else { return nil }
             return ItemType(rawValue: type)
         }
         set {
@@ -67,13 +66,14 @@ final class Item {
     }
 
     var isCompleted: Bool {
-        return completedAt != nil
+        completedAt != nil
     }
 
     // Computed property to decode metadata
     var metadataDict: [String: Any] {
         guard let data = metadata.data(using: .utf8),
-              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else {
             return [:]
         }
         return dict
@@ -82,8 +82,9 @@ final class Item {
     // Helper to update metadata
     func updateMetadata(_ dict: [String: Any]) {
         if let data = try? JSONSerialization.data(withJSONObject: dict),
-           let jsonString = String(data: data, encoding: .utf8) {
-            self.metadata = jsonString
+           let jsonString = String(data: data, encoding: .utf8)
+        {
+            metadata = jsonString
         }
     }
 }
@@ -94,15 +95,15 @@ enum ItemType: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .task: return "Task"
-        case .link: return "Link"
+        case .task: "Task"
+        case .link: "Link"
         }
     }
 
     var icon: String {
         switch self {
-        case .task: return Icons.checkCircleFilled
-        case .link: return Icons.externalLink
+        case .task: Icons.checkCircleFilled
+        case .link: Icons.externalLink
         }
     }
 }
@@ -112,5 +113,15 @@ extension Item {
     var tags: [Tag] {
         get { tagLinks }
         set { tagLinks = newValue }
+    }
+
+    /// Stable color index based on item ID for consistent visual representation
+    var stableColorIndex: Int {
+        abs(id.hashValue) % 8 // Use 8 color palette
+    }
+
+    /// Formatted relative timestamp (e.g., "2 hours ago")
+    var relativeTimestamp: String {
+        createdAt.formatted(.relative(presentation: .named))
     }
 }

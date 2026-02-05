@@ -3,9 +3,8 @@
 // Governed by: AGENTS.md
 // Additional instructions: Keep error presentation lightweight and reusable.
 
-import SwiftUI
 import Observation
-
+import SwiftUI
 
 struct ErrorToastModifier: ViewModifier {
     @Bindable var presenter: ErrorPresenter

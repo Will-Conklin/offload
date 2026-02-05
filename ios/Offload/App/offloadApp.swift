@@ -3,11 +3,9 @@
 // Governed by: AGENTS.md
 // Additional instructions: Keep navigation flow consistent with MainTabView -> NavigationStack -> sheets.
 
-import SwiftUI
-import SwiftData
 import OSLog
-
-
+import SwiftData
+import SwiftUI
 
 @main
 struct OffloadApp: App {

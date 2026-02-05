@@ -6,7 +6,6 @@
 import Foundation
 import SwiftData
 
-
 @Model
 final class CollectionItem {
     var id: UUID
@@ -35,7 +34,7 @@ final class CollectionItem {
 
     // Helper to check if this is a root item (no parent)
     var isRoot: Bool {
-        return parentId == nil
+        parentId == nil
     }
 
     // Helper to check if this has children

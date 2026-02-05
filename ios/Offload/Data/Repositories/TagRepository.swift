@@ -8,8 +8,6 @@
 import Foundation
 import SwiftData
 
-
-
 /// Repository for Tag CRUD operations and queries
 final class TagRepository {
     private let modelContext: ModelContext
@@ -81,7 +79,7 @@ final class TagRepository {
 
     // MARK: - Update
 
-    func update(tag: Tag) throws {
+    func update(tag _: Tag) throws {
         try modelContext.save()
     }
 
@@ -116,6 +114,6 @@ final class TagRepository {
 
     /// Check if tag is used by any items
     func isTagInUse(tag: Tag) -> Bool {
-        return getTaskCount(tag: tag) > 0
+        getTaskCount(tag: tag) > 0
     }
 }

@@ -25,7 +25,7 @@ final class Tag {
         self.name = name
         self.color = color
         self.createdAt = createdAt
-        self.items = []
-        self.collections = []
+        items = []
+        collections = []
     }
 }

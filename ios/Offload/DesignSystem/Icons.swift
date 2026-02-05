@@ -5,9 +5,8 @@
 
 import SwiftUI
 
-
 /// Centralized icon definitions using SF Symbols
-struct Icons {
+enum Icons {
     // MARK: - Navigation
 
     static let home = "house"
@@ -47,4 +46,6 @@ struct Icons {
     static let tag = "tag"
     static let tagFilled = "tag.fill"
     static let search = "magnifyingglass"
+    static let chevronDown = "chevron.down"
+    static let chevronRight = "chevron.right"
 }

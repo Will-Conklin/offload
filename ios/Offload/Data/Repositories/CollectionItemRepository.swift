@@ -6,17 +6,16 @@
 import Foundation
 import SwiftData
 
-
-
 @MainActor
 final class CollectionItemRepository {
-    private let modelContext: ModelContext
+    let modelContext: ModelContext
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
 
     // MARK: - Create
+
     func addItemToCollection(
         itemId: UUID,
         collectionId: UUID,
@@ -39,6 +38,7 @@ final class CollectionItemRepository {
     }
 
     // MARK: - Fetch
+
     func fetchByCollection(_ collectionId: UUID) throws -> [CollectionItem] {
         let descriptor = FetchDescriptor<CollectionItem>(
             predicate: #Predicate { $0.collectionId == collectionId },
@@ -53,14 +53,13 @@ final class CollectionItemRepository {
         limit: Int,
         offset: Int
     ) throws -> [CollectionItem] {
-        var descriptor: FetchDescriptor<CollectionItem>
-        if isStructured {
-            descriptor = FetchDescriptor<CollectionItem>(
+        var descriptor = if isStructured {
+            FetchDescriptor<CollectionItem>(
                 predicate: #Predicate { $0.collectionId == collectionId },
                 sortBy: [SortDescriptor(\.position)]
             )
         } else {
-            descriptor = FetchDescriptor<CollectionItem>(
+            FetchDescriptor<CollectionItem>(
                 predicate: #Predicate { $0.collectionId == collectionId },
                 sortBy: [SortDescriptor(\CollectionItem.item?.createdAt, order: .forward)]
             )
@@ -103,6 +102,7 @@ final class CollectionItemRepository {
     }
 
     // MARK: - Update
+
     func updatePosition(_ collectionItem: CollectionItem, position: Int) throws {
         collectionItem.position = position
         try modelContext.save()
@@ -132,6 +132,7 @@ final class CollectionItemRepository {
     }
 
     // MARK: - Delete
+
     func removeItemFromCollection(_ collectionItem: CollectionItem) throws {
         modelContext.delete(collectionItem)
         try modelContext.save()
@@ -146,6 +147,7 @@ final class CollectionItemRepository {
     }
 
     // MARK: - Helper methods
+
     func isItemInCollection(itemId: UUID, collectionId: UUID) throws -> Bool {
         let descriptor = FetchDescriptor<CollectionItem>(
             predicate: #Predicate {

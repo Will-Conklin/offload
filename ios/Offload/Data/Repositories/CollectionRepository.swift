@@ -4,8 +4,8 @@
 // Additional instructions: Keep CRUD logic centralized and consistent with SwiftData models.
 
 import Foundation
-import SwiftData
 import OSLog
+import SwiftData
 
 @MainActor
 final class CollectionRepository {
@@ -16,6 +16,7 @@ final class CollectionRepository {
     }
 
     // MARK: - Create
+
     func create(
         name: String,
         isStructured: Bool = false
@@ -37,6 +38,7 @@ final class CollectionRepository {
     }
 
     // MARK: - Fetch
+
     func fetchAll() throws -> [Collection] {
         let descriptor = FetchDescriptor<Collection>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
@@ -95,6 +97,7 @@ final class CollectionRepository {
     }
 
     // MARK: - Update
+
     func update(_ collection: Collection) throws {
         let collectionId = collection.id
         AppLogger.persistence.debug("Updating collection - id: \(collectionId, privacy: .public)")
@@ -146,7 +149,7 @@ final class CollectionRepository {
 
     func reorderItems(_ items: [Item], in collection: Collection) throws {
         let collectionItems = collection.collectionItems ?? []
-        let orderedItemIds = items.map { $0.id }
+        let orderedItemIds = items.map(\.id)
         for (index, itemId) in orderedItemIds.enumerated() {
             if let collectionItem = collectionItems.first(where: { $0.itemId == itemId }) {
                 collectionItem.position = index
@@ -156,12 +159,14 @@ final class CollectionRepository {
     }
 
     // MARK: - Star
+
     func toggleStar(_ collection: Collection) throws {
         collection.isStarred.toggle()
         try modelContext.save()
     }
 
     // MARK: - Tags
+
     func addTag(_ collection: Collection, tag: Tag) throws {
         if !collection.tags.contains(where: { $0.id == tag.id }) {
             collection.tags.append(tag)
@@ -175,6 +180,7 @@ final class CollectionRepository {
     }
 
     // MARK: - Delete
+
     func delete(_ collection: Collection) throws {
         let collectionId = collection.id
         AppLogger.persistence.debug("Deleting collection - id: \(collectionId, privacy: .public)")
@@ -189,12 +195,59 @@ final class CollectionRepository {
     }
 
     // MARK: - Helper methods
+
     func getItemCount(_ collection: Collection) -> Int {
-        return collection.collectionItems?.count ?? 0
+        collection.collectionItems?.count ?? 0
     }
 
     func getItems(_ collection: Collection) throws -> [Item] {
         guard let collectionItems = collection.collectionItems else { return [] }
-        return collectionItems.compactMap { $0.item }
+        return collectionItems.compactMap(\.item)
+    }
+
+    func backfillPositions(_ collection: Collection) throws {
+        AppLogger.general.info("Backfilling positions for collection \(collection.name, privacy: .public)")
+
+        guard let collectionItems = collection.collectionItems else {
+            AppLogger.general.info("No items to backfill")
+            return
+        }
+
+        var itemsNeedingPosition: [CollectionItem] = []
+        for collectionItem in collectionItems {
+            if collectionItem.position == nil {
+                itemsNeedingPosition.append(collectionItem)
+            }
+        }
+
+        if itemsNeedingPosition.isEmpty {
+            AppLogger.general.info("All items already have positions")
+            return
+        }
+
+        AppLogger.general.info("Found \(itemsNeedingPosition.count, privacy: .public) items needing positions")
+
+        // Sort items needing position by creation date to maintain chronological order
+        let sortedItems = itemsNeedingPosition.sorted { item1, item2 in
+            guard let date1 = item1.item?.createdAt,
+                  let date2 = item2.item?.createdAt
+            else {
+                return false
+            }
+            return date1 < date2
+        }
+
+        // Get the highest existing position, or start at 0
+        let maxPosition = collectionItems.compactMap(\.position).max() ?? -1
+        var nextPosition = maxPosition + 1
+
+        // Assign positions
+        for item in sortedItems {
+            item.position = nextPosition
+            nextPosition += 1
+        }
+
+        try modelContext.save()
+        AppLogger.general.info("Backfilled \(sortedItems.count, privacy: .public) positions")
     }
 }

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 // MARK: - Toast Type
 
 enum ToastType {
@@ -18,19 +17,19 @@ enum ToastType {
 
     var iconName: String {
         switch self {
-        case .success: return Icons.checkCircleFilled
-        case .error: return Icons.closeCircleFilled
-        case .info: return Icons.infoCircleFilled
-        case .warning: return Icons.warningFilled
+        case .success: Icons.checkCircleFilled
+        case .error: Icons.closeCircleFilled
+        case .info: Icons.infoCircleFilled
+        case .warning: Icons.warningFilled
         }
     }
 
     func color(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
         switch self {
-        case .success: return Theme.Colors.success(colorScheme, style: style)
-        case .error: return Theme.Colors.destructive(colorScheme, style: style)
-        case .info: return Theme.Colors.accentPrimary(colorScheme, style: style)
-        case .warning: return Theme.Colors.caution(colorScheme, style: style)
+        case .success: Theme.Colors.success(colorScheme, style: style)
+        case .error: Theme.Colors.destructive(colorScheme, style: style)
+        case .info: Theme.Colors.accentPrimary(colorScheme, style: style)
+        case .warning: Theme.Colors.caution(colorScheme, style: style)
         }
     }
 }
@@ -106,11 +105,11 @@ class ToastManager {
             do {
                 try await _Concurrency.Task.sleep(for: .seconds(duration))
                 try _Concurrency.Task.checkCancellation()
-                self.currentToast = nil
+                currentToast = nil
             } catch is CancellationError {
                 return
             } catch {
-                self.currentToast = nil
+                currentToast = nil
             }
         }
     }

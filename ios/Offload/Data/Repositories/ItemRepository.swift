@@ -4,9 +4,8 @@
 // Additional instructions: Keep CRUD logic centralized and consistent with SwiftData models.
 
 import Foundation
-import SwiftData
 import OSLog
-
+import SwiftData
 
 @MainActor
 final class ItemRepository {
@@ -17,6 +16,7 @@ final class ItemRepository {
     }
 
     // MARK: - Create
+
     func create(
         type: String? = nil,
         content: String,
@@ -51,6 +51,7 @@ final class ItemRepository {
     }
 
     // MARK: - Fetch
+
     func fetchAll() throws -> [Item] {
         let descriptor = FetchDescriptor<Item>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
@@ -146,6 +147,7 @@ final class ItemRepository {
     }
 
     // MARK: - Update
+
     func update(_ item: Item) throws {
         let itemId = item.id
         AppLogger.persistence.debug("Updating item - id: \(itemId, privacy: .public)")
@@ -230,6 +232,7 @@ final class ItemRepository {
     }
 
     // MARK: - Bulk Operations
+
     func deleteAll(_ items: [Item]) throws {
         guard !items.isEmpty else { return }
         let count = items.count
@@ -256,11 +259,13 @@ final class ItemRepository {
     }
 
     // MARK: - Validation
+
     func validate(_ item: Item) throws -> Bool {
         !item.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     // MARK: - Delete
+
     func delete(_ item: Item) throws {
         let itemId = item.id
         AppLogger.persistence.debug("Deleting item - id: \(itemId, privacy: .public)")
