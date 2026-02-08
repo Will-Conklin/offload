@@ -1,12 +1,12 @@
 ---
 id: plan-convert-plans-lists
 type: plan
-status: accepted
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - organize
-last_updated: 2026-01-25
+last_updated: 2026-02-08
 related:
   - prd-0003-convert-plans-lists
   - adr-0005-collection-ordering-and-hierarchy-persistence
@@ -45,7 +45,7 @@ ADR-0005.
 
 ### Phase 2: Conversion Logic
 
-**Status:** Not Started
+**Status:** In Progress
 
 - [ ] Add repository support for toggling `Collection.isStructured`.
 - [ ] Flatten hierarchy for plan-to-list by clearing `parentId` and preserving
@@ -89,6 +89,7 @@ ADR-0005.
 
 ## Progress
 
-| Date       | Update                |
-| ---------- | --------------------- |
-| 2026-01-21 | Draft plan created.   |
+| Date       | Update                                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------------- |
+| 2026-01-21 | Draft plan created.                                                                                            |
+| 2026-02-08 | Marked in progress; repository has `updateIsStructured` and backfill helpers, conversion flow not wired yet.   |
