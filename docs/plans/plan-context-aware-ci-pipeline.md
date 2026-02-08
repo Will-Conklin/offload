@@ -91,8 +91,8 @@ run override, and a scheduled full CI run per PRD-0006.
 
 ## Progress
 
-| Date       | Update                                                  |
-| ---------- | ------------------------------------------------------- |
-| 2026-01-22 | Draft plan created.                                     |
-| 2026-01-22 | Implemented workflow gating, lanes, and docs reference. |
+| Date       | Update                                                        |
+| ---------- | ------------------------------------------------------------- |
+| 2026-01-22 | Draft plan created.                                           |
+| 2026-01-22 | Implemented workflow gating, lanes, and docs reference.       |
 | 2026-02-03 | Validated through multiple successful PR runs. Plan complete. |
