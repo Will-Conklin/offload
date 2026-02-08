@@ -84,8 +84,8 @@ preserving ADHD-friendly navigation patterns.
 
 ## Progress
 
-| Date       | Update                                           |
-| ---------- | ------------------------------------------------ |
-| 2026-01-21 | Draft plan created.                              |
-| 2026-01-22 | Shipped the persistent tab shell and CTA layout. |
+| Date       | Update                                                                                       |
+| ---------- | -------------------------------------------------------------------------------------------- |
+| 2026-01-21 | Draft plan created.                                                                          |
+| 2026-01-22 | Shipped the persistent tab shell and CTA layout.                                             |
 | 2026-02-03 | Added MCM redesign with atomic age aesthetic, custom fonts, flat design. Merged via PR #123. |

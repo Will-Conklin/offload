@@ -87,10 +87,10 @@ chips for scoped searches and minimal disruption to existing flows.
 
 ## Progress
 
-| Date       | Update                                                       |
-| ---------- | ------------------------------------------------------------ |
-| 2026-01-21 | Draft plan created.                                          |
-| 2026-02-03 | Phase 1 complete: Search UI implemented for CaptureView.    |
-| 2026-02-03 | Phase 2 complete: Search UI implemented for OrganizeView.   |
-| 2026-02-03 | Phase 3 complete: Tag chip filtering implemented.           |
-| 2026-02-03 | Phase 4 complete: All phases finished.                      |
+| Date       | Update                                                    |
+| ---------- | --------------------------------------------------------- |
+| 2026-01-21 | Draft plan created.                                       |
+| 2026-02-03 | Phase 1 complete: Search UI implemented for CaptureView.  |
+| 2026-02-03 | Phase 2 complete: Search UI implemented for OrganizeView. |
+| 2026-02-03 | Phase 3 complete: Tag chip filtering implemented.         |
+| 2026-02-03 | Phase 4 complete: All phases finished.                    |

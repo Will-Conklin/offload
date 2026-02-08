@@ -14,7 +14,7 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 ## Key Directories
 
 - `ios/Offload/App/` - App entry point, root navigation
-- `ios/Offload/Features/` - Feature modules (Capture, Organize)
+- `ios/Offload/Features/` - Feature modules (Home, Capture, Organize, Settings)
 - `ios/Offload/Domain/Models/` - SwiftData models
 - `ios/Offload/Data/Repositories/` - CRUD/query repositories
 - `ios/Offload/Data/Persistence/` - SwiftData container setup
@@ -115,8 +115,8 @@ Add agent-readable headers to non-Markdown config files that agents read/modify:
 
 ## Agent Handoff Summary
 
-- **Primary views**: `CaptureView` (inbox), `OrganizeView` (plans/lists), `CollectionDetailView` (detail), `SettingsView`
-- **Design system**: `ios/Offload/DesignSystem/Theme.swift` and `Components.swift`; default theme is `elijah`
+- **Primary views**: `HomeView` (dashboard), `CaptureView` (inbox), `OrganizeView` (plans/lists), `CollectionDetailView` (detail), `SettingsView`
+- **Design system**: `ios/Offload/DesignSystem/Theme.swift` and `Components.swift`; theme is `midCenturyModern`
 - **Data model**: `Item.type == nil` = captures; `Collection.isStructured` distinguishes plans vs lists; `CollectionItem` stores order (`position`) and hierarchy (`parentId`)
 - **Relationships**: `Collection.collectionItems` and `Item.collectionItems` use `@Relationship` with cascade delete; `Collection.sortedItems` is canonical ordering
 - **Persistence**: Views use `@Query` for reactive data and `@Environment(\.itemRepository)` etc. for mutations
