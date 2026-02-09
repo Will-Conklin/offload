@@ -15,7 +15,8 @@ depends_on: []
 supersedes: []
 accepted_by: null
 accepted_at: null
-related_issues: []
+related_issues:
+  - https://github.com/Will-Conklin/offload/issues/104
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -94,4 +95,4 @@ ADR-0005.
 | 2026-01-21 | Draft plan created.                                                                                            |
 | 2026-02-08 | Marked in progress; repository has `updateIsStructured` and backfill helpers, conversion flow not wired yet.   |
 | 2026-02-08 | Phases 1-3 complete: context menu, confirmationDialog, depth-first flattening, position backfill all wired.    |
-| 2026-02-08 | Phase 4 QA complete: 8 unit tests added covering item linkage, hierarchy flattening, position backfill, round-trip ordering, empty collection, and warning gate. |
+| 2026-02-08 | Phase 4 QA complete: 8 unit tests for linkage, flattening, backfill, ordering, empty, and gate.                |

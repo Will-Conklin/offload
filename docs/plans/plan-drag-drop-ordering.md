@@ -17,7 +17,8 @@ supersedes: []
 accepted_by: null
 accepted_at: null
 related_issues:
-  - https://github.com/Will-Conklin/Offload/pull/130
+  - https://github.com/Will-Conklin/offload/issues/105
+  - https://github.com/Will-Conklin/offload/pull/130
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

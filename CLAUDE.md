@@ -15,12 +15,11 @@ iOS app built with SwiftUI and SwiftData (iPhone + iPad).
 ```bash
 just                    # List all commands
 just build              # Build (Debug, iOS Simulator)
-just test               # Run tests (needs concrete simulator — see note)
-# Note: `just test` needs a concrete simulator. To run tests:
-# xcodebuild test -project ios/Offload.xcodeproj -scheme Offload -destination 'platform=iOS Simulator,name=iPhone 16'
+just test               # Run tests (uses CI_SIM_DEVICE from readiness-env.sh)
 just lint               # Run markdownlint + yamllint
 just lint-docs          # Markdownlint only
 just lint-yaml          # Yamllint only
+just security           # Run Snyk dependency + code scans
 just xcode-open         # Open project in Xcode
 ```
 
@@ -35,6 +34,8 @@ just xcode-open         # Open project in Xcode
 
 ## Gotchas
 
+- CI markdownlint runs strict (no `--fix`); table column alignment (MD060) must be manually correct
+- PRs for plan work must include `Closes #<issue-number>` in the body (see plan's `related_issues` for the issue number)
 - SwiftData predicates require explicit type references for enum cases
 - Repositories must be injected via `@State` + `.task`, not created in `body`
 - `.draggable()` must be on card content directly, not on wrappers with buttons
@@ -42,6 +43,7 @@ just xcode-open         # Open project in Xcode
 - `.accessibilityCustomAction` fails after `.contextMenu{}` — use `.accessibilityAction(named:)` instead
 - `@Environment(\.accessibilityReduceMotion)` only works in Views; use `UIAccessibility.isReduceMotionEnabled` in classes (e.g., ThemeManager)
 - OSLog `privacy:` only works inside string interpolation `\(value, privacy: .public)`, not as a standalone log argument
+- xcodebuild requires `-project ios/Offload.xcodeproj`; repo root has no `.xcodeproj`
 
 ## Design System Rules
 

@@ -12,7 +12,8 @@ depends_on: []
 supersedes: []
 accepted_by: null
 accepted_at: null
-related_issues: []
+related_issues:
+  - https://github.com/Will-Conklin/offload/issues/107
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
