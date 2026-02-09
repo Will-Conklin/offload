@@ -18,6 +18,7 @@ struct CollectionDetailView: View {
     @Environment(\.collectionItemRepository) private var collectionItemRepository
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var themeManager: ThemeManager
 
     @State private var collection: Collection?
@@ -97,14 +98,22 @@ struct CollectionDetailView: View {
                                             },
                                             onToggleExpand: {
                                                 toggleExpanded(collectionItem.id)
-                                            }
+                                            },
+                                            onMoveUp: index > 0 ? {
+                                                let targetId = visiblePlanItems[index - 1].id
+                                                handlePlanDrop(droppedId: collectionItem.id, targetId: targetId, isNesting: false)
+                                            } : nil,
+                                            onMoveDown: index < visiblePlanItems.count - 1 ? {
+                                                let targetId = visiblePlanItems[index + 1].id
+                                                handlePlanDrop(droppedId: collectionItem.id, targetId: targetId, isNesting: false)
+                                            } : nil
                                         )
                                         .onAppear {
                                             if index == visiblePlanItems.count - 1 {
                                                 loadNextPage()
                                             }
                                         }
-                                        .transition(.move(edge: .top).combined(with: .opacity))
+                                        .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
                                     }
                                 }
 
@@ -124,7 +133,7 @@ struct CollectionDetailView: View {
                                 }
                             }
                             .padding(.horizontal, Theme.Spacing.md)
-                            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: visiblePlanItems.map(\.id))
+                            .animation(reduceMotion ? .default : .spring(response: 0.3, dampingFraction: 0.8), value: visiblePlanItems.map(\.id))
                         } else {
                             // Unstructured collections (lists) - support basic reordering
                             LazyVStack(spacing: Theme.Spacing.md) {
@@ -154,7 +163,7 @@ struct CollectionDetailView: View {
                                                 loadNextPage()
                                             }
                                         }
-                                        .transition(.move(edge: .top).combined(with: .opacity))
+                                        .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
                                     }
                                 }
 
@@ -174,7 +183,7 @@ struct CollectionDetailView: View {
                                 }
                             }
                             .padding(.horizontal, Theme.Spacing.md)
-                            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.items.map(\.id))
+                            .animation(reduceMotion ? .default : .spring(response: 0.3, dampingFraction: 0.8), value: viewModel.items.map(\.id))
                         }
                     }
                     .padding(.top, Theme.Spacing.sm)
@@ -208,7 +217,7 @@ struct CollectionDetailView: View {
                     IconTile(
                         iconName: Icons.addCircleFilled,
                         iconSize: 18,
-                        tileSize: 32,
+                        tileSize: 44,
                         style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
                     )
                 }
@@ -218,7 +227,7 @@ struct CollectionDetailView: View {
                     IconTile(
                         iconName: Icons.write,
                         iconSize: 18,
-                        tileSize: 32,
+                        tileSize: 44,
                         style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
                     )
                 }
@@ -555,10 +564,13 @@ private struct HierarchicalItemRow: View {
     let onError: (Error) -> Void
     let onDrop: (UUID, UUID, Bool) -> Void
     let onToggleExpand: () -> Void
+    var onMoveUp: (() -> Void)?
+    var onMoveDown: (() -> Void)?
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.collectionItemRepository) private var collectionItemRepository
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingMenu = false
     @State private var linkedCollectionName: String?
     @State private var isDropTarget = false
@@ -603,7 +615,7 @@ private struct HierarchicalItemRow: View {
                         Color.clear
                     }
                 }
-                .frame(width: 24, height: 24)
+                .frame(width: 44, height: 44)
                 .buttonStyle(.plain)
                 .disabled(!hasChildren)
                 .padding(.trailing, Theme.Spacing.xs)
@@ -651,7 +663,7 @@ private struct HierarchicalItemRow: View {
                 onDrop(droppedId, collectionItem.id, false)
                 return true
             } isTargeted: { isTargeted in
-                withAnimation(.easeInOut(duration: 0.2)) {
+                withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
                     isDropTarget = isTargeted
                 }
             }
@@ -665,7 +677,13 @@ private struct HierarchicalItemRow: View {
                         .transition(.opacity)
                 }
             }
-            .animation(.easeInOut(duration: 0.2), value: isDropTarget)
+            .animation(reduceMotion ? .default : .easeInOut(duration: 0.2), value: isDropTarget)
+        }
+        .accessibilityAction(named: "Move up") {
+            onMoveUp?()
+        }
+        .accessibilityAction(named: "Move down") {
+            onMoveDown?()
         }
         .onAppear {
             calculateNestingLevel()
@@ -711,6 +729,7 @@ private struct BottomDropZone: View {
     let style: ThemeStyle
     let onDrop: (UUID) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isDropTarget = false
 
     var body: some View {
@@ -739,7 +758,7 @@ private struct BottomDropZone: View {
                 onDrop(droppedId)
                 return true
             } isTargeted: { isTargeted in
-                withAnimation(.easeInOut(duration: 0.2)) {
+                withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
                     isDropTarget = isTargeted
                 }
             }
@@ -760,6 +779,7 @@ private struct DraggableItemRow: View {
     let onError: (Error) -> Void
     let onDrop: (UUID, UUID) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isDropTarget = false
 
     var body: some View {
@@ -804,7 +824,7 @@ private struct DraggableItemRow: View {
             onDrop(droppedId, collectionItem.id)
             return true
         } isTargeted: { isTargeted in
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
                 isDropTarget = isTargeted
             }
         }
@@ -818,7 +838,7 @@ private struct DraggableItemRow: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: isDropTarget)
+        .animation(reduceMotion ? .default : .easeInOut(duration: 0.2), value: isDropTarget)
     }
 }
 
@@ -868,7 +888,7 @@ private struct ItemRow: View {
                 IconTile(
                     iconName: Icons.more,
                     iconSize: 16,
-                    tileSize: 32,
+                    tileSize: 44,
                     style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
                 )
             }
@@ -1172,7 +1192,7 @@ private struct AddItemSheet: View {
                                 IconTile(
                                     iconName: Icons.closeCircleFilled,
                                     iconSize: 16,
-                                    tileSize: 32,
+                                    tileSize: 44,
                                     style: .primaryFilled(Theme.Colors.destructive(colorScheme, style: style))
                                 )
                                 .shadow(color: Theme.Shadows.ultraLight(colorScheme), radius: Theme.Shadows.elevationUltraLight, y: Theme.Shadows.offsetYUltraLight)

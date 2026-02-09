@@ -14,6 +14,7 @@ struct FloatingActionButton: View {
     let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var themeManager: ThemeManager
 
     @State private var isPressed = false
@@ -32,7 +33,7 @@ struct FloatingActionButton: View {
             }
             .font(.system(.footnote, design: .default).weight(.black))
             .tracking(0.8)
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
             .padding(.vertical, Theme.Spacing.sm + 2)
             .padding(.horizontal, Theme.Spacing.md + 4)
             .background(
@@ -62,7 +63,8 @@ struct FloatingActionButton: View {
                 .onChanged { _ in isPressed = true }
                 .onEnded { _ in isPressed = false }
         )
-        .animation(Theme.Animations.mechanicalSlide, value: isPressed)
+        .animation(Theme.Animations.motion(.easeInOut(duration: 0.4), reduceMotion: reduceMotion), value: isPressed)
+        .accessibilityLabel(title)
     }
 }
 
@@ -91,6 +93,8 @@ struct StarButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(isStarred ? "Unstar" : "Star")
+        .accessibilityValue(isStarred ? "starred" : "not starred")
+        .accessibilityHint("Toggles favorite status")
     }
 }
 
@@ -195,6 +199,7 @@ struct CardSurface<Content: View>: View {
     let content: Content
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var themeManager: ThemeManager
 
     @State private var isPressed = false
@@ -266,7 +271,7 @@ struct CardSurface<Content: View>: View {
                 ? AnyShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.xl, style: .continuous))
                 : shape)
             .scaleEffect(isPressed ? 0.97 : 1.0)
-            .animation(Theme.Animations.mechanicalSlide, value: isPressed)
+            .animation(Theme.Animations.motion(.easeInOut(duration: 0.4), reduceMotion: reduceMotion), value: isPressed)
     }
 
     @ViewBuilder
@@ -447,13 +452,15 @@ struct TagPill: View {
     let color: Color
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @EnvironmentObject private var themeManager: ThemeManager
     @State private var isPressed = false
 
     var body: some View {
         Text(name.uppercased())
             .font(.system(size: 10, weight: .bold, design: .default))
             .tracking(0.5)
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: themeManager.currentStyle))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(
@@ -470,7 +477,7 @@ struct TagPill: View {
                     )
             )
             .scaleEffect(isPressed ? 0.95 : 1.0)
-            .animation(Theme.Animations.mechanicalSlide, value: isPressed)
+            .animation(Theme.Animations.motion(.easeInOut(duration: 0.4), reduceMotion: reduceMotion), value: isPressed)
     }
 }
 
@@ -509,6 +516,7 @@ struct ItemActionButton: View {
     let iconName: String
     let tint: Color
     var variant: Variant = .plain
+    var label: String = ""
     let action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
@@ -523,6 +531,7 @@ struct ItemActionButton: View {
                 .clipShape(Circle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(label)
     }
 
     private var foreground: Color {
@@ -724,7 +733,7 @@ struct MCMCardContent: View {
                             Text(tag.name.uppercased())
                                 .font(.system(size: size == .compact ? 8 : 10, weight: .bold, design: .default))
                                 .tracking(0.5)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
                                 .padding(.horizontal, size == .compact ? 8 : 10)
                                 .padding(.vertical, size == .compact ? 4 : 6)
                                 .background(

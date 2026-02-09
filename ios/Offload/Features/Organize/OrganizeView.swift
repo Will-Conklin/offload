@@ -83,7 +83,7 @@ struct OrganizeView: View {
                         IconTile(
                             iconName: Icons.addCircleFilled,
                             iconSize: 18,
-                            tileSize: 32,
+                            tileSize: 44,
                             style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
                         )
                     }
@@ -95,7 +95,7 @@ struct OrganizeView: View {
                         IconTile(
                             iconName: Icons.search,
                             iconSize: 18,
-                            tileSize: 32,
+                            tileSize: 44,
                             style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
                         )
                     }
@@ -105,7 +105,7 @@ struct OrganizeView: View {
                         IconTile(
                             iconName: Icons.settings,
                             iconSize: 18,
-                            tileSize: 32,
+                            tileSize: 44,
                             style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
                         )
                     }
@@ -166,7 +166,15 @@ struct OrganizeView: View {
                     onToggleStar: { toggleStar(collection) },
                     onDrop: { droppedId, targetId in
                         handleCollectionReorder(droppedId: droppedId, targetId: targetId)
-                    }
+                    },
+                    onMoveUp: index > 0 ? {
+                        let targetId = viewModel.collections[index - 1].id
+                        handleCollectionReorder(droppedId: collection.id, targetId: targetId)
+                    } : nil,
+                    onMoveDown: index < viewModel.collections.count - 1 ? {
+                        let targetId = viewModel.collections[index + 1].id
+                        handleCollectionReorder(droppedId: collection.id, targetId: targetId)
+                    } : nil
                 )
                 .onAppear {
                     if index == viewModel.collections.count - 1 {
@@ -399,7 +407,10 @@ private struct DraggableCollectionCard: View {
     let onAddTag: () -> Void
     let onToggleStar: () -> Void
     let onDrop: (UUID, UUID) -> Void
+    var onMoveUp: (() -> Void)?
+    var onMoveDown: (() -> Void)?
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isDropTarget = false
 
     var body: some View {
@@ -443,7 +454,7 @@ private struct DraggableCollectionCard: View {
             onDrop(droppedId, collection.id)
             return true
         } isTargeted: { isTargeted in
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
                 isDropTarget = isTargeted
             }
         }
@@ -457,7 +468,14 @@ private struct DraggableCollectionCard: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: isDropTarget)
+        .animation(reduceMotion ? .default : .easeInOut(duration: 0.2), value: isDropTarget)
+        .accessibilityElement(children: .combine)
+        .accessibilityAction(named: "Move up") {
+            onMoveUp?()
+        }
+        .accessibilityAction(named: "Move down") {
+            onMoveDown?()
+        }
     }
 }
 
@@ -468,6 +486,7 @@ private struct BottomCollectionDropZone: View {
     let style: ThemeStyle
     let onDrop: (UUID) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isDropTarget = false
 
     var body: some View {
@@ -496,7 +515,7 @@ private struct BottomCollectionDropZone: View {
                 onDrop(droppedId)
                 return true
             } isTargeted: { isTargeted in
-                withAnimation(.easeInOut(duration: 0.2)) {
+                withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
                     isDropTarget = isTargeted
                 }
             }
@@ -724,6 +743,7 @@ private struct OrganizeSearchView: View {
     @State private var searchResults: [Collection] = []
     @State private var matchingTags: [Tag] = []
     @State private var selectedTags: Set<UUID> = []
+    @State private var isSearching = false
     @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -829,6 +849,9 @@ private struct OrganizeSearchView: View {
                         LazyVStack(spacing: Theme.Spacing.md) {
                             if searchQuery.isEmpty {
                                 emptyQueryState
+                            } else if isSearching {
+                                ProgressView()
+                                    .padding(.vertical, Theme.Spacing.xl)
                             } else if searchResults.isEmpty {
                                 noResultsState
                             } else {
@@ -899,8 +922,12 @@ private struct OrganizeSearchView: View {
             searchResults = []
             matchingTags = []
             selectedTags.removeAll()
+            isSearching = false
             return
         }
+
+        isSearching = true
+        defer { isSearching = false }
 
         do {
             // Search for matching tags

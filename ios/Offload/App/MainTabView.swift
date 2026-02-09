@@ -90,6 +90,8 @@ private struct FloatingTabBar: View {
     let onQuickWrite: () -> Void
     let onQuickVoice: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         ZStack {
             // Bar connects to bottom
@@ -156,7 +158,7 @@ private struct FloatingTabBar: View {
             .offset(y: 0)
         }
         .frame(height: 60)
-        .animation(Theme.Animations.mechanicalSlide, value: selectedTab)
+        .animation(Theme.Animations.motion(.easeInOut(duration: 0.4), reduceMotion: reduceMotion), value: selectedTab)
     }
 }
 
@@ -190,6 +192,7 @@ private struct OffloadCTA: View {
     let onQuickVoice: () -> Void
     @State private var isExpanded = false
     @State private var quickActionBounce: CGFloat = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let mainButtonSize: CGFloat = 64
     private let quickActionLift: CGFloat = 64
@@ -198,7 +201,7 @@ private struct OffloadCTA: View {
     private var quickActionYOffset: CGFloat { mainButtonYOffset - quickActionLift }
 
     private var expansionAnimation: Animation {
-        .spring(response: 0.4, dampingFraction: 0.6)
+        reduceMotion ? .default : .spring(response: 0.4, dampingFraction: 0.6)
     }
 
     var body: some View {
@@ -238,10 +241,11 @@ private struct OffloadCTA: View {
             return
         }
 
-        quickActionBounce = 12
+        quickActionBounce = reduceMotion ? 0 : 12
         withAnimation(expansionAnimation) {
             isExpanded = true
         }
+        guard !reduceMotion else { return }
         withAnimation(.spring(response: 0.28, dampingFraction: 0.5)) {
             quickActionBounce = -6
         }
@@ -269,6 +273,8 @@ private struct OffloadMainButton: View {
     let isExpanded: Bool
     let action: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         Button(action: action) {
             ZStack {
@@ -293,12 +299,12 @@ private struct OffloadMainButton: View {
 
                 // Plus icon
                 AppIcon(name: Icons.add, size: 24)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
                     .rotationEffect(.degrees(isExpanded ? 45 : 0))
             }
         }
         .buttonStyle(.plain)
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isExpanded)
+        .animation(Theme.Animations.motion(.spring(response: 0.4, dampingFraction: 0.7), reduceMotion: reduceMotion), value: isExpanded)
         .accessibilityLabel(isExpanded ? "Close Offload actions" : "Offload")
         .accessibilityHint("Shows quick capture actions")
     }
@@ -309,6 +315,10 @@ private struct OffloadQuickActionButton: View {
     let iconName: String
     let gradient: [Color]
     let action: () -> Void
+
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
+    private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
         Button(action: action) {
@@ -326,13 +336,14 @@ private struct OffloadQuickActionButton: View {
 
                 ZStack {
                     AppIcon(name: iconName, size: 24)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
                 }
                 .frame(width: 56, height: 56)
             }
         }
         .buttonStyle(.plain)
         .accessibilityLabel(title)
+        .accessibilityHint("Opens \(title) capture")
     }
 }
 
@@ -342,6 +353,8 @@ private struct OffloadQuickActionTray: View {
     let isExpanded: Bool
     let onQuickWrite: () -> Void
     let onQuickVoice: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
@@ -371,7 +384,7 @@ private struct OffloadQuickActionTray: View {
         .scaleEffect(isExpanded ? 1 : 0.6, anchor: .bottom)
         .allowsHitTesting(isExpanded)
         .accessibilityHidden(!isExpanded)
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isExpanded)
+        .animation(Theme.Animations.motion(.spring(response: 0.4, dampingFraction: 0.7), reduceMotion: reduceMotion), value: isExpanded)
     }
 }
 
@@ -383,6 +396,8 @@ private struct TabButton: View {
     let colorScheme: ColorScheme
     let style: ThemeStyle
     let action: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: action) {
@@ -405,7 +420,7 @@ private struct TabButton: View {
                                 )
                             )
                             .frame(width: 44, height: 44)
-                            .transition(.scale.combined(with: .opacity))
+                            .transition(reduceMotion ? .opacity : .scale.combined(with: .opacity))
                     } else {
                         Circle()
                             .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.08))
@@ -441,8 +456,9 @@ private struct TabButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+        .animation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion), value: isSelected)
         .accessibilityLabel(tab.label)
+        .accessibilityValue(isSelected ? "selected" : "")
     }
 }
 

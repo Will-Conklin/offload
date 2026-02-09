@@ -124,6 +124,7 @@ class ToastManager {
 
 struct ToastModifier: ViewModifier {
     @State private var toastManager = ToastManager()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
         content
@@ -131,8 +132,14 @@ struct ToastModifier: ViewModifier {
             .overlay(alignment: .top) {
                 if let toast = toastManager.currentToast {
                     ToastView(toast: toast)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: toastManager.currentToast)
+                        .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+                        .animation(
+                            Theme.Animations.motion(
+                                .spring(response: 0.4, dampingFraction: 0.8),
+                                reduceMotion: reduceMotion
+                            ),
+                            value: toastManager.currentToast
+                        )
                         .padding(.top, Theme.Spacing.md)
                         .onTapGesture {
                             toastManager.dismiss()

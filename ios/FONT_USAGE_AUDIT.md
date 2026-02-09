@@ -3,7 +3,9 @@
 ## Status: Fonts Loading ✅ But Underutilized
 
 ### Font Loading Status
+
 ✅ **Fonts are loading correctly**
+
 - BebasNeue-Regular.ttf (61KB) - Loaded
 - SpaceGrotesk variable font (133KB) - Loaded with all weights
 - Console shows successful registration of all weight variants
@@ -13,6 +15,7 @@
 **Total Theme.Typography usages:** 32 occurrences across the codebase
 
 **Files using custom fonts:**
+
 1. `ToastView.swift` - 1 usage (body)
 2. `Components.swift` - 1 usage (metadata)
 3. `AccountView.swift` - 2 usages (title2, body)
@@ -25,6 +28,7 @@
 ### Direct System Font Usage Found
 
 **OrganizeView.swift:339** - Using system font directly instead of Theme.Typography:
+
 ```swift
 .font(.system(.title2, design: .default).weight(.bold))
 ```
@@ -34,6 +38,7 @@ Should use: `Theme.Typography.title2`
 ### MCM Typography Available (Currently Defined)
 
 **Display Fonts (Bebas Neue):**
+
 - largeTitle (34pt)
 - title (28pt)
 - title2 (22pt)
@@ -45,6 +50,7 @@ Should use: `Theme.Typography.title2`
 - buttonLabelEmphasis (18pt)
 
 **Body Fonts (Space Grotesk):**
+
 - body (17pt)
 - callout (16pt)
 - subheadline (15pt)
@@ -76,6 +82,7 @@ Should use: `Theme.Typography.title2`
 ### Next Steps
 
 If you want the full MCM design aesthetic:
+
 - Audit all text elements in the app
 - Replace system font usages with appropriate Theme.Typography styles
 - This would be a separate styling/polish task

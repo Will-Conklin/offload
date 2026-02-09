@@ -25,6 +25,7 @@ struct CaptureComposeView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var themeManager: ThemeManager
 
     @State private var text: String = ""
@@ -191,7 +192,7 @@ struct CaptureComposeView: View {
                             IconTile(
                                 iconName: Icons.closeCircleFilled,
                                 iconSize: 16,
-                                tileSize: 32,
+                                tileSize: 44,
                                 style: .primaryFilled(Theme.Colors.destructive(colorScheme, style: style))
                             )
                             .shadow(
@@ -365,7 +366,7 @@ struct CaptureComposeView: View {
             AppLogger.workflow.info("CaptureCompose save completed - id: \(item.id, privacy: .public)")
 
             // Trigger typewriter ding animation
-            withAnimation(Theme.Animations.typewriterDing) {
+            withAnimation(reduceMotion ? .default : Theme.Animations.typewriterDing) {
                 captureConfirmed = true
             }
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()

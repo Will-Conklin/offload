@@ -40,7 +40,7 @@ struct SettingsView: View {
                             IconTile(
                                 iconName: Icons.tag,
                                 iconSize: 16,
-                                tileSize: 32,
+                                tileSize: 44,
                                 style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
                             )
                             Text("Tags")
@@ -140,7 +140,7 @@ private struct TagManagementView: View {
                         IconTile(
                             iconName: Icons.add,
                             iconSize: 16,
-                            tileSize: 32,
+                            tileSize: 44,
                             style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
                         )
                         Text("Add Tag")

@@ -96,7 +96,7 @@ struct CaptureView: View {
                         IconTile(
                             iconName: Icons.search,
                             iconSize: 18,
-                            tileSize: 32,
+                            tileSize: 44,
                             style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
                         )
                     }
@@ -108,7 +108,7 @@ struct CaptureView: View {
                         IconTile(
                             iconName: Icons.settings,
                             iconSize: 18,
-                            tileSize: 32,
+                            tileSize: 44,
                             style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
                         )
                     }
@@ -274,6 +274,7 @@ private struct ItemCard: View {
     let onComplete: () -> Void
     let onMoveTo: (MoveDestination) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var offset: CGFloat = 0
     @State private var crtFlickerOpacity: Double = 1
 
@@ -335,7 +336,7 @@ private struct ItemCard: View {
                         return
                     }
 
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    withAnimation(reduceMotion ? .default : .spring(response: 0.3, dampingFraction: 0.7)) {
                         if dx > 100 {
                             offset = 0
                             onComplete()
@@ -348,6 +349,12 @@ private struct ItemCard: View {
                     }
                 }
         )
+        .accessibilityAction(named: "Complete") {
+            onComplete()
+        }
+        .accessibilityAction(named: "Delete") {
+            onDelete()
+        }
         .contextMenu {
             Button {
                 onMoveTo(.plan)
@@ -433,6 +440,7 @@ private struct MoveToPlanSheet: View {
     @State private var selectedCollection: Collection?
     @State private var createNew = false
     @State private var newPlanName = ""
+    @State private var isLoading = true
     @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -440,7 +448,15 @@ private struct MoveToPlanSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                if !collections.isEmpty {
+                if isLoading {
+                    Section {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                    }
+                } else if !collections.isEmpty {
                     Section("Select Plan") {
                         ForEach(collections) { collection in
                             Button {
@@ -497,6 +513,7 @@ private struct MoveToPlanSheet: View {
             errorPresenter.present(error)
             collections = []
         }
+        isLoading = false
     }
 
     private func moveToSelectedPlan() {
@@ -555,6 +572,7 @@ private struct MoveToListSheet: View {
     @State private var selectedCollection: Collection?
     @State private var createNew = false
     @State private var newListName = ""
+    @State private var isLoading = true
     @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -562,7 +580,15 @@ private struct MoveToListSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                if !collections.isEmpty {
+                if isLoading {
+                    Section {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                    }
+                } else if !collections.isEmpty {
                     Section("Select List") {
                         ForEach(collections) { collection in
                             Button {
@@ -619,6 +645,7 @@ private struct MoveToListSheet: View {
             errorPresenter.present(error)
             collections = []
         }
+        isLoading = false
     }
 
     private func moveToSelectedList() {
@@ -672,6 +699,7 @@ private struct CaptureSearchView: View {
     @State private var searchResults: [Item] = []
     @State private var matchingTags: [Tag] = []
     @State private var selectedTags: Set<UUID> = []
+    @State private var isSearching = false
     @State private var errorPresenter = ErrorPresenter()
     @FocusState private var isSearchFocused: Bool
 
@@ -774,6 +802,10 @@ private struct CaptureSearchView: View {
                                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         }
                         Spacer()
+                    } else if isSearching {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
                     } else if searchResults.isEmpty {
                         EmptyStateView(
                             iconName: Icons.search,
@@ -829,8 +861,12 @@ private struct CaptureSearchView: View {
             searchResults = []
             matchingTags = []
             selectedTags.removeAll()
+            isSearching = false
             return
         }
+
+        isSearching = true
+        defer { isSearching = false }
 
         do {
             // Search for matching tags

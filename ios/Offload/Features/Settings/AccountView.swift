@@ -41,7 +41,7 @@ struct AccountView: View {
                         IconTile(
                             iconName: Icons.settings,
                             iconSize: 18,
-                            tileSize: 32,
+                            tileSize: 44,
                             style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
                         )
                     }

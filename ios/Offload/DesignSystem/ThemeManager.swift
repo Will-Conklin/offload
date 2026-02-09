@@ -43,7 +43,8 @@ class ThemeManager: ObservableObject {
     @Published var currentStyle: ThemeStyle {
         didSet {
             guard oldValue.rawValue != currentStyle.rawValue else { return }
-            withAnimation(.easeInOut(duration: 0.25)) {
+            let animation: Animation? = UIAccessibility.isReduceMotionEnabled ? nil : .easeInOut(duration: 0.25)
+            withAnimation(animation) {
                 UserDefaults.standard.set(currentStyle.rawValue, forKey: Keys.selectedThemeStyle)
             }
         }
@@ -96,7 +97,8 @@ class ThemeManager: ObservableObject {
 
     /// Update the current theme style
     func setTheme(_ style: ThemeStyle) {
-        withAnimation(.easeInOut(duration: 0.25)) {
+        let animation: Animation? = UIAccessibility.isReduceMotionEnabled ? nil : .easeInOut(duration: 0.25)
+        withAnimation(animation) {
             currentStyle = style
         }
     }
