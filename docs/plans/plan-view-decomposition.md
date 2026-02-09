@@ -1,12 +1,12 @@
 ---
 id: plan-view-decomposition
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
 depends_on: []
