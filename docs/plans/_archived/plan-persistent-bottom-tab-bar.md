@@ -1,7 +1,7 @@
 ---
 id: plan-persistent-bottom-tab-bar
 type: plan
-status: complete
+status: archived
 owners:
   - Will-Conklin
 applies_to:

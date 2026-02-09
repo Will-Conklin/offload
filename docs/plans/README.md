@@ -64,15 +64,13 @@ proposed → accepted → in-progress → completed/archived
 
 - [Plan: Testing & Polish](./plan-testing-polish.md)
 - [Plan: Release Prep](./plan-release-prep.md)
+- [Plan: UX & Accessibility Audit Fixes](./plan-ux-accessibility-audit-fixes.md)
 
-### Accepted
+### Complete (Awaiting User Verification)
 
-- [Plan: Persistent Bottom Tab Bar](./plan-persistent-bottom-tab-bar.md)
 - [Plan: Convert Plans and Lists](./plan-convert-plans-lists.md)
 - [Plan: Drag and Drop Ordering](./plan-drag-drop-ordering.md)
 - [Plan: Item Search by Text or Tag](./plan-item-search-tags.md)
-- [Plan: Logging Implementation](./plan-logging-implementation.md)
-- [Plan: Context-Aware CI Pipeline](./plan-context-aware-ci-pipeline.md)
 
 ### Proposed (Pending Confirmations)
 
@@ -92,6 +90,9 @@ Archived plans have been moved to `_archived/`. See
 Notable archived plans include:
 
 - [Offload Roadmap](./_archived/plan-roadmap.md)
+- [Persistent Bottom Tab Bar](./_archived/plan-persistent-bottom-tab-bar.md)
+- [Logging Implementation](./_archived/plan-logging-implementation.md)
+- [Context-Aware CI Pipeline](./_archived/plan-context-aware-ci-pipeline.md)
 
 ## Template
 
