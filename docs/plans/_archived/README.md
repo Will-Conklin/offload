@@ -7,7 +7,7 @@ owners:
 applies_to:
   - plans
   - archived
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-archived-brain-dump-model
   - plan-archived-consolidated-implementation-plan
@@ -21,6 +21,9 @@ related:
   - plan-archived-tag-relationship-refactor
   - plan-archived-view-decomposition
   - plan-roadmap
+  - plan-persistent-bottom-tab-bar
+  - plan-logging-implementation
+  - plan-context-aware-ci-pipeline
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -66,6 +69,9 @@ Same authority as plans, but no longer active. Archived plans are historical rec
 - [Tag Relationship Refactor Plan](./plan-archived-tag-relationship-refactor.md)
 - [View Decomposition Plan](./plan-archived-view-decomposition.md)
 - [Offload Roadmap](./plan-roadmap.md)
+- [Persistent Bottom Tab Bar](./plan-persistent-bottom-tab-bar.md)
+- [Logging Implementation](./plan-logging-implementation.md)
+- [Context-Aware CI Pipeline](./plan-context-aware-ci-pipeline.md)
 
 ## Naming
 

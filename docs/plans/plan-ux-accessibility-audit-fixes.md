@@ -1,7 +1,7 @@
 ---
 id: plan-ux-accessibility-audit-fixes
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
