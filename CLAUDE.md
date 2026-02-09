@@ -15,12 +15,11 @@ iOS app built with SwiftUI and SwiftData (iPhone + iPad).
 ```bash
 just                    # List all commands
 just build              # Build (Debug, iOS Simulator)
-just test               # Run tests (needs concrete simulator — see note)
-# Note: `just test` needs a concrete simulator. To run tests:
-# xcodebuild test -project ios/Offload.xcodeproj -scheme Offload -destination 'platform=iOS Simulator,name=iPhone 16'
+just test               # Run tests (uses CI_SIM_DEVICE from readiness-env.sh)
 just lint               # Run markdownlint + yamllint
 just lint-docs          # Markdownlint only
 just lint-yaml          # Yamllint only
+just security           # Run Snyk dependency + code scans
 just xcode-open         # Open project in Xcode
 ```
 
