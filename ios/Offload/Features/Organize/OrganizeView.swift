@@ -140,17 +140,19 @@ struct OrganizeView: View {
                 CollectionDetailView(collectionID: collection.id)
                     .environmentObject(themeManager)
             }
-            .alert("Convert to List?", isPresented: $showConversionConfirmation) {
-                Button("Cancel", role: .cancel) {
-                    collectionToConvert = nil
-                }
-                Button("Convert", role: .destructive) {
+            .confirmationDialog(
+                "This will flatten the plan's hierarchy. All items will be preserved but parent-child relationships will be lost.",
+                isPresented: $showConversionConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Convert to List", role: .destructive) {
                     if let collection = collectionToConvert {
                         performConversion(collection)
                     }
                 }
-            } message: {
-                Text("This will flatten the plan's hierarchy. All items will be preserved but parent-child relationships will be lost.")
+                Button("Cancel", role: .cancel) {
+                    collectionToConvert = nil
+                }
             }
             .errorToasts(errorPresenter)
         }

@@ -38,32 +38,32 @@ ADR-0005.
 
 ### Phase 1: UX and Entry Points
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Add a context menu action on collection cards for conversion.
-- [ ] Define concise warning copy for plan-to-list conversion.
+- [x] Add a context menu action on collection cards for conversion.
+- [x] Define concise warning copy for plan-to-list conversion.
 
 ### Phase 2: Conversion Logic
 
-**Status:** In Progress
+**Status:** Complete
 
-- [ ] Add repository support for toggling `Collection.isStructured`.
-- [ ] Flatten hierarchy for plan-to-list by clearing `parentId` and preserving
-      order.
-- [ ] Preserve ordering for list-to-plan conversion.
-- [ ] Backfill `CollectionItem.position` for unstructured lists to ensure
+- [x] Add repository support for toggling `Collection.isStructured`.
+- [x] Flatten hierarchy for plan-to-list by clearing `parentId` and preserving
+      depth-first order.
+- [x] Preserve ordering for list-to-plan conversion.
+- [x] Backfill `CollectionItem.position` for unstructured lists to ensure
       consistent ordering post-conversion.
 
 ### Phase 3: UI Wiring
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] Wire confirmation dialog for plan-to-list conversion.
-- [ ] Refresh Organize and detail views after conversion.
+- [x] Wire confirmation dialog for plan-to-list conversion.
+- [x] Refresh Organize and detail views after conversion.
 
 ### Phase 4: QA
 
-**Status:** Not Started
+**Status:** In Progress
 
 - [ ] Verify items remain linked after conversion.
 - [ ] Confirm plan-to-list warning appears only when required.
@@ -93,3 +93,4 @@ ADR-0005.
 | ---------- | -------------------------------------------------------------------------------------------------------------- |
 | 2026-01-21 | Draft plan created.                                                                                            |
 | 2026-02-08 | Marked in progress; repository has `updateIsStructured` and backfill helpers, conversion flow not wired yet.   |
+| 2026-02-08 | Phases 1-3 complete: context menu, confirmationDialog, depth-first flattening, position backfill all wired.    |

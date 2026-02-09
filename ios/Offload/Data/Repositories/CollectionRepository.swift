@@ -69,13 +69,13 @@ final class CollectionRepository {
         // Sort by position (if set), then by createdAt
         return collections.sorted { c1, c2 in
             if let p1 = c1.position, let p2 = c2.position {
-                return p1 < p2
+                p1 < p2
             } else if c1.position != nil {
-                return true  // c1 has position, c2 doesn't
+                true // c1 has position, c2 doesn't
             } else if c2.position != nil {
-                return false // c2 has position, c1 doesn't
+                false // c2 has position, c1 doesn't
             } else {
-                return c1.createdAt > c2.createdAt // Both nil, use createdAt descending
+                c1.createdAt > c2.createdAt // Both nil, use createdAt descending
             }
         }
     }
@@ -88,13 +88,13 @@ final class CollectionRepository {
         // Sort by position (if set), then by createdAt
         return collections.sorted { c1, c2 in
             if let p1 = c1.position, let p2 = c2.position {
-                return p1 < p2
+                p1 < p2
             } else if c1.position != nil {
-                return true  // c1 has position, c2 doesn't
+                true // c1 has position, c2 doesn't
             } else if c2.position != nil {
-                return false // c2 has position, c1 doesn't
+                false // c2 has position, c1 doesn't
             } else {
-                return c1.createdAt > c2.createdAt // Both nil, use createdAt descending
+                c1.createdAt > c2.createdAt // Both nil, use createdAt descending
             }
         }
     }
@@ -107,18 +107,18 @@ final class CollectionRepository {
         let collections = try modelContext.fetch(descriptor)
         let sorted = collections.sorted { c1, c2 in
             if let p1 = c1.position, let p2 = c2.position {
-                return p1 < p2
+                p1 < p2
             } else if c1.position != nil {
-                return true
+                true
             } else if c2.position != nil {
-                return false
+                false
             } else {
-                return c1.createdAt > c2.createdAt
+                c1.createdAt > c2.createdAt
             }
         }
         let startIndex = min(offset, sorted.count)
         let endIndex = min(offset + limit, sorted.count)
-        return Array(sorted[startIndex..<endIndex])
+        return Array(sorted[startIndex ..< endIndex])
     }
 
     func searchByName(_ query: String) throws -> [Collection] {
@@ -219,30 +219,28 @@ final class CollectionRepository {
         AppLogger.general.info("Converting collection \(collection.name) to \(toStructured ? "structured (plan)" : "unstructured (list)", privacy: .public)")
 
         // If converting from plan to list, flatten hierarchy
-        if collection.isStructured && !toStructured {
-            AppLogger.general.info("Flattening hierarchy for plan-to-list conversion", privacy: .public)
+        if collection.isStructured, !toStructured {
+            AppLogger.general.info("Flattening hierarchy for plan-to-list conversion")
 
             // Get all collection items
             guard let collectionItems = collection.collectionItems else {
-                AppLogger.general.warning("No collection items found during conversion", privacy: .public)
+                AppLogger.general.warning("No collection items found during conversion")
                 collection.isStructured = toStructured
                 try modelContext.save()
                 return
             }
 
-            // Clear parentId from all items and ensure position is set
-            for (index, collectionItem) in collectionItems.enumerated() {
+            // Flatten in depth-first order so nested items read naturally
+            let flattenedItems = depthFirstOrder(collectionItems)
+            for (index, collectionItem) in flattenedItems.enumerated() {
+                collectionItem.position = index
                 collectionItem.parentId = nil
-                // Backfill position if not set
-                if collectionItem.position == nil {
-                    collectionItem.position = index
-                }
             }
         }
 
         // If converting from list to plan, ensure all items have position set
-        if !collection.isStructured && toStructured {
-            AppLogger.general.info("Ensuring positions for list-to-plan conversion", privacy: .public)
+        if !collection.isStructured, toStructured {
+            AppLogger.general.info("Ensuring positions for list-to-plan conversion")
 
             guard let collectionItems = collection.collectionItems else {
                 collection.isStructured = toStructured
@@ -262,7 +260,31 @@ final class CollectionRepository {
         collection.isStructured = toStructured
         try modelContext.save()
 
-        AppLogger.general.info("Collection converted successfully", privacy: .public)
+        AppLogger.general.info("Collection converted successfully")
+    }
+
+    /// Returns items in depth-first order: roots sorted by position, then each root's children recursively.
+    private func depthFirstOrder(_ items: [CollectionItem]) -> [CollectionItem] {
+        let roots = items
+            .filter { $0.parentId == nil }
+            .sorted { ($0.position ?? Int.max) < ($1.position ?? Int.max) }
+
+        var result: [CollectionItem] = []
+        for root in roots {
+            result.append(root)
+            appendChildren(of: root, from: items, to: &result)
+        }
+        return result
+    }
+
+    private func appendChildren(of parent: CollectionItem, from items: [CollectionItem], to result: inout [CollectionItem]) {
+        let children = items
+            .filter { $0.parentId == parent.id }
+            .sorted { ($0.position ?? Int.max) < ($1.position ?? Int.max) }
+        for child in children {
+            result.append(child)
+            appendChildren(of: child, from: items, to: &result)
+        }
     }
 
     func delete(_ collection: Collection) throws {
