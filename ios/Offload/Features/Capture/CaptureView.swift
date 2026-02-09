@@ -790,7 +790,6 @@ private struct CaptureSearchView: View {
                         }
                         .padding(.bottom, Theme.Spacing.sm)
                     }
-
                     // Results
                     if searchQuery.isEmpty {
                         Spacer()
