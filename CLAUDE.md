@@ -15,7 +15,9 @@ iOS app built with SwiftUI and SwiftData (iPhone + iPad).
 ```bash
 just                    # List all commands
 just build              # Build (Debug, iOS Simulator)
-just test               # Run tests
+just test               # Run tests (needs concrete simulator — see note)
+# Note: `just test` needs a concrete simulator. To run tests:
+# xcodebuild test -project ios/Offload.xcodeproj -scheme Offload -destination 'platform=iOS Simulator,name=iPhone 16'
 just lint               # Run markdownlint + yamllint
 just lint-docs          # Markdownlint only
 just lint-yaml          # Yamllint only
@@ -37,6 +39,8 @@ just xcode-open         # Open project in Xcode
 - Repositories must be injected via `@State` + `.task`, not created in `body`
 - `.draggable()` must be on card content directly, not on wrappers with buttons
 - Editing `Domain/Models/*.swift` may require SwiftData migration
+- `.accessibilityCustomAction` fails after `.contextMenu{}` — use `.accessibilityAction(named:)` instead
+- `@Environment(\.accessibilityReduceMotion)` only works in Views; use `UIAccessibility.isReduceMotionEnabled` in classes (e.g., ThemeManager)
 
 ## Design System Rules
 
@@ -76,6 +80,10 @@ private var style: ThemeStyle { themeManager.currentStyle }
 | `Theme.Surface.background/card` | Backgrounds |
 | `Theme.Colors.cardColor(index:)` | 5-color cycling palette for card backgrounds |
 | `Theme.Colors.success/caution/destructive` | Semantic states |
+| `Theme.Colors.accentButtonText/secondaryButtonText` | Contrast-safe text on accent/secondary backgrounds |
+| `Theme.Colors.semanticButtonText/cautionButtonText` | Contrast-safe text on semantic color backgrounds |
+
+Never use `.foregroundStyle(.white)` on colored backgrounds — use the contrast-safe helpers above which adapt for dark mode.
 
 ### Typography
 
@@ -127,6 +135,8 @@ Minimal — prefer `showsBorder` on `CardSurface` over shadows. If needed: `Them
 
 Use `Theme.Animations.*`: `springDefault` (0.3s), `springSnappy` (0.2s), `mechanicalSlide` (0.4s), `snapToGrid`.
 
+All animations MUST respect reduced motion. Use `Theme.Animations.motion(animation, reduceMotion: reduceMotion)` to guard `withAnimation`/`.animation()` calls. Add `@Environment(\.accessibilityReduceMotion) private var reduceMotion` to every view with animations.
+
 ### New View Checklist
 
 1. Inject `colorScheme`, `themeManager`, compute `style`
@@ -136,6 +146,9 @@ Use `Theme.Animations.*`: `springDefault` (0.3s), `springSnappy` (0.2s), `mechan
 5. Use `Theme.Typography.*` for all text
 6. Add `.cardTexture(colorScheme)` to cards
 7. Use existing components before creating new ones
+8. Add `@Environment(\.accessibilityReduceMotion)` and guard all animations
+9. Add `.accessibilityLabel`/`.accessibilityValue`/`.accessibilityHint` to interactive elements
+10. Use contrast-safe text helpers (`accentButtonText`, etc.) on colored backgrounds
 
 ### Figma Integration Rules
 
