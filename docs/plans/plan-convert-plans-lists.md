@@ -1,7 +1,7 @@
 ---
 id: plan-convert-plans-lists
 type: plan
-status: in-progress
+status: complete
 owners:
   - Will-Conklin
 applies_to:
@@ -63,11 +63,11 @@ ADR-0005.
 
 ### Phase 4: QA
 
-**Status:** In Progress
+**Status:** Complete
 
-- [ ] Verify items remain linked after conversion.
-- [ ] Confirm plan-to-list warning appears only when required.
-- [ ] Validate ordering after multiple conversions.
+- [x] Verify items remain linked after conversion.
+- [x] Confirm plan-to-list warning appears only when required.
+- [x] Validate ordering after multiple conversions.
 
 ## Dependencies
 
@@ -94,3 +94,4 @@ ADR-0005.
 | 2026-01-21 | Draft plan created.                                                                                            |
 | 2026-02-08 | Marked in progress; repository has `updateIsStructured` and backfill helpers, conversion flow not wired yet.   |
 | 2026-02-08 | Phases 1-3 complete: context menu, confirmationDialog, depth-first flattening, position backfill all wired.    |
+| 2026-02-08 | Phase 4 QA complete: 8 unit tests added covering item linkage, hierarchy flattening, position backfill, round-trip ordering, empty collection, and warning gate. |
