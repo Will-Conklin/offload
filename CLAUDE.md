@@ -42,6 +42,7 @@ just xcode-open         # Open project in Xcode
 - `.accessibilityCustomAction` fails after `.contextMenu{}` — use `.accessibilityAction(named:)` instead
 - `@Environment(\.accessibilityReduceMotion)` only works in Views; use `UIAccessibility.isReduceMotionEnabled` in classes (e.g., ThemeManager)
 - OSLog `privacy:` only works inside string interpolation `\(value, privacy: .public)`, not as a standalone log argument
+- xcodebuild requires `-project ios/Offload.xcodeproj`; repo root has no `.xcodeproj`
 
 ## Design System Rules
 
