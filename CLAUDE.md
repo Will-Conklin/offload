@@ -35,6 +35,7 @@ just xcode-open         # Open project in Xcode
 
 ## Gotchas
 
+- PRs for plan work must include `Closes #<issue-number>` in the body (see plan's `related_issues` for the issue number)
 - SwiftData predicates require explicit type references for enum cases
 - Repositories must be injected via `@State` + `.task`, not created in `body`
 - `.draggable()` must be on card content directly, not on wrappers with buttons
