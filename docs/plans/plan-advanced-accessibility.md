@@ -6,9 +6,11 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
+  - plan-ux-accessibility-audit-fixes
+  - adr-0003-adhd-focused-ux-ui-guardrails
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -23,9 +25,12 @@ structure_notes:
 
 ## Overview
 
-Execution plan for advanced accessibility features listed as additional proposed
-scope in the roadmap. Work should begin only after scope is confirmed via
-PRD/ADR updates.
+Execution plan for advanced accessibility features beyond the baseline work
+completed in
+[plan-ux-accessibility-audit-fixes](./plan-ux-accessibility-audit-fixes.md).
+Builds on touch targets, color contrast, VoiceOver labels, reduced motion, and
+loading states already shipped. Work should begin only after scope is confirmed
+via PRD/ADR updates.
 
 ## Goals
 
@@ -57,7 +62,11 @@ PRD/ADR updates.
 
 ## Dependencies
 
-- Approved PRD/ADR updates for advanced accessibility scope.
+- Baseline accessibility fixes:
+  [plan-ux-accessibility-audit-fixes](./plan-ux-accessibility-audit-fixes.md)
+  (completed 2026-02-09)
+- ADHD UX guardrails:
+  [adr-0003](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
 - Accessibility testing guidance and tooling.
 
 ## Risks
@@ -76,3 +85,4 @@ PRD/ADR updates.
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
+| 2026-02-09 | Plan refined with cross-references to baseline accessibility audit and ADR-0003. |

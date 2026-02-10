@@ -6,10 +6,19 @@ owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
-depends_on: []
+  - plan-ux-accessibility-audit-fixes
+  - design-manual-testing-checklist
+  - design-manual-testing-results
+  - prd-0001-product-requirements
+  - prd-0003-convert-plans-lists
+  - prd-0004-drag-drop-ordering
+  - prd-0005-item-search-tags
+  - adr-0003-adhd-focused-ux-ui-guardrails
+depends_on:
+  - plan-ux-accessibility-audit-fixes
 supersedes: []
 accepted_by: null
 accepted_at: null
@@ -40,9 +49,13 @@ and accessibility review before release prep begins.
 
 **Status:** Not Started
 
-- [ ] Run the launch manual testing checklist end-to-end.
-- [ ] Verify capture list actions (complete, star, delete) match PRD intent.
-- [ ] Confirm voice recording (permissions, start/stop, transcription).
+- [ ] Run the [launch manual testing checklist](../design/testing/design-manual-testing-checklist.md)
+      end-to-end.
+- [ ] Record results in [manual testing results](../design/testing/design-manual-testing-results.md).
+- [ ] Verify capture list actions (complete, star, delete) match
+      [PRD intent](../prds/prd-0001-product-requirements.md).
+- [ ] Confirm voice recording (permissions, start/stop, transcription) per
+      [voice capture testing guide](../design/testing/design-voice-capture-testing-guide.md).
 - [ ] Validate offline capture and persistence.
 - [ ] Review UX tone requirements in core capture/organize flows.
 
@@ -66,13 +79,21 @@ and accessibility review before release prep begins.
 
 **Status:** Not Started
 
+Baseline accessibility work (touch targets, color contrast, VoiceOver labels,
+reduced motion, loading states) was completed in
+[plan-ux-accessibility-audit-fixes](./plan-ux-accessibility-audit-fixes.md).
+This phase validates that work and catches any remaining gaps.
+
 - [ ] Review VoiceOver support for core views.
 - [ ] Validate contrast, tap targets, and focus order.
 - [ ] Log any launch blockers and confirm resolution.
 
 ## Dependencies
 
-- Launch manual testing artifacts in `docs/design/testing/`.
+- Launch testing checklist: [design-manual-testing-checklist](../design/testing/design-manual-testing-checklist.md)
+- Testing results log: [design-manual-testing-results](../design/testing/design-manual-testing-results.md)
+- Baseline accessibility fixes: [plan-ux-accessibility-audit-fixes](./plan-ux-accessibility-audit-fixes.md)
+  (completed 2026-02-09)
 - Stable build of the iOS app for QA execution.
 
 ## Risks
@@ -92,3 +113,4 @@ and accessibility review before release prep begins.
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
+| 2026-02-09 | Plan refined with cross-references to testing artifacts, PRDs, and accessibility audit. |

@@ -6,9 +6,10 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
+  - adr-0003-adhd-focused-ux-ui-guardrails
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -24,8 +25,9 @@ structure_notes:
 ## Overview
 
 Execution plan for the optional visual timeline feature listed as additional
-proposed scope in the roadmap. Work should begin only after scope is confirmed
-via PRD/ADR updates.
+proposed scope in the roadmap. Targets ADHD-focused progress tracking flows
+aligned with [adr-0003](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
+guardrails. Work should begin only after scope is confirmed via PRD/ADR updates.
 
 ## Goals
 
@@ -58,6 +60,8 @@ via PRD/ADR updates.
 ## Dependencies
 
 - Approved PRD/ADR updates.
+- ADHD UX guardrails:
+  [adr-0003](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
 - Design assets and UX guidance.
 
 ## Risks
@@ -76,3 +80,4 @@ via PRD/ADR updates.
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
+| 2026-02-09 | Plan refined with cross-reference to ADR-0003 ADHD guardrails. |

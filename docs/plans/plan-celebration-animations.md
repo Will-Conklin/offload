@@ -6,9 +6,11 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
+  - adr-0003-adhd-focused-ux-ui-guardrails
+  - plan-ux-accessibility-audit-fixes
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -24,8 +26,10 @@ structure_notes:
 ## Overview
 
 Execution plan for the optional celebration animations feature listed as
-additional proposed scope in the roadmap. Work should begin only after scope
-is confirmed via PRD/ADR updates.
+additional proposed scope in the roadmap. Must respect reduced motion preferences
+established in
+[plan-ux-accessibility-audit-fixes](./plan-ux-accessibility-audit-fixes.md).
+Work should begin only after scope is confirmed via PRD/ADR updates.
 
 ## Goals
 
@@ -58,6 +62,10 @@ is confirmed via PRD/ADR updates.
 ## Dependencies
 
 - Approved PRD/ADR updates.
+- ADHD UX guardrails:
+  [adr-0003](../adrs/adr-0003-adhd-focused-ux-ui-guardrails.md)
+- Reduced motion infrastructure:
+  [plan-ux-accessibility-audit-fixes](./plan-ux-accessibility-audit-fixes.md)
 - Motion guidance in the design system.
 
 ## Risks
@@ -76,3 +84,4 @@ is confirmed via PRD/ADR updates.
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
+| 2026-02-09 | Plan refined with cross-references to ADR-0003 and reduced motion infrastructure. |

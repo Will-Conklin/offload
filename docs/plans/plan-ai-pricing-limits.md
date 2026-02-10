@@ -6,11 +6,17 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
   - plan-ai-organization-flows
-depends_on: []
+  - plan-backend-api-privacy
+  - prd-0013-pricing-limits
+  - research-offline-ai-quota-enforcement
+  - research-privacy-learning-user-data
+depends_on:
+  - plan-backend-api-privacy
+  - plan-ai-organization-flows
 supersedes: []
 accepted_by: null
 accepted_at: null
@@ -24,14 +30,20 @@ structure_notes:
 
 ## Overview
 
-Execution plan for AI pricing and limits (free/paid tiers, server-side
-enforcement) listed as additional proposed scope in the roadmap. Work should
-begin only after scope is confirmed via PRD/ADR updates.
+Execution plan for AI pricing tiers and usage limits, as defined in
+[prd-0013](../prds/prd-0013-pricing-limits.md). Covers free/paid tier
+boundaries, quota enforcement (on-device and server-side), and billing
+integration. Depends on backend API infrastructure and AI feature scope being
+confirmed first.
 
 ## Goals
 
-- Define pricing and usage limits for AI features.
-- Ensure enforcement aligns with backend capabilities and privacy constraints.
+- Implement free and paid tier boundaries for AI features.
+- Establish quota enforcement per
+  [research-offline-ai-quota-enforcement](../research/research-offline-ai-quota-enforcement.md)
+  findings.
+- Align billing and limits with privacy constraints per
+  [research-privacy-learning-user-data](../research/research-privacy-learning-user-data.md).
 
 ## Phases
 
@@ -58,8 +70,16 @@ begin only after scope is confirmed via PRD/ADR updates.
 
 ## Dependencies
 
-- Approved PRD/ADR updates for AI scope.
-- Backend API + privacy constraints plan.
+- Backend API + privacy:
+  [plan-backend-api-privacy](./plan-backend-api-privacy.md)
+- AI feature scope:
+  [plan-ai-organization-flows](./plan-ai-organization-flows.md)
+- Pricing requirements:
+  [prd-0013](../prds/prd-0013-pricing-limits.md)
+- Offline quota research:
+  [research-offline-ai-quota-enforcement](../research/research-offline-ai-quota-enforcement.md)
+- Privacy research:
+  [research-privacy-learning-user-data](../research/research-privacy-learning-user-data.md)
 
 ## Risks
 
@@ -77,3 +97,4 @@ begin only after scope is confirmed via PRD/ADR updates.
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
+| 2026-02-09 | Plan refined with cross-references to pricing PRD and research findings. |

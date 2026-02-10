@@ -10,6 +10,7 @@ last_updated: 2026-02-09
 related:
   - plan-advanced-accessibility
   - adr-0003-adhd-focused-ux-ui-guardrails
+  - plan-testing-polish
 depends_on: []
 supersedes: []
 accepted_by: null

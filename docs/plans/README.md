@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - plans
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related: []
 depends_on: []
 supersedes: []
@@ -64,18 +64,18 @@ proposed → accepted → in-progress → completed/archived
 
 - [Plan: Testing & Polish](./plan-testing-polish.md)
 - [Plan: Release Prep](./plan-release-prep.md)
-- [Plan: UX & Accessibility Audit Fixes](./plan-ux-accessibility-audit-fixes.md)
 
 ### Complete (Awaiting User Verification)
 
 - [Plan: Convert Plans and Lists](./plan-convert-plans-lists.md)
 - [Plan: Drag and Drop Ordering](./plan-drag-drop-ordering.md)
 - [Plan: Item Search by Text or Tag](./plan-item-search-tags.md)
+- [Plan: UX & Accessibility Audit Fixes](./plan-ux-accessibility-audit-fixes.md)
+- [Plan: View Decomposition](./plan-view-decomposition.md)
 
 ### Proposed (Pending Confirmations)
 
 - [Plan: Tag Relationship Refactor](./plan-tag-relationship-refactor.md)
-- [Plan: View Decomposition](./plan-view-decomposition.md)
 - [Plan: Visual Timeline](./plan-visual-timeline.md)
 - [Plan: Celebration Animations](./plan-celebration-animations.md)
 - [Plan: Advanced Accessibility Features](./plan-advanced-accessibility.md)

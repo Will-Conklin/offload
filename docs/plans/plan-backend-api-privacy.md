@@ -6,9 +6,13 @@ owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
+  - adr-0001-technology-stack-and-architecture
+  - research-on-device-ai-feasibility
+  - research-privacy-learning-user-data
+  - research-offline-ai-quota-enforcement
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -23,14 +27,23 @@ structure_notes:
 
 ## Overview
 
-Execution plan for backend API and privacy constraints listed as additional
-proposed scope in the roadmap. Work should begin only after scope is confirmed
-via PRD/ADR updates.
+Execution plan for backend API infrastructure and privacy constraints required
+by AI features. [ADR-0001](../adrs/adr-0001-technology-stack-and-architecture.md)
+deferred backend decisions; this plan activates when AI feature scope is
+confirmed. Privacy approach informed by completed research on user data learning
+and on-device AI feasibility.
 
 ## Goals
 
-- Define backend API integration needs for AI features.
-- Establish privacy constraints and compliance requirements.
+- Define backend API architecture aligned with
+  [adr-0001](../adrs/adr-0001-technology-stack-and-architecture.md) technology
+  decisions.
+- Establish privacy constraints per
+  [research-privacy-learning-user-data](../research/research-privacy-learning-user-data.md)
+  findings.
+- Support hybrid on-device/cloud approach per
+  [research-on-device-ai-feasibility](../research/research-on-device-ai-feasibility.md)
+  recommendations.
 
 ## Phases
 
@@ -57,8 +70,14 @@ via PRD/ADR updates.
 
 ## Dependencies
 
-- Approved PRD/ADR updates for AI scope.
-- Security and compliance review readiness.
+- Technology stack decisions:
+  [adr-0001](../adrs/adr-0001-technology-stack-and-architecture.md)
+- On-device AI feasibility:
+  [research-on-device-ai-feasibility](../research/research-on-device-ai-feasibility.md)
+- Privacy implications:
+  [research-privacy-learning-user-data](../research/research-privacy-learning-user-data.md)
+- Quota enforcement research:
+  [research-offline-ai-quota-enforcement](../research/research-offline-ai-quota-enforcement.md)
 
 ## Risks
 
@@ -76,3 +95,4 @@ via PRD/ADR updates.
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
+| 2026-02-09 | Plan refined with cross-references to ADR-0001 and completed research. |

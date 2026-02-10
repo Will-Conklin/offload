@@ -6,11 +6,14 @@ owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-01-25
+last_updated: 2026-02-09
 related:
   - plan-roadmap
   - plan-testing-polish
-depends_on: []
+  - prd-0001-product-requirements
+  - adr-0001-technology-stack-and-architecture
+depends_on:
+  - plan-testing-polish
 supersedes: []
 accepted_by: null
 accepted_at: null
@@ -40,27 +43,40 @@ metadata, and TestFlight distribution.
 
 **Status:** Not Started
 
-- [ ] Update documentation tied to launch scope and readiness.
-- [ ] Draft release notes.
+- [ ] Update README.md with current feature set and installation instructions.
+- [ ] Review and update docs/ for accuracy against shipped features.
+- [ ] Archive completed plans per plan lifecycle (move to `docs/plans/_archived/`).
+- [ ] Draft release notes highlighting launch features: capture, organize,
+      collections, tags, search, drag-drop ordering.
 
 ### Phase 2: App Store Metadata
 
 **Status:** Not Started
 
-- [ ] Validate App Store metadata fields.
-- [ ] Confirm screenshots and descriptions are current.
+- [ ] Finalize App Store listing: app name, subtitle, description, keywords,
+      and category.
+- [ ] Capture App Store screenshots on required device sizes (iPhone 6.7",
+      6.1", iPad).
+- [ ] Create app icon assets for App Store (1024x1024).
+- [ ] Set age rating, privacy policy URL, and support URL.
+- [ ] Verify bundle ID (`wc.Offload`) and version number.
 
 ### Phase 3: TestFlight Distribution
 
 **Status:** Not Started
 
-- [ ] Prepare TestFlight build.
-- [ ] Coordinate tester distribution and feedback window.
+- [ ] Create Release build configuration and archive.
+- [ ] Upload build to App Store Connect.
+- [ ] Configure TestFlight internal testing group.
+- [ ] Distribute build and establish feedback window (minimum 1 week).
+- [ ] Triage TestFlight feedback and create issues for blockers.
 
 ## Dependencies
 
-- Completion of launch testing and polish plan.
-- Updated product requirements and design assets, if needed.
+- Completion of testing and polish: [plan-testing-polish](./plan-testing-polish.md)
+- Product requirements for feature scope: [prd-0001](../prds/prd-0001-product-requirements.md)
+- Active Apple Developer Program membership.
+- App Store Connect access configured.
 
 ## Risks
 
@@ -79,3 +95,4 @@ metadata, and TestFlight distribution.
 | Date | Update |
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
+| 2026-02-09 | Plan refined with concrete tasks and cross-references. |
