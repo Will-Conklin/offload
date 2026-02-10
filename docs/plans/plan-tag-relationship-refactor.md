@@ -27,8 +27,8 @@ structure_notes:
 Execution plan for the optional tag relationship refactor listed as additional
 proposed scope in the roadmap. Refactors tag storage from denormalized string
 arrays to proper SwiftData relationships. Technical design is documented in
-[archived plan](./_archived/plan-tag-relationship-refactor.md). Work should
-begin only after scope is confirmed via PRD/ADR updates.
+[archived plan](./_archived/plan-archived-tag-relationship-refactor.md). Work
+should begin only after scope is confirmed via PRD/ADR updates.
 
 ## Goals
 
@@ -63,7 +63,7 @@ begin only after scope is confirmed via PRD/ADR updates.
 - Technology stack and SwiftData architecture:
   [adr-0001](../adrs/adr-0001-technology-stack-and-architecture.md)
 - Archived technical design:
-  [plan-tag-relationship-refactor (archived)](./_archived/plan-tag-relationship-refactor.md)
+  [plan-archived-tag-relationship-refactor](./_archived/plan-archived-tag-relationship-refactor.md)
 - SwiftData migration guidance and test coverage.
 
 ## Risks
