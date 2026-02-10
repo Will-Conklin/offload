@@ -29,3 +29,9 @@ final class Tag {
         collections = []
     }
 }
+
+extension Tag {
+    static func normalizedName(_ name: String) -> String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
+}

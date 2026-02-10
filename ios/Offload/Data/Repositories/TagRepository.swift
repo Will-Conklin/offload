@@ -40,24 +40,28 @@ final class TagRepository {
     }
 
     func fetchByName(_ name: String) throws -> Tag? {
-        let normalizedQuery = Self.normalizedName(name)
+        let normalizedQuery = Tag.normalizedName(name)
         guard !normalizedQuery.isEmpty else { return nil }
 
+        // TODO: SwiftData predicates can't express case-insensitive matches; replace with indexed lookup if possible.
         let descriptor = FetchDescriptor<Tag>(
             sortBy: [SortDescriptor(\.createdAt)]
         )
         let allTags = try modelContext.fetch(descriptor)
-        return allTags.first { Self.normalizedName($0.name) == normalizedQuery }
+        return allTags.first { Tag.normalizedName($0.name) == normalizedQuery }
     }
 
     func search(query: String) throws -> [Tag] {
+        let normalizedQuery = Tag.normalizedName(query)
+        guard !normalizedQuery.isEmpty else {
+            return try fetchAll()
+        }
+
         let descriptor = FetchDescriptor<Tag>(
-            predicate: #Predicate { tag in
-                tag.name.contains(query)
-            },
             sortBy: [SortDescriptor(\.name)]
         )
-        return try modelContext.fetch(descriptor)
+        let allTags = try modelContext.fetch(descriptor)
+        return allTags.filter { Tag.normalizedName($0.name).contains(normalizedQuery) }
     }
 
     /// Search tags by name (alias for search)
@@ -122,7 +126,4 @@ final class TagRepository {
         getTaskCount(tag: tag) > 0
     }
 
-    private static func normalizedName(_ name: String) -> String {
-        name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-    }
 }

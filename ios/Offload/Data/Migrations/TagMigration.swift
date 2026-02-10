@@ -22,7 +22,7 @@ struct TagMigration {
             guard !item.legacyTags.isEmpty else { continue }
             for legacyName in item.legacyTags {
                 let trimmed = legacyName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let normalized = normalizedName(trimmed)
+                let normalized = Tag.normalizedName(trimmed)
                 guard !normalized.isEmpty else { continue }
 
                 let tag: Tag
@@ -72,7 +72,7 @@ struct TagMigration {
                 didChange = true
             }
 
-            let normalized = normalizedName(trimmed)
+            let normalized = Tag.normalizedName(trimmed)
             guard !normalized.isEmpty else { continue }
 
             if let canonical = canonicalByName[normalized] {
@@ -100,7 +100,4 @@ struct TagMigration {
         }
     }
 
-    private static func normalizedName(_ value: String) -> String {
-        value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-    }
 }
