@@ -62,6 +62,8 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
 - Ordered task list with dependencies
 - Clear phases and milestones
 - Links to GitHub issues for tracking
+  - When creating new issues for plans, add them to the Offload GitHub project
+  - Use `gh issue create --project "Offload"` or add via GitHub web UI
 - References to design docs and PRDs
 - A User Verification section with a checklist; agents must not update or check items in this section
 
