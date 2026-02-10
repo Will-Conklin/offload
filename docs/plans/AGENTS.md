@@ -64,6 +64,8 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
 - Links to GitHub issues for tracking
   - When creating new issues for plans, add them to the Offload GitHub project
   - Use `gh issue create --project "Offload"` or add via GitHub web UI
+  - **Always add a comment to related issues when a plan is created**, linking to the plan document and summarizing the approach
+  - Include plan status, key phases, and next steps in the issue comment
 - References to design docs and PRDs
 - A User Verification section with a checklist; agents must not update or check items in this section
 
