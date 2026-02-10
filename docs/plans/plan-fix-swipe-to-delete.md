@@ -33,7 +33,7 @@ Swipe-to-delete works correctly in CaptureView (implemented in commit f91521d) b
 
 This is not a regression of broken functionality, but rather a feature gap where the swipe pattern was never implemented in the refactored Organize views.
 
-**Critical Consideration: Gesture Conflicts**
+### Critical Consideration: Gesture Conflicts
 
 ItemRow is wrapped by DraggableItemRow and HierarchicalItemRow components that already implement `.draggable()` for drag-to-reorder functionality (see plan-drag-drop-ordering). Adding swipe gestures could potentially conflict with this existing drag gesture.
 

@@ -78,17 +78,17 @@ Add OSLog statements to trace tag assignment from UI → repository → persiste
 
 Based on diagnostic findings, identify which hypothesis is correct:
 
-**Hypothesis A: Computed Property Setter Issue**
+#### Hypothesis A: Computed Property Setter Issue
 
 - Logs show setter called but tags don't persist after save
 - SwiftData doesn't track changes through computed properties
 
-**Hypothesis B: ModelContext Save Timing**
+#### Hypothesis B: ModelContext Save Timing
 
 - Logs show tags assigned but not in context when saved
 - Tags created in sheets may be in different ModelContext
 
-**Hypothesis C: SwiftData Inverse Relationship**
+#### Hypothesis C: SwiftData Inverse Relationship
 
 - Logs show empty tagLinks after fetch
 - Inverse relationship not properly maintained
