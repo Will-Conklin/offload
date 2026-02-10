@@ -1,5 +1,6 @@
 # Intent: Collect structured feature requests for Offload.
 
+---
 name: Feature request
 description: Suggest an idea or improvement.
 title: "[Feature]: "

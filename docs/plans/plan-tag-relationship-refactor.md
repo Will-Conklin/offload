@@ -1,12 +1,12 @@
 ---
 id: plan-tag-relationship-refactor
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-01-25
+last_updated: 2026-02-10
 related:
   - plan-roadmap
 depends_on: []
@@ -75,4 +75,5 @@ via PRD/ADR updates.
 
 | Date | Update |
 | --- | --- |
+| 2026-02-10 | Implementation started in [PR #138](https://github.com/Will-Conklin/Offload/pull/138). |
 | 2026-01-20 | Plan created from roadmap split. |

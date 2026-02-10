@@ -20,7 +20,7 @@ final class Collection {
     var collectionItems: [CollectionItem]?
 
     // Tags for collections
-    @Relationship(deleteRule: .nullify)
+    @Relationship(deleteRule: .nullify, inverse: \Tag.collections)
     var tags: [Tag]
 
     init(

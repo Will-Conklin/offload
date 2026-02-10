@@ -42,6 +42,14 @@ final class TagRepositoryTests: XCTestCase {
         XCTAssertEqual(first.id, second.id)
     }
 
+    func testFetchOrCreateNormalizesCaseAndWhitespace() throws {
+        let first = try tagRepository.fetchOrCreate("  Work  ")
+        let second = try tagRepository.fetchOrCreate("work")
+
+        XCTAssertEqual(first.id, second.id)
+        XCTAssertEqual(first.name, "Work")
+    }
+
     func testUpdateUsageCount() throws {
         let tag = try tagRepository.fetchOrCreate("urgent")
         _ = try itemRepository.create(content: "Item 1", tags: [tag])

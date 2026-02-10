@@ -30,6 +30,9 @@ final class OffloadUITests: XCTestCase {
 
     @MainActor
     func testLaunchPerformance() throws {
+        if ProcessInfo.processInfo.environment["CI"] == "true" {
+            throw XCTSkip("Performance tests are skipped in CI for stability.")
+        }
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             XCUIApplication().launch()

@@ -4,9 +4,10 @@
 # Governed by: AGENTS.md
 # Additional instructions: Keep lane conditions aligned with docs/reference/ci/reference-ci-path-filters.md
 
+---
 name: Context-Aware CI
 
-on:
+"on":
   pull_request:
   workflow_dispatch:
     inputs:

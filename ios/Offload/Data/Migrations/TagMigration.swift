@@ -9,17 +9,33 @@ import SwiftData
 @MainActor
 struct TagMigration {
     static func runIfNeeded(modelContext: ModelContext) throws {
-        let descriptor = FetchDescriptor<Item>()
-        let items = try modelContext.fetch(descriptor)
         var didChange = false
+        var canonicalTagsByName = try buildCanonicalTagLookup(
+            in: modelContext,
+            didChange: &didChange
+        )
+
+        let itemDescriptor = FetchDescriptor<Item>()
+        let items = try modelContext.fetch(itemDescriptor)
 
         for item in items {
             guard !item.legacyTags.isEmpty else { continue }
             for legacyName in item.legacyTags {
                 let trimmed = legacyName.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !trimmed.isEmpty else { continue }
+                let normalized = Tag.normalizedName(trimmed)
+                guard !normalized.isEmpty else { continue }
 
-                let tag = try fetchOrCreateTag(named: trimmed, in: modelContext)
+                let tag: Tag
+                if let existing = canonicalTagsByName[normalized] {
+                    tag = existing
+                } else {
+                    let created = Tag(name: trimmed)
+                    modelContext.insert(created)
+                    canonicalTagsByName[normalized] = created
+                    didChange = true
+                    tag = created
+                }
+
                 if !item.tags.contains(where: { $0.id == tag.id }) {
                     item.tags.append(tag)
                     didChange = true
@@ -37,16 +53,51 @@ struct TagMigration {
         }
     }
 
-    private static func fetchOrCreateTag(named name: String, in modelContext: ModelContext) throws -> Tag {
+    private static func buildCanonicalTagLookup(
+        in modelContext: ModelContext,
+        didChange: inout Bool
+    ) throws -> [String: Tag] {
         let descriptor = FetchDescriptor<Tag>(
-            predicate: #Predicate { $0.name == name }
+            sortBy: [SortDescriptor(\.createdAt)]
         )
-        if let existing = try modelContext.fetch(descriptor).first {
-            return existing
+        let tags = try modelContext.fetch(descriptor)
+
+        var canonicalByName: [String: Tag] = [:]
+        var duplicates: [Tag] = []
+
+        for tag in tags {
+            let trimmed = tag.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            if tag.name != trimmed {
+                tag.name = trimmed
+                didChange = true
+            }
+
+            let normalized = Tag.normalizedName(trimmed)
+            guard !normalized.isEmpty else { continue }
+
+            if let canonical = canonicalByName[normalized] {
+                mergeRelationships(from: tag, into: canonical)
+                duplicates.append(tag)
+                didChange = true
+            } else {
+                canonicalByName[normalized] = tag
+            }
         }
 
-        let tag = Tag(name: name)
-        modelContext.insert(tag)
-        return tag
+        for duplicate in duplicates {
+            modelContext.delete(duplicate)
+        }
+
+        return canonicalByName
     }
+
+    private static func mergeRelationships(from duplicate: Tag, into canonical: Tag) {
+        for item in duplicate.items where !item.tags.contains(where: { $0.id == canonical.id }) {
+            item.tags.append(canonical)
+        }
+        for collection in duplicate.collections where !collection.tags.contains(where: { $0.id == canonical.id }) {
+            collection.tags.append(canonical)
+        }
+    }
+
 }

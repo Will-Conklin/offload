@@ -5,9 +5,10 @@
 # Additional instructions: Invoked from context-aware CI orchestration.
 # Intent: Minimal iOS tests-only workflow with pinned CI values, running preflight and tests while always collecting diagnostics artifacts.
 
+---
 name: iOS Tests
 
-on:
+"on":
   workflow_call:
 
 jobs:
