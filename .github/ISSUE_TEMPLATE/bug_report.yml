@@ -1,5 +1,6 @@
 # Intent: Collect consistent bug reports for Offload.
 
+---
 name: Bug report
 description: Report a problem or regression.
 title: "[Bug]: "

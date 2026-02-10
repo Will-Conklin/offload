@@ -1,5 +1,6 @@
 # Intent: Configure issue template entry points and support links.
 
+---
 blank_issues_enabled: false
 contact_links:
   - name: Security issue

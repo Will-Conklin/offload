@@ -5,9 +5,10 @@
 # Additional instructions: Invoked from context-aware CI orchestration.
 # Intent: Build-only iOS workflow driven by pinned CI environment values.
 
+---
 name: iOS Build
 
-on:
+"on":
   workflow_call:
 
 jobs:
