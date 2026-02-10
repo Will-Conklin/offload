@@ -35,7 +35,13 @@ just xcode-open         # Open project in Xcode
 ## Gotchas
 
 - CI markdownlint runs strict (no `--fix`); table column alignment (MD060) must be manually correct
+- Markdownlint MD036: Don't use bold text for section headers (`**Section:**`) - use proper headings (`### Section`)
 - PRs for plan work must include `Closes #<issue-number>` in the body (see plan's `related_issues` for the issue number)
+- Plan frontmatter uses `status: completed` (NOT `complete`) — see `docs/reference/reference-frontmatter-schema.md` line 101
+- Plans can only move to completed/archived when User Verification is fully checked — see `docs/plans/AGENTS.md` line 56
+- Worktree git operations require `cd` to worktree path; `gh pr create` fails if PR already exists (push updates existing PR)
+- **When creating new GitHub issues, always add them to the Offload project** using `gh issue create --project "Offload"` during creation, or `gh issue edit <number> --add-project "Offload"` after creation
+- **When creating plans that resolve issues, always add a comment to the issue** linking to the plan document with summary of approach, phases, and next steps
 - SwiftData predicates require explicit type references for enum cases
 - Repositories must be injected via `@State` + `.task`, not created in `body`
 - `.draggable()` must be on card content directly, not on wrappers with buttons

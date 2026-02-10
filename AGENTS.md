@@ -60,6 +60,10 @@ just lint                     # Run markdownlint/yamllint
   move to In Progress when work starts; move to In Review when a PR is open and
   all plan items are complete except User Verification; move to Done after the
   PR merges
+- For all new GitHub issues (not only plan issues): always add them to the
+  Offload project during creation or immediately after creation
+- When creating plans that resolve existing issues: always add an issue comment
+  linking the plan document and summarizing approach, phases, and next steps
 - NEVER assume version numbers or pricing information; treat them as deferred
   unless explicitly documented
 - Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for
@@ -68,6 +72,9 @@ just lint                     # Run markdownlint/yamllint
   that non-agent scripts parse; document metadata for agents must live only in
   YAML front-matter per `docs/AGENTS.md`
 - Prioritize using `just` for common commands and keep the `justfile` at project root up to date
+- For UI work: use `Theme.*` tokens (no hardcoded colors/spacing/radii/fonts)
+  and reuse `ios/Offload/DesignSystem/Components.swift` before creating new
+  UI primitives
 
 ## Documentation Authority
 
