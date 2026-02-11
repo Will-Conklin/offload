@@ -458,11 +458,11 @@ struct TagPill: View {
 
     var body: some View {
         Text(name.uppercased())
-            .font(.system(size: 10, weight: .bold, design: .default))
+            .font(.system(size: 8, weight: .bold, design: .default))
             .tracking(0.5)
             .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: themeManager.currentStyle))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
             .background(
                 Capsule()
                     .fill(
@@ -754,19 +754,19 @@ struct MCMCardContent: View {
                         if let onAddTag {
                             Button(action: onAddTag) {
                                 HStack(spacing: 4) {
-                                    AppIcon(name: Icons.add, size: size == .compact ? 8 : 10)
+                                    AppIcon(name: Icons.add, size: 8)
                                     Text("TAG")
-                                        .font(.system(size: size == .compact ? 8 : 10, weight: .bold, design: .default))
+                                        .font(.system(size: 8, weight: .bold, design: .default))
                                         .tracking(0.5)
                                 }
                                 .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                                .padding(.horizontal, size == .compact ? 8 : 10)
-                                .padding(.vertical, size == .compact ? 4 : 6)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
                                 .background(
                                     Capsule()
                                         .strokeBorder(
                                             Theme.Colors.primary(colorScheme, style: style),
-                                            lineWidth: size == .compact ? 1 : 1.5
+                                            lineWidth: 1
                                         )
                                 )
                             }

@@ -174,37 +174,36 @@ struct CollectionCard: View {
                         .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                         .lineLimit(3)
 
-                    // Tags in flow layout
-                    if !collection.tags.isEmpty {
-                        FlowLayout(spacing: Theme.Spacing.xs) {
-                            ForEach(collection.tags) { tag in
-                                TagPill(
-                                    name: tag.name,
-                                    color: tag.color
-                                        .map { Color(hex: $0) }
-                                        ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
-                                )
-                            }
-
-                            Button(action: onAddTag) {
-                                HStack(spacing: 4) {
-                                    AppIcon(name: Icons.add, size: 10)
-                                    Text("Tag")
-                                        .font(Theme.Typography.caption)
-                                }
-                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                                .padding(.horizontal, Theme.Spacing.pillHorizontal)
-                                .padding(.vertical, Theme.Spacing.pillVertical)
-                                .background(
-                                    Capsule()
-                                        .strokeBorder(
-                                            Theme.Colors.borderMuted(colorScheme, style: style),
-                                            lineWidth: 1
-                                        )
-                                )
-                            }
-                            .buttonStyle(.plain)
+                    // Tags in flow layout - always show if onAddTag is available
+                    FlowLayout(spacing: Theme.Spacing.xs) {
+                        ForEach(collection.tags) { tag in
+                            TagPill(
+                                name: tag.name,
+                                color: tag.color
+                                    .map { Color(hex: $0) }
+                                    ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
+                            )
                         }
+
+                        Button(action: onAddTag) {
+                            HStack(spacing: 4) {
+                                AppIcon(name: Icons.add, size: 8)
+                                Text("TAG")
+                                    .font(.system(size: 8, weight: .bold, design: .default))
+                                    .tracking(0.5)
+                            }
+                            .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .strokeBorder(
+                                        Theme.Colors.primary(colorScheme, style: style),
+                                        lineWidth: 1
+                                    )
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.leading, 12)
