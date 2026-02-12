@@ -22,18 +22,17 @@ struct DraggableCollectionCard: View {
     @State private var isDropTarget = false
 
     var body: some View {
-        Button {
+        CollectionCard(
+            collection: collection,
+            colorScheme: colorScheme,
+            style: style,
+            onAddTag: onAddTag,
+            onToggleStar: onToggleStar
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
             onTap()
-        } label: {
-            CollectionCard(
-                collection: collection,
-                colorScheme: colorScheme,
-                style: style,
-                onAddTag: onAddTag,
-                onToggleStar: onToggleStar
-            )
         }
-        .buttonStyle(.plain)
         .draggable(collection.id.uuidString) {
             // Preview while dragging
             Text(collection.name)
