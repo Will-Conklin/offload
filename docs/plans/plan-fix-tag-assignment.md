@@ -1,14 +1,14 @@
 ---
 id: plan-fix-tag-assignment
 type: plan
-status: proposed
+status: completed
 owners:
   - Will-Conklin
 applies_to:
   - capture
   - organize
   - tags
-last_updated: 2026-02-10
+last_updated: 2026-02-11
 related:
   - plan-tag-relationship-refactor
 depends_on: []
@@ -17,6 +17,7 @@ accepted_by: null
 accepted_at: null
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/141
+  - https://github.com/Will-Conklin/offload/pull/144
 structure_notes:
   - "Section order: Overview; Context; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
