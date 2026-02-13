@@ -4,6 +4,7 @@
 // Additional instructions: Keep CRUD logic centralized and consistent with SwiftData models.
 
 import Foundation
+import OSLog
 import SwiftData
 
 @MainActor
@@ -23,7 +24,17 @@ final class CollectionItemRepository {
         parentId: UUID? = nil
     ) throws -> CollectionItem {
         let collection = try fetchCollection(collectionId)
+        guard let collection else {
+            AppLogger.persistence.error("Failed to add item to collection - collection not found: \(collectionId, privacy: .public)")
+            throw ValidationError("Collection not found")
+        }
+
         let item = try fetchItem(itemId)
+        guard let item else {
+            AppLogger.persistence.error("Failed to add item to collection - item not found: \(itemId, privacy: .public)")
+            throw ValidationError("Item not found")
+        }
+
         let collectionItem = CollectionItem(
             collectionId: collectionId,
             itemId: itemId,
@@ -164,6 +175,11 @@ final class CollectionItemRepository {
         position: Int? = nil
     ) throws {
         let collection = try fetchCollection(toCollectionId)
+        guard let collection else {
+            AppLogger.persistence.error("Failed to move item - collection not found: \(toCollectionId, privacy: .public)")
+            throw ValidationError("Collection not found")
+        }
+
         collectionItem.collectionId = toCollectionId
         collectionItem.collection = collection
         collectionItem.position = position
