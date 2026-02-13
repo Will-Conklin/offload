@@ -6,6 +6,8 @@
 //  Mid-Century Modern design system
 
 import SwiftUI
+import Foundation
+import UIKit
 
 // MARK: - Theme Style
 
@@ -264,9 +266,37 @@ enum Theme {
     // MARK: - Typography
 
     enum Typography {
+        private static func hasBundledFontResource(_ resource: String) -> Bool {
+            let fileName = (resource as NSString).deletingPathExtension
+            let fileExtension = (resource as NSString).pathExtension
+            if Bundle.main.url(forResource: fileName, withExtension: fileExtension) != nil {
+                return true
+            }
+            return Bundle.main.url(forResource: fileName, withExtension: fileExtension, subdirectory: "Resources/Fonts") != nil
+        }
+
+        private static func customOrSystem(
+            _ fontName: String,
+            size: CGFloat,
+            fallbackStyle: Font.TextStyle,
+            fallbackWeight: Font.Weight = .regular,
+            requiredResource: String
+        ) -> Font {
+            guard hasBundledFontResource(requiredResource), UIFont(name: fontName, size: size) != nil else {
+                return system(fallbackStyle, weight: fallbackWeight)
+            }
+            return Font.custom(fontName, size: size)
+        }
+
         // MCM Custom Fonts
         private static func bebas(size: CGFloat) -> Font {
-            Font.custom("BebasNeue-Regular", size: size)
+            customOrSystem(
+                "BebasNeue-Regular",
+                size: size,
+                fallbackStyle: .headline,
+                fallbackWeight: .bold,
+                requiredResource: "BebasNeue-Regular.ttf"
+            )
         }
 
         private static func spaceGrotesk(size: CGFloat, weight: Font.Weight = .regular) -> Font {
@@ -277,7 +307,13 @@ enum Theme {
             default:
                 "SpaceGrotesk-Regular"
             }
-            return Font.custom(fontName, size: size)
+            return customOrSystem(
+                fontName,
+                size: size,
+                fallbackStyle: .body,
+                fallbackWeight: weight,
+                requiredResource: "SpaceGrotesk-Regular.ttf"
+            )
         }
 
         // Fallback to system font if custom font fails to load

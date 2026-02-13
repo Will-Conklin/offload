@@ -4,9 +4,8 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>BebasNeue-Regular.ttf</string>
-		<string>SpaceGrotesk-Bold.ttf</string>
-		<string>SpaceGrotesk-Regular.ttf</string>
+		<string>Resources/Fonts/BebasNeue-Regular.ttf</string>
+		<string>Resources/Fonts/SpaceGrotesk-Regular.ttf</string>
 	</array>
 </dict>
 </plist>

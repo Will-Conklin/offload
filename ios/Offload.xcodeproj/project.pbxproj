@@ -414,12 +414,11 @@
 				DEVELOPMENT_TEAM = K86HVH894Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Offload/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Offload uses the camera to capture attachments for your items.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Offload uses the microphone to capture your thoughts via voice recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Offload uses your photo library to attach images to your items.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Offload uses speech recognition to transcribe your voice recordings into text.";
-				INFOPLIST_KEY_UIAppFonts = "BebasNeue-Regular.ttf SpaceGrotesk-Bold.ttf SpaceGrotesk-Regular.ttf";
+				INFOPLIST_KEY_UIAppFonts = "Resources/Fonts/BebasNeue-Regular.ttf Resources/Fonts/SpaceGrotesk-Regular.ttf";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -454,12 +453,11 @@
 				DEVELOPMENT_TEAM = K86HVH894Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Offload/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Offload uses the camera to capture attachments for your items.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Offload uses the microphone to capture your thoughts via voice recording.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Offload uses your photo library to attach images to your items.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Offload uses speech recognition to transcribe your voice recordings into text.";
-				INFOPLIST_KEY_UIAppFonts = "BebasNeue-Regular.ttf SpaceGrotesk-Bold.ttf SpaceGrotesk-Regular.ttf";
+				INFOPLIST_KEY_UIAppFonts = "Resources/Fonts/BebasNeue-Regular.ttf Resources/Fonts/SpaceGrotesk-Regular.ttf";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
