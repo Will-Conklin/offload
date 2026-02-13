@@ -1,7 +1,7 @@
 ---
 id: plan-resolve-gesture-conflict
 type: plan
-status: accepted
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
@@ -61,20 +61,20 @@ This plan implements the **overlay menu button pattern** (following the existing
 
 ### Phase 1: Implementation
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] **Verify Icons.more exists** in `ios/Offload/DesignSystem/Icons.swift` (expected at line ~33)
-  - If missing, add: `static let more = "ellipsis.circle"`
-- [ ] **Add onConvert parameter** to `DraggableCollectionCard` struct in `ios/Offload/Features/Organize/OrganizeCollectionCards.swift`
-  - Add optional `onConvert: (() -> Void)?` parameter
-  - Add overlay menu button after existing `.accessibilityAction` modifiers (after line ~85)
-  - Use `.topTrailing` alignment to avoid conflict with star button at bottom-right
-  - Use `IconTile` with `.secondaryOutlined` style and `textSecondary` color
-  - Add accessibility label "Collection actions" and hint "Show options for this collection"
-- [ ] **Update OrganizeView** in `ios/Offload/Features/Organize/OrganizeView.swift`
-  - Remove `.contextMenu` block (lines 194-203)
-  - Add `onConvert: { handleConvert(collection) }` parameter to `DraggableCollectionCard` call
-  - Keep existing `handleConvert(_:)`, `performConversion(_:)`, and confirmation dialog logic unchanged
+- [x] **Verify Icons.more exists** in `ios/Offload/DesignSystem/Icons.swift` (expected at line ~33)
+  - Already exists at line 33: `static let more = "ellipsis"`
+- [x] **Add onConvert parameter** to `DraggableCollectionCard` struct in `ios/Offload/Features/Organize/OrganizeCollectionCards.swift`
+  - Added optional `onConvert: (() -> Void)?` parameter at line 18
+  - Added overlay menu button after accessibility actions (lines 87-101)
+  - Used `.topTrailing` alignment to avoid conflict with star button
+  - Used `IconTile` with `.secondaryOutlined` style and `textSecondary` color
+  - Added accessibility label "Collection actions" and hint "Show options for this collection"
+- [x] **Update OrganizeView** in `ios/Offload/Features/Organize/OrganizeView.swift`
+  - Removed `.contextMenu` block (previously lines 194-203)
+  - Added `onConvert: { handleConvert(collection) }` parameter to `DraggableCollectionCard` call
+  - Kept existing `handleConvert(_:)`, `performConversion(_:)`, and confirmation dialog logic unchanged
 
 **Implementation reference**: Follow ItemRow pattern from `ios/Offload/Features/Organize/CollectionDetailItemRows.swift` lines 343-363
 

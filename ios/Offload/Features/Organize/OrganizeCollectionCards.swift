@@ -16,23 +16,23 @@ struct DraggableCollectionCard: View {
     let onDrop: (UUID, UUID) -> Void
     var onMoveUp: (() -> Void)?
     var onMoveDown: (() -> Void)?
+    var onConvert: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isDropTarget = false
 
     var body: some View {
-        Button {
+        CollectionCard(
+            collection: collection,
+            colorScheme: colorScheme,
+            style: style,
+            onAddTag: onAddTag,
+            onToggleStar: onToggleStar
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
             onTap()
-        } label: {
-            CollectionCard(
-                collection: collection,
-                colorScheme: colorScheme,
-                style: style,
-                onAddTag: onAddTag,
-                onToggleStar: onToggleStar
-            )
         }
-        .buttonStyle(.plain)
         .draggable(collection.id.uuidString) {
             // Preview while dragging
             Text(collection.name)
@@ -82,6 +82,22 @@ struct DraggableCollectionCard: View {
         }
         .accessibilityAction(named: "Move down") {
             onMoveDown?()
+        }
+        .overlay(alignment: .topTrailing) {
+            if let onConvert {
+                Button(action: onConvert) {
+                    IconTile(
+                        iconName: Icons.more,
+                        iconSize: 12,
+                        tileSize: 28,
+                        style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                    )
+                }
+                .buttonStyle(.plain)
+                .padding(Theme.Spacing.sm)
+                .accessibilityLabel("Collection actions")
+                .accessibilityHint("Show options for this collection")
+            }
         }
     }
 }

@@ -189,18 +189,9 @@ struct OrganizeView: View {
                     onMoveDown: index < viewModel.collections.count - 1 ? {
                         let targetId = viewModel.collections[index + 1].id
                         handleCollectionReorder(droppedId: collection.id, targetId: targetId)
-                    } : nil
+                    } : nil,
+                    onConvert: { handleConvert(collection) }
                 )
-                .contextMenu {
-                    Button {
-                        handleConvert(collection)
-                    } label: {
-                        Label(
-                            collection.isStructured ? "Convert to List" : "Convert to Plan",
-                            systemImage: collection.isStructured ? Icons.lists : Icons.plans
-                        )
-                    }
-                }
                 .onAppear {
                     if index == viewModel.collections.count - 1 {
                         loadNextPage()
