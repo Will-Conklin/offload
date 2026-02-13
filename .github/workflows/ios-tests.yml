@@ -81,7 +81,17 @@ jobs:
           xcode-version: ${{ needs.bootstrap.outputs.ci_xcode_version }}
 
       - name: Preflight
-        run: scripts/ios/preflight.sh
+        env:
+          DEVICE_NAME: ${{ env.CI_SIM_DEVICE }}
+          OS_VERSION: ${{ env.CI_SIM_OS }}
+        run: |
+          set -euo pipefail
+          selection_output="$(scripts/ios/select-simulator.sh)"
+          selected_udid="$(printf '%s\n' "${selection_output}" | tail -n 1)"
+          while IFS= read -r line; do
+            echo "[INFO] ${line}"
+          done <<<"${selection_output}"
+          DESTINATION="platform=iOS Simulator,id=${selected_udid}" scripts/ios/preflight.sh
 
       - name: Write diagnostics report
         if: ${{ always() }}
