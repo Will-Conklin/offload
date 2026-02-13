@@ -152,4 +152,61 @@ final class CollectionItemRepositoryTests: XCTestCase {
         )
         XCTAssertEqual(page.map(\.itemId), [item1.id, item2.id])
     }
+
+    func testAddItemToCollection_ThrowsWhenCollectionNotFound() async throws {
+        let item = try itemRepository.create(content: "Test Item")
+        let invalidCollectionId = UUID()
+
+        do {
+            _ = try collectionItemRepository.addItemToCollection(
+                itemId: item.id,
+                collectionId: invalidCollectionId
+            )
+            XCTFail("Expected ValidationError to be thrown")
+        } catch let error as ValidationError {
+            XCTAssertEqual(error.message, "Collection not found")
+        } catch {
+            XCTFail("Expected ValidationError but got \(error)")
+        }
+    }
+
+    func testAddItemToCollection_ThrowsWhenItemNotFound() async throws {
+        let collection = try collectionRepository.create(name: "Test Plan", isStructured: true)
+        let invalidItemId = UUID()
+
+        do {
+            _ = try collectionItemRepository.addItemToCollection(
+                itemId: invalidItemId,
+                collectionId: collection.id
+            )
+            XCTFail("Expected ValidationError to be thrown")
+        } catch let error as ValidationError {
+            XCTAssertEqual(error.message, "Item not found")
+        } catch {
+            XCTFail("Expected ValidationError but got \(error)")
+        }
+    }
+
+    func testMoveItemToCollection_ThrowsWhenCollectionNotFound() async throws {
+        let collection1 = try collectionRepository.create(name: "Plan 1", isStructured: true)
+        let item = try itemRepository.create(content: "Test Item")
+        let collectionItem = try collectionItemRepository.addItemToCollection(
+            itemId: item.id,
+            collectionId: collection1.id
+        )
+
+        let invalidCollectionId = UUID()
+
+        do {
+            try collectionItemRepository.moveItemToCollection(
+                collectionItem: collectionItem,
+                toCollectionId: invalidCollectionId
+            )
+            XCTFail("Expected ValidationError to be thrown")
+        } catch let error as ValidationError {
+            XCTAssertEqual(error.message, "Collection not found")
+        } catch {
+            XCTFail("Expected ValidationError but got \(error)")
+        }
+    }
 }

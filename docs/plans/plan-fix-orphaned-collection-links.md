@@ -1,7 +1,7 @@
 ---
 id: plan-fix-orphaned-collection-links
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
@@ -12,8 +12,8 @@ last_updated: 2026-02-12
 related: []
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: Will-Conklin
+accepted_at: 2026-02-12
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/147
 structure_notes:
@@ -72,37 +72,38 @@ func addItemToCollection(itemId: UUID, collectionId: UUID, ...) throws -> Collec
 
 ### Phase 1: Add Validation Guards
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] **Update `addItemToCollection` method** (lines 19-38)
-  - Add guard after `fetchCollection`: `guard let collection else { throw ValidationError("Collection not found") }`
-  - Add `AppLogger.general.error` before throw with collection ID
-  - Add guard after `fetchItem`: `guard let item else { throw ValidationError("Item not found") }`
-  - Add `AppLogger.general.error` before throw with item ID
-  - Keep remaining logic unchanged
+- [x] **Update `addItemToCollection` method** (lines 19-46)
+  - Added guard after `fetchCollection` with `ValidationError("Collection not found")`
+  - Added `AppLogger.persistence.error` before throw with collection ID
+  - Added guard after `fetchItem` with `ValidationError("Item not found")`
+  - Added `AppLogger.persistence.error` before throw with item ID
+  - Added OSLog import for AppLogger support
 
-- [ ] **Update `moveItemToCollection` method** (lines 161-173)
-  - Add guard after `fetchCollection`: `guard let collection else { throw ValidationError("Collection not found") }`
-  - Add `AppLogger.general.error` before throw with collection ID
-  - Keep remaining logic unchanged
+- [x] **Update `moveItemToCollection` method** (lines 173-185)
+  - Added guard after `fetchCollection` with `ValidationError("Collection not found")`
+  - Added `AppLogger.persistence.error` before throw with collection ID
+  - Kept remaining logic unchanged
 
 ### Phase 2: Add Test Coverage
 
-**Status:** Not Started
+**Status:** Complete
 
-- [ ] **Create test file or extend `CollectionItemRepositoryTests.swift`**
-  - Add `testAddItemToCollection_ThrowsWhenCollectionNotFound`
-    - Create item with valid ID
-    - Call `addItemToCollection` with invalid collection ID
-    - Assert throws `ValidationError` with message "Collection not found"
-  - Add `testAddItemToCollection_ThrowsWhenItemNotFound`
-    - Create collection with valid ID
-    - Call `addItemToCollection` with invalid item ID
-    - Assert throws `ValidationError` with message "Item not found"
-  - Add `testMoveItemToCollection_ThrowsWhenCollectionNotFound`
-    - Create collection, item, and collectionItem
-    - Call `moveItemToCollection` with invalid target collection ID
-    - Assert throws `ValidationError` with message "Collection not found"
+- [x] **Extended `CollectionItemRepositoryTests.swift`**
+  - Added `testAddItemToCollection_ThrowsWhenCollectionNotFound` (lines 158-171)
+    - Creates item with valid ID
+    - Calls `addItemToCollection` with invalid collection ID
+    - Asserts throws `ValidationError` with message "Collection not found"
+  - Added `testAddItemToCollection_ThrowsWhenItemNotFound` (lines 173-186)
+    - Creates collection with valid ID
+    - Calls `addItemToCollection` with invalid item ID
+    - Asserts throws `ValidationError` with message "Item not found"
+  - Added `testMoveItemToCollection_ThrowsWhenCollectionNotFound` (lines 188-206)
+    - Creates collection, item, and collectionItem
+    - Calls `moveItemToCollection` with invalid target collection ID
+    - Asserts throws `ValidationError` with message "Collection not found"
+  - All new tests pass successfully
 
 ### Phase 3: Verification
 
