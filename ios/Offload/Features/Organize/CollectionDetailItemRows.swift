@@ -317,54 +317,102 @@ struct ItemRow: View {
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.collectionRepository) private var collectionRepository
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingMenu = false
     @State private var linkedCollectionName: String?
+    @State private var offset: CGFloat = 0
 
     private var isLink: Bool {
         item.itemType == .link
     }
 
     var body: some View {
-        CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
-            MCMCardContent(
-                icon: item.itemType?.icon,
-                title: displayTitle,
-                typeLabel: item.type?.uppercased(),
-                timestamp: item.relativeTimestamp,
-                image: item.attachmentData.flatMap { UIImage(data: $0) },
-                tags: item.tags,
-                onAddTag: onAddTag,
-                size: .compact // Compact size for item cards
-            )
-        }
-        .overlay(alignment: .bottomTrailing) {
-            StarButton(isStarred: item.isStarred, action: toggleStar)
-        }
-        .overlay(alignment: .topTrailing) {
-            Button {
-                showingMenu = true
-            } label: {
-                IconTile(
-                    iconName: Icons.more,
-                    iconSize: 16,
-                    tileSize: 44,
-                    style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+        ZStack(alignment: .trailing) {
+            // Delete indicator (shown when swiping left)
+            if offset < 0 {
+                HStack {
+                    Spacer()
+                    AppIcon(name: Icons.deleteFilled, size: 24)
+                        .foregroundStyle(Theme.Colors.destructive(colorScheme, style: style))
+                        .padding(.trailing, Theme.Spacing.md)
+                        .opacity(min(1, Double(-offset / 120)))
+                }
+            }
+
+            CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
+                MCMCardContent(
+                    icon: item.itemType?.icon,
+                    title: displayTitle,
+                    typeLabel: item.type?.uppercased(),
+                    timestamp: item.relativeTimestamp,
+                    image: item.attachmentData.flatMap { UIImage(data: $0) },
+                    tags: item.tags,
+                    onAddTag: onAddTag,
+                    size: .compact // Compact size for item cards
                 )
             }
-            .buttonStyle(.plain)
-            .padding(Theme.Spacing.md)
-            .accessibilityLabel("Item actions")
-            .accessibilityHint("Show options for this item.")
-            .confirmationDialog("Item Actions", isPresented: $showingMenu) {
-                Button("Remove from Collection", role: .destructive) {
-                    onDelete()
+            .overlay(alignment: .bottomTrailing) {
+                StarButton(isStarred: item.isStarred, action: toggleStar)
+            }
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    showingMenu = true
+                } label: {
+                    IconTile(
+                        iconName: Icons.more,
+                        iconSize: 16,
+                        tileSize: 44,
+                        style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                    )
+                }
+                .buttonStyle(.plain)
+                .padding(Theme.Spacing.md)
+                .accessibilityLabel("Item actions")
+                .accessibilityHint("Show options for this item.")
+                .confirmationDialog("Item Actions", isPresented: $showingMenu) {
+                    // Context menu actions (delete removed - use swipe instead)
                 }
             }
         }
+        .offset(x: offset)
+        .simultaneousGesture(
+            DragGesture()
+                .onChanged { value in
+                    let dx = value.translation.width
+                    let dy = value.translation.height
+                    // Only respond to horizontal swipes
+                    guard abs(dx) > abs(dy) else { return }
+                    // Only allow left swipe (delete)
+                    offset = min(0, dx)
+                }
+                .onEnded { value in
+                    let dx = value.translation.width
+                    let dy = value.translation.height
+                    // Only respond to horizontal swipes
+                    guard abs(dx) > abs(dy) else {
+                        offset = 0
+                        return
+                    }
+
+                    withAnimation(reduceMotion ? .default : .spring(response: 0.3, dampingFraction: 0.7)) {
+                        if dx < -100 {
+                            // Swipe left > 100px triggers delete
+                            offset = 0
+                            onDelete()
+                        } else {
+                            // Snap back
+                            offset = 0
+                        }
+                    }
+                }
+        )
         .contentShape(Rectangle())
         .onTapGesture {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             handleTap()
+        }
+        .accessibilityAction(named: "Delete") {
+            onDelete()
         }
         .onAppear {
             loadLinkedCollectionName()
