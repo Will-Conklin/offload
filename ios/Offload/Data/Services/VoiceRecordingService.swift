@@ -10,7 +10,8 @@ import OSLog
 import Speech
 
 @Observable
-final class VoiceRecordingService: @unchecked Sendable {
+@MainActor
+final class VoiceRecordingService {
     // MARK: - Published State
 
     var isRecording = false
@@ -162,22 +163,27 @@ final class VoiceRecordingService: @unchecked Sendable {
         // Start recognition task
         isTranscribing = true
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
-            guard let self else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
 
-            if let result {
-                transcribedText = result.bestTranscription.formattedString
-            }
+                if let result {
+                    transcribedText = result.bestTranscription.formattedString
+                }
 
-            if let error {
-                AppLogger.voice.error("Recognition task error: \(error.localizedDescription, privacy: .public)")
-                stopRecording()
+                if let error {
+                    AppLogger.voice.error("Recognition task error: \(error.localizedDescription, privacy: .public)")
+                    stopRecording()
+                }
             }
         }
 
         // Start recording timer
         isRecording = true
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.recordingDuration += 0.1
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                recordingDuration += 0.1
+            }
         }
 
         AppLogger.voice.info("Voice recording started - recognition task active")
