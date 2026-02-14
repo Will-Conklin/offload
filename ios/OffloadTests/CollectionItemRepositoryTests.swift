@@ -53,6 +53,30 @@ final class CollectionItemRepositoryTests: XCTestCase {
         XCTAssertEqual(collectionItem.position, 0)
     }
 
+    func testAddItemToCollection_AppendsUsingMaxPositionWhenStructured() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item1 = try itemRepository.create(content: "Item 1")
+        let item2 = try itemRepository.create(content: "Item 2")
+        let item3 = try itemRepository.create(content: "Item 3")
+
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item1.id,
+            collectionId: collection.id,
+            position: 0
+        )
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item2.id,
+            collectionId: collection.id,
+            position: 2
+        )
+        let appended = try collectionItemRepository.addItemToCollection(
+            itemId: item3.id,
+            collectionId: collection.id
+        )
+
+        XCTAssertEqual(appended.position, 3)
+    }
+
     func testReorderForCollection() throws {
         let collection = try collectionRepository.create(name: "Plan", isStructured: true)
         let item1 = try itemRepository.create(content: "Item 1")
@@ -86,6 +110,40 @@ final class CollectionItemRepositoryTests: XCTestCase {
         XCTAssertEqual(positions?[item2.id], 0)
         XCTAssertEqual(positions?[item3.id], 1)
         XCTAssertEqual(positions?[item1.id], 2)
+    }
+
+    func testRemoveItemFromCollection_CompactsStructuredSiblingPositions() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item1 = try itemRepository.create(content: "Item 1")
+        let item2 = try itemRepository.create(content: "Item 2")
+        let item3 = try itemRepository.create(content: "Item 3")
+
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item1.id,
+            collectionId: collection.id,
+            position: 0
+        )
+        let removable = try collectionItemRepository.addItemToCollection(
+            itemId: item2.id,
+            collectionId: collection.id,
+            position: 1
+        )
+        _ = try collectionItemRepository.addItemToCollection(
+            itemId: item3.id,
+            collectionId: collection.id,
+            position: 2
+        )
+
+        try collectionItemRepository.removeItemFromCollection(removable)
+
+        let fetched = try collectionRepository.fetchById(collection.id)
+        let positions = fetched?.collectionItems?.reduce(into: [UUID: Int]()) { result, collectionItem in
+            if let position = collectionItem.position {
+                result[collectionItem.itemId] = position
+            }
+        }
+        XCTAssertEqual(positions?[item1.id], 0)
+        XCTAssertEqual(positions?[item3.id], 1)
     }
 
     func testFetchPageStructuredUsesPosition() throws {

@@ -35,10 +35,16 @@ final class CollectionItemRepository {
             throw ValidationError("Item not found")
         }
 
+        let resolvedPosition = if collection.isStructured {
+            position ?? nextStructuredPosition(in: collection, parentId: parentId)
+        } else {
+            position
+        }
+
         let collectionItem = CollectionItem(
             collectionId: collectionId,
             itemId: itemId,
-            position: position,
+            position: resolvedPosition,
             parentId: parentId
         )
         collectionItem.collection = collection
@@ -145,8 +151,18 @@ final class CollectionItemRepository {
     // MARK: - Delete
 
     func removeItemFromCollection(_ collectionItem: CollectionItem) throws {
+        let collection = try fetchCollection(collectionItem.collectionId)
+        let parentId = collectionItem.parentId
         modelContext.delete(collectionItem)
         try modelContext.save()
+
+        if let collection, collection.isStructured {
+            compactStructuredPositions(
+                collectionId: collection.id,
+                parentId: parentId
+            )
+            try modelContext.save()
+        }
     }
 
     func removeItemFromAllCollections(_ itemId: UUID) throws {
@@ -180,9 +196,15 @@ final class CollectionItemRepository {
             throw ValidationError("Collection not found")
         }
 
+        let resolvedPosition = if collection.isStructured {
+            position ?? nextStructuredPosition(in: collection, parentId: nil)
+        } else {
+            position
+        }
+
         collectionItem.collectionId = toCollectionId
         collectionItem.collection = collection
-        collectionItem.position = position
+        collectionItem.position = resolvedPosition
         collectionItem.parentId = nil // Reset parent when moving
         try modelContext.save()
     }
@@ -201,5 +223,41 @@ final class CollectionItemRepository {
             predicate: #Predicate { $0.id == id }
         )
         return try modelContext.fetch(descriptor).first
+    }
+
+    private func nextStructuredPosition(in collection: Collection, parentId: UUID?) -> Int {
+        let siblings = (collection.collectionItems ?? []).filter { $0.parentId == parentId }
+        return (siblings.compactMap(\.position).max() ?? -1) + 1
+    }
+
+    private func compactStructuredPositions(collectionId: UUID, parentId: UUID?) {
+        let parentIdValue = parentId
+        let descriptor = FetchDescriptor<CollectionItem>(
+            predicate: #Predicate {
+                $0.collectionId == collectionId && $0.parentId == parentIdValue
+            }
+        )
+
+        guard let siblings = try? modelContext.fetch(descriptor) else {
+            return
+        }
+
+        let ordered = siblings.sorted { lhs, rhs in
+            let lhsPosition = lhs.position ?? Int.max
+            let rhsPosition = rhs.position ?? Int.max
+            if lhsPosition != rhsPosition {
+                return lhsPosition < rhsPosition
+            }
+            let lhsDate = lhs.item?.createdAt ?? .distantFuture
+            let rhsDate = rhs.item?.createdAt ?? .distantFuture
+            if lhsDate != rhsDate {
+                return lhsDate < rhsDate
+            }
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
+
+        for (index, sibling) in ordered.enumerated() {
+            sibling.position = index
+        }
     }
 }
