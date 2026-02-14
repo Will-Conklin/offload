@@ -53,9 +53,18 @@ just xcode-open         # Open project in Xcode
 - Plans can only move to completed/archived when User Verification is fully checked; if implementation is merged first, open a follow-up issue labeled `uat` and keep the plan `in-progress`
 - Worktree git operations require `cd` to worktree path; `gh pr create` fails if PR already exists (push updates existing PR)
 - **Worktree workflow**: Standard pattern is `git worktree add .worktrees/<name> -b <branch>` → implement → test → commit → `git worktree remove .worktrees/<name>`
+- For feature implementation, use TDD (red → green → refactor): write tests
+  first, implement the minimal code to pass, then refactor with tests green
+- When generating plans in Plan mode, include explicit TDD sequencing per phase:
+  red tests first, green implementation second, refactor last
 - Use Conventional Commits format: `type(scope): description` (e.g., `fix(ux): restore swipe-to-delete`, `feat(voice): add @MainActor isolation`)
 - Use conventional branch prefixes: `feat/`, `fix/`, `docs/`, `chore/` (e.g., `feat/swipe-delete`, `fix/gesture-conflict`)
 - **When creating new GitHub issues, always add them to the Offload project** using `gh issue create --project "Offload"` during creation, or `gh issue edit <number> --add-project "Offload"` after creation
+- **When creating new GitHub issues, always apply labels at creation time; never leave issues unlabeled**
+- Use `bug` for defects/regressions, `enhancement` for feature or implementation work, and `documentation` for docs-only work
+- Use `uat` only for post-merge user verification follow-up issues
+- Use `ux` as an additional label (with one of the primary labels above) for UX/UI-focused issues
+- If label selection is ambiguous, ask the user before creating or relabeling issues
 - **When creating plans that resolve issues, always add a comment to the issue** linking to the plan document with summary of approach, phases, and next steps
 - SwiftData predicates require explicit type references for enum cases
 - Repositories must be injected via `@State` + `.task`, not created in `body`

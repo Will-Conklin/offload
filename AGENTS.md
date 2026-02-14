@@ -52,6 +52,10 @@ just lint                     # Run markdownlint/yamllint
 - For feature work: REQUIRE accepted PRD + design + plan + any ADRs before
   implementation; keep docs updated; create reference docs when contracts
   stabilize
+- For feature work: follow a TDD cycle (red → green → refactor): write tests
+  first, implement the minimal code to pass, then refactor with tests green
+- For plan generation in Plan mode: encode TDD steps in each implementation
+  phase/slice (red tests, green implementation, refactor)
 - For feature work: Track plans with GitHub issues; update status/comments/links;
   move plan issues through Ready → In Progress → Done using repo project
   settings
@@ -66,6 +70,15 @@ just lint                     # Run markdownlint/yamllint
   complete
 - For all new GitHub issues (not only plan issues): always add them to the
   Offload project during creation or immediately after creation
+- For all new GitHub issues: apply labels at creation time and never leave an
+  issue unlabeled
+- Use `bug` for defects/regressions, `enhancement` for feature or implementation
+  work, and `documentation` for docs-only work
+- Use `uat` only for post-merge user verification follow-up issues
+- Use `ux` as an additional label (with the primary label above) when the issue
+  is primarily about UX/UI behavior
+- If label selection is ambiguous, ask the user before creating or relabeling
+  issues
 - When creating plans that resolve existing issues: always add an issue comment
   linking the plan document and summarizing approach, phases, and next steps
 - NEVER assume version numbers or pricing information; treat them as deferred

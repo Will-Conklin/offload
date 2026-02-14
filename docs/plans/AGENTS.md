@@ -7,7 +7,7 @@ owners:
 applies_to:
   - agents
   - plans
-last_updated: 2026-01-25
+last_updated: 2026-02-14
 related:
   - docs-agents
 depends_on: []
@@ -64,12 +64,22 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
 
 - Ordered task list with dependencies
 - Clear phases and milestones
+- When generating plans in Plan mode, structure implementation work using TDD
+  (red → green → refactor) for each phase/slice
+- Include explicit test-first tasks before implementation tasks in each phase
 - Links to GitHub issues for tracking
   - When creating new issues for plans, add them to the Offload GitHub project
   - Use `gh issue create --project "Offload"` or add via GitHub web UI
+  - Apply labels when creating plan issues; never leave a plan issue unlabeled
+  - Use `enhancement` for feature/implementation plan issues
+  - Use `bug` when the plan is specifically to fix a defect/regression
+  - Use `documentation` for docs-only plan issues
+  - Use `ux` as an additional label when the plan primarily targets UX/UI
+    behavior
   - **Always add a comment to related issues when a plan is created**, linking to the plan document and summarizing the approach
   - Include plan status, key phases, and next steps in the issue comment
-  - When work is merged but User Verification remains, create and link a `uat`-labeled issue for verification follow-up
+  - When work is merged but User Verification remains, create and link a
+    `uat`-labeled issue for verification follow-up
 - References to design docs and PRDs
 - A User Verification section with a checklist; agents must not update or check items in this section
 
