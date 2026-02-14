@@ -59,6 +59,18 @@ final class TagRepositoryTests: XCTestCase {
         XCTAssertEqual(count, 2)
     }
 
+    func testUpdateUsageCount_IncludesCollectionUsage() throws {
+        let tag = try tagRepository.fetchOrCreate("project")
+        _ = try itemRepository.create(content: "Item 1", tags: [tag])
+
+        let collection = Collection(name: "Plan", isStructured: true, tags: [tag])
+        modelContext.insert(collection)
+        try modelContext.save()
+
+        let count = try tagRepository.updateUsageCount(tag)
+        XCTAssertEqual(count, 2)
+    }
+
     func testFetchUnused() throws {
         let unused = try tagRepository.fetchOrCreate("unused")
         let used = try tagRepository.fetchOrCreate("used")
@@ -67,5 +79,27 @@ final class TagRepositoryTests: XCTestCase {
         let unusedTags = try tagRepository.fetchUnused()
         XCTAssertTrue(unusedTags.contains(where: { $0.id == unused.id }))
         XCTAssertFalse(unusedTags.contains(where: { $0.id == used.id }))
+    }
+
+    func testFetchUnused_ExcludesCollectionOnlyTags() throws {
+        let unused = try tagRepository.fetchOrCreate("unused")
+        let collectionTag = try tagRepository.fetchOrCreate("collection-only")
+
+        let collection = Collection(name: "List", isStructured: false, tags: [collectionTag])
+        modelContext.insert(collection)
+        try modelContext.save()
+
+        let unusedTags = try tagRepository.fetchUnused()
+        XCTAssertTrue(unusedTags.contains(where: { $0.id == unused.id }))
+        XCTAssertFalse(unusedTags.contains(where: { $0.id == collectionTag.id }))
+    }
+
+    func testIsTagInUse_TrueForCollectionOnlyTag() throws {
+        let tag = try tagRepository.fetchOrCreate("in-use")
+        let collection = Collection(name: "Plan", isStructured: true, tags: [tag])
+        modelContext.insert(collection)
+        try modelContext.save()
+
+        XCTAssertTrue(tagRepository.isTagInUse(tag: tag))
     }
 }

@@ -116,14 +116,17 @@ final class TagRepository {
 
     // MARK: - Task Relationships
 
-    /// Get count of items using this tag
+    /// Get combined usage count (items + collections) for this tag.
     func getTaskCount(tag: Tag) -> Int {
-        tag.items.count
+        usageCount(tag: tag)
     }
 
-    /// Check if tag is used by any items
+    /// Check if tag is used by any item or collection.
     func isTagInUse(tag: Tag) -> Bool {
-        getTaskCount(tag: tag) > 0
+        usageCount(tag: tag) > 0
     }
 
+    private func usageCount(tag: Tag) -> Int {
+        tag.items.count + tag.collections.count
+    }
 }
