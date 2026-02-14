@@ -453,7 +453,9 @@ struct AddItemSheet: View {
             throw ValidationError("Collection not found.")
         }
 
-        let position = targetCollection.isStructured ? (targetCollection.collectionItems?.count ?? 0) : nil
+        let position = targetCollection.isStructured
+            ? collectionRepository.nextPosition(in: targetCollection, parentId: nil)
+            : nil
         try itemRepository.moveToCollection(item, collection: targetCollection, position: position)
     }
 }

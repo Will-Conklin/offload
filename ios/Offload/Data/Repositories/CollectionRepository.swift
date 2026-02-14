@@ -159,7 +159,7 @@ final class CollectionRepository {
             if let position {
                 return position
             }
-            return collection.isStructured ? (collection.collectionItems?.count ?? 0) : nil
+            return collection.isStructured ? nextPosition(in: collection, parentId: nil) : nil
         }()
         let collectionItem = CollectionItem(
             collectionId: collection.id,
@@ -175,10 +175,26 @@ final class CollectionRepository {
 
     func removeItem(_ item: Item, from collection: Collection) throws {
         guard let collectionItems = collection.collectionItems else { return }
+        var deletedParentIds = Set<UUID?>()
+        var didDelete = false
         for collectionItem in collectionItems where collectionItem.itemId == item.id {
+            deletedParentIds.insert(collectionItem.parentId)
             modelContext.delete(collectionItem)
+            didDelete = true
         }
+
+        guard didDelete else {
+            return
+        }
+
         try modelContext.save()
+
+        if collection.isStructured {
+            for parentId in deletedParentIds {
+                compactStructuredPositions(in: collection, parentId: parentId)
+            }
+            try modelContext.save()
+        }
     }
 
     func reorderItems(_ items: [Item], in collection: Collection) throws {
@@ -345,6 +361,14 @@ final class CollectionRepository {
         collection.collectionItems?.count ?? 0
     }
 
+    /// Returns the next insertion index for structured collections within a sibling scope.
+    /// For unstructured collections this should not be used.
+    func nextPosition(in collection: Collection, parentId: UUID?) -> Int {
+        guard collection.isStructured else { return 0 }
+        let siblings = (collection.collectionItems ?? []).filter { $0.parentId == parentId }
+        return (siblings.compactMap(\.position).max() ?? -1) + 1
+    }
+
     func getItems(_ collection: Collection) throws -> [Item] {
         guard let collectionItems = collection.collectionItems else { return [] }
         return collectionItems.compactMap(\.item)
@@ -394,5 +418,27 @@ final class CollectionRepository {
 
         try modelContext.save()
         AppLogger.general.info("Backfilled \(sortedItems.count, privacy: .public) positions")
+    }
+
+    private func compactStructuredPositions(in collection: Collection, parentId: UUID?) {
+        let siblings = (collection.collectionItems ?? [])
+            .filter { $0.parentId == parentId }
+            .sorted { lhs, rhs in
+                let lhsPosition = lhs.position ?? Int.max
+                let rhsPosition = rhs.position ?? Int.max
+                if lhsPosition != rhsPosition {
+                    return lhsPosition < rhsPosition
+                }
+                let lhsDate = lhs.item?.createdAt ?? .distantFuture
+                let rhsDate = rhs.item?.createdAt ?? .distantFuture
+                if lhsDate != rhsDate {
+                    return lhsDate < rhsDate
+                }
+                return lhs.id.uuidString < rhs.id.uuidString
+            }
+
+        for (index, sibling) in siblings.enumerated() {
+            sibling.position = index
+        }
     }
 }

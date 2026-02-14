@@ -81,6 +81,42 @@ final class CollectionRepositoryTests: XCTestCase {
         XCTAssertEqual(fetched?.collectionItems?.count ?? 0, 0)
     }
 
+    func testAddItem_UsesMaxPositionPlusOneForStructuredCollection() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item1 = try itemRepository.create(content: "Item 1")
+        let item2 = try itemRepository.create(content: "Item 2")
+        let item3 = try itemRepository.create(content: "Item 3")
+
+        try collectionRepository.addItem(item1, to: collection, position: 0)
+        try collectionRepository.addItem(item2, to: collection, position: 2)
+        try collectionRepository.addItem(item3, to: collection)
+
+        let fetched = try collectionRepository.fetchById(collection.id)
+        let linkedItem = fetched?.collectionItems?.first(where: { $0.itemId == item3.id })
+        XCTAssertEqual(linkedItem?.position, 3)
+    }
+
+    func testRemoveItem_CompactsStructuredSiblingPositions() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item1 = try itemRepository.create(content: "Item 1")
+        let item2 = try itemRepository.create(content: "Item 2")
+        let item3 = try itemRepository.create(content: "Item 3")
+
+        try collectionRepository.addItem(item1, to: collection, position: 0)
+        try collectionRepository.addItem(item2, to: collection, position: 1)
+        try collectionRepository.addItem(item3, to: collection, position: 2)
+        try collectionRepository.removeItem(item2, from: collection)
+
+        let fetched = try collectionRepository.fetchById(collection.id)
+        let positions = fetched?.collectionItems?.reduce(into: [UUID: Int]()) { result, collectionItem in
+            if let position = collectionItem.position {
+                result[collectionItem.itemId] = position
+            }
+        }
+        XCTAssertEqual(positions?[item1.id], 0)
+        XCTAssertEqual(positions?[item3.id], 1)
+    }
+
     func testReorderItems() throws {
         let collection = try collectionRepository.create(name: "Plan", isStructured: true)
         let item1 = try itemRepository.create(content: "Item 1")
