@@ -192,7 +192,7 @@ struct CollectionCard: View {
 
                     // Tags in flow layout - always show if onAddTag is available
                     FlowLayout(spacing: Theme.Spacing.xs) {
-                        ForEach(collection.tags) { tag in
+                        ForEach(collection.tags, id: \.id) { tag in
                             TagPill(
                                 name: tag.name,
                                 color: tag.color

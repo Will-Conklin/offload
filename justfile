@@ -10,7 +10,7 @@ build:
     xcodebuild -project ios/Offload.xcodeproj -scheme Offload -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath .derivedData/xcodebuild build
 
 test:
-    source scripts/ci/readiness-env.sh && xcodebuild test -project ios/Offload.xcodeproj -scheme Offload -destination "platform=iOS Simulator,name=${CI_SIM_DEVICE}" -derivedDataPath .derivedData/xcodebuild
+    source scripts/ci/readiness-env.sh && destination="platform=iOS Simulator,OS=${CI_SIM_OS},name=${CI_SIM_DEVICE}" && if [[ -n "${CI_SIM_ARCH:-}" ]]; then destination="${destination},arch=${CI_SIM_ARCH}"; fi && xcodebuild test -project ios/Offload.xcodeproj -scheme Offload -destination "${destination}" -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -derivedDataPath .derivedData/xcodebuild
 
 lint-docs:
     markdownlint --fix .

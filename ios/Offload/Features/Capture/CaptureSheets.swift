@@ -145,12 +145,8 @@ struct MoveToPlanSheet: View {
         guard let collection = selectedCollection else { return }
 
         do {
-            // Update item type
-            try itemRepository.updateType(item, type: "task")
-
-            // Link to collection
             let position = collection.collectionItems?.count ?? 0
-            try itemRepository.moveToCollection(item, collection: collection, position: position)
+            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: position)
 
             dismiss()
             onComplete()
@@ -167,11 +163,7 @@ struct MoveToPlanSheet: View {
             // Create collection
             let collection = try collectionRepository.create(name: trimmed, isStructured: true)
 
-            // Update item type
-            try itemRepository.updateType(item, type: "task")
-
-            // Link to collection
-            try itemRepository.moveToCollection(item, collection: collection, position: 0)
+            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: 0)
 
             dismiss()
             onComplete()
@@ -277,11 +269,7 @@ struct MoveToListSheet: View {
         guard let collection = selectedCollection else { return }
 
         do {
-            // Update item type
-            try itemRepository.updateType(item, type: "task")
-
-            // Link to collection (no position for unstructured lists)
-            try itemRepository.moveToCollection(item, collection: collection, position: nil)
+            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: nil)
 
             dismiss()
             onComplete()
@@ -298,11 +286,7 @@ struct MoveToListSheet: View {
             // Create collection
             let collection = try collectionRepository.create(name: trimmed, isStructured: false)
 
-            // Update item type
-            try itemRepository.updateType(item, type: "task")
-
-            // Link to collection
-            try itemRepository.moveToCollection(item, collection: collection, position: nil)
+            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: nil)
 
             dismiss()
             onComplete()

@@ -8,3 +8,10 @@ export CI_MACOS_RUNNER="macos-14"
 export CI_XCODE_VERSION="16.2"
 export CI_SIM_DEVICE="iPhone 16"
 export CI_SIM_OS="18.2"
+
+# Prefer arm64 simulator execution on Apple Silicon; keep Intel hosts unpinned.
+if [[ "$(uname -m)" == "arm64" ]]; then
+    export CI_SIM_ARCH="${CI_SIM_ARCH:-arm64}"
+else
+    export CI_SIM_ARCH="${CI_SIM_ARCH:-}"
+fi
