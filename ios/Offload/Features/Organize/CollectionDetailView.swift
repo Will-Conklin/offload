@@ -430,9 +430,10 @@ struct CollectionDetailView: View {
                 // Nest as child of target
                 droppedItem.parentId = targetId
 
-                // Find position as last child of target
+                // Find next position among target's existing children.
                 let targetChildren = viewModel.items.filter { $0.parentId == targetId }
-                droppedItem.position = targetChildren.count
+                let nextChildPosition = (targetChildren.compactMap(\.position).max() ?? -1) + 1
+                droppedItem.position = nextChildPosition
 
                 // Expand the target to show the new child
                 expandedItems.insert(targetId)

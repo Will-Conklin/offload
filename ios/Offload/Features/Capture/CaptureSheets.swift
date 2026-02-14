@@ -145,7 +145,7 @@ struct MoveToPlanSheet: View {
         guard let collection = selectedCollection else { return }
 
         do {
-            let position = collection.collectionItems?.count ?? 0
+            let position = collectionRepository.nextPosition(in: collection, parentId: nil)
             try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: position)
 
             dismiss()
