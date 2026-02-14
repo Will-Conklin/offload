@@ -226,17 +226,79 @@ final class ItemRepository {
     /// Updates the item type and collection link in a single save boundary.
     /// If save fails, all in-memory changes are rolled back.
     func moveToCollectionAtomically(_ item: Item, collection: Collection, targetType: String?, position: Int?) throws {
+        try moveToCollectionAtomically(
+            item,
+            collection: collection,
+            targetType: targetType,
+            position: position,
+            saveAction: { [modelContext] in try modelContext.save() }
+        )
+    }
+
+    /// Testable variant that allows injecting save behavior.
+    func moveToCollectionAtomically(
+        _ item: Item,
+        collection: Collection,
+        targetType: String?,
+        position: Int?,
+        saveAction: () throws -> Void
+    ) throws {
         guard try fetchCollection(by: collection.id) != nil else {
             throw ValidationError("Collection not found")
         }
 
-        item.type = targetType
-        _ = try upsertCollectionItem(item: item, collection: collection, position: position)
+        let originalType = item.type
+        let itemId = item.id
+        let collectionId = collection.id
+        let existingDescriptor = FetchDescriptor<CollectionItem>(
+            predicate: #Predicate {
+                $0.itemId == itemId && $0.collectionId == collectionId
+            }
+        )
+        let existingLink = try modelContext.fetch(existingDescriptor).first
+        let originalExistingPosition = existingLink?.position
+        let originalExistingParentId = existingLink?.parentId
+        let originalExistingCollection = existingLink?.collection
+        let originalExistingItem = existingLink?.item
+
+        var insertedLink: CollectionItem?
 
         do {
-            try modelContext.save()
+            item.type = targetType
+            if let existingLink {
+                existingLink.position = position
+                existingLink.parentId = nil
+                existingLink.collection = collection
+                existingLink.item = item
+            } else {
+                let collectionItem = CollectionItem(
+                    collectionId: collectionId,
+                    itemId: itemId,
+                    position: position,
+                    parentId: nil
+                )
+                collectionItem.collection = collection
+                collectionItem.item = item
+                modelContext.insert(collectionItem)
+                insertedLink = collectionItem
+            }
+
+            try saveAction()
         } catch {
             modelContext.rollback()
+            item.type = originalType
+
+            if let existingLink {
+                existingLink.position = originalExistingPosition
+                existingLink.parentId = originalExistingParentId
+                existingLink.collection = originalExistingCollection
+                existingLink.item = originalExistingItem
+            }
+
+            if let insertedLink {
+                modelContext.delete(insertedLink)
+            }
+
             throw error
         }
     }

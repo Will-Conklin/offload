@@ -513,6 +513,58 @@ final class ItemRepositoryTests: XCTestCase {
         XCTAssertTrue(links.isEmpty)
     }
 
+    func testMoveToCollectionAtomicallyRollsBackWhenSaveActionThrows() throws {
+        enum TestError: Error { case expected }
+
+        let collectionRepository = CollectionRepository(modelContext: modelContext)
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item = try repository.create(content: "Move me")
+
+        XCTAssertThrowsError(
+            try repository.moveToCollectionAtomically(
+                item,
+                collection: collection,
+                targetType: "task",
+                position: 0,
+                saveAction: { throw TestError.expected }
+            )
+        )
+
+        XCTAssertNil(item.type)
+        let itemId = item.id
+        let links = try modelContext.fetch(
+            FetchDescriptor<CollectionItem>(
+                predicate: #Predicate { $0.itemId == itemId }
+            )
+        )
+        XCTAssertTrue(links.isEmpty)
+    }
+
+    func testMoveToCollectionAtomicallyRestoresExistingLinkWhenSaveActionThrows() throws {
+        enum TestError: Error { case expected }
+
+        let collectionRepository = CollectionRepository(modelContext: modelContext)
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item = try repository.create(content: "Move me")
+        try repository.moveToCollection(item, collection: collection, position: 1)
+
+        XCTAssertThrowsError(
+            try repository.moveToCollectionAtomically(
+                item,
+                collection: collection,
+                targetType: "task",
+                position: 9,
+                saveAction: { throw TestError.expected }
+            )
+        )
+
+        XCTAssertNil(item.type)
+        let fetchedCollection = try collectionRepository.fetchById(collection.id)
+        XCTAssertEqual(fetchedCollection?.collectionItems?.count, 1)
+        XCTAssertEqual(fetchedCollection?.collectionItems?.first?.position, 1)
+        XCTAssertEqual(fetchedCollection?.collectionItems?.first?.parentId, nil)
+    }
+
     func testValidate() throws {
         let item = try repository.create(content: "  ")
         XCTAssertFalse(try repository.validate(item))
