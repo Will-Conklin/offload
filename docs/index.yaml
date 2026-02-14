@@ -302,6 +302,9 @@ sections:
       - id: research-2026-01-04-main-branch-review
         title: "Code Review: Main Branch - Comprehensive Analysis"
         path: research/reviews/research-2026-01-04-main-branch-review.md
+      - id: research-2026-02-14-docs-plan-coverage-review
+        title: "Docs → Plan Coverage Review (2026-02-14)"
+        path: research/reviews/research-2026-02-14-docs-plan-coverage-review.md
       - id: research-adhd-ux-ui
         title: ADHD-First UX and UI Guidance for Offload
         path: research/research-adhd-ux-ui.md

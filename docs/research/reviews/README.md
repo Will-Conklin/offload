@@ -9,6 +9,7 @@ applies_to:
 last_updated: 2026-01-25
 related:
   - research-2026-01-04-main-branch-review
+  - research-2026-02-14-docs-plan-coverage-review
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -43,6 +44,7 @@ Research-level authority. Reviews are informational and must not define requirem
 ## Canonical documents
 
 - [Code Review: Main Branch - Comprehensive Analysis](./research-2026-01-04-main-branch-review.md)
+- [Docs → Plan Coverage Review (2026-02-14)](./research-2026-02-14-docs-plan-coverage-review.md)
 
 ## Naming
 

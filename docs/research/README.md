@@ -13,6 +13,7 @@ related:
   - research-color-scheme-alternatives
   - research-ios-ui-trends-2025
   - research-2026-01-04-main-branch-review
+  - research-2026-02-14-docs-plan-coverage-review
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -65,6 +66,7 @@ active → completed
 - [Offline AI Quota Enforcement](./research-offline-ai-quota-enforcement.md)
 - [Privacy Implications of Learning from User Data](./research-privacy-learning-user-data.md)
 - [Code Review: Main Branch - Comprehensive Analysis](./reviews/research-2026-01-04-main-branch-review.md)
+- [Docs → Plan Coverage Review (2026-02-14)](./reviews/research-2026-02-14-docs-plan-coverage-review.md)
 
 ## Template
 
