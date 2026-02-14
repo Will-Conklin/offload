@@ -1,14 +1,14 @@
 ---
 id: plan-fix-atomic-move-to-collection
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - capture
   - organize
   - data-model
-last_updated: 2026-02-13
+last_updated: 2026-02-14
 related: []
 depends_on: []
 supersedes: []
@@ -45,34 +45,34 @@ If step 2 fails, step 1 may already be persisted. Product decision is to enforce
 
 ### Phase 1: Repository API for Atomic Move
 
-**Status:** Not started
+**Status:** Completed
 
-- [ ] Add `ItemRepository.moveToCollectionAtomically(item:collection:targetType:position:) throws`.
-- [ ] Inside the method, set type + create/update link + save once.
-- [ ] Roll back context changes on error before rethrowing.
+- [x] Add `ItemRepository.moveToCollectionAtomically(item:collection:targetType:position:) throws`.
+- [x] Inside the method, set type + create/update link + save once.
+- [x] Roll back context changes on error before rethrowing.
 
 ### Phase 2: Migrate Call Sites
 
-**Status:** Not started
+**Status:** Completed
 
-- [ ] Update move flows in `CaptureSheets.swift` to call the atomic API.
-- [ ] Remove duplicate multi-save logic from the sheet layer.
-- [ ] Keep existing `ErrorPresenter` behavior unchanged.
+- [x] Update move flows in `CaptureSheets.swift` to call the atomic API.
+- [x] Remove duplicate multi-save logic from the sheet layer.
+- [x] Keep existing `ErrorPresenter` behavior unchanged.
 
 ### Phase 3: Guard Against Duplicate Links
 
-**Status:** Not started
+**Status:** Completed
 
-- [ ] Ensure the atomic API checks for existing `(itemId, collectionId)` links.
-- [ ] Reuse/update existing link where applicable instead of inserting duplicates.
+- [x] Ensure the atomic API checks for existing `(itemId, collectionId)` links.
+- [x] Reuse/update existing link where applicable instead of inserting duplicates.
 
 ### Phase 4: Tests
 
-**Status:** Not started
+**Status:** Completed
 
-- [ ] Add/extend tests for successful atomic move (type + link persisted together).
-- [ ] Add test that duplicate links are not created.
-- [ ] Add failure-path test proving no partial state remains.
+- [x] Add/extend tests for successful atomic move (type + link persisted together).
+- [x] Add test that duplicate links are not created.
+- [x] Add failure-path test proving no partial state remains.
 
 ## Dependencies
 
@@ -95,6 +95,7 @@ If step 2 fails, step 1 may already be persisted. Product decision is to enforce
 
 ## Progress
 
-| Date       | Update                              |
-| ---------- | ----------------------------------- |
-| 2026-02-13 | Plan created for issue #161.        |
+- 2026-02-13: Plan created for issue #161.
+- 2026-02-14: Implemented repository atomic move API with duplicate-link upsert and rollback behavior.
+- 2026-02-14: Migrated capture move flows to atomic API and added repository regression tests.
+- 2026-02-14: CLI test configuration stabilized for deterministic simulator runs; full suite passed locally.
