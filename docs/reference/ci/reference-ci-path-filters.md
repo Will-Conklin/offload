@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - ci
-last_updated: 2026-01-22
+last_updated: 2026-02-14
 related:
   - adr-0007-context-aware-ci-workflow-strategy
   - prd-0006-context-aware-ci-pipeline
@@ -43,7 +43,7 @@ which lanes run for a change set.
 | Lane | Paths | Owner | Notes |
 | --- | --- | --- | --- |
 | Docs | `docs/**`, root `*.md`, `ios/README.md` | Docs + CI maintainers | Runs markdownlint. |
-| iOS | `ios/**` | iOS | Runs iOS build/tests. |
+| iOS | `ios/**` | iOS | Runs fast iOS tests on PRs; full runs also include iOS build and coverage. |
 | Backend | `backend/**` | Backend | Runs backend checks. |
 | Scripts | `scripts/**` | Automation | Runs scripts checks. |
 

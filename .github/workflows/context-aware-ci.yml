@@ -158,9 +158,7 @@ jobs:
     needs: detect-changes
     if: >-
       ${{
-        needs.detect-changes.outputs.full_run == 'true' ||
-        (needs.detect-changes.outputs.ios_changed == 'true' &&
-        needs.detect-changes.outputs.docs_only != 'true')
+        needs.detect-changes.outputs.full_run == 'true'
       }}
     uses: ./.github/workflows/ios-build.yml
 
@@ -174,6 +172,8 @@ jobs:
         needs.detect-changes.outputs.docs_only != 'true')
       }}
     uses: ./.github/workflows/ios-tests.yml
+    with:
+      full_run: ${{ needs.detect-changes.outputs.full_run == 'true' }}
 
   backend:
     name: Backend lane

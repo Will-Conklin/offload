@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - ci
-last_updated: 2026-01-22
+last_updated: 2026-02-14
 related:
   - prd-0006-context-aware-ci-pipeline
   - design-context-aware-ci-pipeline
@@ -56,9 +56,9 @@ runs. This reference codifies the contracts described in the
 | --- | --- | --- |
 | `docs_changed` | Docs files changed | Change detection job |
 | `docs_only` | Only docs files changed | Change detection job |
-| `ios` | iOS files changed | Change detection job |
-| `backend` | Backend files changed | Change detection job |
-| `scripts` | Scripts files changed | Change detection job |
+| `ios_changed` | iOS files changed | Change detection job |
+| `backend_changed` | Backend files changed | Change detection job |
+| `scripts_changed` | Scripts files changed | Change detection job |
 | `full_run` | Full run requested | Manual or scheduled trigger |
 
 ### Lane Definitions
@@ -71,6 +71,8 @@ Lane path filters and ownership are defined in
 - Docs lane runs for any change under `docs/**`, root-level `*.md`, or `ios/README.md`.
 - Docs-only changes skip non-doc lanes.
 - Manual full runs and scheduled runs execute all lanes regardless of paths.
+- On pull requests, the iOS lane prioritizes fast feedback (unit-test scope, no coverage).
+- Full runs include complete iOS coverage generation and the dedicated iOS build lane.
 - The pipeline uses GitHub Actions per
   [ADR-0006](../../adrs/adr-0006-ci-provider-selection.md).
 - Lane gating follows the strategy in

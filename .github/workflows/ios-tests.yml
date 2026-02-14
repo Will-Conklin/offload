@@ -10,6 +10,12 @@ name: iOS Tests
 
 "on":
   workflow_call:
+    inputs:
+      full_run:
+        description: Run full iOS test lane (includes coverage)
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   bootstrap:
@@ -57,6 +63,7 @@ jobs:
       CI_XCODE_VERSION: ${{ needs.bootstrap.outputs.ci_xcode_version }}
       CI_SIM_DEVICE: ${{ needs.bootstrap.outputs.sim_device }}
       CI_SIM_OS: ${{ needs.bootstrap.outputs.sim_os }}
+      CI_FULL_RUN: ${{ inputs.full_run }}
     steps:
       - name: Guard resolved runner
         run: |
@@ -104,7 +111,7 @@ jobs:
         run: scripts/ios/test.sh
 
       - name: Coverage (non-blocking)
-        if: ${{ always() }}
+        if: ${{ always() && inputs.full_run }}
         continue-on-error: true
         run: scripts/ios/coverage.sh
 
@@ -117,7 +124,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload coverage
-        if: ${{ always() && hashFiles('.ci/coverage/**') != '' }}
+        if: ${{ always() && inputs.full_run && hashFiles('.ci/coverage/**') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: ios-test-coverage
