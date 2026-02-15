@@ -6,7 +6,7 @@
 name = "offload-backend-api"
 version = "0.1.0"
 description = "Offload backend API scaffold"
-readme = "../README.md"
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115.0,<1.0.0",
