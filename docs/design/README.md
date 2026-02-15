@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - design
-last_updated: 2026-01-25
+last_updated: 2026-02-15
 related:
   - design-voice-capture-testing-guide
   - design-voice-capture-test-results
@@ -15,6 +15,7 @@ related:
   - design-convert-plans-lists
   - design-drag-drop-ordering
   - design-item-search-tags
+  - design-backend-api-privacy-mvp
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -70,6 +71,7 @@ proposed → accepted → archived
 - [Convert Plans ↔ Lists Design](./design-convert-plans-lists.md)
 - [Drag & Drop Ordering Design](./design-drag-drop-ordering.md)
 - [Item Search by Text or Tag Design](./design-item-search-tags.md)
+- [Backend API + Privacy Constraints MVP](./design-backend-api-privacy-mvp.md)
 
 ## Template
 

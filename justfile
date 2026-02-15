@@ -20,6 +20,20 @@ lint-yaml:
 
 lint: lint-docs lint-yaml
 
+backend-install:
+    python3 -m pip install -e 'backend/api[dev]'
+
+backend-lint:
+    python3 -m ruff check backend/api/src backend/api/tests
+
+backend-test:
+    python3 -m pytest backend/api/tests -q
+
+backend-typecheck:
+    python3 -m ty check backend/api/src backend/api/tests
+
+backend-check: backend-lint backend-typecheck backend-test
+
 security-deps:
     snyk test --all-projects
 

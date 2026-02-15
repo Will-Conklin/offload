@@ -1,14 +1,14 @@
 ---
 id: plan-fix-tag-usage-semantics
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - tags
   - capture
   - organize
-last_updated: 2026-02-13
+last_updated: 2026-02-15
 related:
   - plan-fix-tag-assignment
   - plan-tag-relationship-refactor
@@ -18,6 +18,8 @@ accepted_by: null
 accepted_at: null
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/164
+  - https://github.com/Will-Conklin/Offload/issues/181
+implementation_pr: https://github.com/Will-Conklin/Offload/pull/168
 structure_notes:
   - "Section order: Overview; Context; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -92,6 +94,6 @@ Tag usage helpers currently only check item relationships. The data model also s
 
 ## Progress
 
-| Date       | Update                              |
-| ---------- | ----------------------------------- |
-| 2026-02-13 | Plan created for issue #164.        |
+- 2026-02-13: Plan created for issue #164.
+- 2026-02-15: Implementation merged in PR #168; opened UAT follow-up issue
+  #181.

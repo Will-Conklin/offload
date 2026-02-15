@@ -5,34 +5,87 @@
 
 import Foundation
 
-/// Network client for API communication
-final class APIClient {
+struct APIRequest {
+    let path: String
+    let method: String
+    var headers: [String: String]
+    var body: Data?
+
+    init(path: String, method: String, headers: [String: String] = [:], body: Data? = nil) {
+        self.path = path
+        self.method = method
+        self.headers = headers
+        self.body = body
+    }
+}
+
+protocol APITransporting {
+    func send(_ request: APIRequest) async throws -> (Data, HTTPURLResponse)
+}
+
+enum APIClientError: Error {
+    case invalidURL
+    case invalidResponse
+    case statusCode(Int, Data)
+    case transport(Error)
+}
+
+/// Network client for API communication.
+final class APIClient: APITransporting {
     static let shared = APIClient()
 
     private let session: URLSession
     private let baseURL: URL
 
-    private init() {
+    init(session: URLSession? = nil, baseURL: URL? = nil) {
+        if let baseURL {
+            self.baseURL = baseURL
+        } else if let configuredBaseURL = ProcessInfo.processInfo.environment["OFFLOAD_API_BASE_URL"],
+                  let url = URL(string: configuredBaseURL)
+        {
+            self.baseURL = url
+        } else if let url = URL(string: "https://api.offload.app") {
+            self.baseURL = url
+        } else {
+            fatalError("Invalid base URL configuration - this is a programmer error")
+        }
+
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
         configuration.timeoutIntervalForResource = 300
-        session = URLSession(configuration: configuration)
-
-        // TODO: Move to configuration/environment
-        guard let baseURL = URL(string: "https://api.offload.app") else {
-            fatalError("Invalid base URL configuration - this is a programmer error")
-        }
-        self.baseURL = baseURL
+        self.session = session ?? URLSession(configuration: configuration)
     }
 
-    // TODO: Implement request(_ endpoint: Endpoint) async throws -> Data
-    // TODO: Implement upload(_ endpoint: Endpoint, data: Data) async throws -> Data
-    // TODO: Implement download(_ endpoint: Endpoint) async throws -> URL
-    // TODO: Add authentication/token management
-    // TODO: Add retry logic with exponential backoff
-    // TODO: Add request/response logging
-    // TODO: Add error handling and mapping
-}
+    func send(_ request: APIRequest) async throws -> (Data, HTTPURLResponse) {
+        guard let url = URL(string: request.path, relativeTo: baseURL) else {
+            throw APIClientError.invalidURL
+        }
 
-// TODO: Define Endpoint protocol
-// TODO: Define APIError enum
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = request.method
+        urlRequest.httpBody = request.body
+
+        for (key, value) in request.headers {
+            urlRequest.setValue(value, forHTTPHeaderField: key)
+        }
+
+        if request.body != nil, request.headers["Content-Type"] == nil {
+            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        }
+
+        do {
+            let (data, response) = try await session.data(for: urlRequest)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw APIClientError.invalidResponse
+            }
+            guard (200 ... 299).contains(httpResponse.statusCode) else {
+                throw APIClientError.statusCode(httpResponse.statusCode, data)
+            }
+            return (data, httpResponse)
+        } catch let error as APIClientError {
+            throw error
+        } catch {
+            throw APIClientError.transport(error)
+        }
+    }
+}

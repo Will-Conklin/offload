@@ -142,6 +142,13 @@ ModuleCache.noindex/
 .env.local
 .env.*.local
 
+# Python backend
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
 # IDE
 .vscode/
 .idea/

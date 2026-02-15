@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - plans
-last_updated: 2026-02-14
+last_updated: 2026-02-15
 related: []
 depends_on: []
 supersedes: []
@@ -84,6 +84,11 @@ proposed → accepted → in-progress → completed/archived
 - [Plan: Fix Voice Recording Service Off-Main-Actor Mutations](./plan-fix-voice-recording-threading.md)
 - [Plan: Fix Collection Form Sheet Dismissing on Save Failure](./plan-fix-collection-form-dismissal.md)
 - [Plan: Tag Relationship Refactor (Pending Confirmation)](./plan-tag-relationship-refactor.md)
+- [Plan: Fix Structured Item Position Collisions](./plan-fix-structured-item-position-collisions.md)
+- [Plan: Fix Tag Usage Semantics](./plan-fix-tag-usage-semantics.md)
+- [Plan: Diagnose Idle Memory Pressure](./plan-diagnose-idle-memory-pressure.md)
+- [Plan: Fix Collection Position Backfill](./plan-fix-collection-position-backfill.md)
+- [Plan: Backend API + Privacy Constraints MVP (Breakdown-First)](./plan-backend-api-privacy.md)
 
 ### Proposed
 
@@ -92,11 +97,6 @@ proposed → accepted → in-progress → completed/archived
 - [Plan: Advanced Accessibility Features (Pending Confirmation)](./plan-advanced-accessibility.md)
 - [Plan: AI Organization Flows & Review Screen (Pending Confirmation)](./plan-ai-organization-flows.md)
 - [Plan: AI Pricing & Limits (Pending Confirmation)](./plan-ai-pricing-limits.md)
-- [Plan: Backend API + Privacy Constraints (Pending Confirmation)](./plan-backend-api-privacy.md)
-- [Plan: Fix Collection Position Backfill](./plan-fix-collection-position-backfill.md)
-- [Plan: Fix Structured Item Position Collisions](./plan-fix-structured-item-position-collisions.md)
-- [Plan: Fix Tag Usage Semantics](./plan-fix-tag-usage-semantics.md)
-- [Plan: Diagnose Idle Memory Pressure](./plan-diagnose-idle-memory-pressure.md)
 
 ### Completed
 

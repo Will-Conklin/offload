@@ -1,14 +1,14 @@
 ---
 id: plan-fix-collection-position-backfill
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - organize
   - ordering
   - migration
-last_updated: 2026-02-13
+last_updated: 2026-02-15
 related: []
 depends_on: []
 supersedes: []
@@ -16,6 +16,8 @@ accepted_by: null
 accepted_at: null
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/163
+  - https://github.com/Will-Conklin/Offload/issues/182
+implementation_pr: https://github.com/Will-Conklin/Offload/pull/179
 structure_notes:
   - "Section order: Overview; Context; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -89,6 +91,6 @@ Make collection position backfill collision-safe by normalizing all positions in
 
 ## Progress
 
-| Date       | Update                              |
-| ---------- | ----------------------------------- |
-| 2026-02-13 | Plan created for issue #163.        |
+- 2026-02-13: Plan created for issue #163.
+- 2026-02-15: Implementation merged in PR #179; opened UAT follow-up issue
+  #182.
