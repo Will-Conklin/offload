@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - agents
-last_updated: 2026-01-25
+last_updated: 2026-02-14
 related: []
 depends_on: []
 supersedes: []
@@ -103,6 +103,7 @@ If ambiguity remains:
 - Preserve historical ADRs; deprecate instead of deleting
 - Do not collapse multiple documents unless explicitly instructed
 - Archived docs can be moved to directory-level `_archived/` directories; create them when missing
+- When moving, renaming, or archiving documentation files, update `docs/index.yaml` in the same change so all `path` entries resolve
 
 ### Owner Assignment Rules
 
@@ -137,6 +138,7 @@ Documentation must be created and accepted in dependency order before implementa
 ## Expected Agent Behavior
 
 - Navigate via `docs/index.yaml`
+- Keep `docs/index.yaml` synchronized with documentation adds/moves/archives before finishing
 - Prefer reference → adrs → prds when answering questions
 - Prefer precision over completeness
 - Prefer explicit uncertainty over assumption

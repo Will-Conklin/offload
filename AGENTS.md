@@ -86,6 +86,13 @@ just ci-local                 # Run lint + backend checks + iOS tests
   is primarily about UX/UI behavior
 - If label selection is ambiguous, ask the user before creating or relabeling
   issues
+- After creating/updating issues, PRs, or project statuses, run a sync audit and
+  fix mismatches before finishing:
+  - every open issue is in the Offload project
+  - no open issue is unlabeled
+  - open issues are not in `Done`/`Archived`
+  - closed issues are in `Done`/`Archived`
+  - `In review` is used only when a relevant PR is currently open
 - When creating plans that resolve existing issues: always add an issue comment
   linking the plan document and summarizing approach, phases, and next steps
 - NEVER assume version numbers or pricing information; treat them as deferred

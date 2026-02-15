@@ -80,8 +80,13 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
   - Include plan status, key phases, and next steps in the issue comment
   - When work is merged but User Verification remains, create and link a
     `uat`-labeled issue for verification follow-up
+  - After plan issue/PR updates, run an issue/project sync audit and fix any
+    mismatches before finishing (project membership, required labels, and lane
+    alignment such as `In review` only with an open PR)
 - References to design docs and PRDs
+- Include related design/testing artifacts in plan frontmatter (`related`) when they inform or validate plan execution
 - A User Verification section with a checklist; agents must not update or check items in this section
+- When plans are added, moved, or archived, update `docs/index.yaml` paths in the same change
 
 ## Boundaries
 

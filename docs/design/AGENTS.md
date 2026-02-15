@@ -7,7 +7,7 @@ owners:
 applies_to:
   - agents
   - design
-last_updated: 2026-01-25
+last_updated: 2026-02-14
 related:
   - docs-agents
 depends_on: []
@@ -63,6 +63,7 @@ Document technical architecture and implementation approach (HOW).
 - Data models and relationships
 - Integration specifications
 - Links to related ADRs and PRDs
+- Feature-focused design/testing docs must link to implementation plans via frontmatter (`related` plan IDs and/or `depends_on` plan paths)
 
 ## Boundaries
 

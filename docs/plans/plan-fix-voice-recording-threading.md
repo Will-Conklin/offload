@@ -9,8 +9,10 @@ applies_to:
   - voice
   - capture
   - bug-fix
-last_updated: 2026-02-13
-related: []
+last_updated: 2026-02-14
+related:
+  - design-voice-capture-testing-guide
+  - design-voice-capture-test-results
 depends_on: []
 supersedes: []
 accepted_by: Will-Conklin

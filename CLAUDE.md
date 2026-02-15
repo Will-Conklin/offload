@@ -65,6 +65,9 @@ just xcode-open         # Open project in Xcode
 - Use `uat` only for post-merge user verification follow-up issues
 - Use `ux` as an additional label (with one of the primary labels above) for UX/UI-focused issues
 - If label selection is ambiguous, ask the user before creating or relabeling issues
+- After any issue/PR/project update, run an issue sync audit and fix mismatches:
+  open issues in project, no unlabeled open issues, open issues not in `Done`/`Archived`,
+  closed issues in `Done`/`Archived`, and `In review` only when a related PR is open
 - **When creating plans that resolve issues, always add a comment to the issue** linking to the plan document with summary of approach, phases, and next steps
 - SwiftData predicates require explicit type references for enum cases
 - Repositories must be injected via `@State` + `.task`, not created in `body`

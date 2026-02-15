@@ -322,4 +322,23 @@ final class CollectionRepositoryTests: XCTestCase {
         XCTAssertTrue(plan.isStructured, "Plan should be structured (triggers warning)")
         XCTAssertFalse(list.isStructured, "List should not be structured (no warning)")
     }
+
+    func testBackfillCollectionPositions_AppendsAfterExistingPositionsForStructuredCollections() throws {
+        let existing = try collectionRepository.create(name: "Existing", isStructured: true)
+        existing.position = 7
+
+        let olderNil = try collectionRepository.create(name: "Older Nil", isStructured: true)
+        let newerNil = try collectionRepository.create(name: "Newer Nil", isStructured: true)
+        olderNil.position = nil
+        newerNil.position = nil
+        olderNil.createdAt = Date(timeIntervalSince1970: 1_000)
+        newerNil.createdAt = Date(timeIntervalSince1970: 2_000)
+        try modelContext.save()
+
+        try collectionRepository.backfillCollectionPositions(isStructured: true)
+
+        XCTAssertEqual(existing.position, 7)
+        XCTAssertEqual(olderNil.position, 8)
+        XCTAssertEqual(newerNil.position, 9)
+    }
 }

@@ -187,10 +187,12 @@ sections:
         path: plans/plan-diagnose-idle-memory-pressure.md
       - id: plan-logging-implementation
         title: "Plan: Comprehensive Logging Implementation (Proposed)"
-        path: plans/plan-logging-implementation.md
+        path: plans/_archived/plan-logging-implementation.md
+        archived: true
       - id: plan-persistent-bottom-tab-bar
         title: "Plan: Persistent Bottom Tab Bar"
-        path: plans/plan-persistent-bottom-tab-bar.md
+        path: plans/_archived/plan-persistent-bottom-tab-bar.md
+        archived: true
       - id: plan-convert-plans-lists
         title: "Plan: Convert Plans and Lists"
         path: plans/plan-convert-plans-lists.md
@@ -202,7 +204,41 @@ sections:
         path: plans/plan-item-search-tags.md
       - id: plan-context-aware-ci-pipeline
         title: "Plan: Context-Aware CI Pipeline"
-        path: plans/plan-context-aware-ci-pipeline.md
+        path: plans/_archived/plan-context-aware-ci-pipeline.md
+        archived: true
+      - id: plan-fix-atomic-move-to-collection
+        title: "Plan: Atomic Move to Collection"
+        path: plans/plan-fix-atomic-move-to-collection.md
+      - id: plan-fix-collection-form-dismissal
+        title: "Plan: Fix Collection Form Sheet Dismissing on Save Failure"
+        path: plans/plan-fix-collection-form-dismissal.md
+      - id: plan-fix-collection-position-backfill
+        title: "Plan: Fix Collection Position Backfill"
+        path: plans/plan-fix-collection-position-backfill.md
+      - id: plan-fix-orphaned-collection-links
+        title: "Plan: Fix Orphaned Collection Links in CollectionItemRepository"
+        path: plans/plan-fix-orphaned-collection-links.md
+      - id: plan-fix-structured-item-position-collisions
+        title: "Plan: Fix Structured Item Position Collisions"
+        path: plans/plan-fix-structured-item-position-collisions.md
+      - id: plan-fix-swipe-to-delete
+        title: "Plan: Fix Swipe-to-Delete in Organize View"
+        path: plans/plan-fix-swipe-to-delete.md
+      - id: plan-fix-tag-assignment
+        title: "Plan: Fix Tag Assignment Persistence"
+        path: plans/plan-fix-tag-assignment.md
+      - id: plan-fix-tag-usage-semantics
+        title: "Plan: Fix Tag Usage Semantics"
+        path: plans/plan-fix-tag-usage-semantics.md
+      - id: plan-fix-voice-recording-threading
+        title: "Plan: Fix Voice Recording Service Off-Main-Actor Mutations"
+        path: plans/plan-fix-voice-recording-threading.md
+      - id: plan-resolve-gesture-conflict
+        title: "Plan: Resolve Gesture Conflict on Collection Cards"
+        path: plans/plan-resolve-gesture-conflict.md
+      - id: plan-ux-accessibility-audit-fixes
+        title: "Plan: UX & Accessibility Audit Fixes"
+        path: plans/plan-ux-accessibility-audit-fixes.md
       - id: plans-archived-readme
         title: Archived Plans
         path: plans/_archived/README.md

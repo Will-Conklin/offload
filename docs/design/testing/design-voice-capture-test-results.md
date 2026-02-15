@@ -8,8 +8,9 @@ applies_to:
   - voice
   - capture
   - testing
-last_updated: 2026-01-17
-related: []
+last_updated: 2026-02-14
+related:
+  - plan-fix-voice-recording-threading
 depends_on: []
 supersedes: []
 accepted_by: null

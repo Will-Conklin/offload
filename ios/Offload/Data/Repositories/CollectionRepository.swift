@@ -345,10 +345,13 @@ final class CollectionRepository {
 
         AppLogger.general.info("Found \(collectionsNeedingPosition.count, privacy: .public) collections needing positions")
 
-        // Sort by creation date and assign positions
+        // Sort nil-position collections by creation date, appending after existing positions
         let sorted = collectionsNeedingPosition.sorted { $0.createdAt < $1.createdAt }
-        for (index, collection) in sorted.enumerated() {
-            collection.position = index
+        let maxExistingPosition = collections.compactMap(\.position).max() ?? -1
+        var nextPosition = maxExistingPosition + 1
+        for collection in sorted {
+            collection.position = nextPosition
+            nextPosition += 1
         }
 
         try modelContext.save()
