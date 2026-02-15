@@ -1,10 +1,10 @@
 # Project: Offload
 
-iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
+iOS application with a FastAPI backend slice.
 
 ## Architecture
 
-- **Stack**: Swift, SwiftUI, SwiftData
+- **Stack**: Swift, SwiftUI, SwiftData, Python, FastAPI
 - **Platform**: iOS (iPhone and iPad)
 - **Bundle ID**: wc.Offload
 - **Pattern**: Feature-based modules with repository pattern for data access
@@ -19,6 +19,8 @@ iOS application built with SwiftUI and SwiftData, targeting iPhone and iPad.
 - `ios/Offload/Data/Repositories/` - CRUD/query repositories
 - `ios/Offload/Data/Persistence/` - SwiftData container setup
 - `ios/Offload/DesignSystem/` - Theme, components, icons
+- `backend/api/` - FastAPI backend package
+- `scripts/ci/` - CI lane scripts (iOS/backend/scripts)
 - `docs/prds/` - Product requirements
 - `docs/adrs/` - Architecture decisions
 - `docs/plans/` - Implementation plans
@@ -31,6 +33,11 @@ just xcode-open               # Open in Xcode
 just build                    # Build
 just test                     # Test
 just lint                     # Run markdownlint/yamllint
+just ios-test-ci              # Run iOS CI-style test lane locally
+just backend-install-uv       # Sync backend dev dependencies with uv
+just backend-check            # Run backend ruff + ty + pytest
+just backend-check-ci         # Run backend CI script locally
+just ci-local                 # Run lint + backend checks + iOS tests
 
 # Manual Xcode shortcuts
 # Cmd+B                       # Build
@@ -96,6 +103,7 @@ just lint                     # Run markdownlint/yamllint
   that non-agent scripts parse; document metadata for agents must live only in
   YAML front-matter per `docs/AGENTS.md`
 - Prioritize using `just` for common commands and keep the `justfile` at project root up to date
+- For backend changes: run `just backend-check` (or `just backend-check-ci`) before opening/updating PRs
 - For UI work: use `Theme.*` tokens (no hardcoded colors/spacing/radii/fonts)
   and reuse `ios/Offload/DesignSystem/Components.swift` before creating new
   UI primitives

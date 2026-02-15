@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - architecture
-last_updated: 2026-01-22
+last_updated: 2026-02-15
 related:
   - adr-0001-technology-stack-and-architecture
   - adr-0002-terminology-alignment-for-capture-and-organization
@@ -15,6 +15,7 @@ related:
   - adr-0005-collection-ordering-and-hierarchy-persistence
   - adr-0006-ci-provider-selection
   - adr-0007-context-aware-ci-workflow-strategy
+  - adr-0008-backend-api-privacy-mvp
 depends_on: []
 supersedes: []
 accepted_by: null
@@ -71,6 +72,7 @@ proposed → accepted → superseded | deprecated
 - [adr-0005: Collection Ordering and Hierarchy Persistence](./adr-0005-collection-ordering-and-hierarchy-persistence.md)
 - [adr-0006: CI Provider Selection](./adr-0006-ci-provider-selection.md)
 - [adr-0007: Context-Aware CI Workflow Strategy](./adr-0007-context-aware-ci-workflow-strategy.md)
+- [adr-0008: Backend API + Privacy Constraints MVP](./adr-0008-backend-api-privacy-mvp.md)
 
 ## Template
 

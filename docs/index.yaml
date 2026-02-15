@@ -77,6 +77,9 @@ sections:
       - id: adr-0007-context-aware-ci-workflow-strategy
         title: "adr-0007: Context-Aware CI Workflow Strategy"
         path: adrs/adr-0007-context-aware-ci-workflow-strategy.md
+      - id: adr-0008-backend-api-privacy-mvp
+        title: "adr-0008: Backend API + Privacy Constraints MVP"
+        path: adrs/adr-0008-backend-api-privacy-mvp.md
   - id: prds
     title: Product Requirements
     description: Product requirements, scope, goals, and success metrics.
@@ -166,6 +169,9 @@ sections:
       - id: design-context-aware-ci-pipeline
         title: Context-Aware CI Pipeline Design
         path: design/design-context-aware-ci-pipeline.md
+      - id: design-backend-api-privacy-mvp
+        title: Backend API + Privacy Constraints MVP
+        path: design/design-backend-api-privacy-mvp.md
   - id: plans
     title: Implementation Plans
     description: Sequencing, milestones, execution strategy.
@@ -289,7 +295,7 @@ sections:
         title: "Plan: AI Pricing & Limits"
         path: plans/plan-ai-pricing-limits.md
       - id: plan-backend-api-privacy
-        title: "Plan: Backend API + Privacy Constraints"
+        title: "Plan: Backend API + Privacy Constraints MVP (Breakdown-First)"
         path: plans/plan-backend-api-privacy.md
       - id: plan-archived-error-handling-improvements
         title: Error Handling Improvements Plan

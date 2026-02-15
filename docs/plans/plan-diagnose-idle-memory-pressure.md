@@ -1,14 +1,14 @@
 ---
 id: plan-diagnose-idle-memory-pressure
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - diagnostics
   - memory
   - startup
-last_updated: 2026-02-14
+last_updated: 2026-02-15
 related: []
 depends_on: []
 supersedes: []
@@ -16,6 +16,7 @@ accepted_by: null
 accepted_at: null
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/175
+implementation_pr: https://github.com/Will-Conklin/Offload/pull/176
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -124,3 +125,4 @@ lifecycle memory telemetry so mitigation work can be evidence-driven.
 | 2026-02-14 | Plan created and linked to issue #175. |
 | 2026-02-14 | Phases 1-4 implemented; Phase 5 validation in progress. |
 | 2026-02-14 | `just build`, `just test`, and `just lint` passed. |
+| 2026-02-15 | Diagnostics instrumentation merged in PR #176; issue #175 remains open for ongoing investigation/validation. |

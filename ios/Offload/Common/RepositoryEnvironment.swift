@@ -7,6 +7,16 @@ import OSLog
 import SwiftData
 import SwiftUI
 
+@MainActor
+private enum RepositoryFallbackLogState {
+    static var emittedKeys: Set<String> = []
+
+    static func logOnce(key: String, message: String) {
+        guard emittedKeys.insert(key).inserted else { return }
+        AppLogger.general.warning("\(message, privacy: .public)")
+    }
+}
+
 // MARK: - Environment Keys
 
 private struct ItemRepositoryKey: EnvironmentKey {
@@ -33,9 +43,12 @@ extension EnvironmentValues {
             if let repository = self[ItemRepositoryKey.self] {
                 return repository
             }
-            AppLogger.general.error("ItemRepository not injected; falling back to modelContext.")
             return MainActor.assumeIsolated {
-                ItemRepository(modelContext: modelContext)
+                RepositoryFallbackLogState.logOnce(
+                    key: "itemRepository",
+                    message: "ItemRepository not injected; falling back to modelContext."
+                )
+                return ItemRepository(modelContext: modelContext)
             }
         }
         set { self[ItemRepositoryKey.self] = newValue }
@@ -46,9 +59,12 @@ extension EnvironmentValues {
             if let repository = self[CollectionRepositoryKey.self] {
                 return repository
             }
-            AppLogger.general.error("CollectionRepository not injected; falling back to modelContext.")
             return MainActor.assumeIsolated {
-                CollectionRepository(modelContext: modelContext)
+                RepositoryFallbackLogState.logOnce(
+                    key: "collectionRepository",
+                    message: "CollectionRepository not injected; falling back to modelContext."
+                )
+                return CollectionRepository(modelContext: modelContext)
             }
         }
         set { self[CollectionRepositoryKey.self] = newValue }
@@ -59,9 +75,12 @@ extension EnvironmentValues {
             if let repository = self[CollectionItemRepositoryKey.self] {
                 return repository
             }
-            AppLogger.general.error("CollectionItemRepository not injected; falling back to modelContext.")
             return MainActor.assumeIsolated {
-                CollectionItemRepository(modelContext: modelContext)
+                RepositoryFallbackLogState.logOnce(
+                    key: "collectionItemRepository",
+                    message: "CollectionItemRepository not injected; falling back to modelContext."
+                )
+                return CollectionItemRepository(modelContext: modelContext)
             }
         }
         set { self[CollectionItemRepositoryKey.self] = newValue }
@@ -72,9 +91,12 @@ extension EnvironmentValues {
             if let repository = self[TagRepositoryKey.self] {
                 return repository
             }
-            AppLogger.general.error("TagRepository not injected; falling back to modelContext.")
             return MainActor.assumeIsolated {
-                TagRepository(modelContext: modelContext)
+                RepositoryFallbackLogState.logOnce(
+                    key: "tagRepository",
+                    message: "TagRepository not injected; falling back to modelContext."
+                )
+                return TagRepository(modelContext: modelContext)
             }
         }
         set { self[TagRepositoryKey.self] = newValue }

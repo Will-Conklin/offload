@@ -8,12 +8,14 @@ applies_to:
   - product
   - ai
   - organize
-last_updated: 2026-01-24
+last_updated: 2026-02-15
 related:
   - adr-0003-adhd-focused-ux-ui-guardrails
+  - adr-0008-backend-api-privacy-mvp
   - prd-0001-product-requirements
 depends_on:
   - docs/adrs/adr-0003-adhd-focused-ux-ui-guardrails.md
+  - docs/adrs/adr-0008-backend-api-privacy-mvp.md
   - docs/prds/prd-0001-product-requirements.md
 supersedes: []
 accepted_by: null
@@ -194,12 +196,23 @@ Pricing and limits are deferred; see
 - Learning from user's accepted/rejected patterns over time
 - Template pattern recognition and suggestion improvements
 
+### Backend MVP contract (Breakdown-first)
+
+- Backend stack: Python + FastAPI.
+- Identity model: anonymous device session token from
+  `POST /v1/sessions/anonymous`.
+- Breakdown endpoint contract: `POST /v1/ai/breakdown/generate`.
+- Usage reconcile contract: `POST /v1/usage/reconcile`.
+- Provider strategy: single provider (OpenAI) behind backend adapter.
+- Session token required for `/v1/ai/*` and `/v1/usage/*`.
+
 ### Privacy requirements
 
 - All processing happens on-device by default
 - No task content sent to cloud without explicit user opt-in
 - Templates stored locally in SwiftData
 - If cloud AI used, task content encrypted in transit and not retained
+- Backend must not persist prompt/response content to durable storage.
 
 ---
 
@@ -345,3 +358,4 @@ Pricing and limits are deferred; see
 | Version | Date | Notes |
 | --- | --- | --- |
 | N/A | 2026-01-24 | Initial draft based on user research |
+| N/A | 2026-02-15 | Added backend MVP contract and privacy retention constraints for breakdown-first cloud fallback. |

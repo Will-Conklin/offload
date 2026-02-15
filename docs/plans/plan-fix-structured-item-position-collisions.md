@@ -1,14 +1,14 @@
 ---
 id: plan-fix-structured-item-position-collisions
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
   - organize
   - capture
   - ordering
-last_updated: 2026-02-13
+last_updated: 2026-02-15
 related:
   - plan-drag-drop-ordering
 depends_on: []
@@ -17,6 +17,8 @@ accepted_by: null
 accepted_at: null
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/162
+  - https://github.com/Will-Conklin/Offload/issues/180
+implementation_pr: https://github.com/Will-Conklin/Offload/pull/167
 structure_notes:
   - "Section order: Overview; Context; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -94,6 +96,6 @@ Structured insertion paths currently use collection count as next position. Afte
 
 ## Progress
 
-| Date       | Update                              |
-| ---------- | ----------------------------------- |
-| 2026-02-13 | Plan created for issue #162.        |
+- 2026-02-13: Plan created for issue #162.
+- 2026-02-15: Implementation merged in PR #167; opened UAT follow-up issue
+  #180.
