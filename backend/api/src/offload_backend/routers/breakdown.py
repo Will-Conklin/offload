@@ -30,6 +30,14 @@ from offload_backend.security import SessionClaims
 router = APIRouter()
 
 
+def _request_content_size_chars(request: BreakdownGenerateRequest) -> int:
+    return (
+        len(request.input_text)
+        + sum(len(hint) for hint in request.context_hints)
+        + sum(len(template_id) for template_id in request.template_ids)
+    )
+
+
 @router.post("/ai/breakdown/generate", response_model=BreakdownGenerateResponse)
 async def generate_breakdown(
     request: BreakdownGenerateRequest,
@@ -38,11 +46,11 @@ async def generate_breakdown(
     provider: AIProvider = Depends(get_provider),
     settings: Settings = Depends(get_app_settings),
 ) -> BreakdownGenerateResponse:
-    if len(request.input_text) > settings.max_input_chars:
+    if _request_content_size_chars(request) > settings.max_input_chars:
         raise APIException(
             status_code=413,
             code="request_too_large",
-            message=f"Input exceeds max size of {settings.max_input_chars} characters",
+            message=f"Request content exceeds max size of {settings.max_input_chars} characters",
         )
 
     started_at = datetime.now(UTC)

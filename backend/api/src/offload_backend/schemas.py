@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Annotated
 
 from pydantic import BaseModel, Field
 
@@ -26,8 +27,14 @@ class AnonymousSessionResponse(BaseModel):
 class BreakdownGenerateRequest(BaseModel):
     input_text: str = Field(min_length=1)
     granularity: int = Field(ge=1, le=5)
-    context_hints: list[str] = Field(default_factory=list)
-    template_ids: list[str] = Field(default_factory=list)
+    context_hints: list[Annotated[str, Field(min_length=1, max_length=280)]] = Field(
+        default_factory=list,
+        max_length=32,
+    )
+    template_ids: list[Annotated[str, Field(min_length=1, max_length=128)]] = Field(
+        default_factory=list,
+        max_length=32,
+    )
 
 
 class BreakdownStep(BaseModel):

@@ -56,8 +56,29 @@ final class APIClient: APITransporting {
         self.session = session ?? URLSession(configuration: configuration)
     }
 
+    func resolvedURL(for path: String) -> URL? {
+        if let absoluteURL = URL(string: path), absoluteURL.scheme != nil {
+            return absoluteURL
+        }
+
+        guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+
+        let pathAndQuery = path.split(separator: "?", maxSplits: 1, omittingEmptySubsequences: false)
+        let requestPath = pathAndQuery.isEmpty ? "" : String(pathAndQuery[0])
+        let requestQuery = pathAndQuery.count > 1 ? String(pathAndQuery[1]) : nil
+
+        let baseSegments = components.percentEncodedPath.split(separator: "/").map(String.init)
+        let requestSegments = requestPath.split(separator: "/").map(String.init)
+        let mergedSegments = baseSegments + requestSegments
+        components.percentEncodedPath = "/" + mergedSegments.joined(separator: "/")
+        components.percentEncodedQuery = requestQuery
+        return components.url
+    }
+
     func send(_ request: APIRequest) async throws -> (Data, HTTPURLResponse) {
-        guard let url = URL(string: request.path, relativeTo: baseURL) else {
+        guard let url = resolvedURL(for: request.path) else {
             throw APIClientError.invalidURL
         }
 

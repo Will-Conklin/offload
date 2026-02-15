@@ -113,7 +113,7 @@ final class DefaultBreakdownService: BreakdownService {
                 source: .cloud,
                 usage: cloudResponse.usage
             )
-        } catch {
+        } catch let error as AIBackendClientError where error.shouldFallbackToOnDevice {
             let steps = try await onDeviceGenerator.generateBreakdown(
                 inputText: inputText,
                 granularity: granularity,
@@ -121,6 +121,8 @@ final class DefaultBreakdownService: BreakdownService {
                 templateIds: templateIds
             )
             return BreakdownExecutionResult(steps: steps, source: .onDevice, usage: nil)
+        } catch {
+            throw error
         }
     }
 

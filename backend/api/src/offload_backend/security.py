@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import hashlib
 import hmac
 import json
@@ -73,7 +74,7 @@ class TokenManager:
             payload = json.loads(payload_bytes.decode("utf-8"))
             expires_at = datetime.fromtimestamp(int(payload["exp"]), tz=UTC)
             install_id = str(payload["install_id"])
-        except (KeyError, ValueError, json.JSONDecodeError) as exc:
+        except (KeyError, TypeError, ValueError, UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise InvalidTokenError("Invalid token payload") from exc
 
         if expires_at <= datetime.now(UTC):
@@ -84,4 +85,7 @@ class TokenManager:
 
 def _urlsafe_b64decode(value: str) -> bytes:
     padding = "=" * (-len(value) % 4)
-    return base64.urlsafe_b64decode(f"{value}{padding}".encode())
+    try:
+        return base64.urlsafe_b64decode(f"{value}{padding}".encode())
+    except (binascii.Error, ValueError) as exc:
+        raise InvalidTokenError("Malformed session token encoding") from exc

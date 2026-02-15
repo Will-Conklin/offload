@@ -93,6 +93,90 @@ final class BreakdownServiceTests: XCTestCase {
         XCTAssertEqual(backend.generateCalls, 1)
     }
 
+    func testTransientServerFailureFallsBackToOnDevice() async throws {
+        let backend = MockBackendClient()
+        backend.breakdownResult = .failure(
+            AIBackendClientError.server(code: "provider_unavailable", status: 503)
+        )
+
+        let service = DefaultBreakdownService(
+            backendClient: backend,
+            consentStore: TestConsentStore(isCloudAIEnabled: true),
+            usageStore: TestUsageCounterStore(),
+            onDeviceGenerator: StubOnDeviceGenerator(steps: [BreakdownStep(title: "Fallback step")]),
+            installIDProvider: { "install-12345" }
+        )
+
+        let result = try await service.generateBreakdown(
+            inputText: "Handle outage",
+            granularity: 4,
+            contextHints: [],
+            templateIds: []
+        )
+
+        XCTAssertEqual(result.source, .onDevice)
+        XCTAssertEqual(result.steps.first?.title, "Fallback step")
+        XCTAssertEqual(backend.generateCalls, 1)
+    }
+
+    func testPolicyErrorDoesNotFallbackToOnDevice() async throws {
+        let backend = MockBackendClient()
+        backend.breakdownResult = .failure(
+            AIBackendClientError.server(code: "quota_exceeded", status: 429)
+        )
+
+        let service = DefaultBreakdownService(
+            backendClient: backend,
+            consentStore: TestConsentStore(isCloudAIEnabled: true),
+            usageStore: TestUsageCounterStore(),
+            onDeviceGenerator: StubOnDeviceGenerator(steps: [BreakdownStep(title: "Fallback step")]),
+            installIDProvider: { "install-12345" }
+        )
+
+        do {
+            _ = try await service.generateBreakdown(
+                inputText: "Plan launch",
+                granularity: 3,
+                contextHints: [],
+                templateIds: []
+            )
+            XCTFail("Expected quota_exceeded to be surfaced")
+        } catch let error as AIBackendClientError {
+            XCTAssertEqual(error, .server(code: "quota_exceeded", status: 429))
+            XCTAssertEqual(backend.generateCalls, 1)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testUnauthorizedDoesNotFallbackToOnDevice() async throws {
+        let backend = MockBackendClient()
+        backend.breakdownResult = .failure(AIBackendClientError.unauthorized)
+
+        let service = DefaultBreakdownService(
+            backendClient: backend,
+            consentStore: TestConsentStore(isCloudAIEnabled: true),
+            usageStore: TestUsageCounterStore(),
+            onDeviceGenerator: StubOnDeviceGenerator(steps: [BreakdownStep(title: "Fallback step")]),
+            installIDProvider: { "install-12345" }
+        )
+
+        do {
+            _ = try await service.generateBreakdown(
+                inputText: "Plan launch",
+                granularity: 3,
+                contextHints: [],
+                templateIds: []
+            )
+            XCTFail("Expected unauthorized to be surfaced")
+        } catch let error as AIBackendClientError {
+            XCTAssertEqual(error, .unauthorized)
+            XCTAssertEqual(backend.generateCalls, 1)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     func testReconcileUsagePreservesMergedCounts() async throws {
         let backend = MockBackendClient()
         backend.reconcileResult = .success(

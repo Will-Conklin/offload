@@ -15,6 +15,30 @@ enum AIBackendClientError: Error, Equatable {
     case transport
 }
 
+extension AIBackendClientError {
+    var shouldFallbackToOnDevice: Bool {
+        switch self {
+        case .transport, .invalidResponse:
+            return true
+        case .server(let code, let status):
+            let blockingCodes: Set<String> = [
+                "quota_exceeded",
+                "feature_disabled",
+                "safety_blocked",
+                "consent_required",
+            ]
+
+            if blockingCodes.contains(code) || status == 429 {
+                return false
+            }
+
+            return status >= 500
+        case .consentRequired, .missingSession, .unauthorized:
+            return false
+        }
+    }
+}
+
 private struct APIErrorEnvelope: Decodable {
     struct APIErrorBody: Decodable {
         let code: String
