@@ -13,7 +13,14 @@ if [[ ! -f "backend/api/pyproject.toml" ]]; then
   exit 1
 fi
 
-python3 -m pip install --user -e 'backend/api[dev]'
-python3 -m ruff check backend/api/src backend/api/tests
-python3 -m ty check backend/api/src backend/api/tests
-python3 -m pytest backend/api/tests -q
+VENV_PATH="backend/api/.venv"
+
+python3 -m venv "${VENV_PATH}"
+"${VENV_PATH}/bin/python" -m pip install --upgrade pip
+"${VENV_PATH}/bin/python" -m pip install -e 'backend/api[dev]'
+"${VENV_PATH}/bin/python" -m ruff check backend/api/src backend/api/tests
+"${VENV_PATH}/bin/python" -m ty check \
+  --project backend/api \
+  --extra-search-path backend/api/src \
+  backend/api/src backend/api/tests
+"${VENV_PATH}/bin/python" -m pytest backend/api/tests -q
