@@ -36,6 +36,7 @@ just lint                     # Run markdownlint/yamllint
 just ios-test-ci              # Run iOS CI-style test lane locally
 just backend-install-uv       # Sync backend dev dependencies with uv
 just backend-check            # Run backend ruff + ty + pytest
+just backend-test-coverage    # Run backend tests with coverage summary
 just backend-check-ci         # Run backend CI script locally
 just ci-local                 # Run lint + backend checks + iOS tests
 
