@@ -192,6 +192,14 @@ jobs:
       - name: Run backend checks
         run: scripts/ci/backend-checks.sh
 
+      - name: Upload backend coverage
+        if: ${{ always() && hashFiles('.ci/backend-coverage/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-coverage
+          path: .ci/backend-coverage
+          if-no-files-found: ignore
+
   scripts:
     name: Scripts lane
     needs: detect-changes

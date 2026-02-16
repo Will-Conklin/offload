@@ -32,6 +32,9 @@ backend-lint:
 backend-test:
     python3 -m pytest backend/api/tests -q
 
+backend-test-coverage:
+    python3 -m pytest backend/api/tests -q --cov=offload_backend --cov-report=term-missing:skip-covered
+
 backend-typecheck:
     python3 -m ty check backend/api/src backend/api/tests
 

@@ -14,6 +14,9 @@ if [[ ! -f "backend/api/pyproject.toml" ]]; then
 fi
 
 VENV_PATH="backend/api/.venv"
+COVERAGE_DIR="${COVERAGE_DIR:-.ci/backend-coverage}"
+COVERAGE_XML="${COVERAGE_XML:-${COVERAGE_DIR}/coverage.xml}"
+COVERAGE_TXT="${COVERAGE_TXT:-${COVERAGE_DIR}/coverage.txt}"
 
 python3 -m venv "${VENV_PATH}"
 "${VENV_PATH}/bin/python" -m pip install --upgrade pip
@@ -23,4 +26,10 @@ python3 -m venv "${VENV_PATH}"
   --project backend/api \
   --extra-search-path backend/api/src \
   backend/api/src backend/api/tests
-"${VENV_PATH}/bin/python" -m pytest backend/api/tests -q
+
+mkdir -p "${COVERAGE_DIR}"
+
+"${VENV_PATH}/bin/python" -m pytest backend/api/tests -q \
+  --cov=offload_backend \
+  --cov-report=term-missing:skip-covered \
+  --cov-report=xml:"${COVERAGE_XML}" | tee "${COVERAGE_TXT}"

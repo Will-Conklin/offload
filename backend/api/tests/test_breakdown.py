@@ -33,18 +33,9 @@ class FailureProvider:
         raise ProviderRequestError("provider failure")
 
 
-def create_session(client, install_id: str = "install-12345") -> str:
-    response = client.post(
-        "/v1/sessions/anonymous",
-        json={"install_id": install_id, "app_version": "1.0", "platform": "ios"},
-    )
-    assert response.status_code == 200
-    return response.json()["session_token"]
-
-
-def test_breakdown_generation_success(client, app):
+def test_breakdown_generation_success(client, app, create_session_token):
     app.dependency_overrides[get_provider] = lambda: FakeProvider()
-    token = create_session(client)
+    token = create_session_token()
 
     response = client.post(
         "/v1/ai/breakdown/generate",
@@ -69,9 +60,9 @@ def test_breakdown_generation_success(client, app):
     app.dependency_overrides.clear()
 
 
-def test_breakdown_rejects_missing_opt_in(client, app):
+def test_breakdown_rejects_missing_opt_in(client, app, create_session_token):
     app.dependency_overrides[get_provider] = lambda: FakeProvider()
-    token = create_session(client)
+    token = create_session_token()
 
     response = client.post(
         "/v1/ai/breakdown/generate",
@@ -85,9 +76,9 @@ def test_breakdown_rejects_missing_opt_in(client, app):
     app.dependency_overrides.clear()
 
 
-def test_breakdown_schema_validation(client, app):
+def test_breakdown_schema_validation(client, app, create_session_token):
     app.dependency_overrides[get_provider] = lambda: FakeProvider()
-    token = create_session(client)
+    token = create_session_token()
 
     response = client.post(
         "/v1/ai/breakdown/generate",
@@ -104,9 +95,9 @@ def test_breakdown_schema_validation(client, app):
     app.dependency_overrides.clear()
 
 
-def test_breakdown_provider_timeout_mapping(client, app):
+def test_breakdown_provider_timeout_mapping(client, app, create_session_token):
     app.dependency_overrides[get_provider] = lambda: TimeoutProvider()
-    token = create_session(client)
+    token = create_session_token()
 
     response = client.post(
         "/v1/ai/breakdown/generate",
@@ -123,9 +114,9 @@ def test_breakdown_provider_timeout_mapping(client, app):
     app.dependency_overrides.clear()
 
 
-def test_breakdown_provider_failure_mapping(client, app):
+def test_breakdown_provider_failure_mapping(client, app, create_session_token):
     app.dependency_overrides[get_provider] = lambda: FailureProvider()
-    token = create_session(client)
+    token = create_session_token()
 
     response = client.post(
         "/v1/ai/breakdown/generate",
@@ -142,9 +133,9 @@ def test_breakdown_provider_failure_mapping(client, app):
     app.dependency_overrides.clear()
 
 
-def test_breakdown_request_limit_enforced(client, app):
+def test_breakdown_request_limit_enforced(client, app, create_session_token):
     app.dependency_overrides[get_provider] = lambda: FakeProvider()
-    token = create_session(client)
+    token = create_session_token()
 
     response = client.post(
         "/v1/ai/breakdown/generate",
@@ -161,9 +152,13 @@ def test_breakdown_request_limit_enforced(client, app):
     app.dependency_overrides.clear()
 
 
-def test_breakdown_request_limit_counts_context_hints_and_template_ids(client, app):
+def test_breakdown_request_limit_counts_context_hints_and_template_ids(
+    client,
+    app,
+    create_session_token,
+):
     app.dependency_overrides[get_provider] = lambda: FakeProvider()
-    token = create_session(client)
+    token = create_session_token()
 
     response = client.post(
         "/v1/ai/breakdown/generate",
@@ -185,9 +180,9 @@ def test_breakdown_request_limit_counts_context_hints_and_template_ids(client, a
     app.dependency_overrides.clear()
 
 
-def test_breakdown_does_not_persist_prompt_content(client, app):
+def test_breakdown_does_not_persist_prompt_content(client, app, create_session_token):
     app.dependency_overrides[get_provider] = lambda: FakeProvider()
-    token = create_session(client)
+    token = create_session_token()
     prompt = "super-private-prompt-content"
 
     response = client.post(
