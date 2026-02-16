@@ -161,6 +161,30 @@ def test_breakdown_request_limit_enforced(client, app):
     app.dependency_overrides.clear()
 
 
+def test_breakdown_request_limit_counts_context_hints_and_template_ids(client, app):
+    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    token = create_session(client)
+
+    response = client.post(
+        "/v1/ai/breakdown/generate",
+        json={
+            "input_text": "x",
+            "granularity": 2,
+            "context_hints": ["a" * 280, "b" * 280, "c" * 280, "d" * 280],
+            "template_ids": [],
+        },
+        headers={
+            "Authorization": f"Bearer {token}",
+            "X-Offload-Cloud-Opt-In": "true",
+        },
+    )
+
+    assert response.status_code == 413
+    assert response.json()["error"]["code"] == "request_too_large"
+
+    app.dependency_overrides.clear()
+
+
 def test_breakdown_does_not_persist_prompt_content(client, app):
     app.dependency_overrides[get_provider] = lambda: FakeProvider()
     token = create_session(client)

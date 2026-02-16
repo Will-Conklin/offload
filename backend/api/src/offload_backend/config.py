@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import secrets
 from functools import lru_cache
 
 from pydantic import Field
@@ -14,7 +15,7 @@ class Settings(BaseSettings):
 
     environment: str = "development"
     build_version: str = "dev"
-    session_secret: str = "dev-secret-change-me"
+    session_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     session_ttl_seconds: int = 3600
     openai_api_key: str | None = None
     openai_base_url: str = "https://api.openai.com/v1"

@@ -50,6 +50,17 @@ def test_invalid_token_is_rejected(client):
     assert response.json()["error"]["code"] == "invalid_token"
 
 
+def test_malformed_base64_token_is_rejected(client):
+    response = client.post(
+        "/v1/usage/reconcile",
+        json={"install_id": "install-12345", "feature": "breakdown", "local_count": 1},
+        headers={"Authorization": "Bearer payload.!@#$"},
+    )
+
+    assert response.status_code == 401
+    assert response.json()["error"]["code"] == "invalid_token"
+
+
 def test_expired_token_is_rejected(client):
     manager = TokenManager(secret="test-secret")
     expired_claims = SessionClaims(
