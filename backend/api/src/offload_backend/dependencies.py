@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import hashlib
+import logging
+
 from fastapi import Depends, Header, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
@@ -13,9 +16,15 @@ from offload_backend.security import (
     SessionClaims,
     TokenManager,
 )
+from offload_backend.session_rate_limiter import (
+    InMemorySessionRateLimiter,
+    SessionRateLimiter,
+    SessionRateLimitExceeded,
+)
 from offload_backend.usage_store import InMemoryUsageStore
 
 bearer_scheme = HTTPBearer(auto_error=False)
+logger = logging.getLogger("offload_backend")
 
 
 def get_request_id(request: Request) -> str:
@@ -70,3 +79,58 @@ def get_provider(settings: Settings = Depends(get_app_settings)) -> AIProvider:
 
 def get_usage_store(request: Request) -> InMemoryUsageStore:
     return request.app.state.usage_store
+
+
+def get_session_rate_limiter(
+    request: Request,
+    settings: Settings = Depends(get_app_settings),
+) -> SessionRateLimiter:
+    limiter = getattr(request.app.state, "session_rate_limiter", None)
+    if limiter is None:
+        limiter = InMemorySessionRateLimiter(
+            limit_per_ip=settings.session_issue_limit_per_ip,
+            limit_per_install=settings.session_issue_limit_per_install,
+            window_seconds=settings.session_issue_limit_window_seconds,
+        )
+        request.app.state.session_rate_limiter = limiter
+    return limiter
+
+
+def _client_ip(request: Request) -> str:
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",", maxsplit=1)[0].strip()
+    if request.client is None or request.client.host is None:
+        return "unknown"
+    return request.client.host
+
+
+def _install_id_hash(install_id: str) -> str:
+    return hashlib.sha256(install_id.encode("utf-8")).hexdigest()[:12]
+
+
+def enforce_session_issuance_rate_limit(
+    *,
+    install_id: str,
+    request: Request,
+    limiter: SessionRateLimiter,
+) -> None:
+    client_ip = _client_ip(request)
+    try:
+        limiter.check(client_ip=client_ip, install_id=install_id)
+    except SessionRateLimitExceeded as exc:
+        logger.info(
+            "session_issuance_throttled",
+            extra={
+                "request_id": get_request_id(request),
+                "path": request.url.path,
+                "dimension": exc.dimension,
+                "retry_after_seconds": exc.retry_after_seconds,
+                "install_id_hash": _install_id_hash(install_id),
+            },
+        )
+        raise APIException(
+            status_code=429,
+            code="session_rate_limited",
+            message="Too many session requests; retry later",
+        ) from exc
