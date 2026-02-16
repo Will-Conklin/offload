@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     build_version: str = "dev"
     session_secret: str = ""
     session_ttl_seconds: int = 3600
+    session_token_issuer: str = "offload-backend"
+    session_token_audience: str = "offload-ios"
+    session_token_active_kid: str = "v2-default"
+    session_signing_keys: dict[str, str] = Field(default_factory=dict)
     session_issue_limit_per_ip: int = Field(default=8, ge=1)
     session_issue_limit_per_install: int = Field(default=4, ge=1)
     session_issue_limit_window_seconds: int = Field(default=60, ge=1)
@@ -34,8 +38,9 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_session_secret_policy(self) -> Settings:
+        production_like = is_production_like_environment(self.environment)
         secret = self.session_secret.strip()
-        if is_production_like_environment(self.environment):
+        if production_like:
             if not secret:
                 raise ValueError(
                     "OFFLOAD_SESSION_SECRET must be explicitly set in production-like environments",
@@ -44,11 +49,51 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "OFFLOAD_SESSION_SECRET is too weak for production-like environments",
                 )
-            self.session_secret = secret
-            return self
-
-        if not secret:
+        elif not secret:
             self.session_secret = secrets.token_urlsafe(32)
+        else:
+            self.session_secret = secret
+
+        self.session_token_issuer = self.session_token_issuer.strip()
+        self.session_token_audience = self.session_token_audience.strip()
+        self.session_token_active_kid = self.session_token_active_kid.strip()
+        if (
+            not self.session_token_issuer
+            or not self.session_token_audience
+            or not self.session_token_active_kid
+        ):
+            raise ValueError(
+                "Session token issuer, audience, and active key ID must be non-empty",
+            )
+
+        normalized_signing_keys: dict[str, str] = {}
+        for kid, key in self.session_signing_keys.items():
+            normalized_kid = kid.strip()
+            normalized_key = key.strip()
+            if not normalized_kid or not normalized_key:
+                raise ValueError(
+                    "OFFLOAD_SESSION_SIGNING_KEYS must use non-empty key IDs and values",
+                )
+            normalized_signing_keys[normalized_kid] = normalized_key
+
+        if not normalized_signing_keys:
+            normalized_signing_keys[self.session_token_active_kid] = self.session_secret
+        elif self.session_token_active_kid not in normalized_signing_keys:
+            raise ValueError(
+                "OFFLOAD_SESSION_TOKEN_ACTIVE_KID must exist in OFFLOAD_SESSION_SIGNING_KEYS",
+            )
+
+        if production_like:
+            for key in normalized_signing_keys.values():
+                if not is_strong_session_secret(key):
+                    raise ValueError(
+                        (
+                            "OFFLOAD_SESSION_SIGNING_KEYS values must be strong in "
+                            "production-like environments"
+                        ),
+                    )
+
+        self.session_signing_keys = normalized_signing_keys
         return self
 
 

@@ -14,6 +14,9 @@ from offload_backend.security import SessionClaims, TokenManager
 def test_env() -> Generator[None, None, None]:
     os.environ["OFFLOAD_SESSION_SECRET"] = "test-secret"
     os.environ["OFFLOAD_SESSION_TTL_SECONDS"] = "120"
+    os.environ["OFFLOAD_SESSION_TOKEN_ISSUER"] = "offload-backend-test"
+    os.environ["OFFLOAD_SESSION_TOKEN_AUDIENCE"] = "offload-ios-test"
+    os.environ["OFFLOAD_SESSION_TOKEN_ACTIVE_KID"] = "test-kid"
     os.environ["OFFLOAD_OPENAI_MODEL"] = "gpt-4o-mini"
     os.environ["OFFLOAD_MAX_INPUT_CHARS"] = "1000"
     os.environ["OFFLOAD_DEFAULT_FEATURE_QUOTA"] = "10"
@@ -48,7 +51,12 @@ def create_session_token(client: TestClient):
 @pytest.fixture
 def create_expired_session_token():
     def _create(install_id: str = "install-12345", secret: str = "test-secret") -> str:
-        manager = TokenManager(secret=secret)
+        manager = TokenManager(
+            secret=secret,
+            issuer=os.environ["OFFLOAD_SESSION_TOKEN_ISSUER"],
+            audience=os.environ["OFFLOAD_SESSION_TOKEN_AUDIENCE"],
+            active_kid=os.environ["OFFLOAD_SESSION_TOKEN_ACTIVE_KID"],
+        )
         expired_claims = SessionClaims(
             install_id=install_id,
             expires_at=datetime.now(UTC) - timedelta(seconds=1),

@@ -9,6 +9,13 @@ Backend API package for Offload MVP services.
 - Production-like environments (`OFFLOAD_ENVIRONMENT` not in
   `dev/development/local/test/testing`): `OFFLOAD_SESSION_SECRET` is required
   and must be strong.
+- Session token v2 settings:
+  - `OFFLOAD_SESSION_TOKEN_ISSUER` (default: `offload-backend`)
+  - `OFFLOAD_SESSION_TOKEN_AUDIENCE` (default: `offload-ios`)
+  - `OFFLOAD_SESSION_TOKEN_ACTIVE_KID` (default: `v2-default`)
+  - optional `OFFLOAD_SESSION_SIGNING_KEYS` as JSON map for key rotation
+    (for example: `{"v2-default":"<secret>"}`); if omitted, active key uses
+    `OFFLOAD_SESSION_SECRET`.
 
 Example:
 

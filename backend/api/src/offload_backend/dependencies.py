@@ -36,7 +36,13 @@ def get_app_settings() -> Settings:
 
 
 def get_token_manager(settings: Settings = Depends(get_app_settings)) -> TokenManager:
-    return TokenManager(secret=settings.session_secret)
+    return TokenManager(
+        secret=settings.session_secret,
+        issuer=settings.session_token_issuer,
+        audience=settings.session_token_audience,
+        active_kid=settings.session_token_active_kid,
+        signing_keys=settings.session_signing_keys,
+    )
 
 
 def get_session_claims(

@@ -84,21 +84,21 @@ issuance, and token metadata/version upgrades for key rotation readiness.
 
 ### Phase 4: Token V2 Claims and Key Metadata (Hard Cutover)
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Red:
-  - [ ] Add tests requiring claims: `v`, `kid`, `iat`, `nbf`, `iss`, `aud`,
+- [x] Red:
+  - [x] Add tests requiring claims: `v`, `kid`, `iat`, `nbf`, `iss`, `aud`,
         `exp`, `install_id`.
-  - [ ] Add tests requiring strict issuer/audience/key-id validation.
-  - [ ] Add tests verifying v1 tokens are rejected after cutover.
-- [ ] Green:
-  - [ ] Implement token v2 encode/decode with key-id aware signing and
+  - [x] Add tests requiring strict issuer/audience/key-id validation.
+  - [x] Add tests verifying v1 tokens are rejected after cutover.
+- [x] Green:
+  - [x] Implement token v2 encode/decode with key-id aware signing and
         constant-time signature checks.
-  - [ ] Add token configuration for issuer, audience, active key ID, and key
+  - [x] Add token configuration for issuer, audience, active key ID, and key
         material.
-- [ ] Refactor:
-  - [ ] Inject deterministic clock for tests.
-  - [ ] Consolidate claim parsing and validation error mapping.
+- [x] Refactor:
+  - [x] Inject deterministic clock for tests.
+  - [x] Consolidate claim parsing and validation error mapping.
 
 ## Dependencies
 
@@ -127,3 +127,4 @@ issuance, and token metadata/version upgrades for key rotation readiness.
 | --- | --- |
 | 2026-02-16 | Plan created from CODE_REVIEW_2026-02-15 security findings split. |
 | 2026-02-16 | Completed Phases 1-3: auth regression lock, production secret policy enforcement, and session issuance rate limiting with deterministic 429/reset behavior and bounded telemetry. |
+| 2026-02-16 | Completed Phase 4 hard cutover to token v2 claims (`v`,`kid`,`iat`,`nbf`,`iss`,`aud`,`exp`,`install_id`) with strict metadata validation, v1 rejection, deterministic clock tests, and key-id-aware signing config. |
