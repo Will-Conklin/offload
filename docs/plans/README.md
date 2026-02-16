@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - plans
-last_updated: 2026-02-15
+last_updated: 2026-02-16
 related: []
 depends_on: []
 supersedes: []
@@ -92,6 +92,10 @@ proposed → accepted → in-progress → completed/archived
 
 ### Proposed
 
+- [Plan: Backend Session Security Hardening](./plan-backend-session-security-hardening.md)
+- [Plan: Backend Reliability and Durability Hardening](./plan-backend-reliability-durability.md)
+- [Plan: iOS Data and Performance Hardening](./plan-ios-data-performance-hardening.md)
+- [Plan: Tab Shell Accessibility Hardening](./plan-tab-shell-accessibility-hardening.md)
 - [Plan: Visual Timeline (Pending Confirmation)](./plan-visual-timeline.md)
 - [Plan: Celebration Animations (Pending Confirmation)](./plan-celebration-animations.md)
 - [Plan: Advanced Accessibility Features (Pending Confirmation)](./plan-advanced-accessibility.md)

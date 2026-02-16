@@ -297,6 +297,18 @@ sections:
       - id: plan-backend-api-privacy
         title: "Plan: Backend API + Privacy Constraints MVP (Breakdown-First)"
         path: plans/plan-backend-api-privacy.md
+      - id: plan-backend-session-security-hardening
+        title: "Plan: Backend Session Security Hardening"
+        path: plans/plan-backend-session-security-hardening.md
+      - id: plan-backend-reliability-durability
+        title: "Plan: Backend Reliability and Durability Hardening"
+        path: plans/plan-backend-reliability-durability.md
+      - id: plan-ios-data-performance-hardening
+        title: "Plan: iOS Data and Performance Hardening"
+        path: plans/plan-ios-data-performance-hardening.md
+      - id: plan-tab-shell-accessibility-hardening
+        title: "Plan: Tab Shell Accessibility Hardening"
+        path: plans/plan-tab-shell-accessibility-hardening.md
       - id: plan-archived-error-handling-improvements
         title: Error Handling Improvements Plan
         path: plans/_archived/plan-archived-error-handling-improvements.md

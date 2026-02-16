@@ -6,10 +6,11 @@ owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-02-09
+last_updated: 2026-02-16
 related:
   - plan-roadmap
   - plan-ux-accessibility-audit-fixes
+  - plan-tab-shell-accessibility-hardening
   - design-manual-testing-checklist
   - design-manual-testing-results
   - prd-0001-product-requirements
@@ -42,6 +43,8 @@ and accessibility review before release prep begins.
   scope.
 - Resolve defects discovered during manual testing.
 - Confirm accessibility, permissions, and offline behavior are stable for launch.
+- Enforce explicit non-functional launch gates (latency, startup, memory,
+  crash-free health) before release prep.
 
 ## Phases
 
@@ -65,6 +68,8 @@ and accessibility review before release prep begins.
 
 - [ ] Capture baseline launch and navigation timing notes.
 - [ ] Run pagination flows under large data sets.
+- [ ] Measure backend breakdown latency and track p95 under representative load.
+- [ ] Capture startup-time and idle-memory baselines on physical devices.
 - [ ] Document any regressions or slow paths to address in Phase 3.
 
 ### Phase 3: Bug Fixes & Polish
@@ -86,7 +91,23 @@ This phase validates that work and catches any remaining gaps.
 
 - [ ] Review VoiceOver support for core views.
 - [ ] Validate contrast, tap targets, and focus order.
+- [ ] Validate custom tab shell and floating CTA VoiceOver traversal end-to-end.
+- [ ] Validate Dynamic Type layout at accessibility sizes for tab shell + CTA
+      quick actions.
 - [ ] Log any launch blockers and confirm resolution.
+
+### Phase 5: Non-Functional Launch Gates
+
+**Status:** Not Started
+
+- [ ] Define and record release gate thresholds:
+  - [ ] Backend breakdown latency p95.
+  - [ ] iOS startup timing budget.
+  - [ ] iOS idle-memory budget.
+  - [ ] TestFlight crash-free goal.
+- [ ] Verify observed metrics meet gate thresholds before entering release prep.
+- [ ] Record gate results in the testing artifacts and link blocking issues for
+      any misses.
 
 ## Dependencies
 
@@ -114,3 +135,4 @@ This phase validates that work and catches any remaining gaps.
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
 | 2026-02-09 | Plan refined with cross-references to testing artifacts, PRDs, and accessibility audit. |
+| 2026-02-16 | Added non-functional launch gates and mandatory tab-shell accessibility validation tasks from review follow-up. |

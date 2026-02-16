@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-02-09
+last_updated: 2026-02-16
 related:
   - plan-roadmap
   - plan-testing-polish
@@ -36,6 +36,8 @@ metadata, and TestFlight distribution.
 - Prepare documentation and release notes for launch.
 - Finalize App Store metadata and assets.
 - Distribute builds via TestFlight for final validation.
+- Complete a security release gate checklist aligned with backend privacy and
+  session-security behavior.
 
 ## Phases
 
@@ -71,6 +73,17 @@ metadata, and TestFlight distribution.
 - [ ] Distribute build and establish feedback window (minimum 1 week).
 - [ ] Triage TestFlight feedback and create issues for blockers.
 
+### Phase 4: Security Release Gate
+
+**Status:** Not Started
+
+- [ ] Validate production secret policy is satisfied in deployed environment.
+- [ ] Validate session issuance rate limiting is enabled and monitored.
+- [ ] Confirm privacy policy and retention statements match implemented backend
+      behavior (no prompt/response durable persistence).
+- [ ] Confirm incident response + rollback runbook is current and available.
+- [ ] Record gate sign-off and link blocking issues for any unmet criteria.
+
 ## Dependencies
 
 - Completion of testing and polish: [plan-testing-polish](./plan-testing-polish.md)
@@ -96,3 +109,4 @@ metadata, and TestFlight distribution.
 | --- | --- |
 | 2026-01-20 | Plan created from roadmap split. |
 | 2026-02-09 | Plan refined with concrete tasks and cross-references. |
+| 2026-02-16 | Added security release gate checklist aligned with backend hardening review recommendations. |
