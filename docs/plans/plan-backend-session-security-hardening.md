@@ -1,7 +1,7 @@
 ---
 id: plan-backend-session-security-hardening
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
@@ -45,41 +45,41 @@ issuance, and token metadata/version upgrades for key rotation readiness.
 
 ### Phase 1: Baseline Verification and Regression Lock
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Add tests that lock in current fixed behavior:
-  - [ ] Malformed base64 and malformed token segments return `invalid_token`.
-  - [ ] Session secret default is non-static and non-reused across
+- [x] Add tests that lock in current fixed behavior:
+  - [x] Malformed base64 and malformed token segments return `invalid_token`.
+  - [x] Session secret default is non-static and non-reused across
         instantiations.
-- [ ] Add tests that verify existing auth error code contracts remain stable.
-- [ ] Refactor auth test helpers for reusable token/session fixtures.
+- [x] Add tests that verify existing auth error code contracts remain stable.
+- [x] Refactor auth test helpers for reusable token/session fixtures.
 
 ### Phase 2: Production Secret Policy Enforcement
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Red:
-  - [ ] Add startup/config tests for production-like environments requiring
+- [x] Red:
+  - [x] Add startup/config tests for production-like environments requiring
         explicit `OFFLOAD_SESSION_SECRET`.
-  - [ ] Add tests rejecting weak or placeholder secret values.
-- [ ] Green:
-  - [ ] Implement config validation that fails closed when secrets are missing
+  - [x] Add tests rejecting weak or placeholder secret values.
+- [x] Green:
+  - [x] Implement config validation that fails closed when secrets are missing
         or weak outside development.
-  - [ ] Add explicit runtime guidance in backend docs.
-- [ ] Refactor: centralize secret strength validation in a dedicated utility.
+  - [x] Add explicit runtime guidance in backend docs.
+- [x] Refactor: centralize secret strength validation in a dedicated utility.
 
 ### Phase 3: Session Issuance Rate Limiting
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Red:
-  - [ ] Add tests for per-IP and per-install throttling behavior on
+- [x] Red:
+  - [x] Add tests for per-IP and per-install throttling behavior on
         `/v1/sessions/anonymous`.
-  - [ ] Add tests for deterministic `429` error envelope and reset behavior.
-- [ ] Green:
-  - [ ] Implement rate limiting dependency/middleware for session issuance.
-  - [ ] Emit bounded, non-sensitive telemetry for throttled events.
-- [ ] Refactor: extract limiter interface to support future storage-backed
+  - [x] Add tests for deterministic `429` error envelope and reset behavior.
+- [x] Green:
+  - [x] Implement rate limiting dependency/middleware for session issuance.
+  - [x] Emit bounded, non-sensitive telemetry for throttled events.
+- [x] Refactor: extract limiter interface to support future storage-backed
       implementations.
 
 ### Phase 4: Token V2 Claims and Key Metadata (Hard Cutover)
@@ -126,3 +126,4 @@ issuance, and token metadata/version upgrades for key rotation readiness.
 | Date | Update |
 | --- | --- |
 | 2026-02-16 | Plan created from CODE_REVIEW_2026-02-15 security findings split. |
+| 2026-02-16 | Completed Phases 1-3: auth regression lock, production secret policy enforcement, and session issuance rate limiting with deterministic 429/reset behavior and bounded telemetry. |
