@@ -138,13 +138,16 @@ struct CaptureSearchView: View {
                                             title: item.content,
                                             typeLabel: item.type?.uppercased(),
                                             timestamp: item.relativeTimestamp,
-                                            image: item.attachmentData.flatMap { UIImage(data: $0) },
+                                            image: itemRepository.attachmentDataForDisplay(item).flatMap { UIImage(data: $0) },
                                             tags: item.tags,
                                             onAddTag: {},
                                             size: .compact
                                         )
                                     }
                                     .contentShape(Rectangle())
+                                    .onAppear {
+                                        itemRepository.migrateLegacyAttachmentOnAccess(item)
+                                    }
                                     .onTapGesture {
                                         dismiss()
                                     }

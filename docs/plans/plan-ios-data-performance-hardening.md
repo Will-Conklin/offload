@@ -59,19 +59,19 @@ lazy migration, and typed metadata access with backward compatibility.
 
 ### Phase 2: File-Backed Attachments with Lazy Migration
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Red:
-  - [ ] Add tests for reading legacy `attachmentData` and migrating on first
+- [x] Red:
+  - [x] Add tests for reading legacy `attachmentData` and migrating on first
         access/save.
-  - [ ] Add tests for attachment delete/update cleanup.
-- [ ] Green:
-  - [ ] Introduce attachment storage service with file path pointer metadata.
-  - [ ] Persist new attachments as files and update model references.
-  - [ ] Perform lazy migration from inline blobs to file storage.
-- [ ] Refactor:
-  - [ ] Consolidate image decode and storage utilities.
-  - [ ] Ensure errors map cleanly to existing user-facing error flows.
+  - [x] Add tests for attachment delete/update cleanup.
+- [x] Green:
+  - [x] Introduce attachment storage service with file path pointer metadata.
+  - [x] Persist new attachments as files and update model references.
+  - [x] Perform lazy migration from inline blobs to file storage.
+- [x] Refactor:
+  - [x] Consolidate image decode and storage utilities.
+  - [x] Ensure errors map cleanly to existing user-facing error flows.
 
 ### Phase 3: Typed Metadata Model (Typed Core + Extension Map)
 
@@ -115,3 +115,4 @@ lazy migration, and typed metadata access with backward compatibility.
 | --- | --- |
 | 2026-02-16 | Plan created from CODE_REVIEW_2026-02-15 iOS performance/data integrity findings. |
 | 2026-02-17 | Phase 1 complete: added large-set reorder regression tests, preserved structured/unstructured ordering semantics, and replaced O(n^2) `first(where:)` reorder lookups with shared dictionary-based mapping helpers. |
+| 2026-02-17 | Phase 2 complete: added file-backed attachment storage, legacy lazy migration paths on access/save, repository cleanup on update/delete, and attachment compatibility rendering in item card/detail/search views. |

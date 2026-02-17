@@ -29,7 +29,7 @@ struct ItemEditSheet: View {
                         .frame(minHeight: 120)
                 }
 
-                if let attachmentData = item.attachmentData,
+                if let attachmentData = itemRepository.attachmentDataForDisplay(item),
                    let uiImage = UIImage(data: attachmentData)
                 {
                     Section("Attachment") {
@@ -61,6 +61,9 @@ struct ItemEditSheet: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            itemRepository.migrateLegacyAttachmentOnAccess(item)
         }
         .errorToasts(errorPresenter)
     }

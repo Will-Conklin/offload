@@ -18,6 +18,7 @@ struct ItemCard: View {
     let onComplete: () -> Void
     let onMoveTo: (MoveDestination) -> Void
 
+    @Environment(\.itemRepository) private var itemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var offset: CGFloat = 0
     @State private var crtFlickerOpacity: Double = 1
@@ -29,7 +30,7 @@ struct ItemCard: View {
                 title: item.content,
                 typeLabel: item.type?.uppercased(),
                 timestamp: item.relativeTimestamp,
-                image: item.attachmentData.flatMap { UIImage(data: $0) },
+                image: itemRepository.attachmentDataForDisplay(item).flatMap { UIImage(data: $0) },
                 tags: item.tags,
                 onAddTag: onAddTag,
                 size: .compact // Compact size for item cards
@@ -39,6 +40,9 @@ struct ItemCard: View {
             StarButton(isStarred: item.isStarred, action: onToggleStar)
         }
         .contentShape(Rectangle())
+        .onAppear {
+            itemRepository.migrateLegacyAttachmentOnAccess(item)
+        }
         .onTapGesture {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             onTap()

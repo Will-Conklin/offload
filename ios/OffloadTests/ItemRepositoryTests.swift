@@ -14,6 +14,8 @@ final class ItemRepositoryTests: XCTestCase {
     var modelContainer: ModelContainer!
     var modelContext: ModelContext!
     var repository: ItemRepository!
+    var attachmentStorage: AttachmentStorageService!
+    var attachmentStorageDirectory: URL!
 
     override func setUp() async throws {
         let schema = Schema([
@@ -25,10 +27,21 @@ final class ItemRepositoryTests: XCTestCase {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         modelContainer = try ModelContainer(for: schema, configurations: [configuration])
         modelContext = modelContainer.mainContext
-        repository = ItemRepository(modelContext: modelContext)
+        attachmentStorageDirectory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("offload-item-repository-tests-\(UUID().uuidString)", isDirectory: true)
+        attachmentStorage = AttachmentStorageService(baseDirectoryURL: attachmentStorageDirectory)
+        repository = ItemRepository(
+            modelContext: modelContext,
+            attachmentStorage: attachmentStorage
+        )
     }
 
     override func tearDown() {
+        if let attachmentStorageDirectory {
+            try? FileManager.default.removeItem(at: attachmentStorageDirectory)
+        }
+        attachmentStorage = nil
+        attachmentStorageDirectory = nil
         modelContainer = nil
         modelContext = nil
         repository = nil
@@ -85,6 +98,78 @@ final class ItemRepositoryTests: XCTestCase {
         } else {
             XCTFail("Expected followUpDate to be set")
         }
+    }
+
+    func testCreateItemWithAttachment_StoresFilePathAndClearsInlineData() throws {
+        let attachmentData = Data([0x01, 0x02, 0x03, 0x04])
+
+        let item = try repository.create(content: "Has attachment", attachmentData: attachmentData)
+
+        XCTAssertNil(item.attachmentData)
+        let attachmentPath = try XCTUnwrap(item.attachmentFilePath)
+        XCTAssertTrue(attachmentStorage.attachmentExists(at: attachmentPath))
+        XCTAssertEqual(try repository.attachmentData(for: item), attachmentData)
+    }
+
+    func testMigrateLegacyAttachmentOnAccess_MovesInlineBlobToFileStorage() throws {
+        let attachmentData = Data([0x0A, 0x0B, 0x0C])
+        let item = try repository.create(content: "Legacy attachment")
+        item.attachmentData = attachmentData
+        item.attachmentFilePath = nil
+        try modelContext.save()
+
+        repository.migrateLegacyAttachmentOnAccess(item)
+
+        XCTAssertNil(item.attachmentData)
+        let attachmentPath = try XCTUnwrap(item.attachmentFilePath)
+        XCTAssertTrue(attachmentStorage.attachmentExists(at: attachmentPath))
+        XCTAssertEqual(try repository.attachmentData(for: item), attachmentData)
+    }
+
+    func testUpdateContent_MigratesLegacyAttachmentOnSave() throws {
+        let attachmentData = Data([0x10, 0x20, 0x30])
+        let item = try repository.create(content: "Legacy attachment save path")
+        item.attachmentData = attachmentData
+        item.attachmentFilePath = nil
+        try modelContext.save()
+
+        try repository.updateContent(item, content: "Updated content")
+
+        XCTAssertEqual(item.content, "Updated content")
+        XCTAssertNil(item.attachmentData)
+        let attachmentPath = try XCTUnwrap(item.attachmentFilePath)
+        XCTAssertTrue(attachmentStorage.attachmentExists(at: attachmentPath))
+    }
+
+    func testUpdateAttachment_ReplacesFileAndRemovesOldFile() throws {
+        let item = try repository.create(
+            content: "Replace attachment",
+            attachmentData: Data([0xAA, 0xBB])
+        )
+        let oldAttachmentPath = try XCTUnwrap(item.attachmentFilePath)
+        XCTAssertTrue(attachmentStorage.attachmentExists(at: oldAttachmentPath))
+
+        let replacementData = Data([0xCC, 0xDD, 0xEE])
+        try repository.updateAttachment(item, attachmentData: replacementData)
+
+        let newAttachmentPath = try XCTUnwrap(item.attachmentFilePath)
+        XCTAssertNotEqual(oldAttachmentPath, newAttachmentPath)
+        XCTAssertFalse(attachmentStorage.attachmentExists(at: oldAttachmentPath))
+        XCTAssertTrue(attachmentStorage.attachmentExists(at: newAttachmentPath))
+        XCTAssertEqual(try repository.attachmentData(for: item), replacementData)
+    }
+
+    func testDelete_RemovesAttachmentFile() throws {
+        let item = try repository.create(
+            content: "Delete attachment",
+            attachmentData: Data([0x42, 0x43])
+        )
+        let attachmentPath = try XCTUnwrap(item.attachmentFilePath)
+        XCTAssertTrue(attachmentStorage.attachmentExists(at: attachmentPath))
+
+        try repository.delete(item)
+
+        XCTAssertFalse(attachmentStorage.attachmentExists(at: attachmentPath))
     }
 
     // MARK: - Fetch Tests
