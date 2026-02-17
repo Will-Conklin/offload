@@ -148,6 +148,12 @@ __pycache__/
 .venv/
 .pytest_cache/
 .ruff_cache/
+*.egg-info/
+.offload-backend/
+backend/api/.offload-backend/
+
+# Local agent tooling
+.codex/
 
 # IDE
 .vscode/
