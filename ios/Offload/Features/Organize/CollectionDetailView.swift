@@ -357,7 +357,7 @@ struct CollectionDetailView: View {
                 item.parentId = nil // Clear any parent relationship for flat ordering
             }
 
-            try collectionItemRepository.modelContext.save()
+            try collectionItemRepository.save()
             AppLogger.general.info("List items reordered successfully")
 
             // Refresh to show new order
@@ -393,7 +393,7 @@ struct CollectionDetailView: View {
                 item.parentId = nil
             }
 
-            try collectionItemRepository.modelContext.save()
+            try collectionItemRepository.save()
             AppLogger.general.info("List item moved to end successfully")
 
             // Refresh to show new order
@@ -476,7 +476,7 @@ struct CollectionDetailView: View {
                 AppLogger.general.info("Reordered item \(droppedId) to position \(targetIndex) at level \(targetParentId?.uuidString ?? "root")")
             }
 
-            try collectionItemRepository.modelContext.save()
+            try collectionItemRepository.save()
 
             // Refresh to show new order
             refreshItems()
@@ -516,7 +516,7 @@ struct CollectionDetailView: View {
             }
             droppedItem.position = reordered.count
 
-            try collectionItemRepository.modelContext.save()
+            try collectionItemRepository.save()
             AppLogger.general.info("Plan item moved to end at root level")
 
             // Refresh to show new order

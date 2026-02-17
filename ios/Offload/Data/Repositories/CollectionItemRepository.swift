@@ -131,8 +131,16 @@ final class CollectionItemRepository {
     }
 
     func reorderItems(_ collectionId: UUID, itemIds: [UUID]) throws {
-        let indexedByItemId = ReorderPositionMapper.indexByItemId(try fetchByCollection(collectionId))
+        let indexedByItemId = try ReorderPositionMapper.indexByItemId(fetchByCollection(collectionId))
         ReorderPositionMapper.applyPositions(for: itemIds, using: indexedByItemId)
+        try modelContext.save()
+    }
+
+    /// Persists any pending changes to collection items.
+    ///
+    /// Use after batch-updating position or parentId on multiple items
+    /// to commit all mutations in a single save.
+    func save() throws {
         try modelContext.save()
     }
 
