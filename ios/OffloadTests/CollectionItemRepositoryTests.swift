@@ -335,4 +335,30 @@ final class CollectionItemRepositoryTests: XCTestCase {
             XCTFail("Expected ValidationError but got \(error)")
         }
     }
+
+    func testSavePersistsBatchPositionUpdates() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let item1 = try itemRepository.create(content: "Item 1")
+        let item2 = try itemRepository.create(content: "Item 2")
+
+        let ci1 = try collectionItemRepository.addItemToCollection(
+            itemId: item1.id, collectionId: collection.id, position: 0
+        )
+        let ci2 = try collectionItemRepository.addItemToCollection(
+            itemId: item2.id, collectionId: collection.id, position: 1
+        )
+
+        // Batch-update positions directly (simulating view reorder)
+        ci1.position = 1
+        ci2.position = 0
+
+        // Use repository save instead of direct modelContext access
+        try collectionItemRepository.save()
+
+        // Verify persisted order
+        let fetched = try collectionItemRepository.fetchByCollection(collection.id)
+        let sorted = fetched.sorted { ($0.position ?? 0) < ($1.position ?? 0) }
+        XCTAssertEqual(sorted.first?.itemId, item2.id)
+        XCTAssertEqual(sorted.last?.itemId, item1.id)
+    }
 }

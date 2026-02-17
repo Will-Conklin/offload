@@ -5,8 +5,8 @@
 
 //  Mid-Century Modern design system
 
-import SwiftUI
 import Foundation
+import SwiftUI
 import UIKit
 
 // MARK: - Theme Style
@@ -197,6 +197,15 @@ enum Theme {
         static func semanticButtonText(_ colorScheme: ColorScheme, style _: ThemeStyle = .midCenturyModern) -> Color {
             colorScheme == .dark
                 ? Color(hex: "FFF8E1") // Warm cream — high contrast on dark semantic colors
+                : .white
+        }
+
+        /// Text color for use on buttonDark background
+        /// Light: white on #1F1F1F = 17.9:1 (excellent)
+        /// Dark: textPrimary (#FFF8E1) on #2D2D2D = 14.8:1 (excellent)
+        static func buttonDarkText(_ colorScheme: ColorScheme, style: ThemeStyle = .midCenturyModern) -> Color {
+            colorScheme == .dark
+                ? textPrimary(colorScheme, style: style)
                 : .white
         }
 

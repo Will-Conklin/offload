@@ -201,7 +201,7 @@ struct CaptureComposeView: View {
                                 y: Theme.Shadows.offsetYUltraLight
                             )
                         }
-                        .padding(4)
+                        .padding(Theme.Spacing.xs)
                         .buttonStyle(.plain)
                         .accessibilityLabel("Remove attachment")
                     }
@@ -292,7 +292,7 @@ struct CaptureComposeView: View {
                 Button(action: save) {
                     Text("Save")
                         .font(Theme.Typography.buttonLabel)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.Colors.buttonDarkText(colorScheme, style: style))
                         .padding(.horizontal, Theme.Spacing.lg)
                         .padding(.vertical, Theme.Spacing.sm)
                         .background(Theme.Colors.buttonDark(colorScheme))
@@ -366,7 +366,7 @@ struct CaptureComposeView: View {
             AppLogger.workflow.info("CaptureCompose save completed - id: \(item.id, privacy: .public)")
 
             // Trigger typewriter ding animation
-            withAnimation(reduceMotion ? .default : Theme.Animations.typewriterDing) {
+            withAnimation(Theme.Animations.motion(Theme.Animations.typewriterDing, reduceMotion: reduceMotion)) {
                 captureConfirmed = true
             }
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()

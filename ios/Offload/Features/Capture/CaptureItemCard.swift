@@ -81,7 +81,7 @@ struct ItemCard: View {
                         return
                     }
 
-                    withAnimation(reduceMotion ? .default : .spring(response: 0.3, dampingFraction: 0.7)) {
+                    withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
                         if dx > 100 {
                             offset = 0
                             onComplete()

@@ -61,7 +61,7 @@ struct DraggableCollectionCard: View {
             onDrop(droppedId, collection.id)
             return true
         } isTargeted: { isTargeted in
-            withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
+            withAnimation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion)) {
                 isDropTarget = isTargeted
             }
         }
@@ -75,7 +75,7 @@ struct DraggableCollectionCard: View {
                     .transition(.opacity)
             }
         }
-        .animation(reduceMotion ? .default : .easeInOut(duration: 0.2), value: isDropTarget)
+        .animation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion), value: isDropTarget)
         .accessibilityElement(children: .combine)
         .accessibilityAction(named: "Move up") {
             onMoveUp?()
@@ -138,7 +138,7 @@ struct BottomCollectionDropZone: View {
                 onDrop(droppedId)
                 return true
             } isTargeted: { isTargeted in
-                withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
+                withAnimation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion)) {
                     isDropTarget = isTargeted
                 }
             }
@@ -186,7 +186,7 @@ struct CollectionCard: View {
                 // Right column (wide - main content)
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text(collection.name)
-                        .font(.system(.title2, design: .default).weight(.bold))
+                        .font(Theme.Typography.cardTitle)
                         .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                         .lineLimit(3)
 
@@ -202,15 +202,15 @@ struct CollectionCard: View {
                         }
 
                         Button(action: onAddTag) {
-                            HStack(spacing: 4) {
+                            HStack(spacing: Theme.Spacing.xs) {
                                 AppIcon(name: Icons.add, size: 8)
                                 Text("TAG")
-                                    .font(.system(size: 8, weight: .bold, design: .default))
+                                    .font(Theme.Typography.badge)
                                     .tracking(0.5)
                             }
                             .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
+                            .padding(.horizontal, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.xs)
                             .background(
                                 Capsule()
                                     .strokeBorder(

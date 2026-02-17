@@ -248,7 +248,7 @@ struct AddItemSheet: View {
                                 )
                                 .shadow(color: Theme.Shadows.ultraLight(colorScheme), radius: Theme.Shadows.elevationUltraLight, y: Theme.Shadows.offsetYUltraLight)
                             }
-                            .padding(4)
+                            .padding(Theme.Spacing.xs)
                             .buttonStyle(.plain)
                             .accessibilityLabel("Remove attachment")
                         }
@@ -363,7 +363,7 @@ struct AddItemSheet: View {
                 Button(action: save) {
                     Text("Save")
                         .font(Theme.Typography.buttonLabel)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.Colors.buttonDarkText(colorScheme, style: style))
                         .padding(.horizontal, Theme.Spacing.lg)
                         .padding(.vertical, Theme.Spacing.sm)
                         .background(Theme.Colors.buttonDark(colorScheme))

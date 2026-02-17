@@ -122,7 +122,7 @@ struct HierarchicalItemRow: View {
                 onDrop(droppedId, collectionItem.id, false)
                 return true
             } isTargeted: { isTargeted in
-                withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
+                withAnimation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion)) {
                     isDropTarget = isTargeted
                 }
             }
@@ -136,7 +136,7 @@ struct HierarchicalItemRow: View {
                         .transition(.opacity)
                 }
             }
-            .animation(reduceMotion ? .default : .easeInOut(duration: 0.2), value: isDropTarget)
+            .animation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion), value: isDropTarget)
         }
         .accessibilityAction(named: "Move up") {
             onMoveUp?()
@@ -217,7 +217,7 @@ struct BottomDropZone: View {
                 onDrop(droppedId)
                 return true
             } isTargeted: { isTargeted in
-                withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
+                withAnimation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion)) {
                     isDropTarget = isTargeted
                 }
             }
@@ -283,7 +283,7 @@ struct DraggableItemRow: View {
             onDrop(droppedId, collectionItem.id)
             return true
         } isTargeted: { isTargeted in
-            withAnimation(reduceMotion ? .default : .easeInOut(duration: 0.2)) {
+            withAnimation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion)) {
                 isDropTarget = isTargeted
             }
         }
@@ -297,7 +297,7 @@ struct DraggableItemRow: View {
                     .transition(.opacity)
             }
         }
-        .animation(reduceMotion ? .default : .easeInOut(duration: 0.2), value: isDropTarget)
+        .animation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion), value: isDropTarget)
     }
 }
 
@@ -394,7 +394,7 @@ struct ItemRow: View {
                         return
                     }
 
-                    withAnimation(reduceMotion ? .default : .spring(response: 0.3, dampingFraction: 0.7)) {
+                    withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
                         if dx < -100 {
                             // Swipe left > 100px triggers delete
                             offset = 0
