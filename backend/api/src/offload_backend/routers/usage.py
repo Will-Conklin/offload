@@ -9,7 +9,7 @@ from offload_backend.dependencies import get_app_settings, get_session_claims, g
 from offload_backend.errors import APIException
 from offload_backend.schemas import UsageReconcileRequest, UsageReconcileResponse
 from offload_backend.security import SessionClaims
-from offload_backend.usage_store import InMemoryUsageStore
+from offload_backend.usage_store import UsageStore
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ router = APIRouter()
 def reconcile_usage(
     request: UsageReconcileRequest,
     claims: SessionClaims = Depends(get_session_claims),
-    usage_store: InMemoryUsageStore = Depends(get_usage_store),
+    usage_store: UsageStore = Depends(get_usage_store),
     settings: Settings = Depends(get_app_settings),
 ) -> UsageReconcileResponse:
     if claims.install_id != request.install_id:

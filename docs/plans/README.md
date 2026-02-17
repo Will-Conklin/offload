@@ -91,10 +91,10 @@ proposed → accepted → in-progress → completed/archived
 - [Plan: Backend API + Privacy Constraints MVP (Breakdown-First)](./plan-backend-api-privacy.md)
 - [Plan: Backend Session Security Hardening](./plan-backend-session-security-hardening.md)
 - [Plan: iOS Data and Performance Hardening](./plan-ios-data-performance-hardening.md)
+- [Plan: Backend Reliability and Durability Hardening](./plan-backend-reliability-durability.md)
 
 ### Proposed
 
-- [Plan: Backend Reliability and Durability Hardening](./plan-backend-reliability-durability.md)
 - [Plan: Tab Shell Accessibility Hardening](./plan-tab-shell-accessibility-hardening.md)
 - [Plan: Visual Timeline (Pending Confirmation)](./plan-visual-timeline.md)
 - [Plan: Celebration Animations (Pending Confirmation)](./plan-celebration-animations.md)

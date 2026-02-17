@@ -33,8 +33,14 @@ class Settings(BaseSettings):
     openai_base_url: str = "https://api.openai.com/v1"
     openai_model: str = "gpt-4o-mini"
     openai_timeout_seconds: float = 20.0
+    openai_retry_max_attempts: int = Field(default=3, ge=1, le=10)
+    openai_retry_base_delay_seconds: float = Field(default=0.25, ge=0.0)
+    openai_retry_max_delay_seconds: float = Field(default=2.0, ge=0.0)
+    openai_retry_max_total_delay_seconds: float = Field(default=4.0, ge=0.0)
+    openai_retry_jitter_factor: float = Field(default=0.25, ge=0.0, le=1.0)
     max_input_chars: int = Field(default=4000, ge=1)
     default_feature_quota: int = Field(default=100, ge=0)
+    usage_db_path: str = ".offload-backend/usage.sqlite3"
 
     @model_validator(mode="after")
     def validate_session_secret_policy(self) -> Settings:
@@ -94,6 +100,9 @@ class Settings(BaseSettings):
                     )
 
         self.session_signing_keys = normalized_signing_keys
+        self.usage_db_path = self.usage_db_path.strip()
+        if not self.usage_db_path:
+            raise ValueError("OFFLOAD_USAGE_DB_PATH must be non-empty")
         return self
 
 

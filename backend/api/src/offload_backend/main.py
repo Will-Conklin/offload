@@ -3,23 +3,33 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 
+from offload_backend.config import get_settings
 from offload_backend.errors import APIException, api_exception_response, error_response
 from offload_backend.routers.breakdown import router as breakdown_router
 from offload_backend.routers.health import router as health_router
 from offload_backend.routers.sessions import router as sessions_router
 from offload_backend.routers.usage import router as usage_router
-from offload_backend.usage_store import InMemoryUsageStore
+from offload_backend.usage_store import SQLiteUsageStore
 
 logger = logging.getLogger("offload_backend")
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Offload Backend API", version="0.1.0")
-    app.state.usage_store = InMemoryUsageStore()
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        yield
+        usage_store = getattr(app.state, "usage_store", None)
+        if usage_store is not None:
+            usage_store.close()
+
+    app = FastAPI(title="Offload Backend API", version="0.1.0", lifespan=lifespan)
+    settings = get_settings()
+    app.state.usage_store = SQLiteUsageStore(db_path=settings.usage_db_path)
 
     @app.middleware("http")
     async def request_context_middleware(request: Request, call_next):

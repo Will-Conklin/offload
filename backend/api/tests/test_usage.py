@@ -1,3 +1,10 @@
+from offload_backend.usage_store import SQLiteUsageStore
+
+
+def test_usage_store_defaults_to_sqlite(app):
+    assert isinstance(app.state.usage_store, SQLiteUsageStore)
+
+
 def test_reconcile_uses_authoritative_max(create_session_token, post_usage_reconcile):
     token = create_session_token()
 

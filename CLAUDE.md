@@ -21,6 +21,20 @@ just test           # Runs all tests
 just xcode-open     # Opens in Xcode for development
 ```
 
+## Backend Environment Variables
+
+Required for production-like environments:
+
+- `OFFLOAD_ENVIRONMENT` — Environment name (dev/test/production)
+- `OFFLOAD_SESSION_SECRET` — Session signing secret (required in production)
+- `OFFLOAD_SESSION_TOKEN_ISSUER` — Token issuer (default: offload-backend)
+- `OFFLOAD_SESSION_TOKEN_AUDIENCE` — Token audience (default: offload-ios)
+- `OFFLOAD_SESSION_TOKEN_ACTIVE_KID` — Active key ID (default: v2-default)
+- `OFFLOAD_SESSION_SIGNING_KEYS` — Optional JSON map for key rotation (e.g., `{"v2-default":"<secret>"}`)
+- `OFFLOAD_USAGE_DB_PATH` — Path to usage tracking database
+
+Development/test: If `OFFLOAD_SESSION_SECRET` is unset, a random in-memory secret is generated at startup.
+
 ## Commands
 
 ```bash
@@ -30,18 +44,64 @@ just test               # Run tests; for direct run: xcodebuild test -project io
 just lint               # Run markdownlint + yamllint
 just lint-docs          # Markdownlint only
 just lint-yaml          # Yamllint only
+just backend-check      # Run backend ruff + ty + pytest
+just backend-test-coverage # Run backend tests with coverage summary
+just backend-check-coverage # Run backend lint + typecheck + coverage tests
+just backend-clean      # Remove generated backend runtime/build artifacts
 just security           # Run Snyk dependency + code scans
 just xcode-open         # Open project in Xcode
 ```
 
+## CI Environment
+
+CI uses pinned simulator configuration (see `scripts/ci/readiness-env.sh`):
+
+- macOS: 14 (GitHub runner)
+- Xcode: 16.2
+- Simulator: iPhone 16, iOS 18.2
+- Architecture: arm64 (Apple Silicon), unpinned (Intel)
+
+Local testing: `just test` sources these values automatically.
+
 ## Key Directories
+
+**iOS:**
 
 - `ios/Offload/App/` — Entry point, `MainTabView`
 - `ios/Offload/Features/` — Capture, Home, Organize, Settings
 - `ios/Offload/Domain/Models/` — SwiftData models
 - `ios/Offload/Data/Repositories/` — CRUD repositories
 - `ios/Offload/DesignSystem/` — Theme, components, icons, textures
+
+**Backend:**
+
+- `backend/api/src/offload_backend/`
+  - `main.py` — FastAPI app entry point
+  - `config.py` — Pydantic settings with OFFLOAD_* env vars
+  - `dependencies.py` — FastAPI dependency injection
+  - `security.py` — Session token v2 management (JWT with key rotation)
+  - `session_rate_limiter.py` — Session issuance rate limiting
+  - `usage_store.py` — Usage tracking persistence
+  - `routers/` — FastAPI route modules (breakdown, usage, health)
+  - `providers/` — External service adapters (OpenAI with retry)
+
+**Documentation:**
+
 - `docs/` — PRDs, ADRs, designs, plans (see `docs/AGENTS.md`)
+
+## Test Organization
+
+**iOS:**
+
+- `ios/OffloadTests/*RepositoryTests.swift` — Repository CRUD tests
+- `ios/OffloadTests/APIClientTests.swift` — Backend API client tests
+- `ios/OffloadTests/PerformanceBenchmarkTests.swift` — Performance tests
+- `ios/OffloadUITests/` — UI automation tests (note: `testLaunch()` is flaky)
+
+**Backend:**
+
+- `backend/api/tests/test_*.py` — pytest modules
+- `backend/api/tests/conftest.py` — pytest fixtures and test config
 
 ## Gotchas
 
@@ -69,6 +129,11 @@ just xcode-open         # Open project in Xcode
   open issues in project, no unlabeled open issues, open issues not in `Done`/`Archived`,
   closed issues in `Done`/`Archived`, and `In review` only when a related PR is open
 - **When creating plans that resolve issues, always add a comment to the issue** linking to the plan document with summary of approach, phases, and next steps
+- For backend persistence, security, or provider-resilience changes: run
+  `just backend-check-coverage` before opening/updating PRs
+- Never commit generated backend runtime/build artifacts (`.offload-backend/`,
+  `backend/api/.offload-backend/`, `backend/api/src/offload_backend_api.egg-info/`);
+  use `just backend-clean` when needed
 - SwiftData predicates require explicit type references for enum cases
 - Repositories must be injected via `@State` + `.task`, not created in `body`
 - `.draggable()` must be on card content directly, not on wrappers with buttons

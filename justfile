@@ -35,10 +35,15 @@ backend-test:
 backend-test-coverage:
     python3 -m pytest backend/api/tests -q --cov=offload_backend --cov-report=term-missing:skip-covered
 
+backend-check-coverage: backend-lint backend-typecheck backend-test-coverage
+
 backend-typecheck:
     python3 -m ty check backend/api/src backend/api/tests
 
 backend-check: backend-lint backend-typecheck backend-test
+
+backend-clean:
+    rm -rf .offload-backend backend/api/.offload-backend backend/api/src/offload_backend_api.egg-info
 
 backend-check-ci:
     bash scripts/ci/backend-checks.sh

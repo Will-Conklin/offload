@@ -37,6 +37,8 @@ just ios-test-ci              # Run iOS CI-style test lane locally
 just backend-install-uv       # Sync backend dev dependencies with uv
 just backend-check            # Run backend ruff + ty + pytest
 just backend-test-coverage    # Run backend tests with coverage summary
+just backend-check-coverage   # Run backend lint + typecheck + coverage tests
+just backend-clean            # Remove generated backend runtime/build artifacts
 just backend-check-ci         # Run backend CI script locally
 just ci-local                 # Run lint + backend checks + iOS tests
 
@@ -108,6 +110,11 @@ just ci-local                 # Run lint + backend checks + iOS tests
   YAML front-matter per `docs/AGENTS.md`
 - Prioritize using `just` for common commands and keep the `justfile` at project root up to date
 - For backend changes: run `just backend-check` (or `just backend-check-ci`) before opening/updating PRs
+- For backend persistence, security, or provider-resilience changes: run
+  `just backend-check-coverage` before opening/updating PRs
+- Never commit generated backend runtime/build artifacts (`.offload-backend/`,
+  `backend/api/.offload-backend/`, `backend/api/src/offload_backend_api.egg-info/`);
+  use `just backend-clean` when needed
 - For UI work: use `Theme.*` tokens (no hardcoded colors/spacing/radii/fonts)
   and reuse `ios/Offload/DesignSystem/Components.swift` before creating new
   UI primitives

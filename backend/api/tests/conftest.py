@@ -1,17 +1,22 @@
 import os
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
 
-from offload_backend.main import create_app
+from offload_backend.config import get_settings
 from offload_backend.security import SessionClaims, TokenManager
 
 
 @pytest.fixture(autouse=True)
 def test_env() -> Generator[None, None, None]:
+    temp_dir = TemporaryDirectory()
+    usage_db_path = Path(temp_dir.name) / "usage.sqlite3"
+    get_settings.cache_clear()
     os.environ["OFFLOAD_SESSION_SECRET"] = "test-secret"
     os.environ["OFFLOAD_SESSION_TTL_SECONDS"] = "120"
     os.environ["OFFLOAD_SESSION_TOKEN_ISSUER"] = "offload-backend-test"
@@ -21,11 +26,18 @@ def test_env() -> Generator[None, None, None]:
     os.environ["OFFLOAD_MAX_INPUT_CHARS"] = "1000"
     os.environ["OFFLOAD_DEFAULT_FEATURE_QUOTA"] = "10"
     os.environ["OFFLOAD_BUILD_VERSION"] = "test-build"
-    yield
+    os.environ["OFFLOAD_USAGE_DB_PATH"] = str(usage_db_path)
+    try:
+        yield
+    finally:
+        get_settings.cache_clear()
+        temp_dir.cleanup()
 
 
 @pytest.fixture
 def app():
+    from offload_backend.main import create_app
+
     return create_app()
 
 
@@ -107,3 +119,18 @@ def post_breakdown_generate(client: TestClient):
         )
 
     return _post
+
+
+@pytest.fixture
+def make_breakdown_payload():
+    def _make(**overrides: Any) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "input_text": "Clean the kitchen",
+            "granularity": 3,
+            "context_hints": [],
+            "template_ids": [],
+        }
+        payload.update(overrides)
+        return payload
+
+    return _make

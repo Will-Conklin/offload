@@ -21,7 +21,7 @@ from offload_backend.session_rate_limiter import (
     SessionRateLimiter,
     SessionRateLimitExceeded,
 )
-from offload_backend.usage_store import InMemoryUsageStore
+from offload_backend.usage_store import UsageStore
 
 bearer_scheme = HTTPBearer(auto_error=False)
 logger = logging.getLogger("offload_backend")
@@ -83,7 +83,7 @@ def get_provider(settings: Settings = Depends(get_app_settings)) -> AIProvider:
     return OpenAIProviderAdapter(settings=settings)
 
 
-def get_usage_store(request: Request) -> InMemoryUsageStore:
+def get_usage_store(request: Request) -> UsageStore:
     return request.app.state.usage_store
 
 

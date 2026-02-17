@@ -1,7 +1,7 @@
 ---
 id: plan-backend-reliability-durability
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
@@ -44,48 +44,48 @@ explicit regression verification for already-fixed payload guardrails.
 
 ### Phase 1: Guardrail Verification Lock (Already Fixed)
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Red:
-  - [ ] Add boundary tests for `context_hints`/`template_ids` list lengths and
+- [x] Red:
+  - [x] Add boundary tests for `context_hints`/`template_ids` list lengths and
         per-element max lengths.
-  - [ ] Add tests proving aggregate request size rejects oversized combined
+  - [x] Add tests proving aggregate request size rejects oversized combined
         payloads.
-- [ ] Green: keep existing schema/router enforcement intact while adding any
+- [x] Green: keep existing schema/router enforcement intact while adding any
       missing assertions.
-- [ ] Refactor: consolidate breakdown request fixture builders.
+- [x] Refactor: consolidate breakdown request fixture builders.
 
 ### Phase 2: Durable Usage Store (SQLite First)
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Red:
-  - [ ] Add usage-store contract tests for persistence across app restart.
-  - [ ] Add concurrency tests verifying atomic `max(local, server)` upsert
+- [x] Red:
+  - [x] Add usage-store contract tests for persistence across app restart.
+  - [x] Add concurrency tests verifying atomic `max(local, server)` upsert
         semantics.
-- [ ] Green:
-  - [ ] Introduce usage store protocol and SQLite implementation.
-  - [ ] Wire app dependencies to use SQLite store by default.
-  - [ ] Preserve API response shape for `/v1/usage/reconcile`.
-- [ ] Refactor:
-  - [ ] Separate schema/bootstrap from reconcile operations.
-  - [ ] Add deterministic test database setup helpers.
+- [x] Green:
+  - [x] Introduce usage store protocol and SQLite implementation.
+  - [x] Wire app dependencies to use SQLite store by default.
+  - [x] Preserve API response shape for `/v1/usage/reconcile`.
+- [x] Refactor:
+  - [x] Separate schema/bootstrap from reconcile operations.
+  - [x] Add deterministic test database setup helpers.
 
 ### Phase 3: Provider Retry and Backoff
 
-**Status:** Not Started
+**Status:** Completed
 
-- [ ] Red:
-  - [ ] Add adapter tests for retries on timeout/429/5xx and no-retry behavior
+- [x] Red:
+  - [x] Add adapter tests for retries on timeout/429/5xx and no-retry behavior
         on non-retriable 4xx.
-  - [ ] Add tests that bound max attempts and total delay.
-- [ ] Green:
-  - [ ] Implement bounded exponential backoff with jitter for transient
+  - [x] Add tests that bound max attempts and total delay.
+- [x] Green:
+  - [x] Implement bounded exponential backoff with jitter for transient
         provider errors.
-  - [ ] Add telemetry tags for attempt count and terminal error class.
-- [ ] Refactor:
-  - [ ] Extract retry policy into reusable configuration.
-  - [ ] Keep provider error mapping stable at router boundary.
+  - [x] Add telemetry tags for attempt count and terminal error class.
+- [x] Refactor:
+  - [x] Extract retry policy into reusable configuration.
+  - [x] Keep provider error mapping stable at router boundary.
 
 ## Dependencies
 
@@ -113,3 +113,4 @@ explicit regression verification for already-fixed payload guardrails.
 | Date | Update |
 | --- | --- |
 | 2026-02-16 | Plan created from CODE_REVIEW_2026-02-15 reliability/performance backend findings split. |
+| 2026-02-16 | Completed Phases 1-3: guardrail boundary regression lock, SQLite-backed durable reconcile store with concurrency coverage, and bounded provider retry/backoff with terminal telemetry tags. |
