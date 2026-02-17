@@ -202,15 +202,15 @@ struct CollectionCard: View {
                         }
 
                         Button(action: onAddTag) {
-                            HStack(spacing: 4) {
+                            HStack(spacing: Theme.Spacing.xs) {
                                 AppIcon(name: Icons.add, size: 8)
                                 Text("TAG")
                                     .font(.system(size: 8, weight: .bold, design: .default))
                                     .tracking(0.5)
                             }
                             .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
+                            .padding(.horizontal, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.xs)
                             .background(
                                 Capsule()
                                     .strokeBorder(

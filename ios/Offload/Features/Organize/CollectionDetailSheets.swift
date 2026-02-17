@@ -248,7 +248,7 @@ struct AddItemSheet: View {
                                 )
                                 .shadow(color: Theme.Shadows.ultraLight(colorScheme), radius: Theme.Shadows.elevationUltraLight, y: Theme.Shadows.offsetYUltraLight)
                             }
-                            .padding(4)
+                            .padding(Theme.Spacing.xs)
                             .buttonStyle(.plain)
                             .accessibilityLabel("Remove attachment")
                         }

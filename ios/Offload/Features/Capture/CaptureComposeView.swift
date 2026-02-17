@@ -201,7 +201,7 @@ struct CaptureComposeView: View {
                                 y: Theme.Shadows.offsetYUltraLight
                             )
                         }
-                        .padding(4)
+                        .padding(Theme.Spacing.xs)
                         .buttonStyle(.plain)
                         .accessibilityLabel("Remove attachment")
                     }
