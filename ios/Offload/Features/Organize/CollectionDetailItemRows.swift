@@ -320,7 +320,11 @@ struct ItemRow: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingMenu = false
     @State private var linkedCollectionName: String?
-    @State private var offset: CGFloat = 0
+    @State private var swipeOffset: CGFloat = 0
+    @State private var dragStartOffset: CGFloat = 0
+    @State private var isSwipeDragging = false
+
+    private let swipeModel = SwipeInteractionModel.trailingDelete
 
     private var isLink: Bool {
         item.itemType == .link
@@ -328,15 +332,18 @@ struct ItemRow: View {
 
     var body: some View {
         ZStack(alignment: .trailing) {
-            // Delete indicator (shown when swiping left)
-            if offset < 0 {
-                HStack {
-                    Spacer()
-                    AppIcon(name: Icons.deleteFilled, size: 24)
-                        .foregroundStyle(Theme.Colors.destructive(colorScheme, style: style))
-                        .padding(.trailing, Theme.Spacing.md)
-                        .opacity(min(1, Double(-offset / 120)))
+            TrailingDeleteAffordance(
+                colorScheme: colorScheme,
+                style: style,
+                progress: swipeModel.trailingProgress(offset: swipeOffset),
+                isEnabled: swipeOffset <= swipeModel.revealedOffset,
+                accessibilityLabel: "Delete item",
+                accessibilityHint: "Deletes this item from the current collection."
+            ) {
+                withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
+                    swipeOffset = 0
                 }
+                onDelete()
             }
 
             CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
@@ -373,41 +380,51 @@ struct ItemRow: View {
                     // Context menu actions (delete removed - use swipe instead)
                 }
             }
-        }
-        .offset(x: offset)
-        .simultaneousGesture(
-            DragGesture()
-                .onChanged { value in
-                    let dx = value.translation.width
-                    let dy = value.translation.height
-                    // Only respond to horizontal swipes
-                    guard abs(dx) > abs(dy) else { return }
-                    // Only allow left swipe (delete)
-                    offset = min(0, dx)
-                }
-                .onEnded { value in
-                    let dx = value.translation.width
-                    let dy = value.translation.height
-                    // Only respond to horizontal swipes
-                    guard abs(dx) > abs(dy) else {
-                        offset = 0
-                        return
+            .offset(x: swipeOffset)
+            .simultaneousGesture(
+                DragGesture()
+                    .onChanged { value in
+                        if !isSwipeDragging {
+                            dragStartOffset = swipeOffset
+                            isSwipeDragging = true
+                        }
+                        guard let dragOffset = swipeModel.dragOffset(
+                            startOffset: dragStartOffset,
+                            translation: value.translation
+                        ) else {
+                            return
+                        }
+                        swipeOffset = dragOffset
                     }
+                    .onEnded { value in
+                        let endState = swipeModel.endState(
+                            startOffset: dragStartOffset,
+                            translation: value.translation
+                        )
+                        isSwipeDragging = false
 
-                    withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
-                        if dx < -100 {
-                            // Swipe left > 100px triggers delete
-                            offset = 0
-                            onDelete()
-                        } else {
-                            // Snap back
-                            offset = 0
+                        withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
+                            switch endState {
+                            case .triggerTrailingAction:
+                                swipeOffset = 0
+                                onDelete()
+                            case .revealed:
+                                swipeOffset = swipeModel.revealedOffset
+                            case .closed, .triggerLeadingAction:
+                                swipeOffset = 0
+                            }
                         }
                     }
-                }
-        )
+            )
+        }
         .contentShape(Rectangle())
         .onTapGesture {
+            guard !swipeModel.isRevealed(offset: swipeOffset) else {
+                withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
+                    swipeOffset = 0
+                }
+                return
+            }
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             handleTap()
         }

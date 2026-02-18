@@ -45,6 +45,8 @@ struct OrganizeView: View {
     @State private var searchQuery = ""
     @State private var collectionToConvert: Collection?
     @State private var showConversionConfirmation = false
+    @State private var collectionToDelete: Collection?
+    @State private var showDeleteConfirmation = false
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -149,6 +151,20 @@ struct OrganizeView: View {
                     collectionToConvert = nil
                 }
             }
+            .confirmationDialog(
+                "Delete this collection? This cannot be undone.",
+                isPresented: $showDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Delete Collection", role: .destructive) {
+                    if let collection = collectionToDelete {
+                        deleteCollection(collection)
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    collectionToDelete = nil
+                }
+            }
             .errorToasts(errorPresenter)
         }
         .onAppear {
@@ -179,6 +195,7 @@ struct OrganizeView: View {
                     onTap: { selectedCollection = collection },
                     onAddTag: { tagPickerCollection = collection },
                     onToggleStar: { toggleStar(collection) },
+                    onDeleteRequested: { handleDeleteRequested(collection) },
                     onDrop: { droppedId, targetId in
                         handleCollectionReorder(droppedId: droppedId, targetId: targetId)
                     },
@@ -428,6 +445,22 @@ struct OrganizeView: View {
         } catch {
             errorPresenter.present(error)
             collectionToConvert = nil
+        }
+    }
+
+    private func handleDeleteRequested(_ collection: Collection) {
+        collectionToDelete = collection
+        showDeleteConfirmation = true
+    }
+
+    private func deleteCollection(_ collection: Collection) {
+        do {
+            try collectionRepository.delete(collection)
+            refreshCollections()
+            collectionToDelete = nil
+        } catch {
+            errorPresenter.present(error)
+            collectionToDelete = nil
         }
     }
 }

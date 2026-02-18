@@ -13,6 +13,7 @@ struct DraggableCollectionCard: View {
     let onTap: () -> Void
     let onAddTag: () -> Void
     let onToggleStar: () -> Void
+    let onDeleteRequested: () -> Void
     let onDrop: (UUID, UUID) -> Void
     var onMoveUp: (() -> Void)?
     var onMoveDown: (() -> Void)?
@@ -20,31 +21,110 @@ struct DraggableCollectionCard: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isDropTarget = false
+    @State private var swipeOffset: CGFloat = 0
+    @State private var dragStartOffset: CGFloat = 0
+    @State private var isSwipeDragging = false
+
+    private let swipeModel = SwipeInteractionModel.trailingDelete
 
     var body: some View {
-        CollectionCard(
-            collection: collection,
-            colorScheme: colorScheme,
-            style: style,
-            onAddTag: onAddTag,
-            onToggleStar: onToggleStar
-        )
-        .contentShape(Rectangle())
-        .onTapGesture {
-            onTap()
-        }
-        .draggable(collection.id.uuidString) {
-            // Preview while dragging
-            Text(collection.name)
-                .font(Theme.Typography.caption)
-                .lineLimit(2)
-                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
-                .padding(Theme.Spacing.sm)
-                .frame(width: 200)
-                .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-                        .fill(Theme.Colors.cardColor(index: collection.stableColorIndex, colorScheme, style: style))
-                )
+        ZStack(alignment: .trailing) {
+            TrailingDeleteAffordance(
+                colorScheme: colorScheme,
+                style: style,
+                progress: swipeModel.trailingProgress(offset: swipeOffset),
+                isEnabled: swipeOffset <= swipeModel.revealedOffset,
+                accessibilityLabel: "Delete collection",
+                accessibilityHint: "Prompts to confirm collection deletion."
+            ) {
+                withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
+                    swipeOffset = 0
+                }
+                onDeleteRequested()
+            }
+
+            CollectionCard(
+                collection: collection,
+                colorScheme: colorScheme,
+                style: style,
+                onAddTag: onAddTag,
+                onToggleStar: onToggleStar
+            )
+            .overlay(alignment: .topTrailing) {
+                if let onConvert {
+                    Button(action: onConvert) {
+                        IconTile(
+                            iconName: Icons.more,
+                            iconSize: 12,
+                            tileSize: 28,
+                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .padding(Theme.Spacing.sm)
+                    .accessibilityLabel("Collection actions")
+                    .accessibilityHint("Show options for this collection")
+                }
+            }
+            .offset(x: swipeOffset)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard !swipeModel.isRevealed(offset: swipeOffset) else {
+                    withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
+                        swipeOffset = 0
+                    }
+                    return
+                }
+                onTap()
+            }
+            .simultaneousGesture(
+                DragGesture()
+                    .onChanged { value in
+                        if !isSwipeDragging {
+                            dragStartOffset = swipeOffset
+                            isSwipeDragging = true
+                        }
+                        guard let dragOffset = swipeModel.dragOffset(
+                            startOffset: dragStartOffset,
+                            translation: value.translation
+                        ) else {
+                            return
+                        }
+                        swipeOffset = dragOffset
+                    }
+                    .onEnded { value in
+                        let endState = swipeModel.endState(
+                            startOffset: dragStartOffset,
+                            translation: value.translation
+                        )
+                        isSwipeDragging = false
+
+                        withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
+                            switch endState {
+                            case .triggerTrailingAction:
+                                swipeOffset = 0
+                                onDeleteRequested()
+                            case .revealed:
+                                swipeOffset = swipeModel.revealedOffset
+                            case .closed, .triggerLeadingAction:
+                                swipeOffset = 0
+                            }
+                        }
+                    }
+            )
+            .draggable(collection.id.uuidString) {
+                // Preview while dragging
+                Text(collection.name)
+                    .font(Theme.Typography.caption)
+                    .lineLimit(2)
+                    .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+                    .padding(Theme.Spacing.sm)
+                    .frame(width: 200)
+                    .background(
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                            .fill(Theme.Colors.cardColor(index: collection.stableColorIndex, colorScheme, style: style))
+                    )
+            }
         }
         .dropDestination(for: String.self) { droppedIds, _ in
             guard let droppedIdString = droppedIds.first,
@@ -77,27 +157,14 @@ struct DraggableCollectionCard: View {
         }
         .animation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion), value: isDropTarget)
         .accessibilityElement(children: .combine)
+        .accessibilityAction(named: "Delete") {
+            onDeleteRequested()
+        }
         .accessibilityAction(named: "Move up") {
             onMoveUp?()
         }
         .accessibilityAction(named: "Move down") {
             onMoveDown?()
-        }
-        .overlay(alignment: .topTrailing) {
-            if let onConvert {
-                Button(action: onConvert) {
-                    IconTile(
-                        iconName: Icons.more,
-                        iconSize: 12,
-                        tileSize: 28,
-                        style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
-                    )
-                }
-                .buttonStyle(.plain)
-                .padding(Theme.Spacing.sm)
-                .accessibilityLabel("Collection actions")
-                .accessibilityHint("Show options for this collection")
-            }
         }
     }
 }

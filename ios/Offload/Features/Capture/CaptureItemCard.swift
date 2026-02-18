@@ -20,80 +20,105 @@ struct ItemCard: View {
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var offset: CGFloat = 0
-    @State private var crtFlickerOpacity: Double = 1
+    @State private var swipeOffset: CGFloat = 0
+    @State private var dragStartOffset: CGFloat = 0
+    @State private var isSwipeDragging = false
+
+    private let swipeModel = SwipeInteractionModel.capture
 
     var body: some View {
-        CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
-            MCMCardContent(
-                icon: item.itemType?.icon,
-                title: item.content,
-                typeLabel: item.type?.uppercased(),
-                timestamp: item.relativeTimestamp,
-                image: itemRepository.attachmentDataForDisplay(item).flatMap { UIImage(data: $0) },
-                tags: item.tags,
-                onAddTag: onAddTag,
-                size: .compact // Compact size for item cards
-            )
-        }
-        .overlay(alignment: .bottomTrailing) {
-            StarButton(isStarred: item.isStarred, action: onToggleStar)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            onTap()
-        }
-        .overlay(
-            // Swipe indicators
-            HStack {
-                if offset > 0 {
-                    AppIcon(name: Icons.checkCircleFilled, size: 18)
-                        .foregroundStyle(Theme.Colors.terminalGreen(colorScheme, style: style))
-                        .padding(.leading, Theme.Spacing.md)
-                        .opacity(min(1, Double(offset / 120)))
+        ZStack(alignment: .trailing) {
+            TrailingDeleteAffordance(
+                colorScheme: colorScheme,
+                style: style,
+                progress: swipeModel.trailingProgress(offset: swipeOffset),
+                isEnabled: swipeOffset <= swipeModel.revealedOffset,
+                accessibilityLabel: "Delete item",
+                accessibilityHint: "Deletes this capture item."
+            ) {
+                withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
+                    swipeOffset = 0
                 }
+                onDelete()
+            }
 
-                Spacer()
-
-                if offset < 0 {
-                    AppIcon(name: Icons.deleteFilled, size: 18)
-                        .foregroundStyle(Theme.Colors.destructive(colorScheme, style: style))
-                        .padding(.trailing, Theme.Spacing.md)
-                        .opacity(min(1, Double(-offset / 120)))
+            CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
+                MCMCardContent(
+                    icon: item.itemType?.icon,
+                    title: item.content,
+                    typeLabel: item.type?.uppercased(),
+                    timestamp: item.relativeTimestamp,
+                    image: itemRepository.attachmentDataForDisplay(item).flatMap { UIImage(data: $0) },
+                    tags: item.tags,
+                    onAddTag: onAddTag,
+                    size: .compact // Compact size for item cards
+                )
+            }
+            .overlay(alignment: .bottomTrailing) {
+                StarButton(isStarred: item.isStarred, action: onToggleStar)
+            }
+            .overlay {
+                HStack {
+                    if swipeOffset > 0 {
+                        AppIcon(name: Icons.checkCircleFilled, size: 18)
+                            .foregroundStyle(Theme.Colors.terminalGreen(colorScheme, style: style))
+                            .padding(.leading, Theme.Spacing.md)
+                            .opacity(min(1, Double(swipeOffset / swipeModel.maxLeadingOffset)))
+                    }
+                    Spacer()
                 }
             }
-        )
-        .offset(x: offset)
-        .simultaneousGesture(
-            DragGesture()
-                .onChanged { value in
-                    let dx = value.translation.width
-                    let dy = value.translation.height
-                    guard abs(dx) > abs(dy) else { return }
-                    offset = dx
-                }
-                .onEnded { value in
-                    let dx = value.translation.width
-                    let dy = value.translation.height
-                    guard abs(dx) > abs(dy) else {
-                        offset = 0
-                        return
+            .offset(x: swipeOffset)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard !swipeModel.isRevealed(offset: swipeOffset) else {
+                    withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
+                        swipeOffset = 0
                     }
+                    return
+                }
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                onTap()
+            }
+            .simultaneousGesture(
+                DragGesture()
+                    .onChanged { value in
+                        if !isSwipeDragging {
+                            dragStartOffset = swipeOffset
+                            isSwipeDragging = true
+                        }
+                        guard let dragOffset = swipeModel.dragOffset(
+                            startOffset: dragStartOffset,
+                            translation: value.translation
+                        ) else {
+                            return
+                        }
+                        swipeOffset = dragOffset
+                    }
+                    .onEnded { value in
+                        let endState = swipeModel.endState(
+                            startOffset: dragStartOffset,
+                            translation: value.translation
+                        )
+                        isSwipeDragging = false
 
-                    withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
-                        if dx > 100 {
-                            offset = 0
-                            onComplete()
-                        } else if dx < -100 {
-                            offset = 0
-                            onDelete()
-                        } else {
-                            offset = 0
+                        withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
+                            switch endState {
+                            case .triggerLeadingAction:
+                                swipeOffset = 0
+                                onComplete()
+                            case .triggerTrailingAction:
+                                swipeOffset = 0
+                                onDelete()
+                            case .revealed:
+                                swipeOffset = swipeModel.revealedOffset
+                            case .closed:
+                                swipeOffset = 0
+                            }
                         }
                     }
-                }
-        )
+            )
+        }
         .accessibilityAction(named: "Complete") {
             onComplete()
         }
