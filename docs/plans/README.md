@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - plans
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related: []
 depends_on: []
 supersedes: []
@@ -50,10 +50,20 @@ proposed → accepted → in-progress → uat → completed/archived
 
 - Merge and close implementation PRs when implementation work is complete.
 - If User Verification checklist items remain, open a follow-up GitHub issue labeled `uat`.
-- Add the `uat` issue to the Offload project and link it to the plan and merged PR.
+- Add the `uat` issue to the Offload project with status `Ready` and link it to the plan and merged PR.
 - Move the plan status to `uat` when implementation is merged and only User Verification remains.
 - Keep the plan status as `uat` until User Verification is complete.
 - Move the plan to `completed` (or `archived`) only after User Verification is fully checked and the `uat` issue is closed.
+
+### Acceptance Rule
+
+- Explicit user instruction to begin implementation counts as plan acceptance
+  unless the plan is marked pending confirmation.
+- When this occurs, set `accepted_by` to GitHub handle format (`@username`)
+  for the active GitHub account and set `accepted_at` to the date
+  implementation first began.
+- Prefer the authenticated `gh` account login as the source for
+  `accepted_by`; use `git config user.name` only as a fallback.
 
 ## What belongs here
 
@@ -72,14 +82,16 @@ proposed → accepted → in-progress → uat → completed/archived
 
 ### In Progress
 
+- None currently.
+
+### Accepted
+
 - [Plan: Testing & Polish](./plan-testing-polish.md)
 - [Plan: Release Prep](./plan-release-prep.md)
-- [Plan: Diagnose Idle Memory Pressure](./plan-diagnose-idle-memory-pressure.md)
-- [Plan: Resolve Gesture Conflict on Collection Cards](./plan-resolve-gesture-conflict.md)
-- [Plan: Tag Relationship Refactor (Pending Confirmation)](./plan-tag-relationship-refactor.md)
 
 ### UAT
 
+- [Plan: Diagnose Idle Memory Pressure](./plan-diagnose-idle-memory-pressure.md)
 - [Plan: Backend API + Privacy Constraints MVP (Breakdown-First)](./plan-backend-api-privacy.md)
 - [Plan: Backend Session Security Hardening](./plan-backend-session-security-hardening.md)
 - [Plan: Backend Reliability and Durability Hardening](./plan-backend-reliability-durability.md)
@@ -90,6 +102,7 @@ proposed → accepted → in-progress → uat → completed/archived
 - [Plan: UX & Accessibility Audit Fixes](./plan-ux-accessibility-audit-fixes.md)
 - [Plan: Tab Shell Accessibility Hardening](./plan-tab-shell-accessibility-hardening.md)
 - [Plan: View Decomposition](./plan-view-decomposition.md)
+- [Plan: Resolve Gesture Conflict on Collection Cards](./plan-resolve-gesture-conflict.md)
 - [Plan: Fix Swipe-to-Delete in Organize View](./plan-fix-swipe-to-delete.md)
 - [Plan: Atomic Move to Collection](./plan-fix-atomic-move-to-collection.md)
 - [Plan: Fix Orphaned Collection Links in CollectionItemRepository](./plan-fix-orphaned-collection-links.md)
@@ -106,6 +119,8 @@ proposed → accepted → in-progress → uat → completed/archived
 - [Plan: Advanced Accessibility Features (Pending Confirmation)](./plan-advanced-accessibility.md)
 - [Plan: AI Organization Flows & Review Screen (Pending Confirmation)](./plan-ai-organization-flows.md)
 - [Plan: AI Pricing & Limits (Pending Confirmation)](./plan-ai-pricing-limits.md)
+- [Plan: Codebase Audit Cleanup](./plan-codebase-audit-cleanup.md)
+- [Plan: Tag Relationship Refactor (Pending Confirmation)](./plan-tag-relationship-refactor.md)
 - [Plan: Trailing-Gutter Swipe Delete Affordance](./plan-trailing-gutter-swipe-delete-affordance.md)
 
 ### Completed

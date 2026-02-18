@@ -8,13 +8,13 @@ applies_to:
   - capture
   - organize
   - tags
-last_updated: 2026-02-11
+last_updated: 2026-02-18
 related:
   - plan-tag-relationship-refactor
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-11
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/141
   - https://github.com/Will-Conklin/offload/pull/144

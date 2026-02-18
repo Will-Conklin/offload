@@ -75,9 +75,9 @@ just ci-local                 # Run lint + backend checks + iOS tests
   all plan items are complete except User Verification; move to Done after the
   PR merges
 - If an implementation PR merges while plan User Verification tasks remain:
-  open a new GitHub issue labeled `uat`, add it to the Offload project, and
-  link the plan + merged PR; keep the plan `in-progress` until verification is
-  complete
+  open a new GitHub issue labeled `uat`, add it to the Offload project with
+  status `Ready`, and link the plan + merged PR; keep the plan `uat` until
+  verification is complete
 - For all new GitHub issues (not only plan issues): always add them to the
   Offload project during creation or immediately after creation
 - For all new GitHub issues: apply labels at creation time and never leave an
@@ -88,6 +88,8 @@ just ci-local                 # Run lint + backend checks + iOS tests
 - Use `bug` for defects/regressions, `enhancement` for feature or implementation
   work, and `documentation` for docs-only work
 - Use `uat` only for post-merge user verification follow-up issues
+- Any issue labeled `uat` must be placed in project status `Ready` (not
+  `Backlog`)
 - Use `ux` as an additional label (with the primary label above) when the issue
   is primarily about UX/UI behavior
 - If label selection is ambiguous, ask the user before creating or relabeling

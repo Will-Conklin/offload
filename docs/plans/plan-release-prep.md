@@ -1,12 +1,12 @@
 ---
 id: plan-release-prep
 type: plan
-status: in-progress
+status: accepted
 owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-02-16
+last_updated: 2026-02-18
 related:
   - plan-roadmap
   - plan-testing-polish
@@ -15,8 +15,8 @@ related:
 depends_on:
   - plan-testing-polish
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-01-25
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/113
 structure_notes:
@@ -110,3 +110,4 @@ metadata, and TestFlight distribution.
 | 2026-01-20 | Plan created from roadmap split. |
 | 2026-02-09 | Plan refined with concrete tasks and cross-references. |
 | 2026-02-16 | Added security release gate checklist aligned with backend hardening review recommendations. |
+| 2026-02-18 | Returned to `accepted`; implementation has not started yet. |

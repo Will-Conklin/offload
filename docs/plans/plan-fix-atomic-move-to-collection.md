@@ -8,14 +8,15 @@ applies_to:
   - capture
   - organize
   - data-model
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related: []
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-13
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/161
+  - https://github.com/Will-Conklin/Offload/issues/212
 structure_notes:
   - "Section order: Overview; Context; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

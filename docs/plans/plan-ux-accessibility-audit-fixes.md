@@ -6,17 +6,18 @@ owners:
   - Will-Conklin
 applies_to:
   - ios
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - plan-advanced-accessibility
   - adr-0003-adhd-focused-ux-ui-guardrails
   - plan-testing-polish
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-09
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/134
+  - https://github.com/Will-Conklin/Offload/issues/216
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

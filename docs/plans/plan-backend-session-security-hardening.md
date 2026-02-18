@@ -8,7 +8,7 @@ applies_to:
   - backend
   - ai
   - security
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - plan-backend-api-privacy
   - adr-0008-backend-api-privacy-mvp
@@ -17,9 +17,10 @@ depends_on:
   - docs/adrs/adr-0008-backend-api-privacy-mvp.md
   - docs/design/design-backend-api-privacy-mvp.md
 supersedes: []
-accepted_by: null
-accepted_at: null
-related_issues: []
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-16
+related_issues:
+  - https://github.com/Will-Conklin/Offload/issues/209
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

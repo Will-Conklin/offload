@@ -7,7 +7,7 @@ owners:
 applies_to:
   - capture
   - organize
-last_updated: 2026-02-16
+last_updated: 2026-02-17
 related:
   - plan-fix-swipe-to-delete
   - plan-resolve-gesture-conflict
@@ -16,7 +16,8 @@ depends_on:
 supersedes: []
 accepted_by: null
 accepted_at: null
-related_issues: []
+related_issues:
+  - https://github.com/Will-Conklin/Offload/issues/220
 structure_notes:
   - "Section order: Overview; Context; Goals; Phases; Dependencies; Risks; User Verification; Progress."
   - "Implementation phases use TDD slices: red -> green -> refactor."

@@ -21,10 +21,11 @@ depends_on:
   - docs/adrs/adr-0008-backend-api-privacy-mvp.md
   - docs/design/design-backend-api-privacy-mvp.md
 supersedes: []
-accepted_by: Will-Conklin
+accepted_by: @Will-Conklin
 accepted_at: 2026-02-15
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/111
+  - https://github.com/Will-Conklin/Offload/issues/207
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
   - "Implementation scope is breakdown-first backend MVP with explicit cloud opt-in and zero content retention."

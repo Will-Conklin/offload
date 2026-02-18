@@ -13,7 +13,7 @@ last_updated: 2026-02-17
 related: []
 depends_on: []
 supersedes: []
-accepted_by: Will-Conklin
+accepted_by: @Will-Conklin
 accepted_at: 2026-02-13
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/146

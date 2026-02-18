@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - organize
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - prd-0004-drag-drop-ordering
   - adr-0005-collection-ordering-and-hierarchy-persistence
@@ -14,10 +14,11 @@ related:
   - design-drag-drop-ordering
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-01-22
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/105
+  - https://github.com/Will-Conklin/Offload/issues/211
   - https://github.com/Will-Conklin/offload/pull/130
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."

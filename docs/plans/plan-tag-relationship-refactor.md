@@ -1,12 +1,12 @@
 ---
 id: plan-tag-relationship-refactor
 type: plan
-status: in-progress
+status: proposed
 owners:
   - Will-Conklin
 applies_to:
   - pending-confirmation
-last_updated: 2026-02-10
+last_updated: 2026-02-17
 related:
   - plan-roadmap
   - adr-0001-technology-stack-and-architecture
@@ -15,7 +15,7 @@ supersedes: []
 accepted_by: null
 accepted_at: null
 related_issues:
-  - https://github.com/Will-Conklin/offload/issues/115
+  - https://github.com/Will-Conklin/Offload/issues/219
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

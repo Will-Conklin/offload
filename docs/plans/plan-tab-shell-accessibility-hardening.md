@@ -8,7 +8,7 @@ applies_to:
   - ios
   - ux
   - accessibility
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - prd-0002-persistent-bottom-tab-bar
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -21,9 +21,10 @@ depends_on:
   - docs/adrs/adr-0004-tab-bar-navigation-shell-and-offload-cta.md
   - docs/design/design-persistent-bottom-tab-bar.md
 supersedes: []
-accepted_by: null
-accepted_at: null
-related_issues: []
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-17
+related_issues:
+  - https://github.com/Will-Conklin/Offload/issues/215
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

@@ -6,15 +6,16 @@ owners:
   - Will-Conklin
 applies_to:
   - ios
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - plan-roadmap
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-01-19
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/117
+  - https://github.com/Will-Conklin/Offload/issues/217
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

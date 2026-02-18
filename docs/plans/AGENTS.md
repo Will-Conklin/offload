@@ -7,7 +7,7 @@ owners:
 applies_to:
   - agents
   - plans
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - docs-agents
 depends_on: []
@@ -53,9 +53,17 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
 - Created after design docs, before implementation
 - Status: proposed -> accepted -> in-progress -> uat -> completed/archived
 - Updated as implementation progresses
+- If a user explicitly instructs implementation to begin, treat that instruction
+  as plan acceptance unless the plan is marked pending confirmation.
+- On implicit acceptance, set `accepted_by` to the GitHub handle format
+  (`@username`) for the active GitHub account and set `accepted_at` to the date
+  implementation first began.
+- Prefer the authenticated `gh` account login as the source for
+  `accepted_by` and use `git config user.name` only as a fallback if GitHub
+  identity is unavailable.
 - Plans can only move to completed/archived when every item in the User Verification section is checked
 - Implementation PRs can be merged/closed when implementation tasks are complete, even if User Verification remains
-- If implementation is merged but User Verification is pending, create a follow-up GitHub issue labeled `uat`, add it to the Offload project, and link the plan and merged PR
+- If implementation is merged but User Verification is pending, create a follow-up GitHub issue labeled `uat`, add it to the Offload project with status `Ready`, and link the plan and merged PR
 - Move the plan to `uat` when implementation is merged and only User Verification remains
 - Keep the plan in `uat` until User Verification is complete and the `uat` issue is closed
 - Active plans tracked in `docs/plans/`
@@ -75,12 +83,14 @@ Define execution sequencing, milestones, and task breakdown (WHEN).
   - Use `enhancement` for feature/implementation plan issues
   - Use `bug` when the plan is specifically to fix a defect/regression
   - Use `documentation` for docs-only plan issues
+  - Any issue labeled `uat` must be placed in project status `Ready` (not
+    `Backlog`)
   - Use `ux` as an additional label when the plan primarily targets UX/UI
     behavior
   - **Always add a comment to related issues when a plan is created**, linking to the plan document and summarizing the approach
   - Include plan status, key phases, and next steps in the issue comment
   - When work is merged but User Verification remains, create and link a
-    `uat`-labeled issue for verification follow-up
+    `uat`-labeled issue for verification follow-up and place it in project status `Ready`
   - After plan issue/PR updates, run an issue/project sync audit and fix any
     mismatches before finishing (project membership, required labels, and lane
     alignment such as `In review` only with an open PR)

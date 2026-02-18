@@ -1,7 +1,7 @@
 ---
 id: plan-resolve-gesture-conflict
 type: plan
-status: in-progress
+status: uat
 owners:
   - Will-Conklin
 applies_to:
@@ -9,7 +9,7 @@ applies_to:
   - organize
   - ux
   - accessibility
-last_updated: 2026-02-12
+last_updated: 2026-02-17
 related:
   - plan-drag-drop-ordering
   - prd-0004-drag-drop-ordering
@@ -17,10 +17,11 @@ related:
   - reference-drag-drop-ordering
 depends_on: []
 supersedes: []
-accepted_by: Will-Conklin
+accepted_by: @Will-Conklin
 accepted_at: 2026-02-12
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/142
+  - https://github.com/Will-Conklin/Offload/issues/218
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

@@ -6,17 +6,18 @@ owners:
   - Will-Conklin
 applies_to:
   - organize
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - prd-0003-convert-plans-lists
   - adr-0005-collection-ordering-and-hierarchy-persistence
   - design-convert-plans-lists
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-01-22
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/104
+  - https://github.com/Will-Conklin/Offload/issues/210
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

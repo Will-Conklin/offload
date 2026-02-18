@@ -49,7 +49,7 @@ MAY be included when applicable:
 ```yaml
 depends_on: array[string]     # Full paths to dependency docs
 supersedes: array[string]     # IDs of superseded documents
-accepted_by: string|null      # Approver name when accepted
+accepted_by: string|null      # Approver GitHub handle (@username) when accepted
 accepted_at: date|null        # Acceptance date YYYY-MM-DD
 related_issues: array[string] # GitHub issue numbers or URLs
 ```
@@ -220,6 +220,14 @@ applies_to:
 - **Examples:** `[adr-0000-old-decision]`
 - **Rules:** Mark superseded docs as deprecated/superseded
 
+### `accepted_by`
+
+- **Type:** string | null
+- **Format:** GitHub handle with leading `@`
+- **Examples:** `@Will-Conklin`
+- **Rules:** Use handle format for accepted docs; use `null` only when
+  acceptance has not occurred.
+
 ### `structure_notes`
 
 - **Type:** array[string]
@@ -284,7 +292,7 @@ related:
   - prd-0001-product-requirements
 depends_on: []
 supersedes: []
-accepted_by: Will-Conklin
+accepted_by: @Will-Conklin
 accepted_at: 2025-12-30
 related_issues: []
 structure_notes:
@@ -316,7 +324,7 @@ depends_on:
   - docs/adrs/adr-0001-technology-stack.md
   - docs/adrs/adr-0002-terminology-alignment.md
 supersedes: []
-accepted_by: Will-Conklin
+accepted_by: @Will-Conklin
 accepted_at: 2026-01-03
 related_issues:
   - "#123"

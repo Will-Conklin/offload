@@ -8,13 +8,13 @@ applies_to:
   - organize
   - capture
   - ordering
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - plan-drag-drop-ordering
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-15
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/162
   - https://github.com/Will-Conklin/Offload/issues/180

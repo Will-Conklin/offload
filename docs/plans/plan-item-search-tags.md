@@ -7,7 +7,7 @@ owners:
 applies_to:
   - capture
   - organize
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - prd-0005-item-search-tags
   - adr-0003-adhd-focused-ux-ui-guardrails
@@ -15,10 +15,11 @@ related:
   - design-item-search-tags
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-01-22
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/106
+  - https://github.com/Will-Conklin/Offload/issues/214
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

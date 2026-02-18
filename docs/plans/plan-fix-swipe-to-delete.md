@@ -13,7 +13,7 @@ related:
 depends_on:
   - plan-drag-drop-ordering
 supersedes: []
-accepted_by: Will-Conklin
+accepted_by: @Will-Conklin
 accepted_at: 2026-02-13
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/140

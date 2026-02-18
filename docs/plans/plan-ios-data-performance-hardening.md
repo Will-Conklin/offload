@@ -8,7 +8,7 @@ applies_to:
   - ios
   - performance
   - persistence
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - prd-0001-product-requirements
   - prd-0007-smart-task-breakdown
@@ -17,9 +17,10 @@ depends_on:
   - docs/prds/prd-0001-product-requirements.md
   - docs/adrs/adr-0005-collection-ordering-and-hierarchy-persistence.md
 supersedes: []
-accepted_by: null
-accepted_at: null
-related_issues: []
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-16
+related_issues:
+  - https://github.com/Will-Conklin/Offload/issues/213
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---

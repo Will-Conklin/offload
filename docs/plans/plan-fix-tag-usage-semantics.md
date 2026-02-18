@@ -8,14 +8,14 @@ applies_to:
   - tags
   - capture
   - organize
-last_updated: 2026-02-17
+last_updated: 2026-02-18
 related:
   - plan-fix-tag-assignment
   - plan-tag-relationship-refactor
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-02-15
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/164
   - https://github.com/Will-Conklin/Offload/issues/181

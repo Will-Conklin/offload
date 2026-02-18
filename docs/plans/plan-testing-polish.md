@@ -1,12 +1,12 @@
 ---
 id: plan-testing-polish
 type: plan
-status: in-progress
+status: accepted
 owners:
   - Will-Conklin
 applies_to:
   - launch-release
-last_updated: 2026-02-16
+last_updated: 2026-02-18
 related:
   - plan-roadmap
   - plan-ux-accessibility-audit-fixes
@@ -21,8 +21,8 @@ related:
 depends_on:
   - plan-ux-accessibility-audit-fixes
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: @Will-Conklin
+accepted_at: 2026-01-25
 related_issues:
   - https://github.com/Will-Conklin/offload/issues/116
 structure_notes:
@@ -136,3 +136,4 @@ This phase validates that work and catches any remaining gaps.
 | 2026-01-20 | Plan created from roadmap split. |
 | 2026-02-09 | Plan refined with cross-references to testing artifacts, PRDs, and accessibility audit. |
 | 2026-02-16 | Added non-functional launch gates and mandatory tab-shell accessibility validation tasks from review follow-up. |
+| 2026-02-18 | Returned to `accepted`; implementation has not started yet. |
