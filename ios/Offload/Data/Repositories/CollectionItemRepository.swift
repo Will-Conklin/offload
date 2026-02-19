@@ -118,6 +118,23 @@ final class CollectionItemRepository {
         return try modelContext.fetch(descriptor).first
     }
 
+    /// Indicates whether a collection item currently has child items.
+    /// - Parameter id: The parent collection item identifier to check.
+    /// - Returns: `true` when at least one child exists; otherwise `false`.
+    func hasChildren(_ id: UUID) -> Bool {
+        var descriptor = FetchDescriptor<CollectionItem>(
+            predicate: #Predicate { $0.parentId == id }
+        )
+        descriptor.fetchLimit = 1
+        do {
+            let results = try modelContext.fetch(descriptor)
+            return !results.isEmpty
+        } catch {
+            AppLogger.persistence.error("Failed to check child collection items for \(id, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            return false
+        }
+    }
+
     // MARK: - Update
 
     func updatePosition(_ collectionItem: CollectionItem, position: Int) throws {

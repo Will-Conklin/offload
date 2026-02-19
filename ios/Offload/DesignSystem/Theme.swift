@@ -557,6 +557,11 @@ enum Theme {
         static func optionalMotion(_ animation: Animation, reduceMotion: Bool) -> Animation? {
             reduceMotion ? nil : animation
         }
+
+        /// Returns `.opacity` when Reduce Motion is enabled, otherwise the provided transition.
+        static func transition(_ transition: AnyTransition, reduceMotion: Bool) -> AnyTransition {
+            reduceMotion ? .opacity : transition
+        }
     }
 
     // MARK: - Hit Targets

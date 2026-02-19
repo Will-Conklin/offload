@@ -361,4 +361,52 @@ final class CollectionItemRepositoryTests: XCTestCase {
         XCTAssertEqual(sorted.first?.itemId, item2.id)
         XCTAssertEqual(sorted.last?.itemId, item1.id)
     }
+
+    func testSavePersistsBatchParentAndPositionUpdates() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let parentItem = try itemRepository.create(content: "Parent")
+        let childItem = try itemRepository.create(content: "Child")
+
+        let parentCollectionItem = try collectionItemRepository.addItemToCollection(
+            itemId: parentItem.id,
+            collectionId: collection.id,
+            position: 0
+        )
+        let childCollectionItem = try collectionItemRepository.addItemToCollection(
+            itemId: childItem.id,
+            collectionId: collection.id,
+            position: 1
+        )
+
+        // Batch-update hierarchy and ordering directly (simulating drag/nest).
+        childCollectionItem.parentId = parentCollectionItem.id
+        childCollectionItem.position = 0
+
+        try collectionItemRepository.save()
+
+        let persistedChild = try collectionItemRepository.fetchById(childCollectionItem.id)
+        XCTAssertEqual(persistedChild?.parentId, parentCollectionItem.id)
+        XCTAssertEqual(persistedChild?.position, 0)
+    }
+
+    func testHasChildrenReturnsTrueOnlyForItemsWithChildren() throws {
+        let collection = try collectionRepository.create(name: "Plan", isStructured: true)
+        let parentItem = try itemRepository.create(content: "Parent")
+        let childItem = try itemRepository.create(content: "Child")
+
+        let parentCollectionItem = try collectionItemRepository.addItemToCollection(
+            itemId: parentItem.id,
+            collectionId: collection.id,
+            position: 0
+        )
+        let childCollectionItem = try collectionItemRepository.addItemToCollection(
+            itemId: childItem.id,
+            collectionId: collection.id,
+            position: 1,
+            parentId: parentCollectionItem.id
+        )
+
+        XCTAssertTrue(collectionItemRepository.hasChildren(parentCollectionItem.id))
+        XCTAssertFalse(collectionItemRepository.hasChildren(childCollectionItem.id))
+    }
 }
