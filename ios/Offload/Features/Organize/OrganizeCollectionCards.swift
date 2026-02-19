@@ -50,22 +50,6 @@ struct DraggableCollectionCard: View {
                 onAddTag: onAddTag,
                 onToggleStar: onToggleStar
             )
-            .overlay(alignment: .topTrailing) {
-                if let onConvert {
-                    Button(action: onConvert) {
-                        IconTile(
-                            iconName: Icons.more,
-                            iconSize: 12,
-                            tileSize: 28,
-                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .padding(Theme.Spacing.sm)
-                    .accessibilityLabel("Collection actions")
-                    .accessibilityHint("Show options for this collection")
-                }
-            }
             .offset(x: swipeOffset)
             .contentShape(Rectangle())
             .onTapGesture {
@@ -153,6 +137,22 @@ struct DraggableCollectionCard: View {
                     .frame(height: 3)
                     .offset(y: -(Theme.Spacing.md / 2 + 1.5))
                     .transition(.opacity)
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            if let onConvert {
+                Button(action: onConvert) {
+                    IconTile(
+                        iconName: Icons.more,
+                        iconSize: 12,
+                        tileSize: 28,
+                        style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                    )
+                }
+                .buttonStyle(.plain)
+                .padding(Theme.Spacing.sm)
+                .accessibilityLabel("Collection actions")
+                .accessibilityHint("Show options for this collection")
             }
         }
         .animation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion), value: isDropTarget)
