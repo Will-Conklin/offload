@@ -84,7 +84,7 @@ struct CollectionDetailView: View {
                                             item: item,
                                             collectionItem: collectionItem,
                                             isExpanded: expandedItems.contains(collectionItem.id),
-                                            hasChildren: collectionItem.hasChildren(in: collectionItemRepository.modelContext),
+                                            hasChildren: collectionItemRepository.hasChildren(collectionItem.id),
                                             showChevronSpace: planHasHierarchy,
                                             colorScheme: colorScheme,
                                             style: style,
@@ -113,7 +113,12 @@ struct CollectionDetailView: View {
                                                 loadNextPage()
                                             }
                                         }
-                                        .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+                                        .transition(
+                                            Theme.Animations.transition(
+                                                .move(edge: .top).combined(with: .opacity),
+                                                reduceMotion: reduceMotion
+                                            )
+                                        )
                                     }
                                 }
 
@@ -133,7 +138,10 @@ struct CollectionDetailView: View {
                                 }
                             }
                             .padding(.horizontal, Theme.Spacing.md)
-                            .animation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.8), reduceMotion: reduceMotion), value: visiblePlanItems.map(\.id))
+                            .animation(
+                                Theme.Animations.motion(Theme.Animations.snapToGrid, reduceMotion: reduceMotion),
+                                value: visiblePlanItems.map(\.id)
+                            )
                         } else {
                             // Unstructured collections (lists) - support basic reordering
                             LazyVStack(spacing: Theme.Spacing.md) {
@@ -163,7 +171,12 @@ struct CollectionDetailView: View {
                                                 loadNextPage()
                                             }
                                         }
-                                        .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+                                        .transition(
+                                            Theme.Animations.transition(
+                                                .move(edge: .top).combined(with: .opacity),
+                                                reduceMotion: reduceMotion
+                                            )
+                                        )
                                     }
                                 }
 
@@ -183,7 +196,10 @@ struct CollectionDetailView: View {
                                 }
                             }
                             .padding(.horizontal, Theme.Spacing.md)
-                            .animation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.8), reduceMotion: reduceMotion), value: viewModel.items.map(\.id))
+                            .animation(
+                                Theme.Animations.motion(Theme.Animations.snapToGrid, reduceMotion: reduceMotion),
+                                value: viewModel.items.map(\.id)
+                            )
                         }
                     }
                     .padding(.top, Theme.Spacing.sm)

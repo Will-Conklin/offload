@@ -82,7 +82,7 @@ proposed → accepted → in-progress → uat → completed/archived
 
 ### In Progress
 
-- None currently.
+- [Plan: Codebase Audit Cleanup](./plan-codebase-audit-cleanup.md)
 
 ### Accepted
 
@@ -119,7 +119,6 @@ proposed → accepted → in-progress → uat → completed/archived
 - [Plan: Advanced Accessibility Features (Pending Confirmation)](./plan-advanced-accessibility.md)
 - [Plan: AI Organization Flows & Review Screen (Pending Confirmation)](./plan-ai-organization-flows.md)
 - [Plan: AI Pricing & Limits (Pending Confirmation)](./plan-ai-pricing-limits.md)
-- [Plan: Codebase Audit Cleanup](./plan-codebase-audit-cleanup.md)
 - [Plan: Tag Relationship Refactor (Pending Confirmation)](./plan-tag-relationship-refactor.md)
 - [Plan: Trailing-Gutter Swipe Delete Affordance](./plan-trailing-gutter-swipe-delete-affordance.md)
 

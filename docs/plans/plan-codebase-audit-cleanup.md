@@ -1,7 +1,7 @@
 ---
 id: plan-codebase-audit-cleanup
 type: plan
-status: proposed
+status: in-progress
 owners:
   - Will-Conklin
 applies_to:
@@ -9,16 +9,16 @@ applies_to:
   - ux
   - accessibility
   - design-system
-last_updated: 2026-02-17
+last_updated: 2026-02-19
 related:
   - plan-ux-accessibility-audit-fixes
   - plan-tab-shell-accessibility-hardening
 depends_on: []
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: "@Will-Conklin"
+accepted_at: 2026-02-19
 related_issues:
-  - "#204"
+  - "https://github.com/Will-Conklin/Offload/issues/204"
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -53,7 +53,7 @@ were found, but multiple CLAUDE.md compliance issues need cleanup.
 
 ### Phase 1: Add `buttonDarkText` Contrast-Safe Helper
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] Red:
   - [ ] Add test asserting `Theme.Colors.buttonDarkText(colorScheme, style:)`
@@ -70,7 +70,7 @@ were found, but multiple CLAUDE.md compliance issues need cleanup.
 
 ### Phase 2: Tokenize Hardcoded Spacing
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] Red:
   - [ ] Add snapshot or unit test verifying spacing tokens are used (optional
@@ -93,7 +93,7 @@ were found, but multiple CLAUDE.md compliance issues need cleanup.
 
 ### Phase 3: Tokenize Hardcoded Fonts
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] Red:
   - [ ] Grep-verify no `.font(.system(` calls exist in Features/ after fix.
@@ -110,7 +110,7 @@ were found, but multiple CLAUDE.md compliance issues need cleanup.
 
 ### Phase 4: Standardize Animation Guards
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] Red:
   - [ ] Add test verifying `Theme.Animations.motion()` returns `.default` when
@@ -136,7 +136,7 @@ were found, but multiple CLAUDE.md compliance issues need cleanup.
 
 ### Phase 5: Encapsulate Direct ModelContext Access
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] Red:
   - [ ] Add test for new `CollectionItemRepository.saveReorder()` method (or
@@ -179,8 +179,12 @@ were found, but multiple CLAUDE.md compliance issues need cleanup.
 
 | Phase | Description | Status |
 | --- | --- | --- |
-| 1 | buttonDarkText helper | Not started |
-| 2 | Tokenize spacing | Not started |
-| 3 | Tokenize fonts | Not started |
-| 4 | Animation guards | Not started |
-| 5 | ModelContext encapsulation | Not started |
+| 1 | buttonDarkText helper | Completed |
+| 2 | Tokenize spacing | Completed |
+| 3 | Tokenize fonts | Completed |
+| 4 | Animation guards | Completed |
+| 5 | ModelContext encapsulation | Completed |
+
+| Date | Update |
+| --- | --- |
+| 2026-02-19 | Implementation resumed on `fix/codebase-audit-cleanup`; standardized remaining animation tokens/guards, removed final direct view `modelContext` usage, and added repository coverage for child detection plus batch hierarchy/position persistence. |

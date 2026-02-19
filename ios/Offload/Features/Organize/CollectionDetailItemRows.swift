@@ -403,7 +403,7 @@ struct ItemRow: View {
                         )
                         isSwipeDragging = false
 
-                        withAnimation(Theme.Animations.motion(.spring(response: 0.3, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
+                        withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
                             switch endState {
                             case .triggerTrailingAction:
                                 swipeOffset = 0
