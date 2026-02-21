@@ -161,13 +161,16 @@ struct DraggableCollectionCard: View {
         .accessibilityAction(named: "Delete") {
             onDeleteRequested()
         }
-        .accessibilityAction(named: "Convert") {
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.starToggleActionName(isStarred: collection.isStarred)) {
+            onToggleStar()
+        }
+        .accessibilityActionIf(onConvert != nil, named: "Convert") {
             onConvert?()
         }
-        .accessibilityAction(named: "Move up") {
+        .accessibilityActionIf(onMoveUp != nil, named: "Move up") {
             onMoveUp?()
         }
-        .accessibilityAction(named: "Move down") {
+        .accessibilityActionIf(onMoveDown != nil, named: "Move down") {
             onMoveDown?()
         }
     }
@@ -181,6 +184,7 @@ struct BottomCollectionDropZone: View {
     let onDrop: (UUID) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isDropTarget = false
 
     var body: some View {
@@ -189,7 +193,11 @@ struct BottomCollectionDropZone: View {
                 ? Theme.Colors.primary(colorScheme, style: style).opacity(0.08)
                 : Color.white.opacity(0.001)
             )
-            .frame(height: isDropTarget ? 60 : 44)
+            .frame(
+                height: isDropTarget
+                    ? AdvancedAccessibilityLayoutPolicy.dropZoneTargetHeight(for: dynamicTypeSize)
+                    : AdvancedAccessibilityLayoutPolicy.dropZoneBaseHeight(for: dynamicTypeSize)
+            )
             .overlay {
                 if isDropTarget {
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)

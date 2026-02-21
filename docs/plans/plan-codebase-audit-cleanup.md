@@ -1,7 +1,7 @@
 ---
 id: plan-codebase-audit-cleanup
 type: plan
-status: in-progress
+status: uat
 owners:
   - Will-Conklin
 applies_to:
@@ -19,6 +19,7 @@ accepted_by: "@Will-Conklin"
 accepted_at: 2026-02-19
 related_issues:
   - "https://github.com/Will-Conklin/Offload/issues/204"
+  - "https://github.com/Will-Conklin/Offload/issues/224"
 structure_notes:
   - "Section order: Overview; Goals; Phases; Dependencies; Risks; User Verification; Progress."
 ---
@@ -188,3 +189,4 @@ were found, but multiple CLAUDE.md compliance issues need cleanup.
 | Date | Update |
 | --- | --- |
 | 2026-02-19 | Implementation resumed on `fix/codebase-audit-cleanup`; standardized remaining animation tokens/guards, removed final direct view `modelContext` usage, and added repository coverage for child detection plus batch hierarchy/position persistence. |
+| 2026-02-19 | PR [#223](https://github.com/Will-Conklin/Offload/pull/223) merged; plan moved to `uat` and follow-up verification issue [#224](https://github.com/Will-Conklin/Offload/issues/224) created in Offload project status `Ready`. |

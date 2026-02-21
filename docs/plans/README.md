@@ -82,7 +82,7 @@ proposed → accepted → in-progress → uat → completed/archived
 
 ### In Progress
 
-- [Plan: Codebase Audit Cleanup](./plan-codebase-audit-cleanup.md)
+- [Plan: Advanced Accessibility Features](./plan-advanced-accessibility.md)
 
 ### Accepted
 
@@ -91,6 +91,7 @@ proposed → accepted → in-progress → uat → completed/archived
 
 ### UAT
 
+- [Plan: Codebase Audit Cleanup](./plan-codebase-audit-cleanup.md)
 - [Plan: Diagnose Idle Memory Pressure](./plan-diagnose-idle-memory-pressure.md)
 - [Plan: Backend API + Privacy Constraints MVP (Breakdown-First)](./plan-backend-api-privacy.md)
 - [Plan: Backend Session Security Hardening](./plan-backend-session-security-hardening.md)
@@ -111,16 +112,15 @@ proposed → accepted → in-progress → uat → completed/archived
 - [Plan: Fix Structured Item Position Collisions](./plan-fix-structured-item-position-collisions.md)
 - [Plan: Fix Tag Usage Semantics](./plan-fix-tag-usage-semantics.md)
 - [Plan: Fix Collection Position Backfill](./plan-fix-collection-position-backfill.md)
+- [Plan: Trailing-Gutter Swipe Delete Affordance](./plan-trailing-gutter-swipe-delete-affordance.md)
 
 ### Proposed
 
 - [Plan: Visual Timeline (Pending Confirmation)](./plan-visual-timeline.md)
 - [Plan: Celebration Animations (Pending Confirmation)](./plan-celebration-animations.md)
-- [Plan: Advanced Accessibility Features (Pending Confirmation)](./plan-advanced-accessibility.md)
 - [Plan: AI Organization Flows & Review Screen (Pending Confirmation)](./plan-ai-organization-flows.md)
 - [Plan: AI Pricing & Limits (Pending Confirmation)](./plan-ai-pricing-limits.md)
 - [Plan: Tag Relationship Refactor (Pending Confirmation)](./plan-tag-relationship-refactor.md)
-- [Plan: Trailing-Gutter Swipe Delete Affordance](./plan-trailing-gutter-swipe-delete-affordance.md)
 
 ### Completed
 

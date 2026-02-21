@@ -166,6 +166,9 @@ sections:
       - id: design-voice-capture-testing-guide
         title: Voice Capture Testing Guide
         path: design/testing/design-voice-capture-testing-guide.md
+      - id: design-advanced-accessibility-testing-checklist
+        title: Advanced Accessibility Testing Checklist
+        path: design/testing/design-advanced-accessibility-testing-checklist.md
       - id: design-context-aware-ci-pipeline
         title: Context-Aware CI Pipeline Design
         path: design/design-context-aware-ci-pipeline.md
