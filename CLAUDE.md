@@ -264,5 +264,5 @@ All animations MUST respect reduced motion. Use `Theme.Animations.motion(animati
 See [AGENTS.md](AGENTS.md) for:
 
 - Critical git workflow and PR requirements
-- Documentation governance (`docs/AGENTS.md` is authoritative for docs/ behavior)
+- Documentation governance (`docs/AGENTS.md` scopes agents to `docs/plans/plan-implementation-backlog.md` only)
 - Agent handoff summary and data model details
