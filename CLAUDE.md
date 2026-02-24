@@ -87,7 +87,7 @@ Local testing: `just test` sources these values automatically.
 
 **Documentation:**
 
-- `docs/` — PRDs, ADRs, designs, plans (see `docs/AGENTS.md`)
+- `docs/` — PRDs, ADRs, designs (human reference); `docs/plans/plan-implementation-backlog.md` is the single source of pending work (see `docs/AGENTS.md`)
 
 ## Test Organization
 
@@ -108,27 +108,20 @@ Local testing: `just test` sources these values automatically.
 - **NEVER commit directly to main branch** - always use feature branches for all work (see AGENTS.md for full git workflow)
 - CI markdownlint runs strict (no `--fix`); table column alignment (MD060) must be manually correct
 - Markdownlint MD036: Don't use bold text for section headers (`**Section:**`) - use proper headings (`### Section`)
-- PRs for plan work must include `Closes #<issue-number>` in the body (see plan's `related_issues` for the issue number)
-- Plan frontmatter uses `status: completed` (NOT `complete`) — see `docs/reference/reference-frontmatter-schema.md` line 101
-- Plans can only move to completed/archived when User Verification is fully checked; if implementation is merged first, open a follow-up issue labeled `uat` and keep the plan `in-progress`
 - Worktree git operations require `cd` to worktree path; `gh pr create` fails if PR already exists (push updates existing PR)
 - **Worktree workflow**: Standard pattern is `git worktree add .worktrees/<name> -b <branch>` → implement → test → commit → `git worktree remove .worktrees/<name>`
 - For feature implementation, use TDD (red → green → refactor): write tests
   first, implement the minimal code to pass, then refactor with tests green
-- When generating plans in Plan mode, include explicit TDD sequencing per phase:
-  red tests first, green implementation second, refactor last
 - Use Conventional Commits format: `type(scope): description` (e.g., `fix(ux): restore swipe-to-delete`, `feat(voice): add @MainActor isolation`)
 - Use conventional branch prefixes: `feat/`, `fix/`, `docs/`, `chore/` (e.g., `feat/swipe-delete`, `fix/gesture-conflict`)
 - **When creating new GitHub issues, always add them to the Offload project** using `gh issue create --project "Offload"` during creation, or `gh issue edit <number> --add-project "Offload"` after creation
 - **When creating new GitHub issues, always apply labels at creation time; never leave issues unlabeled**
 - Use `bug` for defects/regressions, `enhancement` for feature or implementation work, and `documentation` for docs-only work
-- Use `uat` only for post-merge user verification follow-up issues
 - Use `ux` as an additional label (with one of the primary labels above) for UX/UI-focused issues
 - If label selection is ambiguous, ask the user before creating or relabeling issues
 - After any issue/PR/project update, run an issue sync audit and fix mismatches:
   open issues in project, no unlabeled open issues, open issues not in `Done`/`Archived`,
   closed issues in `Done`/`Archived`, and `In review` only when a related PR is open
-- **When creating plans that resolve issues, always add a comment to the issue** linking to the plan document with summary of approach, phases, and next steps
 - For backend persistence, security, or provider-resilience changes: run
   `just backend-check-coverage` before opening/updating PRs
 - Never commit generated backend runtime/build artifacts (`.offload-backend/`,
@@ -271,6 +264,5 @@ All animations MUST respect reduced motion. Use `Theme.Animations.motion(animati
 See [AGENTS.md](AGENTS.md) for:
 
 - Critical git workflow and PR requirements
-- Documentation governance (`docs/AGENTS.md` is authoritative for docs/ behavior)
-- Feature work requirements (PRD → design → plan → implementation)
+- Documentation governance (`docs/AGENTS.md` scopes agents to `docs/plans/plan-implementation-backlog.md` only)
 - Agent handoff summary and data model details

@@ -30,6 +30,7 @@ struct HierarchicalItemRow: View {
     @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.collectionItemRepository) private var collectionItemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showingMenu = false
     @State private var linkedCollectionName: String?
     @State private var isDropTarget = false
@@ -74,7 +75,10 @@ struct HierarchicalItemRow: View {
                         Color.clear
                     }
                 }
-                .frame(width: 44, height: 44)
+                .frame(
+                    width: AdvancedAccessibilityLayoutPolicy.controlSize(for: dynamicTypeSize),
+                    height: AdvancedAccessibilityLayoutPolicy.controlSize(for: dynamicTypeSize)
+                )
                 .buttonStyle(.plain)
                 .disabled(!hasChildren)
                 .padding(.trailing, Theme.Spacing.xs)
@@ -138,10 +142,10 @@ struct HierarchicalItemRow: View {
             }
             .animation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion), value: isDropTarget)
         }
-        .accessibilityAction(named: "Move up") {
+        .accessibilityActionIf(onMoveUp != nil, named: "Move up") {
             onMoveUp?()
         }
-        .accessibilityAction(named: "Move down") {
+        .accessibilityActionIf(onMoveDown != nil, named: "Move down") {
             onMoveDown?()
         }
         .onAppear {
@@ -189,6 +193,7 @@ struct BottomDropZone: View {
     let onDrop: (UUID) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isDropTarget = false
 
     var body: some View {
@@ -197,7 +202,11 @@ struct BottomDropZone: View {
                 ? Theme.Colors.primary(colorScheme, style: style).opacity(0.08)
                 : Color.white.opacity(0.001) // Nearly invisible but receives hit tests
             )
-            .frame(height: isDropTarget ? 60 : 44)
+            .frame(
+                height: isDropTarget
+                    ? AdvancedAccessibilityLayoutPolicy.dropZoneTargetHeight(for: dynamicTypeSize)
+                    : AdvancedAccessibilityLayoutPolicy.dropZoneBaseHeight(for: dynamicTypeSize)
+            )
             .overlay {
                 if isDropTarget {
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
@@ -318,6 +327,7 @@ struct ItemRow: View {
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showingMenu = false
     @State private var linkedCollectionName: String?
     @State private var swipeOffset: CGFloat = 0
@@ -368,7 +378,7 @@ struct ItemRow: View {
                     IconTile(
                         iconName: Icons.more,
                         iconSize: 16,
-                        tileSize: 44,
+                        tileSize: AdvancedAccessibilityLayoutPolicy.controlSize(for: dynamicTypeSize),
                         style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
                     )
                 }
@@ -430,6 +440,12 @@ struct ItemRow: View {
         }
         .accessibilityAction(named: "Delete") {
             onDelete()
+        }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.primaryItemActionName(isLink: isLink)) {
+            handleTap()
+        }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.starToggleActionName(isStarred: item.isStarred)) {
+            toggleStar()
         }
         .onAppear {
             loadLinkedCollectionName()

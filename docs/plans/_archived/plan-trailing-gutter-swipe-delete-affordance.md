@@ -1,23 +1,24 @@
 ---
 id: plan-trailing-gutter-swipe-delete
 type: plan
-status: proposed
+status: uat
 owners:
   - TBD
 applies_to:
   - capture
   - organize
-last_updated: 2026-02-17
+last_updated: 2026-02-19
 related:
   - plan-fix-swipe-to-delete
   - plan-resolve-gesture-conflict
 depends_on:
   - plan-fix-swipe-to-delete
 supersedes: []
-accepted_by: null
-accepted_at: null
+accepted_by: "@Will-Conklin"
+accepted_at: 2026-02-18
 related_issues:
   - https://github.com/Will-Conklin/Offload/issues/220
+  - https://github.com/Will-Conklin/Offload/issues/225
 structure_notes:
   - "Section order: Overview; Context; Goals; Phases; Dependencies; Risks; User Verification; Progress."
   - "Implementation phases use TDD slices: red -> green -> refactor."
@@ -52,7 +53,7 @@ deletion for collections.
 
 ### Phase 1: Shared Swipe Interaction Primitive
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] **Red:** Add unit tests for swipe state transitions (closed, revealed,
   full-swipe delete).
@@ -63,7 +64,7 @@ deletion for collections.
 
 ### Phase 2: Capture Item Cards (Trailing Gutter Delete)
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] **Red:** Add tests covering left reveal/tap delete/full-swipe delete while
   preserving right-swipe complete.
@@ -74,7 +75,7 @@ deletion for collections.
 
 ### Phase 3: Collection Detail Item Rows
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] **Red:** Add tests for left reveal/tap delete/full-swipe delete and
   close-on-small-swipe behavior.
@@ -83,7 +84,7 @@ deletion for collections.
 
 ### Phase 4: Organize Collection Cards + Delete Confirmation
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] **Red:** Add tests for collection delete flow requiring confirmation.
 - [ ] **Green:** Add swipe-delete affordance to collection cards; wire
@@ -93,7 +94,7 @@ deletion for collections.
 
 ### Phase 5: Validation and Accessibility
 
-**Status:** Not started
+**Status:** Completed
 
 - [ ] **Red:** Add tests for accessibility actions and swipe-state tap behavior.
 - [ ] **Green:** Ensure VoiceOver delete actions and labels/hints are present on
@@ -142,3 +143,4 @@ deletion for collections.
 | Date | Update |
 | --- | --- |
 | 2026-02-16 | Plan drafted for trailing-gutter swipe-delete behavior and cross-view consistency. |
+| 2026-02-19 | PR [#222](https://github.com/Will-Conklin/Offload/pull/222) merged and implementation issue [#220](https://github.com/Will-Conklin/Offload/issues/220) closed; moved plan to `uat` with follow-up verification issue [#225](https://github.com/Will-Conklin/Offload/issues/225). |

@@ -125,6 +125,15 @@ struct ItemCard: View {
         .accessibilityAction(named: "Delete") {
             onDelete()
         }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.starToggleActionName(isStarred: item.isStarred)) {
+            onToggleStar()
+        }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.moveDestinationActionName(.plan)) {
+            onMoveTo(.plan)
+        }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.moveDestinationActionName(.list)) {
+            onMoveTo(.list)
+        }
         .contextMenu {
             Button {
                 onMoveTo(.plan)

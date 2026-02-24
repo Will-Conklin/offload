@@ -23,7 +23,7 @@ iOS application with a FastAPI backend slice.
 - `scripts/ci/` - CI lane scripts (iOS/backend/scripts)
 - `docs/prds/` - Product requirements
 - `docs/adrs/` - Architecture decisions
-- `docs/plans/` - Implementation plans
+- `docs/plans/plan-implementation-backlog.md` - Single implementation backlog (see `docs/AGENTS.md`)
 
 ## Common Commands
 
@@ -59,25 +59,8 @@ just ci-local                 # Run lint + backend checks + iOS tests
 - ALWAYS clean up merged branches
 - ALWAYS label pull requests using the repository's label settings; ask the user
   if uncertain
-- For feature work: REQUIRE accepted PRD + design + plan + any ADRs before
-  implementation; keep docs updated; create reference docs when contracts
-  stabilize
 - For feature work: follow a TDD cycle (red → green → refactor): write tests
   first, implement the minimal code to pass, then refactor with tests green
-- For plan generation in Plan mode: encode TDD steps in each implementation
-  phase/slice (red tests, green implementation, refactor)
-- For feature work: Track plans with GitHub issues; update status/comments/links;
-  move plan issues through Ready → In Progress → Done using repo project
-  settings
-- For plan issues: add proposed plans as GitHub issues and add them to the
-  Offload project with status Backlog; move to Ready once the plan is accepted;
-  move to In Progress when work starts; move to In Review when a PR is open and
-  all plan items are complete except User Verification; move to Done after the
-  PR merges
-- If an implementation PR merges while plan User Verification tasks remain:
-  open a new GitHub issue labeled `uat`, add it to the Offload project with
-  status `Ready`, and link the plan + merged PR; keep the plan `uat` until
-  verification is complete
 - For all new GitHub issues (not only plan issues): always add them to the
   Offload project during creation or immediately after creation
 - For all new GitHub issues: apply labels at creation time and never leave an
@@ -87,9 +70,6 @@ just ci-local                 # Run lint + backend checks + iOS tests
   text
 - Use `bug` for defects/regressions, `enhancement` for feature or implementation
   work, and `documentation` for docs-only work
-- Use `uat` only for post-merge user verification follow-up issues
-- Any issue labeled `uat` must be placed in project status `Ready` (not
-  `Backlog`)
 - Use `ux` as an additional label (with the primary label above) when the issue
   is primarily about UX/UI behavior
 - If label selection is ambiguous, ask the user before creating or relabeling
@@ -101,15 +81,10 @@ just ci-local                 # Run lint + backend checks + iOS tests
   - open issues are not in `Done`/`Archived`
   - closed issues are in `Done`/`Archived`
   - `In review` is used only when a relevant PR is currently open
-- When creating plans that resolve existing issues: always add an issue comment
-  linking the plan document and summarizing approach, phases, and next steps
 - NEVER assume version numbers or pricing information; treat them as deferred
   unless explicitly documented
 - Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for
   YAML, and use conventional atomic commits
-- NEVER use markdown files to drive non-agent processes or store configuration
-  that non-agent scripts parse; document metadata for agents must live only in
-  YAML front-matter per `docs/AGENTS.md`
 - Prioritize using `just` for common commands and keep the `justfile` at project root up to date
 - For backend changes: run `just backend-check` (or `just backend-check-ci`) before opening/updating PRs
 - For backend persistence, security, or provider-resilience changes: run
