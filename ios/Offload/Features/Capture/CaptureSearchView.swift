@@ -57,6 +57,7 @@ struct CaptureSearchView: View {
                                     .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("Clear search")
                         }
                     }
                     .padding(Theme.Spacing.md)

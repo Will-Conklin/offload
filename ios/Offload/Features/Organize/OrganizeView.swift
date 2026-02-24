@@ -294,6 +294,9 @@ struct OrganizeView: View {
                 .clipShape(Capsule())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(scope.title)
+        .accessibilityValue(selectedScope == scope ? "Selected" : "Not selected")
+        .accessibilityAddTraits(selectedScope == scope ? .isSelected : [])
     }
 
     // MARK: - Create Sheet

@@ -134,6 +134,7 @@ struct ItemCard: View {
         .accessibilityAction(named: AdvancedAccessibilityActionPolicy.moveDestinationActionName(.list)) {
             onMoveTo(.list)
         }
+        .accessibilityElement(children: .combine)
         .contextMenu {
             Button {
                 onMoveTo(.plan)

@@ -81,6 +81,9 @@ struct HierarchicalItemRow: View {
                 )
                 .buttonStyle(.plain)
                 .disabled(!hasChildren)
+                .accessibilityLabel(hasChildren ? (isExpanded ? "Collapse" : "Expand") : "")
+                .accessibilityValue(hasChildren ? (isExpanded ? "Expanded" : "Collapsed") : "")
+                .accessibilityHidden(!hasChildren)
                 .padding(.trailing, Theme.Spacing.xs)
             }
 
@@ -328,7 +331,6 @@ struct ItemRow: View {
     @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var showingMenu = false
     @State private var linkedCollectionName: String?
     @State private var swipeOffset: CGFloat = 0
     @State private var dragStartOffset: CGFloat = 0
@@ -370,25 +372,6 @@ struct ItemRow: View {
             }
             .overlay(alignment: .bottomTrailing) {
                 StarButton(isStarred: item.isStarred, action: toggleStar)
-            }
-            .overlay(alignment: .topTrailing) {
-                Button {
-                    showingMenu = true
-                } label: {
-                    IconTile(
-                        iconName: Icons.more,
-                        iconSize: 16,
-                        tileSize: AdvancedAccessibilityLayoutPolicy.controlSize(for: dynamicTypeSize),
-                        style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
-                    )
-                }
-                .buttonStyle(.plain)
-                .padding(Theme.Spacing.md)
-                .accessibilityLabel("Item actions")
-                .accessibilityHint("Show options for this item.")
-                .confirmationDialog("Item Actions", isPresented: $showingMenu) {
-                    // Context menu actions (delete removed - use swipe instead)
-                }
             }
             .offset(x: swipeOffset)
             .simultaneousGesture(
