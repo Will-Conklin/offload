@@ -80,7 +80,9 @@ struct CelebrationParticlesView: View {
             }
         }
         .onAppear {
-            isAnimating = true
+            withAnimation(Theme.Animations.motion(Theme.Animations.mechanicalSlide, reduceMotion: false)) {
+                isAnimating = true
+            }
         }
     }
 
@@ -180,9 +182,6 @@ struct CelebrationOverlayModifier: ViewModifier {
         // Particles
         if style.showsParticles {
             showParticles = true
-            withAnimation(Theme.Animations.motion(Theme.Animations.mechanicalSlide, reduceMotion: false)) {
-                // Particles animate via their own onAppear
-            }
             DispatchQueue.main.asyncAfter(deadline: .now() + style.duration) {
                 showParticles = false
             }

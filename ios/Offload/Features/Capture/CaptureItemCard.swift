@@ -23,7 +23,6 @@ struct ItemCard: View {
     @State private var swipeOffset: CGFloat = 0
     @State private var dragStartOffset: CGFloat = 0
     @State private var isSwipeDragging = false
-    @State private var showCompleteCelebration = false
 
     private let swipeModel = SwipeInteractionModel.capture
 
@@ -107,7 +106,6 @@ struct ItemCard: View {
                             switch endState {
                             case .triggerLeadingAction:
                                 swipeOffset = 0
-                                showCompleteCelebration = true
                                 onComplete()
                             case .triggerTrailingAction:
                                 swipeOffset = 0
@@ -121,7 +119,6 @@ struct ItemCard: View {
                     }
             )
         }
-        .celebrationOverlay(style: .itemCompleted, isActive: $showCompleteCelebration)
         .accessibilityAction(named: "Complete") {
             onComplete()
         }

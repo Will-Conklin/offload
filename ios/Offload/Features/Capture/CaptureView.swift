@@ -208,6 +208,9 @@ struct CaptureView: View {
             viewModel.remove(item)
             AppLogger.workflow.info("CaptureView complete completed - id: \(itemId, privacy: .public)")
 
+            // Celebrate successful completion
+            UIImpactFeedbackGenerator(style: CelebrationStyle.itemCompleted.hapticStyle).impactOccurred()
+
             // Check if this completion finishes any collection
             checkCollectionCompletion(for: item)
         } catch {
