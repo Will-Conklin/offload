@@ -43,6 +43,8 @@ struct CaptureComposeView: View {
     @State private var errorPresenter = ErrorPresenter()
     @State private var didTriggerQuickStart = false
     @State private var captureConfirmed = false
+    @AppStorage("hasCompletedFirstCapture") private var hasCompletedFirstCapture = false
+    @State private var showFirstCaptureCelebration = false
 
     @FocusState private var isFocused: Bool
 
@@ -138,6 +140,7 @@ struct CaptureComposeView: View {
         } message: {
             Text("This device does not support camera capture.")
         }
+        .celebrationOverlay(style: .firstCapture, isActive: $showFirstCaptureCelebration)
     }
 
     private var textInputSection: some View {
@@ -365,16 +368,26 @@ struct CaptureComposeView: View {
             )
             AppLogger.workflow.info("CaptureCompose save completed - id: \(item.id, privacy: .public)")
 
-            // Trigger typewriter ding animation
-            withAnimation(Theme.Animations.motion(Theme.Animations.typewriterDing, reduceMotion: reduceMotion)) {
-                captureConfirmed = true
-            }
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            if !hasCompletedFirstCapture {
+                // First capture ever — special celebration
+                hasCompletedFirstCapture = true
+                showFirstCaptureCelebration = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
+                    dismiss()
+                }
+            } else {
+                // Standard capture confirmation (existing behavior)
+                withAnimation(Theme.Animations.motion(Theme.Animations.typewriterDing, reduceMotion: reduceMotion)) {
+                    captureConfirmed = true
+                }
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
 
-            // Dismiss after brief amber flash
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
-                dismiss()
+                // Dismiss after brief amber flash
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
+                    dismiss()
+                }
             }
         } catch {
             AppLogger.workflow.error("CaptureCompose save failed - error: \(error.localizedDescription, privacy: .public)")
