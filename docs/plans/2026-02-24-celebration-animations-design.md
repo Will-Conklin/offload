@@ -1,5 +1,7 @@
 # Celebration Animations Design
 
+Status: Implemented (2026-02-24)
+
 ## Overview
 
 Positive feedback animations for three key moments in Offload, using moderate

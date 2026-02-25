@@ -38,6 +38,10 @@ Action parity and Dynamic Type hardening for VoiceOver/Switch Control users. Cod
 - [ ] Adjust labels based on QA feedback
 - [ ] Complete user verification
 
+### Celebration Animations
+
+Positive feedback animations for three moments: item completed, first capture, and collection fully completed. Uses `CelebrationStyle` enum + `.celebrationOverlay()` ViewModifier with pure SwiftUI particle system. All animations respect reduced motion via `Theme.Animations.motion()`. Collection completion detected from CaptureView via item relationships, shown as success toast. Design: `docs/plans/2026-02-24-celebration-animations-design.md`.
+
 ## Active
 
 ### Testing & Polish
@@ -100,21 +104,6 @@ App Store preparation, TestFlight distribution, security release gate. Blocked b
 - [ ] Incident response + rollback runbook current
 
 ## Future Work
-
-### Celebration Animations
-
-Positive feedback animations for key moments, respecting reduced motion and ADHD guardrails.
-
-**Constraints:** Calm visual system (restrained palette, minimal simultaneous colors). Non-blocking feedback only (banners/snackbars, not modals). No urgency language. All animations gated via `Theme.Animations.motion(_:reduceMotion:)` and `@Environment(\.accessibilityReduceMotion)`. Must use `Theme.Animations.*` tokens (`springDefault` 0.3s, `springSnappy` 0.2s, `mechanicalSlide` 0.4s). No new visual noise beyond existing design system palette.
-
-**Open decisions:** Specific trigger moments TBD (first capture, collection completed, milestone reached). Animation patterns and durations TBD. Performance budget on older devices TBD.
-
-**Remaining:**
-
-- [ ] Define key celebration moments
-- [ ] Define animation patterns against design system motion tokens
-- [ ] Implement with reduce-motion guards
-- [ ] Profile performance on older devices
 
 ### Visual Timeline
 
