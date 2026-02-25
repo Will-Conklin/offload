@@ -112,6 +112,10 @@ App Store preparation, TestFlight distribution, security release gate. Blocked b
 
 ## Future Work
 
+### Home Dashboard
+
+The Home tab is currently empty (placeholder view). Needs to become a user dashboard with at-a-glance context: recent captures, active collections, progress summary. The Visual Timeline (below) could be a natural component here. Scope and layout TBD — requires brainstorming and design.
+
 ### Visual Timeline
 
 Visual timeline component for ADHD-focused progress tracking. Related issue: #118.
