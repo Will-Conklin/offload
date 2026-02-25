@@ -54,6 +54,11 @@ Final launch testing and polish. Blocks Release Prep. Related issue: #116.
 - [ ] Test on at least one iPhone + one iPad, physical device for voice capture
 - [ ] Record results with device, OS, build, tester, pass/fail
 
+**UX fixes:**
+
+- [ ] Swipe-to-complete on collections needs a confirmation step and a visible affordance icon (current indicator overlaps with the card and is not visible; should match the trash icon pattern used by swipe-to-delete)
+- [ ] +tag icon on collection items is oversized; should match the +tag icon size used on capture items
+
 **Performance & reliability:**
 
 - [ ] Baseline launch/navigation timing on physical devices (current baseline: 112.8s full suite, iPhone 16 Pro, iOS 18.3.1)
