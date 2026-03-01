@@ -161,8 +161,10 @@ backend/api/.offload-backend/
 *.sublime-project
 *.sublime-workspace
 
-# Claude Code
-.claude/
+# Claude Code — ignore personal/local files but track project hooks and settings
+.claude/*
+!.claude/hooks/
+!.claude/settings.json
 
 # Backup files
 *~
