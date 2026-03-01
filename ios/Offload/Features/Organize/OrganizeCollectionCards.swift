@@ -233,6 +233,16 @@ struct CollectionCard: View {
     let onAddTag: () -> Void
     let onToggleStar: () -> Void
 
+    private static let maxVisibleTags = 3
+
+    private var visibleTags: [Tag] {
+        Array(collection.tags.prefix(Self.maxVisibleTags))
+    }
+
+    private var overflowCount: Int {
+        max(0, collection.tags.count - Self.maxVisibleTags)
+    }
+
     var body: some View {
         CardSurface(fill: Theme.Colors.cardColor(index: collection.stableColorIndex, colorScheme, style: style)) {
             // MCM card content with custom metadata for collections
@@ -247,10 +257,6 @@ struct CollectionCard: View {
                     )
 
                     Text(collection.isStructured ? "PLAN" : "LIST")
-                        .font(Theme.Typography.caption)
-                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-
-                    Text(collection.formattedDate)
                         .font(Theme.Typography.caption)
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
 
@@ -269,15 +275,28 @@ struct CollectionCard: View {
                         .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                         .lineLimit(3)
 
-                    // Tags in flow layout - always show if onAddTag is available
+                    // Tags in flow layout — capped at maxVisibleTags with overflow indicator
                     FlowLayout(spacing: Theme.Spacing.xs) {
-                        ForEach(collection.tags, id: \.id) { tag in
+                        ForEach(visibleTags, id: \.id) { tag in
                             TagPill(
                                 name: tag.name,
                                 color: tag.color
                                     .map { Color(hex: $0) }
                                     ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
                             )
+                        }
+
+                        if overflowCount > 0 {
+                            Text("+\(overflowCount)")
+                                .font(Theme.Typography.badge)
+                                .tracking(0.5)
+                                .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                .padding(.horizontal, Theme.Spacing.sm)
+                                .padding(.vertical, Theme.Spacing.xs)
+                                .background(
+                                    Capsule()
+                                        .fill(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.12))
+                                )
                         }
 
                         Button(action: onAddTag) {
