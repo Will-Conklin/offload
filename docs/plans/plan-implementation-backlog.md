@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - agents
-last_updated: 2026-02-24
+last_updated: 2026-03-01
 related: []
 depends_on: []
 supersedes:
@@ -149,6 +149,54 @@ Migrate tag storage from denormalized string arrays to proper SwiftData relation
 - [ ] Implement versioned schema migration with tests
 - [ ] Update repositories and views
 - [ ] Validate migration on real data
+
+### New Item Types
+
+Expand the `ItemType` enum beyond the current `task` and `link` cases to support a richer capture vocabulary. The Brain Dump Compiler AI flow already references six categories (`task`, `question`, `decision`, `idea`, `concern`, `reference`) — formalizing these as first-class types lets the capture UI, filters, and AI features share a single source of truth.
+
+**Current state:** `ItemType` has two cases: `task` and `link`. `Item.type` stores the raw string, defaulting to `nil` for uncategorized captures.
+
+**Proposed new types:**
+
+| Type | Purpose |
+| --- | --- |
+| `note` | General free-form capture with no action required |
+| `idea` | Creative or exploratory thought to revisit |
+| `question` | Open question needing an answer or research |
+| `decision` | A choice that needs to be made or was made |
+| `concern` | Something worrying or at risk, flagged for attention |
+| `reference` | External material (URL, quote, source) saved for later |
+
+**Model changes:** Add new cases to `ItemType` in `Domain/Models/Item.swift`. No SwiftData migration required — `type` is stored as a raw `String?` and existing values remain valid. Remove or repurpose the existing `link` case: consider whether `link` becomes a metadata property on `reference` items rather than a standalone type (decision required before implementing).
+
+**UI changes:**
+
+- Update type picker in `CaptureComposeView` to show all types with icons and short descriptions
+- Add type-specific icons to `Icons.swift` for each new type
+- Display type chip on capture cards (`CaptureItemCard`) using `TypeChip` component
+- Filter bar in `CaptureView` — filter by type alongside existing starred/follow-up filters
+
+**Capture flow:**
+
+- Voice capture: map AI-inferred category to new type enum cases
+- Brain Dump Compiler: align category labels with `ItemType.rawValue` to eliminate translation layer
+
+**Search & organize:**
+
+- `ItemRepository.fetchByType` predicate (requires explicit enum raw value — see SwiftData predicate gotcha in CLAUDE.md)
+- Type-aware grouping option in Organize tab
+
+**Remaining:**
+
+- [ ] Decide fate of `link`/`linkedCollectionId` — keep as distinct type or absorb into `reference` with metadata URL field
+- [ ] Add new `ItemType` cases with `displayName` and `icon`
+- [ ] Add SF Symbol constants to `Icons.swift` for each new type
+- [ ] Update `CaptureComposeView` type picker
+- [ ] Update `CaptureItemCard` to display type chip
+- [ ] Add type filter to `CaptureView`
+- [ ] Add `fetchByType` to `ItemRepository`
+- [ ] Align Brain Dump Compiler category labels with `ItemType.rawValue`
+- [ ] Update tests (`ItemRepositoryTests`, `CaptureViewTests` if applicable)
 
 ### AI Organization Flows
 
