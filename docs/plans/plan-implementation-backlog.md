@@ -138,17 +138,81 @@ Migrate tag storage from denormalized string arrays to proper SwiftData relation
 
 **Target model:** `Item.tags: [Tag]?` with `@Relationship(deleteRule: .nullify, inverse: \Tag.items)`. `Tag.items: [Item]?` inverse. `Tag.name` marked `@Attribute(.unique)`. `tagNames: [String]` computed property for backward compatibility. Queries use `#Predicate<Item>` for database-layer filtering.
 
-**Migration:** Versioned schemas `OffloadSchemaV1` → `OffloadSchemaV2` via `SchemaMigrationPlan`. `willMigrate` hook collects unique tag strings, creates `Tag` objects, re-links items. `TagRepository` gets `findOrCreate(name:color:)`. Migrated tags will have `color: nil` unless matched to pre-existing `Tag` objects by name.
-
-**Risks:** Migration failures could cause data loss (staged tests + backups required). All views referencing `item.tags` as `[String]` will break. `tagLookup` dictionary pattern must be removed entirely.
-
 **Remaining:**
 
 - [ ] Confirm scope approval
 - [ ] Identify all impacted views (CaptureComposeView, CaptureView, CollectionDetailView, tag pickers)
-- [ ] Implement versioned schema migration with tests
-- [ ] Update repositories and views
-- [ ] Validate migration on real data
+- [ ] Update model and repositories in place
+- [ ] Update all views referencing `item.tags` as `[String]`; remove `tagLookup` dictionary pattern
+
+### New Item Types
+
+Expand the `ItemType` enum beyond the current `task` and `link` cases to support a richer capture vocabulary. The Brain Dump Compiler AI flow already references six categories (`task`, `question`, `decision`, `idea`, `concern`, `reference`) — formalizing these as first-class types lets the capture UI, filters, and AI features share a single source of truth.
+
+**Current state:** `ItemType` has two cases: `task` and `link`. `Item.type` stores the raw string, defaulting to `nil` for uncategorized captures.
+
+**Proposed new types:**
+
+| Type | Purpose |
+| --- | --- |
+| `note` | General free-form capture with no action required |
+| `idea` | Creative or exploratory thought to revisit |
+| `question` | Open question needing an answer or research |
+| `decision` | A choice that needs to be made or was made |
+| `concern` | Something worrying or at risk, flagged for attention |
+| `reference` | External material (URL, quote, source) saved for later |
+
+**Model changes:** Add new cases to `ItemType` in `Domain/Models/Item.swift`. No SwiftData migration required — `type` is stored as a raw `String?` and existing values remain valid. Remove or repurpose the existing `link` case: consider whether `link` becomes a metadata property on `reference` items rather than a standalone type (decision required before implementing).
+
+**UI changes:**
+
+- Update type picker in `CaptureComposeView` to show all types with icons and short descriptions
+- Add type-specific icons to `Icons.swift` for each new type
+- Display type chip on capture cards (`CaptureItemCard`) using `TypeChip` component
+- Filter bar in `CaptureView` — filter by type alongside existing starred/follow-up filters
+
+**Capture flow:**
+
+- Voice capture: map AI-inferred category to new type enum cases
+- Brain Dump Compiler: align category labels with `ItemType.rawValue` to eliminate translation layer
+
+**Search & organize:**
+
+- `ItemRepository.fetchByType` predicate (requires explicit enum raw value — see SwiftData predicate gotcha in CLAUDE.md)
+- Type-aware grouping option in Organize tab
+
+**Implementation steps:**
+
+**Phase 1 — Model & Icons**
+
+1. **Resolve `link` vs `reference`** *(BLOCKER)* — Recommendation: keep `link` as-is (Collection-pointer type using `linkedCollectionId`) and add `reference` as a new independent type for external URLs stored in item metadata. The two serve different purposes and can coexist.
+2. **Add icon constants** to `ios/Offload/DesignSystem/Icons.swift` for each new type:
+
+   | Type | SF Symbol |
+   | --- | --- |
+   | `note` | `"note.text"` |
+   | `idea` | `"lightbulb"` |
+   | `question` | `"questionmark.circle"` |
+   | `decision` | `"arrow.triangle.branch"` |
+   | `concern` | `"exclamationmark.triangle"` |
+   | `reference` | `"doc.text"` |
+
+3. **Extend `ItemType` enum** in `ios/Offload/Domain/Models/Item.swift:92` — add six new cases, update both `displayName` and `icon` switch statements.
+
+**Phase 2 — Capture UI**
+
+4. **Add type picker to `CaptureComposeView`** (`ios/Offload/Features/Capture/CaptureComposeView.swift`) — add `@State private var selectedType: ItemType? = nil`; render a horizontal chip row using `ItemType.allCases` (already `CaseIterable`); pass `selectedType?.rawValue` into `itemRepository.create(type:)` at line 363. Apply Theme tokens and reduced-motion guard.
+5. **Update `CaptureItemCard`** (`ios/Offload/Features/Capture/CaptureItemCard.swift:47`) — replace `typeLabel: item.type?.uppercased()` with a `TypeChip` view. Reuse existing `TypeChip` at `ios/Offload/DesignSystem/Components.swift:485` — no new component needed.
+
+**Phase 3 — Filtering**
+
+6. **Update `CaptureView` list predicate** (`ios/Offload/Features/Capture/CaptureView.swift:151`) — current predicate filters `type == nil` only; expand to `completedAt == nil` so typed captures appear. Add a type filter chip bar above the list using `ItemType.allCases`; selection calls the existing `ItemRepository.fetchByType(_:)` at `ios/Offload/Data/Repositories/ItemRepository.swift:90`.
+
+**Phase 4 — Tests**
+
+7. **Update `ItemRepositoryTests`** (`ios/OffloadTests/ItemRepositoryTests.swift:301`) — `testFetchByType()` currently covers only `"task"` and `"link"`; add test cases for two or three new type strings (e.g., `"idea"`, `"concern"`).
+
+**Connects to:** The Brain Dump Compiler in AI Organization Flows outputs the same six category strings — once new types are live those strings map directly to `ItemType.rawValue` with no translation layer. Track alignment work within that section.
 
 ### New Item Types
 

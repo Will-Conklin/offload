@@ -86,6 +86,7 @@ just ci-local                 # Run lint + backend checks + iOS tests
 - Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for
   YAML, and use conventional atomic commits
 - Prioritize using `just` for common commands and keep the `justfile` at project root up to date
+- **App is pre-production / early-stage**: do not design or implement schema migration plans, versioned schemas, or data migration hooks — update models in place. Remove existing migration language from documentation when encountered.
 - For backend changes: run `just backend-check` (or `just backend-check-ci`) before opening/updating PRs
 - For backend persistence, security, or provider-resilience changes: run
   `just backend-check-coverage` before opening/updating PRs

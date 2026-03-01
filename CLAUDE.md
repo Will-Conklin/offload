@@ -127,6 +127,7 @@ Local testing: `just test` sources these values automatically.
 - Never commit generated backend runtime/build artifacts (`.offload-backend/`,
   `backend/api/.offload-backend/`, `backend/api/src/offload_backend_api.egg-info/`);
   use `just backend-clean` when needed
+- **App is pre-production / early-stage**: do not propose or implement SwiftData versioned-schema migrations, `SchemaMigrationPlan`, `willMigrate` hooks, or staged data migration strategies. Modify models directly. If existing docs reference migration complexity, simplify them.
 - SwiftData predicates require explicit type references for enum cases
 - Repositories must be injected via `@State` + `.task`, not created in `body`
 - `.draggable()` must be on card content directly, not on wrappers with buttons
