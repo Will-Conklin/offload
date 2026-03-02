@@ -302,6 +302,8 @@ final class ItemRepositoryTests: XCTestCase {
         try repository.create(type: "task", content: "Task 1")
         try repository.create(type: "task", content: "Task 2")
         try repository.create(type: "link", content: "Link 1")
+        try repository.create(type: "idea", content: "Idea 1")
+        try repository.create(type: "concern", content: "Concern 1")
         try repository.create(content: "Capture")
 
         let tasks = try repository.fetchByType("task")
@@ -309,6 +311,32 @@ final class ItemRepositoryTests: XCTestCase {
 
         let links = try repository.fetchByType("link")
         XCTAssertEqual(links.count, 1)
+
+        let ideas = try repository.fetchByType("idea")
+        XCTAssertEqual(ideas.count, 1)
+
+        let concerns = try repository.fetchByType("concern")
+        XCTAssertEqual(concerns.count, 1)
+    }
+
+    func testFetchCaptureItemsByTypeExcludesCompleted() throws {
+        try repository.create(type: "idea", content: "Active idea")
+        let completedIdea = try repository.create(type: "idea", content: "Completed idea")
+        try repository.complete(completedIdea)
+
+        let results = try repository.fetchCaptureItemsByType("idea", limit: 50, offset: 0)
+        XCTAssertEqual(results.count, 1)
+        XCTAssertEqual(results[0].content, "Active idea")
+    }
+
+    func testFetchCaptureItemsByTypeExcludesLinked() throws {
+        let linkedId = UUID()
+        try repository.create(type: "note", content: "Standalone note")
+        try repository.create(type: "note", content: "Linked note", linkedCollectionId: linkedId)
+
+        let results = try repository.fetchCaptureItemsByType("note", limit: 50, offset: 0)
+        XCTAssertEqual(results.count, 1)
+        XCTAssertEqual(results[0].content, "Standalone note")
     }
 
     func testFetchStarred() throws {

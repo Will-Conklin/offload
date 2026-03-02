@@ -92,11 +92,23 @@ final class Item {
 enum ItemType: String, Codable, CaseIterable {
     case task
     case link
+    case note
+    case idea
+    case question
+    case decision
+    case concern
+    case reference
 
     var displayName: String {
         switch self {
         case .task: "Task"
         case .link: "Link"
+        case .note: "Note"
+        case .idea: "Idea"
+        case .question: "Question"
+        case .decision: "Decision"
+        case .concern: "Concern"
+        case .reference: "Reference"
         }
     }
 
@@ -104,7 +116,19 @@ enum ItemType: String, Codable, CaseIterable {
         switch self {
         case .task: Icons.checkCircleFilled
         case .link: Icons.externalLink
+        case .note: Icons.typeNote
+        case .idea: Icons.typeIdea
+        case .question: Icons.typeQuestion
+        case .decision: Icons.typeDecision
+        case .concern: Icons.typeConcern
+        case .reference: Icons.typeReference
         }
+    }
+
+    /// Whether users can assign this type directly from the capture UI.
+    /// `link` is an internal type for collection pointers and should not appear in pickers.
+    var isUserAssignable: Bool {
+        self != .link
     }
 }
 

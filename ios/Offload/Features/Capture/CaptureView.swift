@@ -46,6 +46,10 @@ struct CaptureView: View {
 
                 ScrollView {
                     LazyVStack(spacing: Theme.Spacing.md) {
+                        typeFilterBar
+                            .padding(.horizontal, Theme.Spacing.md)
+                            .padding(.top, Theme.Spacing.xs)
+
                         if viewModel.items.isEmpty, viewModel.isLoading {
                             ProgressView()
                                 .padding(.vertical, Theme.Spacing.sm)
@@ -180,6 +184,58 @@ struct CaptureView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .captureItemsChanged)) { _ in
             refreshItems()
+        }
+    }
+
+    // MARK: - Type Filter Bar
+
+    private var typeFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(ItemType.allCases.filter(\.isUserAssignable), id: \.rawValue) { type in
+                    let isSelected = viewModel.typeFilter == type
+                    Button {
+                        setTypeFilter(isSelected ? nil : type)
+                    } label: {
+                        Label(type.displayName, systemImage: type.icon)
+                            .font(Theme.Typography.metadata)
+                            .foregroundStyle(
+                                isSelected
+                                    ? Theme.Colors.accentButtonText(colorScheme, style: style)
+                                    : Theme.Colors.textSecondary(colorScheme, style: style)
+                            )
+                            .padding(.horizontal, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.xs)
+                            .background(
+                                Capsule()
+                                    .fill(
+                                        isSelected
+                                            ? Theme.Colors.primary(colorScheme, style: style)
+                                            : Theme.Colors.primary(colorScheme, style: style).opacity(0.08)
+                                    )
+                            )
+                            .overlay(
+                                Capsule()
+                                    .strokeBorder(
+                                        Theme.Colors.primary(colorScheme, style: style).opacity(isSelected ? 0 : 0.25),
+                                        lineWidth: 0.8
+                                    )
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(type.displayName) filter")
+                    .accessibilityHint(isSelected ? "Active. Tap to show all types." : "Tap to filter by \(type.displayName).")
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                }
+            }
+        }
+    }
+
+    private func setTypeFilter(_ type: ItemType?) {
+        do {
+            try viewModel.setTypeFilter(type, using: itemRepository)
+        } catch {
+            errorPresenter.present(error)
         }
     }
 

@@ -149,9 +149,10 @@ final class ItemRepository {
     }
 
     func fetchCaptureItems() throws -> [Item] {
-        // Capture items are uncategorized items (type=nil) that are not completed
+        // Capture items: not completed, not a collection-pointer link (linkedCollectionId == nil).
+        // Includes both uncategorized (type==nil) and user-typed captures.
         let descriptor = FetchDescriptor<Item>(
-            predicate: #Predicate { $0.type == nil && $0.completedAt == nil },
+            predicate: #Predicate { $0.linkedCollectionId == nil && $0.completedAt == nil },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         return try modelContext.fetch(descriptor)
@@ -159,7 +160,22 @@ final class ItemRepository {
 
     func fetchCaptureItems(limit: Int, offset: Int) throws -> [Item] {
         var descriptor = FetchDescriptor<Item>(
-            predicate: #Predicate { $0.type == nil && $0.completedAt == nil },
+            predicate: #Predicate { $0.linkedCollectionId == nil && $0.completedAt == nil },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = limit
+        descriptor.fetchOffset = offset
+        return try modelContext.fetch(descriptor)
+    }
+
+    /// Fetches capture items filtered to a specific type, excluding completed and collection-linked items.
+    /// - Parameters:
+    ///   - type: The raw string value of the `ItemType` to filter by.
+    ///   - limit: Maximum number of items to return.
+    ///   - offset: Number of items to skip before returning results.
+    func fetchCaptureItemsByType(_ type: String, limit: Int, offset: Int) throws -> [Item] {
+        var descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { $0.type == type && $0.completedAt == nil && $0.linkedCollectionId == nil },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         descriptor.fetchLimit = limit

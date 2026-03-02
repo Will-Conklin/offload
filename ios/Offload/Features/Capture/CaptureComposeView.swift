@@ -37,6 +37,7 @@ struct CaptureComposeView: View {
     @State private var showingImagePicker = false
     @State private var imagePickerSource: UIImagePickerController.SourceType = .photoLibrary
     @State private var showingCameraUnavailableAlert = false
+    @State private var selectedType: ItemType?
     @State private var voiceService = VoiceRecordingService()
     @State private var preRecordingText = ""
     @State private var showingPermissionAlert = false
@@ -210,6 +211,46 @@ struct CaptureComposeView: View {
                     }
                 }
 
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(ItemType.allCases.filter(\.isUserAssignable), id: \.rawValue) { type in
+                            let isSelected = selectedType == type
+                            Button {
+                                selectedType = isSelected ? nil : type
+                            } label: {
+                                Label(type.displayName, systemImage: type.icon)
+                                    .font(Theme.Typography.metadata)
+                                    .foregroundStyle(
+                                        isSelected
+                                            ? Theme.Colors.accentButtonText(colorScheme, style: style)
+                                            : Theme.Colors.textSecondary(colorScheme, style: style)
+                                    )
+                                    .padding(.horizontal, Theme.Spacing.sm)
+                                    .padding(.vertical, Theme.Spacing.xs)
+                                    .background(
+                                        Capsule()
+                                            .fill(
+                                                isSelected
+                                                    ? Theme.Colors.primary(colorScheme, style: style)
+                                                    : Theme.Colors.primary(colorScheme, style: style).opacity(0.08)
+                                            )
+                                    )
+                                    .overlay(
+                                        Capsule()
+                                            .strokeBorder(
+                                                Theme.Colors.primary(colorScheme, style: style).opacity(isSelected ? 0 : 0.25),
+                                                lineWidth: 0.8
+                                            )
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("\(type.displayName) type")
+                            .accessibilityHint(isSelected ? "Selected. Tap to remove type." : "Tap to set capture type.")
+                            .accessibilityAddTraits(isSelected ? .isSelected : [])
+                        }
+                    }
+                }
+
                 if !selectedTags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
@@ -360,7 +401,7 @@ struct CaptureComposeView: View {
                 "CaptureCompose save requested - textLength: \(trimmedText.count, privacy: .public), tags: \(selectedTags.count, privacy: .public), attachment: \(attachmentData != nil, privacy: .public), starred: \(isStarred, privacy: .public)"
             )
             let item = try itemRepository.create(
-                type: nil, // Uncategorized capture
+                type: selectedType?.rawValue,
                 content: trimmedText,
                 attachmentData: attachmentData,
                 tags: selectedTags,

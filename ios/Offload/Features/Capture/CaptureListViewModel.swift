@@ -14,6 +14,7 @@ final class CaptureListViewModel {
     private(set) var isLoading = false
     private(set) var hasMore = true
     private(set) var hasLoaded = false
+    private(set) var typeFilter: ItemType?
 
     private let pageSize = 50
     private var offset = 0
@@ -40,7 +41,12 @@ final class CaptureListViewModel {
 
         AppLogger.workflow.debug("CaptureList loadNextPage fetching - offset: \(self.offset, privacy: .public), limit: \(self.pageSize, privacy: .public)")
         do {
-            let page = try repository.fetchCaptureItems(limit: pageSize, offset: offset)
+            let page: [Item]
+            if let typeFilter {
+                page = try repository.fetchCaptureItemsByType(typeFilter.rawValue, limit: pageSize, offset: offset)
+            } else {
+                page = try repository.fetchCaptureItems(limit: pageSize, offset: offset)
+            }
             items.append(contentsOf: page)
             offset += page.count
             hasMore = page.count == pageSize
@@ -53,6 +59,14 @@ final class CaptureListViewModel {
             )
             throw error
         }
+    }
+
+    func setTypeFilter(_ filter: ItemType?, using repository: ItemRepository) throws {
+        typeFilter = filter
+        AppLogger.workflow.info("CaptureList type filter set - filter: \(filter?.rawValue ?? "nil", privacy: .public)")
+        reset()
+        try loadNextPage(using: repository)
+        hasLoaded = true
     }
 
     func refresh(using repository: ItemRepository) throws {
