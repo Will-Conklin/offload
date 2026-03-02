@@ -30,10 +30,28 @@ struct DraggableCollectionCard: View {
     }
 
     var body: some View {
-        ZStack(alignment: .trailing) {
-            TrailingDeleteAffordance(
-                colorScheme: colorScheme,
-                style: style,
+        ZStack {
+            if onConvert != nil {
+                SwipeAffordance(
+                    side: .leading,
+                    iconName: Icons.convert,
+                    color: Theme.Colors.accentSecondary(colorScheme, style: style),
+                    progress: swipeModel.leadingProgress(offset: swipeOffset),
+                    isEnabled: swipeModel.isLeadingTriggered(offset: swipeOffset),
+                    accessibilityLabel: "Convert collection",
+                    accessibilityHint: "Converts between plan and list format."
+                ) {
+                    withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
+                        swipeOffset = 0
+                    }
+                    onConvert?()
+                }
+            }
+
+            SwipeAffordance(
+                side: .trailing,
+                iconName: Icons.deleteFilled,
+                color: Theme.Colors.destructive(colorScheme, style: style),
                 progress: swipeModel.trailingProgress(offset: swipeOffset),
                 isEnabled: swipeOffset <= swipeModel.revealedOffset,
                 accessibilityLabel: "Delete collection",
@@ -52,18 +70,6 @@ struct DraggableCollectionCard: View {
                 onAddTag: onAddTag,
                 onToggleStar: onToggleStar
             )
-            .overlay {
-                HStack {
-                    if swipeOffset > 0, onConvert != nil {
-                        AppIcon(name: Icons.more, size: 16)
-                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
-                            .padding(.leading, Theme.Spacing.md)
-                            .opacity(min(1, Double(swipeOffset / swipeModel.maxLeadingOffset)))
-                            .accessibilityHidden(true)
-                    }
-                    Spacer()
-                }
-            }
             .offset(x: swipeOffset)
             .contentShape(Rectangle())
             .onTapGesture {
@@ -79,6 +85,8 @@ struct DraggableCollectionCard: View {
                 DragGesture()
                     .onChanged { value in
                         if !isSwipeDragging {
+                            // Only activate horizontal swipe; let ScrollView own vertical drags
+                            guard swipeModel.isHorizontal(translation: value.translation) else { return }
                             dragStartOffset = swipeOffset
                             isSwipeDragging = true
                         }
@@ -91,6 +99,7 @@ struct DraggableCollectionCard: View {
                         swipeOffset = dragOffset
                     }
                     .onEnded { value in
+                        guard isSwipeDragging else { return }
                         let endState = swipeModel.endState(
                             startOffset: dragStartOffset,
                             translation: value.translation
@@ -300,15 +309,15 @@ struct CollectionCard: View {
                         }
 
                         Button(action: onAddTag) {
-                            HStack(spacing: Theme.Spacing.xs) {
+                            HStack(spacing: 4) {
                                 AppIcon(name: Icons.add, size: 8)
                                 Text("TAG")
-                                    .font(Theme.Typography.badge)
+                                    .font(.system(size: 8, weight: .bold, design: .default))
                                     .tracking(0.5)
                             }
                             .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                            .padding(.horizontal, Theme.Spacing.sm)
-                            .padding(.vertical, Theme.Spacing.xs)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
                             .background(
                                 Capsule()
                                     .strokeBorder(

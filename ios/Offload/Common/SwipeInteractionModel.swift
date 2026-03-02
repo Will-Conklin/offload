@@ -110,6 +110,29 @@ struct SwipeInteractionModel {
         return min(max(normalized, 0), 1)
     }
 
+    /// Produces normalized leading-affordance visibility based on swipe offset.
+    /// - Parameter offset: Current horizontal offset (positive when swiping right).
+    /// - Returns: A value between `0` and `1`.
+    func leadingProgress(offset: CGFloat) -> Double {
+        guard supportsLeadingAction else { return 0 }
+        let normalized = Double(offset / maxLeadingOffset)
+        return min(max(normalized, 0), 1)
+    }
+
+    /// Returns whether the leading action threshold has been reached.
+    /// - Parameter offset: Current horizontal offset.
+    /// - Returns: `true` when offset has crossed the action threshold.
+    func isLeadingTriggered(offset: CGFloat) -> Bool {
+        supportsLeadingAction && offset >= actionThreshold
+    }
+
+    /// Returns whether the gesture translation is primarily horizontal.
+    /// - Parameter translation: The current drag translation from SwiftUI.
+    /// - Returns: `true` when horizontal movement exceeds vertical movement.
+    func isHorizontal(translation: CGSize) -> Bool {
+        abs(translation.width) > abs(translation.height)
+    }
+
     private var minOffset: CGFloat {
         supportsTrailingReveal ? -maxTrailingOffset : 0
     }
@@ -122,7 +145,4 @@ struct SwipeInteractionModel {
         min(max(value, minOffset), maxOffset)
     }
 
-    private func isHorizontal(translation: CGSize) -> Bool {
-        abs(translation.width) > abs(translation.height)
-    }
 }

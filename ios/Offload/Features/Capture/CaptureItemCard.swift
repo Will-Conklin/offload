@@ -28,9 +28,10 @@ struct ItemCard: View {
 
     var body: some View {
         ZStack(alignment: .trailing) {
-            TrailingDeleteAffordance(
-                colorScheme: colorScheme,
-                style: style,
+            SwipeAffordance(
+                side: .trailing,
+                iconName: Icons.deleteFilled,
+                color: Theme.Colors.destructive(colorScheme, style: style),
                 progress: swipeModel.trailingProgress(offset: swipeOffset),
                 isEnabled: swipeOffset <= swipeModel.revealedOffset,
                 accessibilityLabel: "Delete item",
