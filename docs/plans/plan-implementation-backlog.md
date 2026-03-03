@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - agents
-last_updated: 2026-03-02
+last_updated: 2026-03-03
 related: []
 depends_on: []
 supersedes:
@@ -92,25 +92,12 @@ App Store preparation, TestFlight distribution, security release gate. Blocked b
 
 ## Future Work
 
-### Home Dashboard
+> **Session pickup guide:** Items below are labeled **[Ready]**, **[Needs Decision]**, or **[Needs Design]**.
+> **[Ready]** items have enough context for a session to start immediately.
+> **[Needs Decision]** items are blocked on a human choice; look for tasks marked `⚠️ Human gate` and stop there.
+> **[Needs Design]** items require design or scoping work before implementation tasks can be written.
 
-The Home tab is currently empty (placeholder view). Needs to become a user dashboard with at-a-glance context: recent captures, active collections, progress summary. The Visual Timeline (below) could be a natural component here. Scope and layout TBD — requires brainstorming and design.
-
-### Visual Timeline
-
-Visual timeline component for ADHD-focused progress tracking. Related issue: #118.
-
-**Constraints:** Must fit within existing tab shell or shallow sheets (no deep navigation stacks). Calm visual system, no urgency language, non-blocking with snooze/dismiss. Accessibility-first: Dynamic Type, Reduce Motion, 44x44pt tap targets. Must use Theme tokens exclusively.
-
-**Open decisions:** Target views for placement TBD. Timeline states and transitions TBD. Design assets needed before build.
-
-**Remaining:**
-
-- [ ] Define placement and states
-- [ ] Build timeline components with Theme tokens
-- [ ] Validate accessibility
-
-### Tag Relationship Refactor
+### Tag Relationship Refactor [Ready]
 
 Migrate tag storage from denormalized string arrays to proper SwiftData relationships.
 
@@ -120,12 +107,12 @@ Migrate tag storage from denormalized string arrays to proper SwiftData relation
 
 **Remaining:**
 
-- [ ] Confirm scope approval
+- [ ] ⚠️ Human gate: Confirm scope approval before starting
 - [ ] Identify all impacted views (CaptureComposeView, CaptureView, CollectionDetailView, tag pickers)
 - [ ] Update model and repositories in place
 - [ ] Update all views referencing `item.tags` as `[String]`; remove `tagLookup` dictionary pattern
 
-### New Item Types
+### New Item Types [Ready]
 
 Expand the `ItemType` enum beyond the current `task` and `link` cases to support a richer capture vocabulary. The Brain Dump Compiler AI flow already references six categories (`task`, `question`, `decision`, `idea`, `concern`, `reference`) — formalizing these as first-class types lets the capture UI, filters, and AI features share a single source of truth.
 
@@ -135,49 +122,117 @@ Expand the `ItemType` enum beyond the current `task` and `link` cases to support
 
 **Remaining:**
 
-- [ ] Voice capture: map AI-inferred category to new type enum cases
+- [ ] Voice capture: map AI-inferred category to new `ItemType` enum cases (see `VoiceCaptureViewModel`; AI returns a string category, needs mapping to `ItemType.rawValue`)
 - [ ] Align Brain Dump Compiler category labels with `ItemType.rawValue` (no translation layer needed now)
-- [ ] Type-aware grouping option in Organize tab (future)
+- [ ] Type-aware grouping option in Organize tab (future; do not implement until AI Organization Flows are underway)
 
-### AI Organization Flows
+### AI Organization Flows [Needs Decision]
 
-Six AI-assisted features for neurodivergent users. All depend on backend API/privacy infrastructure.
-
-**Features:**
-
-- **Smart Task Breakdown:** Decomposes tasks into subtasks with adjustable granularity (1-5 slider). Saves reusable templates. Cloud endpoint: `POST /v1/ai/breakdown/generate`.
-- **Brain Dump Compiler:** Extracts/categorizes items (task, question, decision, idea, concern, reference) from long captures (>75 words triggers suggestion). Creates Collections from approved compilations.
-- **Recurring Task Intelligence:** Detects natural completion patterns (min 3 completions), surfaces gentle suggestions. No rigid schedules, no "overdue" language. Learns from snooze/dismiss timing.
-- **Tone Assistant:** Transforms captures into toned messages (formal, friendly, concise, empathetic, direct, neutral). Saves presets, multiple simultaneous previews.
-- **Executive Function Prompts:** Conversational scaffolding when stuck. Detects challenge type (initiation, overwhelm, time blindness, decision paralysis). Learns which strategies work per user.
-- **Decision Fatigue Reducer:** Surfaces max 2-3 "good enough" recommendations. Max 1-2 clarifying questions. "Just pick for me" mode.
+Six AI-assisted features for neurodivergent users. All depend on backend API/privacy infrastructure being confirmed production-ready. **Do not implement any feature until the human gate below is cleared.**
 
 **Backend/privacy constraints:** On-device processing is default; cloud requires explicit per-feature opt-in. Zero content retention (no durable storage of prompts/responses). Anonymous device session tokens only (`POST /v1/sessions/anonymous`). Python + FastAPI backend, single provider (OpenAI) behind adapter interface. Cloud endpoint fails closed if opt-in absent. Logs: request ID, route, status, latency only.
 
 **ADHD design rules:** AI always suggests, never auto-acts. No judgmental language ("overdue," "late," "easy," "simple," "you should"). Tone is collaborative. All features optional and dismissible. Concerns acknowledged as valid. Animations respect `accessibilityReduceMotion`.
 
-**Open decisions:** On-device model selection (Core ML, model size/latency budgets). Minimum completion count for pattern detection. Whether learning is implicit or explicit to user.
+**Open decisions:** On-device model selection (Core ML, model size/latency budgets). Minimum completion count for pattern detection (Recurring Task Intelligence). Whether learning is implicit or explicit to user.
 
-**Remaining:**
+**Remaining — prerequisites:**
 
-- [ ] Confirm backend API/privacy infrastructure readiness
-- [ ] Define on-device model constraints per device class
-- [ ] Implement features incrementally (breakdown first, then others)
-- [ ] Validate UX with manual testing
+- [ ] ⚠️ Human gate: Confirm backend API/privacy infrastructure is production-ready
+- [ ] ⚠️ Human gate: Define on-device model constraints per device class (Core ML model ID, max size, acceptable latency)
 
-### AI Pricing & Limits
+**Feature 1 — Smart Task Breakdown** (implement first):
 
-Free/paid tier boundaries, quota enforcement, billing integration. No tiers or limits defined yet — this is a placeholder awaiting decisions.
+Decomposes a task item into subtasks with adjustable granularity. Cloud endpoint: `POST /v1/ai/breakdown/generate`. UI: 1-5 granularity slider, subtask preview list, approve/edit before save. Saves reusable templates per task type.
+
+- [ ] Add `BreakdownService` calling `POST /v1/ai/breakdown/generate` with item text + granularity
+- [ ] Build `TaskBreakdownSheet` (granularity slider, subtask list, approve/dismiss)
+- [ ] Wire sheet into `CaptureItemCard` context menu and `CaptureComposeView` toolbar
+- [ ] Save approved subtasks as new `Item` records linked to parent via collection
+- [ ] Add unit tests for `BreakdownService` (mock network, assert subtask count + types)
+
+**Feature 2 — Brain Dump Compiler** (after Feature 1):
+
+Extracts and categorizes items from long captures (>75 words triggers suggestion). Creates Collections from approved compilations. Categories map to `ItemType` cases — no translation layer needed.
+
+- [ ] Add word-count trigger in `CaptureComposeView` (>75 words → show "Compile" suggestion)
+- [ ] Add `BrainDumpService` calling backend to extract and categorize items
+- [ ] Build `BrainDumpReviewSheet` (categorized item list, type chips, approve/edit/dismiss)
+- [ ] On approve: create `Collection` + child `Item` records from result
+- [ ] Add unit tests for `BrainDumpService`
+
+**Feature 3 — Recurring Task Intelligence** (after infrastructure proven with Features 1–2):
+
+Detects natural completion patterns (min 3 completions), surfaces gentle suggestions. No rigid schedules, no "overdue" language. Learns from snooze/dismiss timing.
+
+- [ ] ⚠️ Human gate: Confirm minimum completion count and snooze learning behavior before implementation
+- [ ] Add pattern detection logic (completion timestamps → interval model)
+- [ ] Surface suggestion as dismissible toast or inline card; never modal
+- [ ] Record snooze/dismiss events for learning
+
+**Feature 4 — Tone Assistant** (after infrastructure proven):
+
+Transforms captures into toned messages (formal, friendly, concise, empathetic, direct, neutral). Saves presets. Multiple simultaneous previews.
+
+- [ ] Add `ToneService` calling backend with item text + selected tone
+- [ ] Build `ToneAssistantSheet` (tone picker chips, multi-preview grid, copy/save/dismiss)
+- [ ] Allow saving named presets to `UserDefaults`
+
+**Feature 5 — Executive Function Prompts** (after infrastructure proven):
+
+Conversational scaffolding when a user is stuck. Detects challenge type (initiation, overwhelm, time blindness, decision paralysis). Learns which strategies work per user.
+
+- [ ] ⚠️ Human gate: Define challenge detection heuristics and learning model before implementation
+- [ ] Add entry point (e.g., "I'm stuck" button on `CaptureItemCard`)
+- [ ] Build `ExecutiveFunctionSheet` (conversational prompt flow, strategy suggestions, feedback collection)
+
+**Feature 6 — Decision Fatigue Reducer** (after infrastructure proven):
+
+Surfaces max 2-3 "good enough" recommendations. Max 1-2 clarifying questions. "Just pick for me" mode.
+
+- [ ] Add `DecisionService` calling backend with item options + context
+- [ ] Build `DecisionSheet` (recommendation list, clarifying question flow, "just pick" mode)
+
+### AI Pricing & Limits [Needs Decision]
+
+Free/paid tier boundaries, quota enforcement, billing integration. **Cannot implement until pricing tiers are defined by owner.**
 
 **Decided:** Hybrid enforcement model — local provisional counters (UserDefaults) + Keychain mirror for tamper resistance, reconciled with server on reconnect via `POST /v1/usage/reconcile` at `max(local, server)`. Server-only enforcement rejected (poor offline UX). UX tone: non-judgmental, shame-free, no pressure language.
 
 **Research findings:** UserDefaults counters lightweight but not tamper-proof. Keychain provides moderate resistance. DeviceCheck requires network, viable as defense-in-depth. Core ML suitable for smaller models; large LLMs need optimization or cloud fallback. Hybrid on-device-first + optional cloud recommended.
 
-**Open decisions:** Free tier AI action counts and paid tier soft caps. Definition of one "AI action." Cloud vs on-device quota reconciliation edge cases. Billing integration approach.
+**Remaining:**
+
+- [ ] ⚠️ Human gate: Define free tier AI action counts, paid tier soft caps, and what constitutes one "AI action"
+- [ ] ⚠️ Human gate: Decide billing integration approach (RevenueCat, StoreKit direct, or other)
+- [ ] Implement local quota enforcement (`QuotaStore`: UserDefaults counter + Keychain mirror)
+- [ ] Build server reconciliation: `POST /v1/usage/reconcile`, `max(local, server)` merge
+- [ ] Add quota-exceeded UX (non-judgmental inline message, upgrade nudge if paid tier exists)
+- [ ] Integrate billing per chosen approach
+
+### Visual Timeline [Needs Design]
+
+Visual timeline component for ADHD-focused progress tracking. Related issue: #118.
+
+**Constraints:** Must fit within existing tab shell or shallow sheets (no deep navigation stacks). Calm visual system, no urgency language, non-blocking with snooze/dismiss. Accessibility-first: Dynamic Type, Reduce Motion, 44x44pt tap targets. Must use Theme tokens exclusively.
+
+**Blocked on design:** Target view placement, timeline states, and visual design assets must be defined before implementation tasks can be written. The planning task below must be completed first.
 
 **Remaining:**
 
-- [ ] Define pricing tiers and action counts
-- [ ] Implement local quota enforcement (UserDefaults + Keychain)
-- [ ] Build server reconciliation endpoint
-- [ ] Integrate billing
+- [ ] ⚠️ Human gate: Define target placement (Home tab, Organize tab, or sheet), timeline states (empty, active, completed), and provide or approve visual design before implementation begins
+- [ ] Build timeline component(s) with Theme tokens per approved design
+- [ ] Validate accessibility (Dynamic Type, Reduce Motion, 44pt targets)
+
+### Home Dashboard [Needs Design]
+
+The Home tab is currently empty (placeholder view). Needs to become a user dashboard with at-a-glance context: recent captures, active collections, progress summary. The Visual Timeline could be a natural component here.
+
+**Blocked on design:** No scope, layout, or data requirements defined. Cannot implement until design is complete.
+
+**Remaining:**
+
+- [ ] ⚠️ Human gate: Define Home tab scope — which data surfaces (recent captures, collection progress, timeline), layout (grid, list, cards), and interaction model. Produce wireframe or written spec before implementation begins
+- [ ] Implement Home tab layout per approved design using existing `CardSurface`/`MCMCardContent` components
+- [ ] Add data queries to `ItemRepository`/`CollectionRepository` as needed for dashboard data
+- [ ] Validate accessibility and performance (pagination if lists are unbounded)
