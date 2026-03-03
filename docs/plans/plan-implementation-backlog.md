@@ -31,12 +31,7 @@ related_issues: []
 
 Action parity and Dynamic Type hardening for VoiceOver/Switch Control users. Code implementation complete: `AdvancedAccessibilityActionPolicy`, `AdvancedAccessibilityLayoutPolicy`, `accessibilityActionIf()` extension, wired into `CaptureItemCard`, `CollectionDetailItemRows`, `OrganizeCollectionCards`. Unit tests passing.
 
-**Remaining (manual/QA only):**
-
-- [ ] Complete on-device VoiceOver + Switch Control validation (testing checklist in `docs/design/testing/design-advanced-accessibility-testing-checklist.md`)
-- [ ] Run refactored tests in CI-capable environment
-- [ ] Adjust labels based on QA feedback
-- [ ] Complete user verification
+On-device VoiceOver + Switch Control validation and user sign-off are tracked in `docs/plans/plan-uat-checklist.md`.
 
 ### Celebration Animations
 
@@ -47,12 +42,6 @@ Positive feedback animations for three moments: item completed, first capture, a
 ### Testing & Polish
 
 Final launch testing and polish. Blocks Release Prep. Related issue: #116.
-
-**Manual feature verification:**
-
-- [ ] Run full manual testing checklist (text capture CRUD + undo, attachments, tags/star/follow-up, organize plan + list creation, item move, reorder persistence, mark complete, voice capture, settings, persistence across force-quit and background)
-- [ ] Test on at least one iPhone + one iPad, physical device for voice capture
-- [ ] Record results with device, OS, build, tester, pass/fail
 
 **UX fixes:** All resolved in PRs #232–#233.
 
@@ -67,16 +56,7 @@ Final launch testing and polish. Blocks Release Prep. Related issue: #116.
 - Pagination benchmarks added (first-page and deep-page at 100/1000/10000 items, PR #228)
 - Backend p95 latency load test added (~72ms p95 observed, <100ms threshold, PR #228)
 
-**Accessibility review:**
-
-- [ ] VoiceOver on core views, contrast/tap targets/focus order
-- [ ] Tab shell + floating CTA traversal end-to-end
-- [ ] Dynamic Type at accessibility sizes for tab shell + CTA quick actions
-
-**Non-functional launch gates (all must pass before Release Prep):**
-
-- [ ] Define and record thresholds: backend p95 latency, iOS startup budget, iOS idle-memory budget, TestFlight crash-free rate
-- [ ] Triage and fix issues from testing phases, retest affected flows
+Manual verification, accessibility review, and non-functional launch gates are tracked in `docs/plans/plan-uat-checklist.md`.
 
 ## Ready to Start
 
