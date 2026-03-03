@@ -49,4 +49,13 @@ enum Icons {
     static let search = "magnifyingglass"
     static let chevronDown = "chevron.down"
     static let chevronRight = "chevron.right"
+
+    // MARK: - Item Types
+
+    static let typeNote = "note.text"
+    static let typeIdea = "lightbulb"
+    static let typeQuestion = "questionmark.circle"
+    static let typeDecision = "arrow.triangle.branch"
+    static let typeConcern = "exclamationmark.triangle"
+    static let typeReference = "doc.text"
 }

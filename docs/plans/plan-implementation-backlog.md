@@ -6,7 +6,7 @@ owners:
   - Will-Conklin
 applies_to:
   - agents
-last_updated: 2026-03-01
+last_updated: 2026-03-02
 related: []
 depends_on: []
 supersedes:
@@ -31,12 +31,7 @@ related_issues: []
 
 Action parity and Dynamic Type hardening for VoiceOver/Switch Control users. Code implementation complete: `AdvancedAccessibilityActionPolicy`, `AdvancedAccessibilityLayoutPolicy`, `accessibilityActionIf()` extension, wired into `CaptureItemCard`, `CollectionDetailItemRows`, `OrganizeCollectionCards`. Unit tests passing.
 
-**Remaining (manual/QA only):**
-
-- [ ] Complete on-device VoiceOver + Switch Control validation (testing checklist in `docs/design/testing/design-advanced-accessibility-testing-checklist.md`)
-- [ ] Run refactored tests in CI-capable environment
-- [ ] Adjust labels based on QA feedback
-- [ ] Complete user verification
+On-device VoiceOver + Switch Control validation and user sign-off are tracked in `docs/plans/plan-uat-checklist.md`.
 
 ### Celebration Animations
 
@@ -48,35 +43,20 @@ Positive feedback animations for three moments: item completed, first capture, a
 
 Final launch testing and polish. Blocks Release Prep. Related issue: #116.
 
-**Manual feature verification:**
+**UX fixes:** All resolved in PRs #232–#233.
 
-- [ ] Run full manual testing checklist (text capture CRUD + undo, attachments, tags/star/follow-up, organize plan + list creation, item move, reorder persistence, mark complete, voice capture, settings, persistence across force-quit and background)
-- [ ] Test on at least one iPhone + one iPad, physical device for voice capture
-- [ ] Record results with device, OS, build, tester, pass/fail
+- Collection scroll bug fixed (gesture direction guard added to ItemRow and DraggableCollectionCard)
+- +tag icon sizing corrected to match MCMCardContent (8pt, 4/8pt spacing)
+- Card density reduced: date removed, tags capped at 3 with muted "+N" overflow pill
+- Swipe-to-convert affordance made visible (leading `SwipeAffordance` with `Icons.convert`; delete already had confirmation)
 
-**UX fixes:**
+**Performance & reliability:** Baselines established; automated tests in place.
 
-- [ ] Swipe-to-complete on collections needs a confirmation step and a visible affordance icon (current indicator overlaps with the card and is not visible; should match the trash icon pattern used by swipe-to-delete)
-- [ ] +tag icon on collection items is oversized; should match the +tag icon size used on capture items
-- [ ] Collection cards are too large; reduce content density — remove date display and limit visible tags (e.g., show max 2-3 with "+N more" overflow). When cards are oversized the decorative circle's bottom cutoff becomes visible, breaking the visual effect
-- [ ] Collection list view scroll is broken — unable to scroll the list on the collection screen
+- Launch/navigation baseline: 112.8s full suite, iPhone 16 Pro, iOS 18.3.1
+- Pagination benchmarks added (first-page and deep-page at 100/1000/10000 items, PR #228)
+- Backend p95 latency load test added (~72ms p95 observed, <100ms threshold, PR #228)
 
-**Performance & reliability:**
-
-- [ ] Baseline launch/navigation timing on physical devices (current baseline: 112.8s full suite, iPhone 16 Pro, iOS 18.3.1)
-- [ ] Run pagination under large data sets and measure breakdown latency
-- [ ] Backend breakdown p95 latency under load
-
-**Accessibility review:**
-
-- [ ] VoiceOver on core views, contrast/tap targets/focus order
-- [ ] Tab shell + floating CTA traversal end-to-end
-- [ ] Dynamic Type at accessibility sizes for tab shell + CTA quick actions
-
-**Non-functional launch gates (all must pass before Release Prep):**
-
-- [ ] Define and record thresholds: backend p95 latency, iOS startup budget, iOS idle-memory budget, TestFlight crash-free rate
-- [ ] Triage and fix issues from testing phases, retest affected flows
+Manual verification, accessibility review, and non-functional launch gates are tracked in `docs/plans/plan-uat-checklist.md`.
 
 ## Ready to Start
 
@@ -149,118 +129,15 @@ Migrate tag storage from denormalized string arrays to proper SwiftData relation
 
 Expand the `ItemType` enum beyond the current `task` and `link` cases to support a richer capture vocabulary. The Brain Dump Compiler AI flow already references six categories (`task`, `question`, `decision`, `idea`, `concern`, `reference`) — formalizing these as first-class types lets the capture UI, filters, and AI features share a single source of truth.
 
-**Current state:** `ItemType` has two cases: `task` and `link`. `Item.type` stores the raw string, defaulting to `nil` for uncategorized captures.
+**Implemented:** Six new `ItemType` cases added (`note`, `idea`, `question`, `decision`, `concern`, `reference`) with `displayName`, `icon`, and `isUserAssignable` properties. SF Symbol constants added to `Icons.swift`. Type picker chip row added to `CaptureComposeView`. `CaptureItemCard` updated to use `displayName`. `fetchCaptureItems` predicate updated to include typed captures (excludes `linkedCollectionId != nil`). `fetchCaptureItemsByType(_:limit:offset:)` added to `ItemRepository`. Type filter chip bar added to `CaptureView` via `CaptureListViewModel.setTypeFilter(_:using:)`. `ItemRepositoryTests` updated with new type cases and two new tests for `fetchCaptureItemsByType`.
 
-**Proposed new types:**
-
-| Type | Purpose |
-| --- | --- |
-| `note` | General free-form capture with no action required |
-| `idea` | Creative or exploratory thought to revisit |
-| `question` | Open question needing an answer or research |
-| `decision` | A choice that needs to be made or was made |
-| `concern` | Something worrying or at risk, flagged for attention |
-| `reference` | External material (URL, quote, source) saved for later |
-
-**Model changes:** Add new cases to `ItemType` in `Domain/Models/Item.swift`. No SwiftData migration required — `type` is stored as a raw `String?` and existing values remain valid. Remove or repurpose the existing `link` case: consider whether `link` becomes a metadata property on `reference` items rather than a standalone type (decision required before implementing).
-
-**UI changes:**
-
-- Update type picker in `CaptureComposeView` to show all types with icons and short descriptions
-- Add type-specific icons to `Icons.swift` for each new type
-- Display type chip on capture cards (`CaptureItemCard`) using `TypeChip` component
-- Filter bar in `CaptureView` — filter by type alongside existing starred/follow-up filters
-
-**Capture flow:**
-
-- Voice capture: map AI-inferred category to new type enum cases
-- Brain Dump Compiler: align category labels with `ItemType.rawValue` to eliminate translation layer
-
-**Search & organize:**
-
-- `ItemRepository.fetchByType` predicate (requires explicit enum raw value — see SwiftData predicate gotcha in CLAUDE.md)
-- Type-aware grouping option in Organize tab
-
-**Implementation steps:**
-
-**Phase 1 — Model & Icons**
-
-1. **Resolve `link` vs `reference`** *(BLOCKER)* — Recommendation: keep `link` as-is (Collection-pointer type using `linkedCollectionId`) and add `reference` as a new independent type for external URLs stored in item metadata. The two serve different purposes and can coexist.
-2. **Add icon constants** to `ios/Offload/DesignSystem/Icons.swift` for each new type:
-
-   | Type | SF Symbol |
-   | --- | --- |
-   | `note` | `"note.text"` |
-   | `idea` | `"lightbulb"` |
-   | `question` | `"questionmark.circle"` |
-   | `decision` | `"arrow.triangle.branch"` |
-   | `concern` | `"exclamationmark.triangle"` |
-   | `reference` | `"doc.text"` |
-
-3. **Extend `ItemType` enum** in `ios/Offload/Domain/Models/Item.swift:92` — add six new cases, update both `displayName` and `icon` switch statements.
-
-**Phase 2 — Capture UI**
-
-4. **Add type picker to `CaptureComposeView`** (`ios/Offload/Features/Capture/CaptureComposeView.swift`) — add `@State private var selectedType: ItemType? = nil`; render a horizontal chip row using `ItemType.allCases` (already `CaseIterable`); pass `selectedType?.rawValue` into `itemRepository.create(type:)` at line 363. Apply Theme tokens and reduced-motion guard.
-5. **Update `CaptureItemCard`** (`ios/Offload/Features/Capture/CaptureItemCard.swift:47`) — replace `typeLabel: item.type?.uppercased()` with a `TypeChip` view. Reuse existing `TypeChip` at `ios/Offload/DesignSystem/Components.swift:485` — no new component needed.
-
-**Phase 3 — Filtering**
-
-6. **Update `CaptureView` list predicate** (`ios/Offload/Features/Capture/CaptureView.swift:151`) — current predicate filters `type == nil` only; expand to `completedAt == nil` so typed captures appear. Add a type filter chip bar above the list using `ItemType.allCases`; selection calls the existing `ItemRepository.fetchByType(_:)` at `ios/Offload/Data/Repositories/ItemRepository.swift:90`.
-
-**Phase 4 — Tests**
-
-7. **Update `ItemRepositoryTests`** (`ios/OffloadTests/ItemRepositoryTests.swift:301`) — `testFetchByType()` currently covers only `"task"` and `"link"`; add test cases for two or three new type strings (e.g., `"idea"`, `"concern"`).
-
-**Connects to:** The Brain Dump Compiler in AI Organization Flows outputs the same six category strings — once new types are live those strings map directly to `ItemType.rawValue` with no translation layer. Track alignment work within that section.
-
-### New Item Types
-
-Expand the `ItemType` enum beyond the current `task` and `link` cases to support a richer capture vocabulary. The Brain Dump Compiler AI flow already references six categories (`task`, `question`, `decision`, `idea`, `concern`, `reference`) — formalizing these as first-class types lets the capture UI, filters, and AI features share a single source of truth.
-
-**Current state:** `ItemType` has two cases: `task` and `link`. `Item.type` stores the raw string, defaulting to `nil` for uncategorized captures.
-
-**Proposed new types:**
-
-| Type | Purpose |
-| --- | --- |
-| `note` | General free-form capture with no action required |
-| `idea` | Creative or exploratory thought to revisit |
-| `question` | Open question needing an answer or research |
-| `decision` | A choice that needs to be made or was made |
-| `concern` | Something worrying or at risk, flagged for attention |
-| `reference` | External material (URL, quote, source) saved for later |
-
-**Model changes:** Add new cases to `ItemType` in `Domain/Models/Item.swift`. No SwiftData migration required — `type` is stored as a raw `String?` and existing values remain valid. Remove or repurpose the existing `link` case: consider whether `link` becomes a metadata property on `reference` items rather than a standalone type (decision required before implementing).
-
-**UI changes:**
-
-- Update type picker in `CaptureComposeView` to show all types with icons and short descriptions
-- Add type-specific icons to `Icons.swift` for each new type
-- Display type chip on capture cards (`CaptureItemCard`) using `TypeChip` component
-- Filter bar in `CaptureView` — filter by type alongside existing starred/follow-up filters
-
-**Capture flow:**
-
-- Voice capture: map AI-inferred category to new type enum cases
-- Brain Dump Compiler: align category labels with `ItemType.rawValue` to eliminate translation layer
-
-**Search & organize:**
-
-- `ItemRepository.fetchByType` predicate (requires explicit enum raw value — see SwiftData predicate gotcha in CLAUDE.md)
-- Type-aware grouping option in Organize tab
+**Decided:** `link` is kept as-is (Collection-pointer type using `linkedCollectionId`). `reference` is a new independent type for external URLs saved in item metadata. `isUserAssignable` property on `ItemType` excludes `link` from the capture UI picker and filter bar.
 
 **Remaining:**
 
-- [ ] Decide fate of `link`/`linkedCollectionId` — keep as distinct type or absorb into `reference` with metadata URL field
-- [ ] Add new `ItemType` cases with `displayName` and `icon`
-- [ ] Add SF Symbol constants to `Icons.swift` for each new type
-- [ ] Update `CaptureComposeView` type picker
-- [ ] Update `CaptureItemCard` to display type chip
-- [ ] Add type filter to `CaptureView`
-- [ ] Add `fetchByType` to `ItemRepository`
-- [ ] Align Brain Dump Compiler category labels with `ItemType.rawValue`
-- [ ] Update tests (`ItemRepositoryTests`, `CaptureViewTests` if applicable)
+- [ ] Voice capture: map AI-inferred category to new type enum cases
+- [ ] Align Brain Dump Compiler category labels with `ItemType.rawValue` (no translation layer needed now)
+- [ ] Type-aware grouping option in Organize tab (future)
 
 ### AI Organization Flows
 

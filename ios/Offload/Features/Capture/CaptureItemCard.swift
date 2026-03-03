@@ -47,7 +47,7 @@ struct ItemCard: View {
                 MCMCardContent(
                     icon: item.itemType?.icon,
                     title: item.content,
-                    typeLabel: item.type?.uppercased(),
+                    typeLabel: item.itemType?.displayName,
                     timestamp: item.relativeTimestamp,
                     image: itemRepository.attachmentDataForDisplay(item).flatMap { UIImage(data: $0) },
                     tags: item.tags,
