@@ -8,7 +8,7 @@ iOS app built with SwiftUI and SwiftData (iPhone + iPad).
 - **Pattern**: Feature-based modules with repository pattern
 - **Navigation**: `MainTabView` (tabs: home/review/organize/account) → `NavigationStack` → sheets
 - **Models**: Item, Collection, CollectionItem, Tag (SwiftData)
-- **Item types**: `task`, `link`, `note`, `idea`, `question` (nil = uncategorized capture)
+- **Item types**: `task`, `link`, `note`, `idea`, `question`, `decision`, `concern`, `reference` (nil = uncategorized capture)
 - **Design system**: `DesignSystem/Theme.swift`, theme `midCenturyModern`
 
 ## Quick Start
@@ -166,7 +166,7 @@ Local testing: `just test` sources these values automatically.
 - `RepositoryBundle` bundles all repositories — inject via `AppRootView`, not created ad-hoc in views
 - `CelebrationModifier` — use `.celebrationOverlay(style:isActive:)` to trigger positive feedback animations; respect reduced motion via `Theme.Animations.motion()`
 - `SwipeDeleteAffordance` — use `SwipeAffordance` for leading/trailing swipe affordances; swipe gesture logic lives in `SwipeInteractionModel`, not in views
-- `ItemType` has 5 cases (`task`, `link`, `note`, `idea`, `question`); `nil` type means uncategorized capture; predicates must reference `ItemType.task.rawValue` etc., not string literals
+- `ItemType` has 8 cases (`task`, `link`, `note`, `idea`, `question`, `decision`, `concern`, `reference`); `nil` type means uncategorized capture; predicates must reference `ItemType.task.rawValue` etc., not string literals
 - Backend `sessions.py` issues anonymous session tokens; `session_security.py` validates production secret strength — never weaken or bypass these checks
 
 ## Design System Rules
