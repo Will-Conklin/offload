@@ -100,11 +100,6 @@ final class TagRepository {
     // MARK: - Delete
 
     func delete(tag: Tag) throws {
-        if !tag.items.isEmpty {
-            for item in tag.items {
-                item.tags.removeAll { $0.id == tag.id }
-            }
-        }
         modelContext.delete(tag)
         try modelContext.save()
     }

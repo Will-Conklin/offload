@@ -14,10 +14,8 @@ final class Item {
     var metadata: String // JSON string for flexible future features
     var attachmentData: Data? // Optional attachment data (photo, etc.)
     var linkedCollectionId: UUID? // for type="link" items pointing to collections
-    @Attribute(originalName: "tags")
-    var legacyTags: [String] // legacy tag names for migration
     @Relationship(deleteRule: .nullify, inverse: \Tag.items)
-    var tagLinks: [Tag]
+    var tags: [Tag]
     var isStarred: Bool
     var followUpDate: Date?
     var completedAt: Date? // nullable timestamp for completion status
@@ -40,7 +38,6 @@ final class Item {
         metadata: String = "{}",
         attachmentData: Data? = nil,
         linkedCollectionId: UUID? = nil,
-        tags: [String] = [],
         isStarred: Bool = false,
         followUpDate: Date? = nil,
         completedAt: Date? = nil,
@@ -52,8 +49,7 @@ final class Item {
         self.metadata = metadata
         self.attachmentData = attachmentData
         self.linkedCollectionId = linkedCollectionId
-        legacyTags = tags
-        tagLinks = []
+        tags = []
         self.isStarred = isStarred
         self.followUpDate = followUpDate
         self.completedAt = completedAt
@@ -133,12 +129,6 @@ enum ItemType: String, Codable, CaseIterable {
 }
 
 extension Item {
-    // Keep a stable API name while the stored relationship is tagLinks.
-    var tags: [Tag] {
-        get { tagLinks }
-        set { tagLinks = newValue }
-    }
-
     var typedMetadata: ItemMetadata {
         get {
             if let cachedMetadataModel,

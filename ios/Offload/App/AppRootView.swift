@@ -24,7 +24,7 @@ struct AppRootView: View {
             .withToast()
             .task {
                 let startupStart = Date()
-                let memoryBeforeMigration = MemoryDiagnostics.residentMemoryBytes()
+                let memoryBeforeStartup = MemoryDiagnostics.residentMemoryBytes()
                 AppLogger.general.info(
                     "Startup diagnostics begin - launchId: \(self.launchCorrelationId, privacy: .public), memory: \(MemoryDiagnostics.residentMemoryMBString(), privacy: .public)"
                 )
@@ -34,25 +34,10 @@ struct AppRootView: View {
                     AppLogger.general.info("Repository bundle initialized")
                 }
 
-                AppLogger.persistence.info(
-                    "Tag migration start - launchId: \(self.launchCorrelationId, privacy: .public), memoryBefore: \(MemoryDiagnostics.residentMemoryMBString(), privacy: .public)"
-                )
-                let migrationStart = Date()
-                do {
-                    try TagMigration.runIfNeeded(modelContext: modelContext)
-                    let memoryAfterMigration = MemoryDiagnostics.residentMemoryBytes()
-                    let migrationDuration = Date().timeIntervalSince(migrationStart)
-                    AppLogger.persistence.info(
-                        "Tag migration end - launchId: \(self.launchCorrelationId, privacy: .public), durationMs: \(Int((migrationDuration * 1000).rounded()), privacy: .public), memoryAfter: \(MemoryDiagnostics.residentMemoryMBString(), privacy: .public), memoryDelta: \(MemoryDiagnostics.deltaMBString(before: memoryBeforeMigration, after: memoryAfterMigration), privacy: .public)"
-                    )
-                } catch {
-                    AppLogger.general.error("Tag migration failed: \(error.localizedDescription)")
-                }
-
                 let startupDuration = Date().timeIntervalSince(startupStart)
                 let memoryAfterStartup = MemoryDiagnostics.residentMemoryBytes()
                 AppLogger.general.info(
-                    "Startup diagnostics end - launchId: \(self.launchCorrelationId, privacy: .public), durationMs: \(Int((startupDuration * 1000).rounded()), privacy: .public), memoryAfter: \(MemoryDiagnostics.residentMemoryMBString(), privacy: .public), memoryDelta: \(MemoryDiagnostics.deltaMBString(before: memoryBeforeMigration, after: memoryAfterStartup), privacy: .public)"
+                    "Startup diagnostics end - launchId: \(self.launchCorrelationId, privacy: .public), durationMs: \(Int((startupDuration * 1000).rounded()), privacy: .public), memoryAfter: \(MemoryDiagnostics.residentMemoryMBString(), privacy: .public), memoryDelta: \(MemoryDiagnostics.deltaMBString(before: memoryBeforeStartup, after: memoryAfterStartup), privacy: .public)"
                 )
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in

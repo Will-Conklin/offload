@@ -46,7 +46,6 @@ final class ItemRepository {
             metadata: metadata,
             attachmentData: nil,
             linkedCollectionId: linkedCollectionId,
-            tags: [],
             isStarred: isStarred,
             followUpDate: followUpDate
         )
