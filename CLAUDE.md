@@ -6,8 +6,9 @@ iOS app built with SwiftUI and SwiftData (iPhone + iPad).
 
 - **Bundle ID**: wc.Offload
 - **Pattern**: Feature-based modules with repository pattern
-- **Navigation**: `MainTabView` → `NavigationStack` → sheets
+- **Navigation**: `MainTabView` (tabs: home/review/organize/account) → `NavigationStack` → sheets
 - **Models**: Item, Collection, CollectionItem, Tag (SwiftData)
+- **Item types**: `task`, `link`, `note`, `idea`, `question` (nil = uncategorized capture)
 - **Design system**: `DesignSystem/Theme.swift`, theme `midCenturyModern`
 
 ## Quick Start
@@ -44,10 +45,14 @@ just test               # Run tests; for direct run: xcodebuild test -project io
 just lint               # Run markdownlint + yamllint
 just lint-docs          # Markdownlint only
 just lint-yaml          # Yamllint only
+just ios-test-ci        # Run iOS CI-style test lane locally
+just backend-install-uv # Sync backend dev dependencies with uv
 just backend-check      # Run backend ruff + ty + pytest
 just backend-test-coverage # Run backend tests with coverage summary
 just backend-check-coverage # Run backend lint + typecheck + coverage tests
+just backend-check-ci   # Run backend CI script locally
 just backend-clean      # Remove generated backend runtime/build artifacts
+just ci-local           # Run lint + backend checks + iOS tests
 just security           # Run Snyk dependency + code scans
 just xcode-open         # Open project in Xcode
 ```
@@ -67,11 +72,14 @@ Local testing: `just test` sources these values automatically.
 
 **iOS:**
 
-- `ios/Offload/App/` — Entry point, `MainTabView`
-- `ios/Offload/Features/` — Capture, Home, Organize, Settings
-- `ios/Offload/Domain/Models/` — SwiftData models
-- `ios/Offload/Data/Repositories/` — CRUD repositories
-- `ios/Offload/DesignSystem/` — Theme, components, icons, textures
+- `ios/Offload/App/` — Entry point, `MainTabView`, `AppRootView`, accessibility/tab policy enums
+- `ios/Offload/Features/` — Home, Capture (with search), Organize, Settings
+- `ios/Offload/Domain/Models/` — SwiftData models (Item, Collection, CollectionItem, Tag, ItemMetadata)
+- `ios/Offload/Data/Repositories/` — CRUD repositories (Item, Collection, CollectionItem, Tag, ReorderPositionMapper)
+- `ios/Offload/Data/Services/` — BreakdownService (on-device + cloud AI), VoiceRecordingService, AttachmentStorageService
+- `ios/Offload/Data/Networking/` — AIBackendClient, AIBackendContracts, APIClient
+- `ios/Offload/Data/Persistence/` — PersistenceController, SwiftDataManager
+- `ios/Offload/DesignSystem/` — Theme, Components, Icons, Textures, ThemeManager, ToastView, CelebrationModifier, SwipeDeleteAffordance
 
 **Backend:**
 
@@ -80,9 +88,12 @@ Local testing: `just test` sources these values automatically.
   - `config.py` — Pydantic settings with OFFLOAD_* env vars
   - `dependencies.py` — FastAPI dependency injection
   - `security.py` — Session token v2 management (JWT with key rotation)
+  - `session_security.py` — Production secret validation (strength checks, placeholder detection)
   - `session_rate_limiter.py` — Session issuance rate limiting
   - `usage_store.py` — Usage tracking persistence
-  - `routers/` — FastAPI route modules (breakdown, usage, health)
+  - `schemas.py` — Shared Pydantic request/response models
+  - `errors.py` — `APIException` + error response helpers
+  - `routers/` — FastAPI route modules (breakdown, usage, health, sessions)
   - `providers/` — External service adapters (OpenAI with retry)
 
 **Documentation:**
@@ -95,6 +106,14 @@ Local testing: `just test` sources these values automatically.
 
 - `ios/OffloadTests/*RepositoryTests.swift` — Repository CRUD tests
 - `ios/OffloadTests/APIClientTests.swift` — Backend API client tests
+- `ios/OffloadTests/AIBackendClientTests.swift` — AI backend client tests
+- `ios/OffloadTests/BreakdownServiceTests.swift` — Breakdown service (on-device + cloud) tests
+- `ios/OffloadTests/VoiceRecordingServiceTests.swift` — Voice recording service tests
+- `ios/OffloadTests/CelebrationModifierTests.swift` — Celebration animation modifier tests
+- `ios/OffloadTests/SwipeInteractionModelTests.swift` — Swipe gesture model tests
+- `ios/OffloadTests/AdvancedAccessibilityPoliciesTests.swift` — Accessibility policy unit tests
+- `ios/OffloadTests/TabShellPoliciesTests.swift` — Tab shell layout/motion/accessibility policy tests
+- `ios/OffloadTests/ThemeColorTests.swift` — Theme color token tests
 - `ios/OffloadTests/PerformanceBenchmarkTests.swift` — Performance tests
 - `ios/OffloadUITests/` — UI automation tests (note: `testLaunch()` is flaky)
 
@@ -141,6 +160,14 @@ Local testing: `just test` sources these values automatically.
 - To find SF Symbol icon names, grep Icons.swift: `grep -i "trash" ios/Offload/DesignSystem/Icons.swift`
 - SwiftUI gesture composition: use `.simultaneousGesture()` for multiple gestures; `abs(dx) > abs(dy)` differentiates horizontal from vertical
 - New or modified production functions/methods should include concise doc comments covering purpose, key parameters, and return behavior when not `Void`
+- `BreakdownService` is designed fallback-safe: cloud errors that match `shouldFallbackToOnDevice` automatically retry on-device; never bypass this pattern
+- `VoiceRecordingService` uses `@Observable` + `@MainActor`; do not use `@Published` or `ObservableObject` for it
+- `AIBackendClient` calls are consent-gated (`consentRequired` error if not opted in); never skip consent checks
+- `RepositoryBundle` bundles all repositories — inject via `AppRootView`, not created ad-hoc in views
+- `CelebrationModifier` — use `.celebrationOverlay(style:isActive:)` to trigger positive feedback animations; respect reduced motion via `Theme.Animations.motion()`
+- `SwipeDeleteAffordance` — use `SwipeAffordance` for leading/trailing swipe affordances; swipe gesture logic lives in `SwipeInteractionModel`, not in views
+- `ItemType` has 5 cases (`task`, `link`, `note`, `idea`, `question`); `nil` type means uncategorized capture; predicates must reference `ItemType.task.rawValue` etc., not string literals
+- Backend `sessions.py` issues anonymous session tokens; `session_security.py` validates production secret strength — never weaken or bypass these checks
 
 ## Design System Rules
 
@@ -218,6 +245,8 @@ Reuse components from `DesignSystem/Components.swift` — do not recreate:
 - **FlowLayout** — Wrapping layout for tags
 - **EmptyStateView** — Icon + message + optional action
 - **ToastView** — Auto-dismissing notification (via `ToastManager`)
+- **CelebrationModifier** — `.celebrationOverlay(style:isActive:)` for positive feedback particle animations
+- **SwipeAffordance** — Leading/trailing swipe affordance; use with `SwipeInteractionModel` for gesture state
 
 ### Icons
 
