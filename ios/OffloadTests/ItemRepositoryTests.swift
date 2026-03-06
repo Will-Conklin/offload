@@ -805,6 +805,85 @@ final class ItemRepositoryTests: XCTestCase {
 
         XCTAssertEqual(try repository.fetchAll().count, 0)
     }
+
+    // MARK: - Home Dashboard Fetch Tests
+
+    func testFetchCapturedThisWeek() throws {
+        let item1 = try repository.create(content: "This week 1")
+        let item2 = try repository.create(content: "This week 2")
+        let oldItem = try repository.create(content: "Old item")
+
+        // Push oldItem's createdAt to 8 days ago
+        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date())!
+        oldItem.createdAt = eightDaysAgo
+        try modelContext.save()
+
+        let results = try repository.fetchCapturedThisWeek()
+        let resultIds = Set(results.map(\.id))
+
+        XCTAssertTrue(resultIds.contains(item1.id))
+        XCTAssertTrue(resultIds.contains(item2.id))
+        XCTAssertFalse(resultIds.contains(oldItem.id))
+        XCTAssertEqual(results.count, 2)
+    }
+
+    func testFetchCompletedThisWeek() throws {
+        let completedToday1 = try repository.create(content: "Done 1")
+        completedToday1.completedAt = Date()
+        let completedToday2 = try repository.create(content: "Done 2")
+        completedToday2.completedAt = Date()
+
+        let completedOld = try repository.create(content: "Done long ago")
+        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date())!
+        completedOld.completedAt = eightDaysAgo
+
+        _ = try repository.create(content: "Incomplete")
+
+        try modelContext.save()
+
+        let results = try repository.fetchCompletedThisWeek()
+        let resultIds = Set(results.map(\.id))
+
+        XCTAssertTrue(resultIds.contains(completedToday1.id))
+        XCTAssertTrue(resultIds.contains(completedToday2.id))
+        XCTAssertFalse(resultIds.contains(completedOld.id))
+        XCTAssertEqual(results.count, 2)
+    }
+
+    func testFetchItemsWithFollowUpDate() throws {
+        let now = Date()
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: now)!
+        let inTwo = Calendar.current.date(byAdding: .day, value: 2, to: now)!
+        let inFive = Calendar.current.date(byAdding: .day, value: 5, to: now)!
+        let inTen = Calendar.current.date(byAdding: .day, value: 10, to: now)!
+
+        let pastItem = try repository.create(content: "Past", followUpDate: yesterday)
+        let inTwoItem = try repository.create(content: "In 2", followUpDate: inTwo)
+        let inFiveItem = try repository.create(content: "In 5", followUpDate: inFive)
+        let inTenItem = try repository.create(content: "In 10", followUpDate: inTen)
+        _ = pastItem; _ = inTenItem // referenced for clarity
+
+        let sevenDaysOut = Calendar.current.date(byAdding: .day, value: 7, to: now)!
+        let results = try repository.fetchItemsWithFollowUpDate(from: now, to: sevenDaysOut)
+        let resultIds = Set(results.map(\.id))
+
+        XCTAssertEqual(results.count, 2)
+        XCTAssertTrue(resultIds.contains(inTwoItem.id))
+        XCTAssertTrue(resultIds.contains(inFiveItem.id))
+    }
+
+    func testFetchItemsWithFollowUpDate_excludesCompleted() throws {
+        let now = Date()
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now)!
+        let nextWeek = Calendar.current.date(byAdding: .day, value: 7, to: now)!
+
+        let completedItem = try repository.create(content: "Completed", followUpDate: tomorrow)
+        completedItem.completedAt = Date()
+        try modelContext.save()
+
+        let results = try repository.fetchItemsWithFollowUpDate(from: now, to: nextWeek)
+        XCTAssertTrue(results.isEmpty, "Completed items should not appear in timeline")
+    }
 }
 
 private final class ThrowingCleanupAttachmentStorage: AttachmentStorage {

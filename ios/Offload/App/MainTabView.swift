@@ -17,7 +17,7 @@ struct MainTabView: View {
     private var style: ThemeStyle { themeManager.currentStyle }
 
     var body: some View {
-        TabContent(selectedTab: selectedTab)
+        TabContent(selectedTab: selectedTab, navigateToOrganize: { selectedTab = .organize })
             .safeAreaInset(edge: .bottom) {
                 FloatingTabBar(
                     selectedTab: $selectedTab,
@@ -66,11 +66,12 @@ struct MainTabView: View {
 
 private struct TabContent: View {
     let selectedTab: MainTabView.Tab
+    let navigateToOrganize: () -> Void
 
     var body: some View {
         switch selectedTab {
         case .home:
-            HomeView()
+            HomeView(navigateToOrganize: navigateToOrganize)
         case .review:
             CaptureView(navigationTitle: "Review")
         case .organize:

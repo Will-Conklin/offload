@@ -395,4 +395,47 @@ final class CollectionRepositoryTests: XCTestCase {
         XCTAssertEqual(olderNil.position, 8)
         XCTAssertEqual(newerNil.position, 9)
     }
+
+    // MARK: - Home Dashboard Tests
+
+    func testFetchActiveCollections() throws {
+        // Collection A: 2 items, both incomplete → should be included
+        let collectionA = try collectionRepository.create(name: "Active")
+        let itemA1 = try itemRepository.create(content: "A1")
+        let itemA2 = try itemRepository.create(content: "A2")
+        try collectionRepository.addItem(itemA1, to: collectionA)
+        try collectionRepository.addItem(itemA2, to: collectionA)
+
+        // Collection B: 2 items, both complete → should be excluded
+        let collectionB = try collectionRepository.create(name: "All Done")
+        let itemB1 = try itemRepository.create(content: "B1")
+        let itemB2 = try itemRepository.create(content: "B2")
+        itemB1.completedAt = Date()
+        itemB2.completedAt = Date()
+        try modelContext.save()
+        try collectionRepository.addItem(itemB1, to: collectionB)
+        try collectionRepository.addItem(itemB2, to: collectionB)
+
+        // Collection C: no items → should be excluded
+        _ = try collectionRepository.create(name: "Empty")
+
+        let active = try collectionRepository.fetchActiveCollections()
+        XCTAssertEqual(active.count, 1)
+        XCTAssertEqual(active.first?.id, collectionA.id)
+    }
+
+    func testFetchActiveCollections_partiallyComplete() throws {
+        // A collection with one complete and one incomplete item is still active
+        let collection = try collectionRepository.create(name: "Mixed")
+        let done = try itemRepository.create(content: "Done")
+        done.completedAt = Date()
+        try modelContext.save()
+        let notDone = try itemRepository.create(content: "Not done")
+
+        try collectionRepository.addItem(done, to: collection)
+        try collectionRepository.addItem(notDone, to: collection)
+
+        let active = try collectionRepository.fetchActiveCollections()
+        XCTAssertEqual(active.count, 1)
+    }
 }

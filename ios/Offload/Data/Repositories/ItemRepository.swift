@@ -139,6 +139,44 @@ final class ItemRepository {
         return try modelContext.fetch(descriptor)
     }
 
+    /// Returns items created during the current calendar week, sorted newest-first.
+    func fetchCapturedThisWeek() throws -> [Item] {
+        let startOfWeek = Calendar.current.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate<Item> { item in
+                item.createdAt >= startOfWeek
+            },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    /// Returns items completed during the current calendar week, sorted newest-first.
+    func fetchCompletedThisWeek() throws -> [Item] {
+        let startOfWeek = Calendar.current.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate<Item> { item in
+                item.completedAt != nil && item.completedAt! >= startOfWeek
+            },
+            sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    /// Returns non-completed items with a followUpDate in [startDate, endDate], sorted ascending.
+    func fetchItemsWithFollowUpDate(from startDate: Date, to endDate: Date) throws -> [Item] {
+        let descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate<Item> { item in
+                item.followUpDate != nil &&
+                    item.followUpDate! >= startDate &&
+                    item.followUpDate! <= endDate &&
+                    item.completedAt == nil
+            },
+            sortBy: [SortDescriptor(\.followUpDate)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
     func fetchIncomplete() throws -> [Item] {
         let descriptor = FetchDescriptor<Item>(
             predicate: #Predicate { $0.completedAt == nil },

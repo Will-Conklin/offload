@@ -49,6 +49,10 @@ enum Icons {
     static let search = "magnifyingglass"
     static let chevronDown = "chevron.down"
     static let chevronRight = "chevron.right"
+    static let heart = "heart"
+    static let clock = "clock"
+    static let xmark = "xmark"
+    static let calendar = "calendar"
 
     // MARK: - Item Types
 

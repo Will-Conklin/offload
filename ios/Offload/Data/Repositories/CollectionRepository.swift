@@ -121,6 +121,16 @@ final class CollectionRepository {
         return Array(sorted[startIndex ..< endIndex])
     }
 
+    /// Returns collections that have at least one non-completed item.
+    func fetchActiveCollections() throws -> [Collection] {
+        let descriptor = FetchDescriptor<Collection>()
+        let all = try modelContext.fetch(descriptor)
+        return all.filter { collection in
+            guard let items = collection.collectionItems, !items.isEmpty else { return false }
+            return items.contains { $0.item?.completedAt == nil }
+        }
+    }
+
     func searchByName(_ query: String) throws -> [Collection] {
         let lowercaseQuery = query.lowercased()
         let descriptor = FetchDescriptor<Collection>(
