@@ -111,7 +111,7 @@ struct HomeView: View {
     private func loadStats() async {
         try? await viewModel.loadStats(using: itemRepository, collectionRepository: collectionRepository)
         if viewModel.completedThisWeek > 0 && !showCelebration {
-            withAnimation(Theme.Animations.motion(.springDefault, reduceMotion: reduceMotion)) {
+            withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
                 showCelebration = true
             }
         }
