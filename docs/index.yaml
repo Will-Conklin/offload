@@ -1,14 +1,14 @@
 ---
 # File: docs/index.yaml
 # Role: Documentation navigation index (human reference only)
-# Note: Agents should use docs/plans/plan-implementation-backlog.md directly
+# Note: Agents should use docs/plans/backlog.md directly
 
 version: 2
 sections:
   - id: plans
     title: Implementation Plans
-    description: Active implementation backlog.
+    description: Unplanned items backlog and active plan docs.
     documents:
-      - id: plan-implementation-backlog
-        title: Implementation Backlog
-        path: plans/plan-implementation-backlog.md
+      - id: backlog
+        title: Backlog
+        path: plans/backlog.md

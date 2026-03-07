@@ -21,9 +21,10 @@ iOS application with a FastAPI backend slice.
 - `ios/Offload/DesignSystem/` - Theme, components, icons
 - `backend/api/` - FastAPI backend package
 - `scripts/ci/` - CI lane scripts (iOS/backend/scripts)
-- `docs/prds/` - Product requirements
-- `docs/adrs/` - Architecture decisions
-- `docs/plans/plan-implementation-backlog.md` - Single implementation backlog (see `docs/AGENTS.md`)
+- `docs/product.md` - Product philosophy and features
+- `docs/architecture.md` - Tech stack and architectural decisions
+- `docs/design.md` - UX patterns and testing guides
+- `docs/plans/backlog.md` - Unplanned items (see `docs/CLAUDE.md`)
 
 ## Common Commands
 
@@ -102,10 +103,10 @@ just ci-local                 # Run lint + backend checks + iOS tests
 ## Documentation Authority
 
 All agent behavior related to documentation under `docs/` is governed by
-`docs/AGENTS.md` (AUTHORITATIVE). If this file conflicts with `docs/AGENTS.md`
-for documentation behavior, `docs/AGENTS.md` wins.
+`docs/CLAUDE.md` (AUTHORITATIVE). If this file conflicts with `docs/CLAUDE.md`
+for documentation behavior, `docs/CLAUDE.md` wins.
 
-Agents MUST follow `docs/AGENTS.md` when reading, writing, restructuring, or interpreting documentation. This file governs repository-wide and code-level behavior only.
+Agents MUST follow `docs/CLAUDE.md` when reading, writing, restructuring, or interpreting documentation. This file governs repository-wide and code-level behavior only.
 
 ## Agent-Readable Headers
 
@@ -117,7 +118,7 @@ Add agent-readable headers to non-Markdown config files that agents read/modify:
 # File: docs/index.yaml
 # Role: Documentation navigation index
 # Authority: Navigation only (not source of truth)
-# Governed by: docs/AGENTS.md
+# Governed by: docs/CLAUDE.md
 # Additional instructions: Additional instructions
 ```
 
@@ -128,7 +129,7 @@ Add agent-readable headers to non-Markdown config files that agents read/modify:
   "_meta": {
     "role": "reference",
     "authority": "highest",
-    "governed_by": "docs/AGENTS.md",
+    "governed_by": "docs/CLAUDE.md",
     "additional_instructions": "Additional instructions"
   }
 }

@@ -87,7 +87,11 @@ Local testing: `just test` sources these values automatically.
 
 **Documentation:**
 
-- `docs/` — PRDs, ADRs, designs (human reference); `docs/plans/plan-implementation-backlog.md` is the single source of pending work (see `docs/AGENTS.md`)
+- `docs/product.md` — Product philosophy, features, data model
+- `docs/architecture.md` — Tech stack, architectural decisions, CI, backend/privacy
+- `docs/design.md` — UX patterns, testing guides
+- `docs/plans/backlog.md` — Unplanned items (see `docs/CLAUDE.md`)
+- `docs/plans/` — Active plan docs, each covering a unified body of work
 
 ## Test Organization
 
@@ -265,5 +269,5 @@ All animations MUST respect reduced motion. Use `Theme.Animations.motion(animati
 See [AGENTS.md](AGENTS.md) for:
 
 - Critical git workflow and PR requirements
-- Documentation governance (`docs/AGENTS.md` scopes agents to `docs/plans/plan-implementation-backlog.md` only)
+- Documentation governance (`docs/CLAUDE.md` defines agent scope in `docs/`)
 - Agent handoff summary and data model details
