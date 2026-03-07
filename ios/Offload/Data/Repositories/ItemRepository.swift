@@ -143,12 +143,10 @@ final class ItemRepository {
     func fetchCapturedThisWeek() throws -> [Item] {
         let startOfWeek = currentWeekStart()
         let descriptor = FetchDescriptor<Item>(
-            predicate: #Predicate<Item> { item in
-                item.createdAt >= startOfWeek
-            },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
-        return try modelContext.fetch(descriptor)
+        let all = try modelContext.fetch(descriptor)
+        return all.filter { $0.createdAt >= startOfWeek }
     }
 
     /// Returns items completed during the current calendar week, sorted newest-first.
