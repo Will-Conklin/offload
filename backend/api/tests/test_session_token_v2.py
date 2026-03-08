@@ -2,6 +2,7 @@ import base64
 import hashlib
 import hmac
 import json
+from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 
 import pytest
@@ -22,7 +23,7 @@ def _payload_from_token(token: str) -> dict[str, object]:
     return json.loads(payload_bytes.decode("utf-8"))
 
 
-def _build_signed_token(payload: dict[str, object], secret: str = "test-secret") -> str:
+def _build_signed_token(payload: Mapping[str, object], secret: str = "test-secret") -> str:
     payload_segment = _urlsafe_b64encode(
         json.dumps(payload, separators=(",", ":")).encode("utf-8"),
     )
