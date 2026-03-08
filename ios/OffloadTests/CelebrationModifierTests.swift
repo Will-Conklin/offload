@@ -1,6 +1,6 @@
 // Purpose: Tests for celebration animation types and configuration.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 @testable import Offload
 import XCTest

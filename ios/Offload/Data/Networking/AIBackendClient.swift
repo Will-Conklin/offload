@@ -1,6 +1,6 @@
 // Purpose: Backend client abstractions for AI cloud integration.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep cloud calls consent-gated and testable.
 
 import Foundation

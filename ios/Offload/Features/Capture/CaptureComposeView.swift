@@ -1,6 +1,6 @@
 // Purpose: Capture feature views and flows.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Preserve low-friction capture UX and Item.type == nil semantics.
 
 //  Minimal capture: text + mic + attachment, optional tags/starred

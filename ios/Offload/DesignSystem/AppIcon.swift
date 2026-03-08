@@ -1,6 +1,6 @@
 // Purpose: Design system components and theme definitions.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Preserve established theme defaults and component APIs.
 
 //  SF Symbols wrapper for consistent sizing and template rendering.

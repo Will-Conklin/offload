@@ -1,6 +1,6 @@
 // Purpose: SwiftData model definitions.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Maintain explicit type references in predicates and preserve relationship rules.
 
 import Foundation

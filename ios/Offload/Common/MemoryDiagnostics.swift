@@ -1,6 +1,6 @@
 // Purpose: Shared utilities and helpers.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Prefer small, reusable helpers and avoid feature-specific coupling.
 
 import Darwin.Mach

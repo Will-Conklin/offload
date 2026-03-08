@@ -1,6 +1,6 @@
 # Purpose: Backend API project metadata and test tool configuration.
 # Authority: Config-level
-# Governed by: AGENTS.md
+# Governed by: CLAUDE.md
 
 [project]
 name = "offload-backend-api"

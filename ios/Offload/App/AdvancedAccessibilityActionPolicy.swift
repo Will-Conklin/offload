@@ -1,6 +1,6 @@
 // Purpose: Shared accessibility action labels for advanced card and row interactions.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 

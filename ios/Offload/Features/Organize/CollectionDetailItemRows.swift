@@ -1,6 +1,6 @@
 // Purpose: Item row views for CollectionDetailView.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import OSLog
 import SwiftUI

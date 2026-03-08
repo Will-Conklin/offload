@@ -1,6 +1,6 @@
 // Purpose: Networking utilities.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep networking isolated from view code.
 
 import Foundation

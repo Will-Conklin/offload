@@ -1,6 +1,6 @@
 // Purpose: Typed metadata model for Item records.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Preserve unknown metadata fields for backward and forward compatibility.
 
 import Foundation

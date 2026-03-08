@@ -1,7 +1,7 @@
 # File: .yamllint
 # Role: YAML lint configuration
 # Authority: Tooling configuration
-# Governed by: AGENTS.md
+# Governed by: CLAUDE.md
 # Additional instructions: Disable only line-length rule.
 ---
 extends: default

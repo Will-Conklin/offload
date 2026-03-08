@@ -1,6 +1,6 @@
 // Purpose: Reusable swipe affordance views for leading and trailing swipe actions.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 

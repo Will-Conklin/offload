@@ -1,6 +1,6 @@
 // Purpose: Service-layer utilities.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep service APIs focused and testable.
 
 import AVFoundation

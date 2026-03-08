@@ -1,6 +1,6 @@
 // Purpose: Environment keys for backend AI scaffolding dependencies.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep fallback defaults local and side-effect safe.
 
 import SwiftUI

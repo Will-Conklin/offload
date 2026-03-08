@@ -1,6 +1,6 @@
 // Purpose: Error presentation helpers for SwiftUI views.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep error presentation lightweight and reusable.
 
 import Observation

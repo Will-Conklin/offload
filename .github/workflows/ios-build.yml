@@ -1,7 +1,7 @@
 # File: .github/workflows/ios-build.yml
 # Role: Reusable iOS build lane
 # Authority: CI workflow lane
-# Governed by: AGENTS.md
+# Governed by: CLAUDE.md
 # Additional instructions: Invoked from context-aware CI orchestration.
 # Intent: Build-only iOS workflow driven by pinned CI environment values.
 

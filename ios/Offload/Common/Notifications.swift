@@ -1,6 +1,6 @@
 // Purpose: App-wide notification names.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep notification names scoped and specific.
 
 import Foundation

@@ -1,6 +1,6 @@
 // Purpose: Settings and account feature views.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Avoid introducing feature logic that belongs in repositories.
 
 //  Placeholder account view for profile settings

@@ -44,10 +44,14 @@ just test               # Run tests; for direct run: xcodebuild test -project io
 just lint               # Run markdownlint + yamllint
 just lint-docs          # Markdownlint only
 just lint-yaml          # Yamllint only
+just backend-install-uv # Sync backend dev dependencies with uv
 just backend-check      # Run backend ruff + ty + pytest
+just backend-check-ci   # Run backend CI script locally
 just backend-test-coverage # Run backend tests with coverage summary
 just backend-check-coverage # Run backend lint + typecheck + coverage tests
 just backend-clean      # Remove generated backend runtime/build artifacts
+just ios-test-ci        # Run iOS CI-style test lane locally
+just ci-local           # Run lint + backend checks + iOS tests
 just security           # Run Snyk dependency + code scans
 just xcode-open         # Open project in Xcode
 ```
@@ -71,7 +75,12 @@ Local testing: `just test` sources these values automatically.
 - `ios/Offload/Features/` — Capture, Home, Organize, Settings
 - `ios/Offload/Domain/Models/` — SwiftData models
 - `ios/Offload/Data/Repositories/` — CRUD repositories
+- `ios/Offload/Data/Networking/` — Backend API client and contracts
+- `ios/Offload/Data/Persistence/` — SwiftData container setup
+- `ios/Offload/Data/Services/` — Voice recording, breakdown, attachment services
+- `ios/Offload/Common/` — Shared utilities, repository environment, error handling
 - `ios/Offload/DesignSystem/` — Theme, components, icons, textures
+- `scripts/ci/` — CI lane scripts (iOS/backend/scripts)
 
 **Backend:**
 
@@ -80,8 +89,11 @@ Local testing: `just test` sources these values automatically.
   - `config.py` — Pydantic settings with OFFLOAD_* env vars
   - `dependencies.py` — FastAPI dependency injection
   - `security.py` — Session token v2 management (JWT with key rotation)
+  - `session_security.py` — Startup secret validation and environment checks
   - `session_rate_limiter.py` — Session issuance rate limiting
   - `usage_store.py` — Usage tracking persistence
+  - `schemas.py` — Pydantic request/response models
+  - `errors.py` — API exception types and error handlers
   - `routers/` — FastAPI route modules (breakdown, usage, health)
   - `providers/` — External service adapters (OpenAI with retry)
 
@@ -109,7 +121,10 @@ Local testing: `just test` sources these values automatically.
 
 ## Gotchas
 
-- **NEVER commit directly to main branch** - always use feature branches for all work (see AGENTS.md for full git workflow)
+- **NEVER commit directly to main branch** - always use feature branches for all work
+- Always clean up merged branches
+- For GitHub issue/PR descriptions created via `gh`: use `--body-file` (or a heredoc with real line breaks) and never pass escaped `\n` sequences as body text
+- Pre-commit hygiene: run `markdownlint --fix` for doc changes, `yamllint` for YAML, and use conventional atomic commits
 - CI markdownlint runs strict (no `--fix`); table column alignment (MD060) must be manually correct
 - Markdownlint MD036: Don't use bold text for section headers (`**Section:**`) - use proper headings (`### Section`)
 - Worktree git operations require `cd` to worktree path; `gh pr create` fails if PR already exists (push updates existing PR)
@@ -178,9 +193,9 @@ private var style: ThemeStyle { themeManager.currentStyle }
 
 | Token | Purpose |
 | --- | --- |
-| `Theme.Colors.accent` | Primary burnt orange |
+| `Theme.Colors.accentPrimary` | Primary burnt orange |
 | `Theme.Colors.accentSecondary` | Avocado green |
-| `Theme.Colors.textPrimary/Secondary/Tertiary` | Text hierarchy |
+| `Theme.Colors.textPrimary/Secondary` | Text hierarchy |
 | `Theme.Surface.background/card` | Backgrounds |
 | `Theme.Colors.cardColor(index:)` | 5-color cycling palette for card backgrounds |
 | `Theme.Colors.success/caution/destructive` | Semantic states |
@@ -198,7 +213,7 @@ Never use `.foregroundStyle(.white)` on colored backgrounds — use the contrast
 | `Theme.Typography.cardTitle/cardTitleEmphasis` | Bebas Neue | Card headings |
 | `Theme.Typography.cardBody` | Space Grotesk | Card content |
 | `Theme.Typography.buttonLabel` | Space Grotesk | Button text |
-| `Theme.Typography.badge/metadata/timestamp` | Space Grotesk | Small/monospaced |
+| `Theme.Typography.badge/metadata/timestampMono` | Space Grotesk | Small/monospaced |
 
 ### Spacing
 
@@ -233,7 +248,7 @@ Cards get `.cardTexture(colorScheme)` (linen overlay, 0.02-0.03 opacity). Respec
 
 ### Shadows
 
-Minimal — prefer `showsBorder` on `CardSurface` over shadows. If needed: `Theme.Shadows.ultraLight/xs/sm/md`.
+Minimal — prefer `showsBorder` on `CardSurface` over shadows. If needed: `Theme.Shadows.ultraLight(colorScheme)` (color function) or elevation constants `Theme.Shadows.elevationXs/elevationSm/elevationMd`.
 
 ### Animations
 
@@ -264,10 +279,54 @@ All animations MUST respect reduced motion. Use `Theme.Animations.motion(animati
 6. Use SF Symbols from `Icons.swift` — do NOT add icon packages
 7. Validate final UI against Figma screenshot for 1:1 parity
 
-## Full Project Directives
+## Documentation Governance
 
-See [AGENTS.md](AGENTS.md) for:
+All agent behavior related to documentation under `docs/` is governed by `docs/CLAUDE.md` (AUTHORITATIVE). If this file conflicts with `docs/CLAUDE.md` for documentation behavior, `docs/CLAUDE.md` wins.
 
-- Critical git workflow and PR requirements
-- Documentation governance (`docs/CLAUDE.md` defines agent scope in `docs/`)
-- Agent handoff summary and data model details
+Agents MUST follow `docs/CLAUDE.md` when reading, writing, restructuring, or interpreting documentation. This file governs repository-wide and code-level behavior only.
+
+## Agent-Readable Headers
+
+Add agent-readable headers to non-Markdown config files that agents read/modify:
+
+**YAML/TOML:**
+
+```yaml
+# File: docs/index.yaml
+# Role: Documentation navigation index
+# Authority: Navigation only (not source of truth)
+# Governed by: CLAUDE.md
+# Additional instructions: Additional instructions
+```
+
+**JSON:**
+
+```json
+{
+  "_meta": {
+    "role": "reference",
+    "authority": "highest",
+    "governed_by": "CLAUDE.md",
+    "additional_instructions": "Additional instructions"
+  }
+}
+```
+
+**ENV/INI/conf/text/other:**
+
+```text
+# Purpose: Runtime configuration defaults
+# Authority: Config-level
+# Governed by: CLAUDE.md
+# Additional instructions
+```
+
+## Agent Handoff Summary
+
+- **Primary views**: `HomeView` (dashboard), `CaptureView` (inbox), `OrganizeView` (plans/lists), `CollectionDetailView` (detail), `SettingsView`
+- **Design system**: `ios/Offload/DesignSystem/Theme.swift` and `Components.swift`; theme is `midCenturyModern`
+- **Data model**: `Item.type == nil` = captures; `Collection.isStructured` distinguishes plans vs lists; `CollectionItem` stores order (`position`) and hierarchy (`parentId`)
+- **Relationships**: `Collection.collectionItems` and `Item.collectionItems` use `@Relationship` with cascade delete; `Collection.sortedItems` is canonical ordering
+- **Persistence**: Views use `@Query` for reactive data and `@Environment(\.itemRepository)` etc. for mutations
+- **Repositories**: Injected via `RepositoryEnvironment.swift`; CRUD in `ios/Offload/Data/Repositories/`
+- **Capture flow**: Creates `Item` records (type nil), can attach photo/voice, moves to plan/list via `CollectionItem` link

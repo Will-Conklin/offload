@@ -1,6 +1,6 @@
 // Purpose: Unit tests for breakdown service orchestration.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 @testable import Offload
 import XCTest

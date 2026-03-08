@@ -1,6 +1,6 @@
 // Purpose: Unit tests for advanced accessibility action label policy.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 @testable import Offload
 import SwiftUI

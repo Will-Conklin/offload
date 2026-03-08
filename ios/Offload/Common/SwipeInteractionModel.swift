@@ -1,6 +1,6 @@
 // Purpose: Shared swipe gesture state model used across card and row views.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import CoreGraphics
 

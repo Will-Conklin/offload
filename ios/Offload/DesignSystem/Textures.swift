@@ -1,6 +1,6 @@
 // Purpose: Texture overlays for retro digital warmth aesthetic
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep textures extremely subtle to maintain calm visual system.
 
 import SwiftUI

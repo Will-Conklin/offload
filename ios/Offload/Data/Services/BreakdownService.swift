@@ -1,6 +1,6 @@
 // Purpose: Task breakdown service orchestration.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep cloud usage opt-in and fallback-safe.
 
 import Foundation

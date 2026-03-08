@@ -1,6 +1,6 @@
 // Purpose: Organize feature pagination state.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep view model logic lightweight and MainActor-bound.
 
 import Foundation

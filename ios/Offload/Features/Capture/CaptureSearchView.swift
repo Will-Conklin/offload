@@ -1,6 +1,6 @@
 // Purpose: Search view for CaptureView.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 import UIKit

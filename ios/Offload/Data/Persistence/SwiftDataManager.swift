@@ -1,6 +1,6 @@
 // Purpose: SwiftData container and persistence setup.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Avoid side effects outside model context initialization.
 
 import Foundation

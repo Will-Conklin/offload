@@ -1,6 +1,6 @@
 // Purpose: File-backed storage for item attachments.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep attachment writes atomic and scoped to app-owned storage.
 
 import Foundation

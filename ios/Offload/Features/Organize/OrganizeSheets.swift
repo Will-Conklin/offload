@@ -1,6 +1,6 @@
 // Purpose: Sheet and search views for OrganizeView.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftData
 import SwiftUI

@@ -1,7 +1,7 @@
 # File: .github/workflows/context-aware-ci.yml
 # Role: Context-aware CI entry point with lane gating
 # Authority: Workflow orchestration
-# Governed by: AGENTS.md
+# Governed by: CLAUDE.md
 # Additional instructions: Keep lane conditions aligned with docs/reference/ci/reference-ci-path-filters.md
 
 ---

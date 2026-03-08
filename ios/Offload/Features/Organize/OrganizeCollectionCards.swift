@@ -1,6 +1,6 @@
 // Purpose: Collection card views for OrganizeView.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 

@@ -1,6 +1,6 @@
 // Purpose: Shared reorder position mapping helper for collection-item links.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep reorder behavior stable while avoiding repeated linear scans.
 
 import Foundation

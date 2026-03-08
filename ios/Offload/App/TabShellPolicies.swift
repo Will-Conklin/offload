@@ -1,6 +1,6 @@
 // Purpose: Shared policy values for tab shell layout, accessibility, and motion.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep policy values deterministic and aligned with Theme tokens.
 
 import SwiftUI

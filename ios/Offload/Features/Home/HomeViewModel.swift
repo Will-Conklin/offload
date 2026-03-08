@@ -1,6 +1,6 @@
 // Purpose: Home feature view model for dashboard stats and timeline data.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import Foundation
 import Observation

@@ -1,6 +1,6 @@
 // Purpose: Shared backend API contracts for AI and usage reconciliation.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep contract types stable and Codable.
 
 import Foundation

@@ -1,6 +1,6 @@
 // Purpose: UI tests for Offload.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep UI tests stable and focused on critical flows.
 
 import XCTest

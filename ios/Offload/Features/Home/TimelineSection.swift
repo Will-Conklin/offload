@@ -1,6 +1,6 @@
 // Purpose: Home feature — upcoming check-in timeline section.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 

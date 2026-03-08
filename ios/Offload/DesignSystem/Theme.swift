@@ -1,6 +1,6 @@
 // Purpose: Design system components and theme definitions.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Preserve established theme defaults and component APIs.
 
 //  Mid-Century Modern design system

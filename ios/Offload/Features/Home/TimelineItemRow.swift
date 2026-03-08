@@ -1,6 +1,6 @@
 // Purpose: Home feature — a single row in the Coming Up timeline.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 

@@ -1,6 +1,6 @@
 // Purpose: Repository layer for data access and queries.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep CRUD logic centralized and consistent with SwiftData models.
 
 //  Supports Tag entities linked to Item relationships.

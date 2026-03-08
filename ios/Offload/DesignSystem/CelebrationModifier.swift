@@ -1,6 +1,6 @@
 // Purpose: Celebration animation modifier for positive feedback moments.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 import UIKit

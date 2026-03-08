@@ -1,6 +1,6 @@
 // Purpose: Home feature support nudge card — warm, dismissible, message-driven.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 

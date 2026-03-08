@@ -1,6 +1,6 @@
 // Purpose: Environment keys for repository dependency injection.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: All views should access repositories through environment, not create them directly.
 
 import OSLog

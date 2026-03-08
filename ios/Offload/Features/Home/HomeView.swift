@@ -1,6 +1,6 @@
 // Purpose: Home feature dashboard — activity stats, support nudge, active collections, and coming-up timeline.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep navigation flow consistent with MainTabView -> NavigationStack -> sheets.
 
 import SwiftUI

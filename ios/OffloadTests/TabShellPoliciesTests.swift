@@ -1,6 +1,6 @@
 // Purpose: Unit tests for tab shell accessibility and layout policies.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 // Additional instructions: Keep tests deterministic and avoid relying on network or time.
 
 @testable import Offload

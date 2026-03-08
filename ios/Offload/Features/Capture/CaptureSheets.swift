@@ -1,6 +1,6 @@
 // Purpose: Sheet views for CaptureView.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import SwiftUI
 

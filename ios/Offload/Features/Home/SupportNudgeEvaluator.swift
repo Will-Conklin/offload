@@ -1,6 +1,6 @@
 // Purpose: Extensibility seam for deciding whether to surface a support nudge and what it says.
 // Authority: Code-level
-// Governed by: AGENTS.md
+// Governed by: CLAUDE.md
 
 import Foundation
 
