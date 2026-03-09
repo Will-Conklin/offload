@@ -173,7 +173,7 @@ struct DraggableCollectionCard: View {
         .accessibilityAction(named: AdvancedAccessibilityActionPolicy.starToggleActionName(isStarred: collection.isStarred)) {
             onToggleStar()
         }
-        .accessibilityActionIf(onConvert != nil, named: "Convert") {
+        .accessibilityActionIf(onConvert != nil, named: AdvancedAccessibilityActionPolicy.convertActionName(isStructured: collection.isStructured)) {
             onConvert?()
         }
         .accessibilityActionIf(onMoveUp != nil, named: "Move up") {
@@ -230,6 +230,7 @@ struct BottomCollectionDropZone: View {
                     isDropTarget = isTargeted
                 }
             }
+            .accessibilityHidden(true)
     }
 }
 

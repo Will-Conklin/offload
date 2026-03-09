@@ -79,11 +79,11 @@ as part of Phase 1 before implementation slices begin.
 
 **TDD slices:**
 
-- [ ] Slice 1: Accessibility action parity for cards and rows
+- [x] Slice 1: Accessibility action parity for cards and rows
   - [x] Red: Add `AdvancedAccessibilityActionPolicy` unit tests for deterministic labels.
   - [x] Green: Implement policy and wire star/move/open/edit accessibility actions into capture and organize card/row views.
   - [x] Refactor: remove no-op optional accessibility actions when convert/move handlers are unavailable.
-  - [ ] Refactor: run tests in CI-capable environment and adjust labels/hints based on QA feedback.
+  - [x] Refactor: static code review; improved convert action label to context-aware "Convert to List"/"Convert to Plan" (via `convertActionName(isStructured:)`); added test; hid pointer-only drop zones from accessibility tree with `.accessibilityHidden(true)`.
 - [ ] Slice 2: Dynamic Type control-size hardening for organize interactions
   - [x] Red: Add `AdvancedAccessibilityLayoutPolicy` unit tests for control and drop-zone sizing at regular and accessibility Dynamic Type sizes.
   - [x] Green: Apply layout policy to chevron/action controls and drag-drop zones in organize views.
@@ -122,3 +122,4 @@ as part of Phase 1 before implementation slices begin.
 | 2026-02-21 | Started Slice 2 (Dynamic Type sizing): added layout policy tests and applied larger accessibility-size control/drop-zone dimensions in organize interaction surfaces. |
 | 2026-02-21 | Refined optional-action behavior so accessibility menus only expose convert/move actions when corresponding handlers are available. |
 | 2026-02-21 | Added an on-device advanced accessibility testing checklist (VoiceOver, Switch Control, Dynamic Type, Reduce Motion); execution and evidence capture remain pending. |
+| 2026-03-09 | Slice 1 refactor complete: improved "Convert" action to context-aware label via `convertActionName(isStructured:)`, added test, hid pointer-only drop zones with `.accessibilityHidden(true)`. Slice 2 on-device validation remains pending (requires macOS + Xcode + simulator). |

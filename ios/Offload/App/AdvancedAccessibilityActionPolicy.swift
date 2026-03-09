@@ -24,6 +24,12 @@ enum AdvancedAccessibilityActionPolicy {
             "Move to List"
         }
     }
+
+    /// Returns the action name for converting a collection, naming the target type.
+    /// - Parameter isStructured: Whether the collection is currently a plan (`true`) or a list (`false`).
+    static func convertActionName(isStructured: Bool) -> String {
+        isStructured ? "Convert to List" : "Convert to Plan"
+    }
 }
 
 enum AdvancedAccessibilityLayoutPolicy {

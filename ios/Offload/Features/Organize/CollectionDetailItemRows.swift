@@ -233,6 +233,7 @@ struct BottomDropZone: View {
                     isDropTarget = isTargeted
                 }
             }
+            .accessibilityHidden(true)
     }
 }
 
