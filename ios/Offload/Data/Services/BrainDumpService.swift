@@ -22,9 +22,7 @@ final class SimpleOnDeviceBrainDumpGenerator: OnDeviceBrainDumpGenerating {
         let rawParts = inputText
             .components(separatedBy: CharacterSet(charactersIn: ".\n!?"))
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        let parts = rawParts.filter {
-            $0.components(separatedBy: .whitespaces).filter { !$0.isEmpty }.count > 2
-        }
+        let parts = rawParts.filter { $0.split(separator: " ").count > 2 }
         if parts.isEmpty {
             let trimmed = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
             let truncated = trimmed.count > 200 ? String(trimmed.prefix(200)) + "…" : trimmed
@@ -55,6 +53,8 @@ protocol BrainDumpService {
 }
 
 final class DefaultBrainDumpService: BrainDumpService {
+    static let featureKey = "braindump"
+
     private let backendClient: AIBackendClient
     private let consentStore: CloudAIConsentStore
     private let usageStore: UsageCounterStore
@@ -81,7 +81,7 @@ final class DefaultBrainDumpService: BrainDumpService {
         inputText: String,
         contextHints: [String]
     ) async throws -> BrainDumpExecutionResult {
-        usageStore.increment(feature: "braindump", by: 1)
+        usageStore.increment(feature: DefaultBrainDumpService.featureKey, by: 1)
 
         guard consentStore.isCloudAIEnabled else {
             let items = try await onDeviceGenerator.compileBrainDump(

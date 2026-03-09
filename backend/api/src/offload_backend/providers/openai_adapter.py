@@ -90,7 +90,8 @@ class OpenAIProviderAdapter:
                         )
                     return result
 
-            assert last_retryable_error is not None
+            if last_retryable_error is None:
+                raise RuntimeError("retry loop invariant violated")
             if attempt >= max_attempts:
                 break
             delay = self._retry_delay(attempt=attempt, total_delay_slept=total_delay_slept)
@@ -98,7 +99,8 @@ class OpenAIProviderAdapter:
             if delay > 0:
                 await self._sleep_fn(delay)
 
-        assert last_retryable_error is not None
+        if last_retryable_error is None:
+            raise RuntimeError("retry loop invariant violated")
         logger.warning(
             "provider_retry_terminal",
             extra={
@@ -234,7 +236,8 @@ class OpenAIProviderAdapter:
                         )
                     return result
 
-            assert last_retryable_error is not None
+            if last_retryable_error is None:
+                raise RuntimeError("retry loop invariant violated")
             if attempt >= max_attempts:
                 break
             delay = self._retry_delay(attempt=attempt, total_delay_slept=total_delay_slept)
@@ -242,7 +245,8 @@ class OpenAIProviderAdapter:
             if delay > 0:
                 await self._sleep_fn(delay)
 
-        assert last_retryable_error is not None
+        if last_retryable_error is None:
+            raise RuntimeError("retry loop invariant violated")
         logger.warning(
             "provider_retry_terminal",
             extra={

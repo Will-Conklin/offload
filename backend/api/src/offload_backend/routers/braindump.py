@@ -30,6 +30,10 @@ from offload_backend.security import SessionClaims
 router = APIRouter()
 
 
+def _request_content_size_chars(request: BrainDumpCompileRequest) -> int:
+    return len(request.input_text) + sum(len(h) for h in request.context_hints)
+
+
 @router.post("/ai/braindump/compile", response_model=BrainDumpCompileResponse)
 async def compile_brain_dump(
     request: BrainDumpCompileRequest,
@@ -38,8 +42,7 @@ async def compile_brain_dump(
     provider: AIProvider = Depends(get_provider),
     settings: Settings = Depends(get_app_settings),
 ) -> BrainDumpCompileResponse:
-    content_size = len(request.input_text) + sum(len(h) for h in request.context_hints)
-    if content_size > settings.max_input_chars:
+    if _request_content_size_chars(request) > settings.max_input_chars:
         raise APIException(
             status_code=413,
             code="request_too_large",

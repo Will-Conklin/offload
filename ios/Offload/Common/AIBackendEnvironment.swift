@@ -19,17 +19,17 @@ private struct UsageCounterStoreKey: EnvironmentKey {
 
 private struct BreakdownServiceKey: EnvironmentKey {
     static let defaultValue: BreakdownService = DefaultBreakdownService(
-        backendClient: NetworkAIBackendClient(),
-        consentStore: UserDefaultsCloudAIConsentStore(),
-        usageStore: UserDefaultsUsageCounterStore()
+        backendClient: AIBackendClientKey.defaultValue,
+        consentStore: CloudAIConsentStoreKey.defaultValue,
+        usageStore: UsageCounterStoreKey.defaultValue
     )
 }
 
 private struct BrainDumpServiceKey: EnvironmentKey {
     static let defaultValue: BrainDumpService = DefaultBrainDumpService(
-        backendClient: NetworkAIBackendClient(),
-        consentStore: UserDefaultsCloudAIConsentStore(),
-        usageStore: UserDefaultsUsageCounterStore()
+        backendClient: AIBackendClientKey.defaultValue,
+        consentStore: CloudAIConsentStoreKey.defaultValue,
+        usageStore: UsageCounterStoreKey.defaultValue
     )
 }
 
