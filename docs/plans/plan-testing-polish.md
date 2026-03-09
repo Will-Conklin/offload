@@ -52,13 +52,13 @@ and accessibility review before release prep begins.
 
 **Status:** Not Started
 
-- [ ] Run the [launch manual testing checklist](../design/testing/design-manual-testing-checklist.md)
+- [ ] Run the [launch manual testing checklist](../design.md#manual-testing-checklist)
       end-to-end.
-- [ ] Record results in [manual testing results](../design/testing/design-manual-testing-results.md).
+- [ ] Record results in a manual testing results artifact (create in `docs/plans/` or a shared doc).
 - [ ] Verify capture list actions (complete, star, delete) match
       [PRD intent](../prds/prd-0001-product-requirements.md).
 - [ ] Confirm voice recording (permissions, start/stop, transcription) per
-      [voice capture testing guide](../design/testing/design-voice-capture-testing-guide.md).
+      [voice capture testing guide](../design.md#voice-capture-testing-checklist).
 - [ ] Validate offline capture and persistence.
 - [ ] Review UX tone requirements in core capture/organize flows.
 
@@ -111,8 +111,8 @@ This phase validates that work and catches any remaining gaps.
 
 ## Dependencies
 
-- Launch testing checklist: [design-manual-testing-checklist](../design/testing/design-manual-testing-checklist.md)
-- Testing results log: [design-manual-testing-results](../design/testing/design-manual-testing-results.md)
+- Launch testing checklist: [Manual Testing Checklist](../design.md#manual-testing-checklist) (in `docs/design.md`)
+- Testing results log: create in `docs/plans/` when testing begins
 - Baseline accessibility fixes: [plan-ux-accessibility-audit-fixes](./plan-ux-accessibility-audit-fixes.md)
   (completed 2026-02-09)
 - Stable build of the iOS app for QA execution.

@@ -65,10 +65,10 @@ as part of Phase 1 before implementation slices begin.
 
 **Mapped first-slice components:**
 
-- `/Users/wconklin/Code/GitHub/Will-Conklin/offload/ios/Offload/Features/Capture/CaptureItemCard.swift`
-- `/Users/wconklin/Code/GitHub/Will-Conklin/offload/ios/Offload/Features/Organize/CollectionDetailItemRows.swift`
-- `/Users/wconklin/Code/GitHub/Will-Conklin/offload/ios/Offload/Features/Organize/OrganizeCollectionCards.swift`
-- `/Users/wconklin/Code/GitHub/Will-Conklin/offload/ios/Offload/App/AdvancedAccessibilityActionPolicy.swift`
+- `ios/Offload/Features/Capture/CaptureItemCard.swift`
+- `ios/Offload/Features/Organize/CollectionDetailItemRows.swift`
+- `ios/Offload/Features/Organize/OrganizeCollectionCards.swift`
+- `ios/Offload/App/AdvancedAccessibilityActionPolicy.swift`
 
 ### Phase 3: Implementation & Validation
 
