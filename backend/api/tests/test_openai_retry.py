@@ -17,20 +17,20 @@ def _response(status_code: int, payload: dict) -> httpx.Response:
 
 def _settings(
     *,
-    openai_retry_max_attempts: int = 3,
-    openai_retry_base_delay_seconds: float = 0.5,
-    openai_retry_max_delay_seconds: float = 2.0,
-    openai_retry_max_total_delay_seconds: float = 3.0,
-    openai_retry_jitter_factor: float = 0.0,
+    ai_retry_max_attempts: int = 3,
+    ai_retry_base_delay_seconds: float = 0.5,
+    ai_retry_max_delay_seconds: float = 2.0,
+    ai_retry_max_total_delay_seconds: float = 3.0,
+    ai_retry_jitter_factor: float = 0.0,
 ) -> Settings:
     return Settings(
         session_secret="test-secret",
         openai_api_key="test-key",
-        openai_retry_max_attempts=openai_retry_max_attempts,
-        openai_retry_base_delay_seconds=openai_retry_base_delay_seconds,
-        openai_retry_max_delay_seconds=openai_retry_max_delay_seconds,
-        openai_retry_max_total_delay_seconds=openai_retry_max_total_delay_seconds,
-        openai_retry_jitter_factor=openai_retry_jitter_factor,
+        ai_retry_max_attempts=ai_retry_max_attempts,
+        ai_retry_base_delay_seconds=ai_retry_base_delay_seconds,
+        ai_retry_max_delay_seconds=ai_retry_max_delay_seconds,
+        ai_retry_max_total_delay_seconds=ai_retry_max_total_delay_seconds,
+        ai_retry_jitter_factor=ai_retry_jitter_factor,
     )
 
 
@@ -128,7 +128,7 @@ def test_openai_adapter_retries_429_and_5xx_with_bounded_attempts(caplog):
         return _response(503, {"error": {"message": "unavailable"}})
 
     adapter = OpenAIProviderAdapter(
-        settings=_settings(openai_retry_max_attempts=3),
+        settings=_settings(ai_retry_max_attempts=3),
         request_executor=fake_executor,
         sleep_fn=fake_sleep,
     )
@@ -166,10 +166,10 @@ def test_openai_adapter_bounds_total_retry_delay_budget():
 
     adapter = OpenAIProviderAdapter(
         settings=_settings(
-            openai_retry_max_attempts=5,
-            openai_retry_base_delay_seconds=1.0,
-            openai_retry_max_delay_seconds=10.0,
-            openai_retry_max_total_delay_seconds=1.5,
+            ai_retry_max_attempts=5,
+            ai_retry_base_delay_seconds=1.0,
+            ai_retry_max_delay_seconds=10.0,
+            ai_retry_max_total_delay_seconds=1.5,
         ),
         request_executor=fake_executor,
         sleep_fn=fake_sleep,

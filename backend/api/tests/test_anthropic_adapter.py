@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 
 import httpx
 import pytest
 
-from offload_backend.config import Settings
+from offload_backend.config import Settings, get_settings
+from offload_backend.dependencies import get_provider
 from offload_backend.providers.anthropic_adapter import AnthropicProviderAdapter
 from offload_backend.providers.base import (
     ProviderRequestError,
@@ -46,16 +48,16 @@ def _settings(**overrides) -> Settings:
     defaults = {
         "session_secret": "test-secret",
         "anthropic_api_key": "test-anthropic-key",
-        "openai_retry_max_attempts": 3,
-        "openai_retry_base_delay_seconds": 0.5,
-        "openai_retry_max_delay_seconds": 2.0,
-        "openai_retry_max_total_delay_seconds": 3.0,
-        "openai_retry_jitter_factor": 0.0,
+        "ai_retry_max_attempts": 3,
+        "ai_retry_base_delay_seconds": 0.5,
+        "ai_retry_max_delay_seconds": 2.0,
+        "ai_retry_max_total_delay_seconds": 3.0,
+        "ai_retry_jitter_factor": 0.0,
     }
     return Settings(**(defaults | overrides))
 
 
-def _adapter(executor, settings=None) -> AnthropicProviderAdapter:
+def _adapter(executor, settings=None) -> tuple[AnthropicProviderAdapter, list[float]]:
     slept: list[float] = []
 
     async def fake_sleep(delay: float):
@@ -66,8 +68,7 @@ def _adapter(executor, settings=None) -> AnthropicProviderAdapter:
         request_executor=executor,
         sleep_fn=fake_sleep,
     )
-    adapter._slept = slept
-    return adapter
+    return adapter, slept
 
 
 # --- generate_breakdown ---
@@ -79,7 +80,7 @@ def test_anthropic_generate_breakdown_success():
         assert "/v1/messages" in url
         return _breakdown_response()
 
-    adapter = _adapter(executor)
+    adapter, _ = _adapter(executor)
     result = asyncio.run(
         adapter.generate_breakdown(
             input_text="clean the kitchen",
@@ -108,7 +109,7 @@ def test_anthropic_generate_breakdown_raises_on_parse_error():
     async def executor(url, payload, headers, timeout):
         return _response(200, {"content": [{"type": "text", "text": "not json"}], "usage": {}})
 
-    adapter = _adapter(executor)
+    adapter, _ = _adapter(executor)
     with pytest.raises(ProviderResponseError):
         asyncio.run(
             adapter.generate_breakdown(
@@ -123,7 +124,7 @@ def test_anthropic_compile_brain_dump_success():
     async def executor(url, payload, headers, timeout):
         return _brain_dump_response()
 
-    adapter = _adapter(executor)
+    adapter, _ = _adapter(executor)
     result = asyncio.run(
         adapter.compile_brain_dump(input_text="I need to call the dentist", context_hints=[])
     )
@@ -150,7 +151,7 @@ def test_anthropic_retries_timeout_then_succeeds():
             raise httpx.ReadTimeout("timed out")
         return _breakdown_response()
 
-    adapter = _adapter(executor)
+    adapter, slept = _adapter(executor)
     result = asyncio.run(
         adapter.generate_breakdown(
             input_text="test", granularity=1, context_hints=[], template_ids=[]
@@ -158,7 +159,7 @@ def test_anthropic_retries_timeout_then_succeeds():
     )
 
     assert attempts["count"] == 2
-    assert len(adapter._slept) == 1
+    assert len(slept) == 1
     assert result.input_tokens == 10
 
 
@@ -169,7 +170,7 @@ def test_anthropic_does_not_retry_non_retryable_4xx():
         attempts["count"] += 1
         return _response(400, {"type": "error", "error": {"type": "invalid_request_error"}})
 
-    adapter = _adapter(executor)
+    adapter, slept = _adapter(executor)
     with pytest.raises(ProviderRequestError, match="rejected"):
         asyncio.run(
             adapter.generate_breakdown(
@@ -178,7 +179,7 @@ def test_anthropic_does_not_retry_non_retryable_4xx():
         )
 
     assert attempts["count"] == 1
-    assert adapter._slept == []
+    assert slept == []
 
 
 def test_anthropic_retries_429_and_5xx_up_to_max_attempts(caplog):
@@ -190,7 +191,7 @@ def test_anthropic_retries_429_and_5xx_up_to_max_attempts(caplog):
             return _response(429, {"error": "rate limited"})
         return _response(503, {"error": "unavailable"})
 
-    adapter = _adapter(executor)
+    adapter, slept = _adapter(executor)
     with caplog.at_level("WARNING", logger="offload_backend"):
         with pytest.raises(ProviderUnavailable):
             asyncio.run(
@@ -200,7 +201,7 @@ def test_anthropic_retries_429_and_5xx_up_to_max_attempts(caplog):
             )
 
     assert attempts["count"] == 3
-    assert len(adapter._slept) == 2
+    assert len(slept) == 2
     terminal = [r for r in caplog.records if r.msg == "provider_retry_terminal"]
     assert terminal
     assert terminal[-1].provider == "anthropic"
@@ -215,7 +216,7 @@ def test_anthropic_retries_529_overloaded():
             return _response(529, {"error": "overloaded"})
         return _brain_dump_response()
 
-    adapter = _adapter(executor)
+    adapter, _ = _adapter(executor)
     result = asyncio.run(
         adapter.compile_brain_dump(input_text="brain dump text", context_hints=[])
     )
@@ -226,11 +227,6 @@ def test_anthropic_retries_529_overloaded():
 
 def test_anthropic_get_provider_dependency_returns_anthropic(app):
     """Confirm get_provider returns AnthropicProviderAdapter when ai_provider=anthropic."""
-    import os
-
-    from offload_backend.config import get_settings
-    from offload_backend.dependencies import get_provider
-
     get_settings.cache_clear()
     os.environ["OFFLOAD_AI_PROVIDER"] = "anthropic"
     os.environ["OFFLOAD_ANTHROPIC_API_KEY"] = "sk-ant-test"

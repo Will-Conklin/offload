@@ -4,7 +4,7 @@ import asyncio
 import json
 import logging
 import random
-from collections.abc import Awaitable, Callable
+from collections.abc import Callable
 
 import httpx
 
@@ -16,11 +16,12 @@ from offload_backend.providers.base import (
     ProviderResponseError,
     ProviderTimeout,
     ProviderUnavailable,
+    RequestExecutor,
+    SleepFunction,
+    compute_retry_delay,
 )
 
 logger = logging.getLogger("offload_backend")
-RequestExecutor = Callable[[str, dict, dict, httpx.Timeout], Awaitable[httpx.Response]]
-SleepFunction = Callable[[float], Awaitable[None]]
 
 
 class OpenAIProviderAdapter:
@@ -64,7 +65,7 @@ class OpenAIProviderAdapter:
         timeout = httpx.Timeout(self._settings.openai_timeout_seconds)
 
         total_delay_slept = 0.0
-        max_attempts = self._settings.openai_retry_max_attempts
+        max_attempts = self._settings.ai_retry_max_attempts
         last_retryable_error: Exception | None = None
 
         for attempt in range(1, max_attempts + 1):
@@ -94,7 +95,15 @@ class OpenAIProviderAdapter:
                 raise RuntimeError("retry loop invariant violated")
             if attempt >= max_attempts:
                 break
-            delay = self._retry_delay(attempt=attempt, total_delay_slept=total_delay_slept)
+            delay = compute_retry_delay(
+                attempt=attempt,
+                total_delay_slept=total_delay_slept,
+                base_delay=self._settings.ai_retry_base_delay_seconds,
+                max_delay=self._settings.ai_retry_max_delay_seconds,
+                max_total_delay=self._settings.ai_retry_max_total_delay_seconds,
+                jitter_factor=self._settings.ai_retry_jitter_factor,
+                random_fn=self._random_fn,
+            )
             total_delay_slept += delay
             if delay > 0:
                 await self._sleep_fn(delay)
@@ -155,18 +164,6 @@ class OpenAIProviderAdapter:
         async with httpx.AsyncClient(timeout=timeout) as client:
             return await client.post(url, json=payload, headers=headers)
 
-    def _retry_delay(self, *, attempt: int, total_delay_slept: float) -> float:
-        base = self._settings.openai_retry_base_delay_seconds
-        max_delay = self._settings.openai_retry_max_delay_seconds
-        bounded_base = min(max_delay, base * (2 ** (attempt - 1)))
-        jitter = bounded_base * self._settings.openai_retry_jitter_factor * self._random_fn()
-        candidate = min(max_delay, bounded_base + jitter)
-        budget_left = max(
-            0.0,
-            self._settings.openai_retry_max_total_delay_seconds - total_delay_slept,
-        )
-        return min(candidate, budget_left)
-
     def _parse_success_response(self, response: httpx.Response) -> ProviderBreakdownResult:
         try:
             body = response.json()
@@ -210,7 +207,7 @@ class OpenAIProviderAdapter:
         timeout = httpx.Timeout(self._settings.openai_timeout_seconds)
 
         total_delay_slept = 0.0
-        max_attempts = self._settings.openai_retry_max_attempts
+        max_attempts = self._settings.ai_retry_max_attempts
         last_retryable_error: Exception | None = None
 
         for attempt in range(1, max_attempts + 1):
@@ -240,7 +237,15 @@ class OpenAIProviderAdapter:
                 raise RuntimeError("retry loop invariant violated")
             if attempt >= max_attempts:
                 break
-            delay = self._retry_delay(attempt=attempt, total_delay_slept=total_delay_slept)
+            delay = compute_retry_delay(
+                attempt=attempt,
+                total_delay_slept=total_delay_slept,
+                base_delay=self._settings.ai_retry_base_delay_seconds,
+                max_delay=self._settings.ai_retry_max_delay_seconds,
+                max_total_delay=self._settings.ai_retry_max_total_delay_seconds,
+                jitter_factor=self._settings.ai_retry_jitter_factor,
+                random_fn=self._random_fn,
+            )
             total_delay_slept += delay
             if delay > 0:
                 await self._sleep_fn(delay)
