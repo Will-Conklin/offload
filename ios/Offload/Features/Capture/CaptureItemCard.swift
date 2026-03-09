@@ -17,6 +17,7 @@ struct ItemCard: View {
     let onDelete: () -> Void
     let onComplete: () -> Void
     let onMoveTo: (MoveDestination) -> Void
+    let onBreakdown: () -> Void
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -135,6 +136,9 @@ struct ItemCard: View {
         .accessibilityAction(named: AdvancedAccessibilityActionPolicy.moveDestinationActionName(.list)) {
             onMoveTo(.list)
         }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.breakdownActionName) {
+            onBreakdown()
+        }
         .accessibilityElement(children: .combine)
         .contextMenu {
             Button {
@@ -154,6 +158,16 @@ struct ItemCard: View {
                     Text("Move to List")
                 } icon: {
                     AppIcon(name: Icons.lists, size: 14)
+                }
+            }
+
+            Button {
+                onBreakdown()
+            } label: {
+                Label {
+                    Text("Break Down")
+                } icon: {
+                    AppIcon(name: Icons.breakdown, size: 14)
                 }
             }
         }

@@ -30,6 +30,9 @@ enum AdvancedAccessibilityActionPolicy {
     static func convertActionName(isStructured: Bool) -> String {
         isStructured ? "Convert to List" : "Convert to Plan"
     }
+
+    /// Returns the action name for triggering Smart Task Breakdown on an item.
+    static let breakdownActionName = "Break Down"
 }
 
 enum AdvancedAccessibilityLayoutPolicy {

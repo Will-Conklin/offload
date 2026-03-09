@@ -27,6 +27,7 @@ struct CaptureView: View {
     @State private var tagPickerItem: Item?
     @State private var moveItem: Item?
     @State private var moveDestination: MoveDestination?
+    @State private var breakdownItem: Item?
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -68,7 +69,8 @@ struct CaptureView: View {
                                 onMoveTo: { destination in
                                     moveItem = item
                                     moveDestination = destination
-                                }
+                                },
+                                onBreakdown: { breakdownItem = item }
                             )
                             .onAppear {
                                 if index == viewModel.items.count - 1 {
@@ -176,6 +178,12 @@ struct CaptureView: View {
                         refreshItems()
                     }
                 }
+            }
+            .sheet(item: $breakdownItem) { item in
+                BreakdownSheet(item: item)
+                    .environmentObject(themeManager)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
             .errorToasts(errorPresenter)
         }
