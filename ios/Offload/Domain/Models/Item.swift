@@ -167,4 +167,14 @@ extension Item {
     var relativeTimestamp: String {
         createdAt.formatted(.relative(presentation: .named))
     }
+
+    /// Number of words in the item content.
+    var wordCount: Int {
+        content.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }.count
+    }
+
+    /// True when the item content is long enough to warrant a Brain Dump suggestion.
+    var isBrainDumpCandidate: Bool {
+        wordCount > 75
+    }
 }

@@ -228,6 +228,15 @@ private final class MockBackendClient: AIBackendClient {
         return try breakdownResult.get()
     }
 
+    func compileBrainDump(request _: BrainDumpCompileRequest) async throws -> BrainDumpCompileResponse {
+        BrainDumpCompileResponse(
+            items: [],
+            provider: "openai",
+            latencyMs: 0,
+            usage: BrainDumpUsage(inputTokens: 0, outputTokens: 0)
+        )
+    }
+
     func reconcileUsage(request _: UsageReconcileRequest) async throws -> UsageReconcileResponse {
         try reconcileResult.get()
     }

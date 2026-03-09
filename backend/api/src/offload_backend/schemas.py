@@ -78,3 +78,28 @@ class ErrorBody(BaseModel):
 
 class ErrorEnvelope(BaseModel):
     error: ErrorBody
+
+
+class BrainDumpCompileRequest(BaseModel):
+    input_text: str = Field(min_length=1)
+    context_hints: list[Annotated[str, Field(min_length=1, max_length=280)]] = Field(
+        default_factory=list,
+        max_length=32,
+    )
+
+
+class BrainDumpItem(BaseModel):
+    title: str = Field(min_length=1, max_length=280)
+    type: str = Field(min_length=1, max_length=32)
+
+
+class BrainDumpUsage(BaseModel):
+    input_tokens: int = Field(ge=0)
+    output_tokens: int = Field(ge=0)
+
+
+class BrainDumpCompileResponse(BaseModel):
+    items: list[BrainDumpItem]
+    provider: str
+    latency_ms: int = Field(ge=0)
+    usage: BrainDumpUsage

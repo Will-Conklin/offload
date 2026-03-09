@@ -33,6 +33,14 @@ class ProviderBreakdownResult(BaseModel):
     output_tokens: int
 
 
+class ProviderBrainDumpResult(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    items: list[dict] = Field(default_factory=list)
+    input_tokens: int
+    output_tokens: int
+
+
 class AIProvider(Protocol):
     async def generate_breakdown(
         self,
@@ -42,3 +50,10 @@ class AIProvider(Protocol):
         context_hints: list[str],
         template_ids: list[str],
     ) -> ProviderBreakdownResult: ...
+
+    async def compile_brain_dump(
+        self,
+        *,
+        input_text: str,
+        context_hints: list[str],
+    ) -> ProviderBrainDumpResult: ...

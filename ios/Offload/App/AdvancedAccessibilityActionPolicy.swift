@@ -33,6 +33,9 @@ enum AdvancedAccessibilityActionPolicy {
 
     /// Returns the action name for triggering Smart Task Breakdown on an item.
     static let breakdownActionName = "Break Down"
+
+    /// Returns the action name for triggering Brain Dump Compiler on an item.
+    static let brainDumpActionName = "Compile Brain Dump"
 }
 
 enum AdvancedAccessibilityLayoutPolicy {

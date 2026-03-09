@@ -10,6 +10,7 @@ import httpx
 
 from offload_backend.config import Settings
 from offload_backend.providers.base import (
+    ProviderBrainDumpResult,
     ProviderBreakdownResult,
     ProviderRequestError,
     ProviderResponseError,
@@ -182,6 +183,128 @@ class OpenAIProviderAdapter:
 
         return ProviderBreakdownResult(
             steps=steps,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+
+    async def compile_brain_dump(
+        self,
+        *,
+        input_text: str,
+        context_hints: list[str],
+    ) -> ProviderBrainDumpResult:
+        if not self._settings.openai_api_key:
+            raise ProviderUnavailable("OpenAI API key is not configured")
+
+        payload = self._brain_dump_request_payload(
+            input_text=input_text,
+            context_hints=context_hints,
+        )
+        headers = {
+            "Authorization": f"Bearer {self._settings.openai_api_key}",
+            "Content-Type": "application/json",
+        }
+        url = f"{self._settings.openai_base_url}/chat/completions"
+        timeout = httpx.Timeout(self._settings.openai_timeout_seconds)
+
+        total_delay_slept = 0.0
+        max_attempts = self._settings.openai_retry_max_attempts
+        last_retryable_error: Exception | None = None
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = await self._request_executor(url, payload, headers, timeout)
+            except httpx.TimeoutException:
+                last_retryable_error = ProviderTimeout("OpenAI request timed out")
+            except httpx.HTTPError:
+                last_retryable_error = ProviderRequestError("OpenAI request failed")
+            else:
+                if response.status_code >= 500:
+                    last_retryable_error = ProviderRequestError("OpenAI server error")
+                elif response.status_code == 429:
+                    last_retryable_error = ProviderRequestError("OpenAI rate limited")
+                elif response.status_code >= 400:
+                    raise ProviderRequestError("OpenAI request rejected")
+                else:
+                    result = self._parse_brain_dump_response(response)
+                    if attempt > 1:
+                        logger.info(
+                            "provider_retry_recovered",
+                            extra={"attempt_count": attempt, "provider": self.provider_name},
+                        )
+                    return result
+
+            assert last_retryable_error is not None
+            if attempt >= max_attempts:
+                break
+            delay = self._retry_delay(attempt=attempt, total_delay_slept=total_delay_slept)
+            total_delay_slept += delay
+            if delay > 0:
+                await self._sleep_fn(delay)
+
+        assert last_retryable_error is not None
+        logger.warning(
+            "provider_retry_terminal",
+            extra={
+                "attempt_count": max_attempts,
+                "error_class": last_retryable_error.__class__.__name__,
+                "provider": self.provider_name,
+            },
+        )
+        raise last_retryable_error
+
+    def _brain_dump_request_payload(
+        self,
+        *,
+        input_text: str,
+        context_hints: list[str],
+    ) -> dict:
+        return {
+            "model": self._settings.openai_model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "You extract and categorize items from unstructured text. "
+                        "Valid type values: task, note, idea, question, "
+                        "decision, concern, reference. "
+                        "Return strict JSON with this shape: "
+                        '{"items":[{"title":"...","type":"..."}]}. '
+                        "Produce one item per distinct thought, action, or topic. "
+                        "Keep titles concise (under 100 words each)."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "input_text": input_text,
+                            "context_hints": context_hints,
+                        }
+                    ),
+                },
+            ],
+            "response_format": {"type": "json_object"},
+        }
+
+    def _parse_brain_dump_response(self, response: httpx.Response) -> ProviderBrainDumpResult:
+        try:
+            body = response.json()
+            content = body["choices"][0]["message"]["content"]
+            parsed = json.loads(content)
+            items = parsed["items"]
+        except (KeyError, IndexError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            raise ProviderResponseError("OpenAI brain dump response parsing failed") from exc
+
+        usage = body.get("usage", {})
+        input_tokens = int(usage.get("prompt_tokens", 0))
+        output_tokens = int(usage.get("completion_tokens", 0))
+
+        if not isinstance(items, list):
+            raise ProviderResponseError("OpenAI brain dump response did not return an items array")
+
+        return ProviderBrainDumpResult(
+            items=items,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )

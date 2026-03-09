@@ -43,8 +43,8 @@ Six AI-assisted features for neurodivergent users. Backend infrastructure is pro
 **Feature 1 — Smart Task Breakdown** (implemented 2026-03-09):
 Decomposes a task into subtasks with adjustable granularity (1–5). Cloud endpoint: `POST /v1/ai/breakdown/generate`. UI: granularity slider, subtask preview, approve/edit before save. Core implementation shipped: `BreakdownSheet.swift` (ViewModel + UI), wired into `CaptureItemCard` context menu and accessibility actions, and `CaptureView` sheet presentation. Template persistence deferred post-launch.
 
-**Feature 2 — Brain Dump Compiler** (after Feature 1):
-Extracts and categorizes items from long captures (>75 words triggers suggestion). Creates Collections from approved compilations. Categories map to `ItemType` cases directly.
+**Feature 2 — Brain Dump Compiler** (implemented 2026-03-09):
+Extracts and categorizes items from long captures (>75 words triggers suggestion). Creates Collections from approved compilations. Categories map to `ItemType` cases directly. Core implementation shipped: `BrainDumpSheet.swift` (ViewModel + UI), `BrainDumpService.swift`, backend `POST /v1/ai/braindump/compile` endpoint, wired into `CaptureItemCard` context menu, accessibility action, and visual suggestion badge for long-content items. `CaptureView` sheet presentation.
 
 **Feature 3 — Recurring Task Intelligence** (after infra proven; ⚠️ needs human gate):
 Detects natural completion patterns (≥3 completions), surfaces gentle suggestions at learned intervals. No rigid schedules, no "overdue" language. Learns from snooze/dismiss timing.

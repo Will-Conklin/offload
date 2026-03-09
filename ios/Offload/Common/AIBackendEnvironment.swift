@@ -25,6 +25,14 @@ private struct BreakdownServiceKey: EnvironmentKey {
     )
 }
 
+private struct BrainDumpServiceKey: EnvironmentKey {
+    static let defaultValue: BrainDumpService = DefaultBrainDumpService(
+        backendClient: NetworkAIBackendClient(),
+        consentStore: UserDefaultsCloudAIConsentStore(),
+        usageStore: UserDefaultsUsageCounterStore()
+    )
+}
+
 extension EnvironmentValues {
     var aiBackendClient: AIBackendClient {
         get { self[AIBackendClientKey.self] }
@@ -44,5 +52,10 @@ extension EnvironmentValues {
     var breakdownService: BreakdownService {
         get { self[BreakdownServiceKey.self] }
         set { self[BreakdownServiceKey.self] = newValue }
+    }
+
+    var brainDumpService: BrainDumpService {
+        get { self[BrainDumpServiceKey.self] }
+        set { self[BrainDumpServiceKey.self] = newValue }
     }
 }

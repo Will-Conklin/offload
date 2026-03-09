@@ -131,6 +131,7 @@ final class UserDefaultsUsageCounterStore: UsageCounterStore {
 protocol AIBackendClient {
     func createAnonymousSession(request: AnonymousSessionRequest) async throws -> AnonymousSessionResponse
     func generateBreakdown(request: BreakdownGenerateRequest) async throws -> BreakdownGenerateResponse
+    func compileBrainDump(request: BrainDumpCompileRequest) async throws -> BrainDumpCompileResponse
     func reconcileUsage(request: UsageReconcileRequest) async throws -> UsageReconcileResponse
 }
 
@@ -238,6 +239,45 @@ final class NetworkAIBackendClient: AIBackendClient {
                 method: "POST",
                 body: request,
                 headers: ["Authorization": "Bearer \(refreshedToken)"],
+                retryUnauthorized: false
+            )
+        }
+    }
+
+    func compileBrainDump(request: BrainDumpCompileRequest) async throws -> BrainDumpCompileResponse {
+        guard consentStore.isCloudAIEnabled else {
+            throw AIBackendClientError.consentRequired
+        }
+
+        try await ensureActiveSession()
+        guard let token = tokenStore.token else {
+            throw AIBackendClientError.missingSession
+        }
+
+        do {
+            return try await performRequest(
+                path: "/v1/ai/braindump/compile",
+                method: "POST",
+                body: request,
+                headers: [
+                    "Authorization": "Bearer \(token)",
+                    "X-Offload-Cloud-Opt-In": "true",
+                ],
+                retryUnauthorized: false
+            )
+        } catch AIBackendClientError.unauthorized {
+            try await refreshSession()
+            guard let refreshedToken = tokenStore.token else {
+                throw AIBackendClientError.missingSession
+            }
+            return try await performRequest(
+                path: "/v1/ai/braindump/compile",
+                method: "POST",
+                body: request,
+                headers: [
+                    "Authorization": "Bearer \(refreshedToken)",
+                    "X-Offload-Cloud-Opt-In": "true",
+                ],
                 retryUnauthorized: false
             )
         }

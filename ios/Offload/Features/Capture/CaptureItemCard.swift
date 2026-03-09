@@ -18,6 +18,7 @@ struct ItemCard: View {
     let onComplete: () -> Void
     let onMoveTo: (MoveDestination) -> Void
     let onBreakdown: () -> Void
+    let onBrainDump: () -> Void
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -58,6 +59,25 @@ struct ItemCard: View {
             }
             .overlay(alignment: .bottomTrailing) {
                 StarButton(isStarred: item.isStarred, action: onToggleStar)
+            }
+            .overlay(alignment: .topTrailing) {
+                if item.isBrainDumpCandidate {
+                    Button(action: onBrainDump) {
+                        Label("Brain Dump?", systemImage: Icons.brainDump)
+                            .font(Theme.Typography.badge)
+                            .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
+                            .padding(.horizontal, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.xs)
+                            .background(
+                                Capsule()
+                                    .fill(Theme.Colors.accentPrimary(colorScheme, style: style).opacity(0.12))
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .padding(Theme.Spacing.sm)
+                    .accessibilityLabel("Compile Brain Dump")
+                    .accessibilityHint("Extracts and categorizes items from this capture")
+                }
             }
             .overlay {
                 HStack {
@@ -139,6 +159,9 @@ struct ItemCard: View {
         .accessibilityAction(named: AdvancedAccessibilityActionPolicy.breakdownActionName) {
             onBreakdown()
         }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.brainDumpActionName) {
+            onBrainDump()
+        }
         .accessibilityElement(children: .combine)
         .contextMenu {
             Button {
@@ -168,6 +191,16 @@ struct ItemCard: View {
                     Text("Break Down")
                 } icon: {
                     AppIcon(name: Icons.breakdown, size: 14)
+                }
+            }
+
+            Button {
+                onBrainDump()
+            } label: {
+                Label {
+                    Text("Compile Brain Dump")
+                } icon: {
+                    AppIcon(name: Icons.brainDump, size: 14)
                 }
             }
         }

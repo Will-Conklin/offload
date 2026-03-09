@@ -107,3 +107,42 @@ struct UsageReconcileResponse: Codable, Equatable {
         case reconciledAt = "reconciled_at"
     }
 }
+
+struct BrainDumpCompileRequest: Codable, Equatable {
+    let inputText: String
+    let contextHints: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case inputText = "input_text"
+        case contextHints = "context_hints"
+    }
+}
+
+struct BrainDumpItem: Codable, Equatable {
+    let title: String
+    let type: String
+}
+
+struct BrainDumpUsage: Codable, Equatable {
+    let inputTokens: Int
+    let outputTokens: Int
+
+    enum CodingKeys: String, CodingKey {
+        case inputTokens = "input_tokens"
+        case outputTokens = "output_tokens"
+    }
+}
+
+struct BrainDumpCompileResponse: Codable, Equatable {
+    let items: [BrainDumpItem]
+    let provider: String
+    let latencyMs: Int
+    let usage: BrainDumpUsage
+
+    enum CodingKeys: String, CodingKey {
+        case items
+        case provider
+        case latencyMs = "latency_ms"
+        case usage
+    }
+}
