@@ -29,6 +29,7 @@ struct CaptureView: View {
     @State private var moveDestination: MoveDestination?
     @State private var breakdownItem: Item?
     @State private var brainDumpItem: Item?
+    @State private var decisionFatigueItem: Item?
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -72,7 +73,8 @@ struct CaptureView: View {
                                     moveDestination = destination
                                 },
                                 onBreakdown: { breakdownItem = item },
-                                onBrainDump: { brainDumpItem = item }
+                                onBrainDump: { brainDumpItem = item },
+                                onDecisionFatigue: { decisionFatigueItem = item }
                             )
                             .onAppear {
                                 if index == viewModel.items.count - 1 {
@@ -189,6 +191,12 @@ struct CaptureView: View {
             }
             .sheet(item: $brainDumpItem) { item in
                 BrainDumpSheet(item: item)
+                    .environmentObject(themeManager)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+            }
+            .sheet(item: $decisionFatigueItem) { item in
+                DecisionFatigueSheet(item: item)
                     .environmentObject(themeManager)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)

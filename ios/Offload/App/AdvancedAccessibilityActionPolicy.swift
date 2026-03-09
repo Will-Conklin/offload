@@ -36,6 +36,9 @@ enum AdvancedAccessibilityActionPolicy {
 
     /// Returns the action name for triggering Brain Dump Compiler on an item.
     static let brainDumpActionName = "Compile Brain Dump"
+
+    /// Returns the action name for triggering Decision Fatigue Reducer on an item.
+    static let decisionFatigueActionName = "Get Options"
 }
 
 enum AdvancedAccessibilityLayoutPolicy {

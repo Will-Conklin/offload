@@ -19,6 +19,7 @@ struct ItemCard: View {
     let onMoveTo: (MoveDestination) -> Void
     let onBreakdown: () -> Void
     let onBrainDump: () -> Void
+    let onDecisionFatigue: () -> Void
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -162,6 +163,9 @@ struct ItemCard: View {
         .accessibilityAction(named: AdvancedAccessibilityActionPolicy.brainDumpActionName) {
             onBrainDump()
         }
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.decisionFatigueActionName) {
+            onDecisionFatigue()
+        }
         .accessibilityElement(children: .combine)
         .contextMenu {
             Button {
@@ -201,6 +205,16 @@ struct ItemCard: View {
                     Text("Compile Brain Dump")
                 } icon: {
                     AppIcon(name: Icons.brainDump, size: 14)
+                }
+            }
+
+            Button {
+                onDecisionFatigue()
+            } label: {
+                Label {
+                    Text("Get Options")
+                } icon: {
+                    AppIcon(name: Icons.decisionFatigue, size: 14)
                 }
             }
         }

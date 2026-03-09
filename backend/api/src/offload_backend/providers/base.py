@@ -63,6 +63,15 @@ class ProviderBrainDumpResult(BaseModel):
     output_tokens: int
 
 
+class ProviderDecisionResult(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    options: list[dict] = Field(default_factory=list)
+    clarifying_questions: list[str] = Field(default_factory=list)
+    input_tokens: int
+    output_tokens: int
+
+
 class AIProvider(Protocol):
     async def generate_breakdown(
         self,
@@ -79,3 +88,11 @@ class AIProvider(Protocol):
         input_text: str,
         context_hints: list[str],
     ) -> ProviderBrainDumpResult: ...
+
+    async def suggest_decisions(
+        self,
+        *,
+        input_text: str,
+        context_hints: list[str],
+        clarifying_answers: list[dict],
+    ) -> ProviderDecisionResult: ...

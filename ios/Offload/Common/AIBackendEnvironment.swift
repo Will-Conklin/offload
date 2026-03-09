@@ -33,6 +33,14 @@ private struct BrainDumpServiceKey: EnvironmentKey {
     )
 }
 
+private struct DecisionFatigueServiceKey: EnvironmentKey {
+    static let defaultValue: DecisionFatigueService = DefaultDecisionFatigueService(
+        backendClient: AIBackendClientKey.defaultValue,
+        consentStore: CloudAIConsentStoreKey.defaultValue,
+        usageStore: UsageCounterStoreKey.defaultValue
+    )
+}
+
 extension EnvironmentValues {
     var aiBackendClient: AIBackendClient {
         get { self[AIBackendClientKey.self] }
@@ -57,5 +65,10 @@ extension EnvironmentValues {
     var brainDumpService: BrainDumpService {
         get { self[BrainDumpServiceKey.self] }
         set { self[BrainDumpServiceKey.self] = newValue }
+    }
+
+    var decisionFatigueService: DecisionFatigueService {
+        get { self[DecisionFatigueServiceKey.self] }
+        set { self[DecisionFatigueServiceKey.self] = newValue }
     }
 }

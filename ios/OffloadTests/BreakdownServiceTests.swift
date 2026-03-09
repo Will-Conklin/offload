@@ -237,6 +237,10 @@ private final class MockBackendClient: AIBackendClient {
         )
     }
 
+    func suggestDecisions(request _: DecisionRecommendRequest) async throws -> DecisionRecommendResponse {
+        throw AIBackendClientError.transport
+    }
+
     func reconcileUsage(request _: UsageReconcileRequest) async throws -> UsageReconcileResponse {
         try reconcileResult.get()
     }

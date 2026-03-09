@@ -107,3 +107,44 @@ class BrainDumpCompileResponse(BaseModel):
     provider: str
     latency_ms: int = Field(ge=0)
     usage: BrainDumpUsage
+
+
+class DecisionClarifyingAnswer(BaseModel):
+    question: str = Field(min_length=1, max_length=280)
+    answer: str = Field(min_length=1, max_length=280)
+
+
+class DecisionRecommendRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    input_text: str = Field(min_length=1)
+    context_hints: list[Annotated[str, Field(min_length=1, max_length=280)]] = Field(
+        default_factory=list,
+        max_length=32,
+    )
+    clarifying_answers: list[DecisionClarifyingAnswer] = Field(
+        default_factory=list,
+        max_length=2,
+    )
+
+
+class DecisionOption(BaseModel):
+    title: str = Field(min_length=1, max_length=280)
+    description: str = Field(min_length=1, max_length=560)
+    is_recommended: bool = False
+
+
+class DecisionUsage(BaseModel):
+    input_tokens: int = Field(ge=0)
+    output_tokens: int = Field(ge=0)
+
+
+class DecisionRecommendResponse(BaseModel):
+    options: list[DecisionOption]
+    clarifying_questions: list[Annotated[str, Field(min_length=1, max_length=280)]] = Field(
+        default_factory=list,
+        max_length=2,
+    )
+    provider: str
+    latency_ms: int = Field(ge=0)
+    usage: DecisionUsage

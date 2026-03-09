@@ -142,6 +142,10 @@ private final class MockBrainDumpBackendClient: AIBackendClient {
         return try compileResult.get()
     }
 
+    func suggestDecisions(request _: DecisionRecommendRequest) async throws -> DecisionRecommendResponse {
+        throw AIBackendClientError.transport
+    }
+
     func reconcileUsage(request _: UsageReconcileRequest) async throws -> UsageReconcileResponse {
         throw AIBackendClientError.transport
     }

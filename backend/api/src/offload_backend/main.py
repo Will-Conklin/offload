@@ -12,6 +12,7 @@ from offload_backend.config import get_settings
 from offload_backend.errors import APIException, api_exception_response, error_response
 from offload_backend.routers.braindump import router as braindump_router
 from offload_backend.routers.breakdown import router as breakdown_router
+from offload_backend.routers.decide import router as decide_router
 from offload_backend.routers.health import router as health_router
 from offload_backend.routers.sessions import router as sessions_router
 from offload_backend.routers.usage import router as usage_router
@@ -84,6 +85,7 @@ def create_app() -> FastAPI:
     app.include_router(sessions_router, prefix="/v1")
     app.include_router(breakdown_router, prefix="/v1")
     app.include_router(braindump_router, prefix="/v1")
+    app.include_router(decide_router, prefix="/v1")
     app.include_router(usage_router, prefix="/v1")
 
     return app

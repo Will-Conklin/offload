@@ -146,3 +146,68 @@ struct BrainDumpCompileResponse: Codable, Equatable {
         case usage
     }
 }
+
+struct DecisionClarifyingAnswer: Codable, Equatable {
+    let question: String
+    let answer: String
+}
+
+struct DecisionRecommendRequest: Codable, Equatable {
+    let inputText: String
+    let contextHints: [String]
+    let clarifyingAnswers: [DecisionClarifyingAnswer]
+
+    init(
+        inputText: String,
+        contextHints: [String] = [],
+        clarifyingAnswers: [DecisionClarifyingAnswer] = []
+    ) {
+        self.inputText = inputText
+        self.contextHints = contextHints
+        self.clarifyingAnswers = clarifyingAnswers
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case inputText = "input_text"
+        case contextHints = "context_hints"
+        case clarifyingAnswers = "clarifying_answers"
+    }
+}
+
+struct DecisionOption: Codable, Equatable {
+    let title: String
+    let description: String
+    let isRecommended: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case description
+        case isRecommended = "is_recommended"
+    }
+}
+
+struct DecisionUsage: Codable, Equatable {
+    let inputTokens: Int
+    let outputTokens: Int
+
+    enum CodingKeys: String, CodingKey {
+        case inputTokens = "input_tokens"
+        case outputTokens = "output_tokens"
+    }
+}
+
+struct DecisionRecommendResponse: Codable, Equatable {
+    let options: [DecisionOption]
+    let clarifyingQuestions: [String]
+    let provider: String
+    let latencyMs: Int
+    let usage: DecisionUsage
+
+    enum CodingKeys: String, CodingKey {
+        case options
+        case clarifyingQuestions = "clarifying_questions"
+        case provider
+        case latencyMs = "latency_ms"
+        case usage
+    }
+}

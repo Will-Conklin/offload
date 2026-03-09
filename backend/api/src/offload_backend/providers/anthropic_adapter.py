@@ -16,6 +16,7 @@ from offload_backend.config import Settings
 from offload_backend.providers.base import (
     ProviderBrainDumpResult,
     ProviderBreakdownResult,
+    ProviderDecisionResult,
     ProviderRequestError,
     ProviderResponseError,
     ProviderTimeout,
@@ -244,6 +245,78 @@ class AnthropicProviderAdapter:
 
         return ProviderBrainDumpResult(
             items=items,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+
+    async def suggest_decisions(
+        self,
+        *,
+        input_text: str,
+        context_hints: list[str],
+        clarifying_answers: list[dict],
+    ) -> ProviderDecisionResult:
+        """Surface 2–3 good-enough options to help the user overcome decision fatigue.
+
+        Returns a ProviderDecisionResult with options, optional clarifying questions,
+        and token usage. Raises ProviderUnavailable if the API key is not configured.
+        """
+        if not self._settings.anthropic_api_key:
+            raise ProviderUnavailable("Anthropic API key is not configured")
+
+        payload = {
+            "model": self._settings.anthropic_model,
+            "max_tokens": 1024,
+            "system": (
+                "You help users overcome decision fatigue by surfacing 2–3 "
+                "good-enough options. Keep descriptions concise (under 2 sentences). "
+                "Mark exactly one option as is_recommended. "
+                "If the input lacks enough context, include 1–2 short clarifying "
+                "questions (max 2). "
+                "Return strict JSON with this shape: "
+                '{"options":[{"title":"...","description":"...","is_recommended":true/false}],'
+                '"clarifying_questions":["..."]}. '
+                "Never use urgency language. All suggestions are optional. "
+                "Output only the JSON object, no other text."
+            ),
+            "messages": [
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "input_text": input_text,
+                            "context_hints": context_hints,
+                            "clarifying_answers": clarifying_answers,
+                        }
+                    ),
+                }
+            ],
+        }
+        response = await self._execute_with_retry(payload=payload)
+        return self._parse_decision_response(response)
+
+    def _parse_decision_response(self, response: httpx.Response) -> ProviderDecisionResult:
+        try:
+            body = response.json()
+            content = body["content"][0]["text"]
+            parsed = json.loads(content)
+            options = parsed["options"]
+            clarifying_questions = parsed.get("clarifying_questions", [])
+        except (KeyError, IndexError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            raise ProviderResponseError("Anthropic decision response parsing failed") from exc
+
+        usage = body.get("usage", {})
+        input_tokens = int(usage.get("input_tokens", 0))
+        output_tokens = int(usage.get("output_tokens", 0))
+
+        if not isinstance(options, list):
+            raise ProviderResponseError("Anthropic response did not return an options array")
+        if not isinstance(clarifying_questions, list):
+            clarifying_questions = []
+
+        return ProviderDecisionResult(
+            options=options,
+            clarifying_questions=clarifying_questions[:2],
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )

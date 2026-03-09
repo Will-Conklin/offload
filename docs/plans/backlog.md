@@ -57,8 +57,8 @@ Transforms captures into toned messages (formal, friendly, concise, empathetic, 
 Conversational scaffolding when a user is stuck. Detects challenge type via clarifying questions, offers micro-strategies. Learns which strategies work per user.
 ⚠️ Human gate: define challenge detection heuristics and learning model before implementation.
 
-**Feature 6 — Decision Fatigue Reducer** (after infra proven):
-Surfaces max 2–3 "good enough" recommendations. Max 1–2 clarifying questions. "Just pick for me" mode.
+**Feature 6 — Decision Fatigue Reducer** (implemented 2026-03-09):
+Surfaces max 2–3 "good enough" recommendations with optional 1–2 clarifying questions for refinement and a "Just pick for me" mode. Cloud endpoint: `POST /v1/ai/decide/recommend`. Core implementation shipped: `DecisionFatigueSheet.swift` (ViewModel + UI), `DecisionFatigueService.swift`, backend router with schemas and OpenAI/Anthropic provider methods, wired into `CaptureItemCard` context menu and accessibility actions, and `CaptureView` sheet presentation. Fully on-device fallback (parses "or"-style alternatives; falls back to generic options).
 
 ---
 
