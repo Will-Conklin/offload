@@ -27,6 +27,10 @@ final class AdvancedAccessibilityPoliciesTests: XCTestCase {
         XCTAssertEqual(AdvancedAccessibilityActionPolicy.convertActionName(isStructured: false), "Convert to Plan")
     }
 
+    func testBreakdownActionNameIsDeterministic() {
+        XCTAssertEqual(AdvancedAccessibilityActionPolicy.breakdownActionName, "Break Down")
+    }
+
     func testLayoutPolicyControlSizeScalesForAccessibilityDynamicType() {
         XCTAssertEqual(
             AdvancedAccessibilityLayoutPolicy.controlSize(for: .large),

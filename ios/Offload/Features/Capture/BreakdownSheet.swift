@@ -137,7 +137,7 @@ struct BreakdownSheet: View {
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                 }
                 if viewModel.phase == .preview {
-                    ToolbarItem(placement: .topBarLeading) {
+                    ToolbarItem(placement: .topBarTrailing) {
                         Button("Edit") {
                             withAnimation(Theme.Animations.motion(Theme.Animations.springDefault, reduceMotion: reduceMotion)) {
                                 viewModel.phase = .configure
@@ -233,7 +233,7 @@ struct BreakdownSheet: View {
             .padding(Theme.Spacing.md)
             .accessibilityLabel("Generating steps, please wait")
         } else {
-            FloatingActionButton(label: "Generate Steps", iconName: Icons.breakdown) {
+            FloatingActionButton(title: "Generate Steps", iconName: Icons.breakdown) {
                 Task {
                     do {
                         try await viewModel.generate(inputText: item.content, using: breakdownService)
@@ -279,7 +279,7 @@ struct BreakdownSheet: View {
     }
 
     private var saveButtonSection: some View {
-        FloatingActionButton(label: "Save as Plan", iconName: Icons.plans) {
+        FloatingActionButton(title: "Save as Plan", iconName: Icons.plans) {
             saveBreakdown()
         }
         .disabled(viewModel.isPlanNameEmpty)

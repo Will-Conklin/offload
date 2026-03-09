@@ -109,11 +109,10 @@ final class BreakdownSheetViewModelTests: XCTestCase {
 
     // MARK: - Loading state
 
-    func testIsGeneratingTrueWhileGenerating() async throws {
+    func testIsGeneratingFalseAfterCompletion() async throws {
         let vm = BreakdownSheetViewModel()
         let service = StubBreakdownService()
 
-        // isGenerating is async — just verify it ends false after completion
         XCTAssertFalse(vm.isGenerating)
         try await vm.generate(inputText: "Task", using: service)
         XCTAssertFalse(vm.isGenerating)

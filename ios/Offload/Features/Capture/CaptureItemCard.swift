@@ -136,7 +136,7 @@ struct ItemCard: View {
         .accessibilityAction(named: AdvancedAccessibilityActionPolicy.moveDestinationActionName(.list)) {
             onMoveTo(.list)
         }
-        .accessibilityAction(named: "Break Down") {
+        .accessibilityAction(named: AdvancedAccessibilityActionPolicy.breakdownActionName) {
             onBreakdown()
         }
         .accessibilityElement(children: .combine)
