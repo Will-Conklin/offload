@@ -142,7 +142,7 @@ struct OrganizeView: View {
                 isPresented: $showConversionConfirmation,
                 titleVisibility: .visible
             ) {
-                Button("Convert to List", role: .destructive) {
+                Button(AdvancedAccessibilityActionPolicy.convertActionName(isStructured: collectionToConvert?.isStructured ?? true), role: .destructive) {
                     if let collection = collectionToConvert {
                         performConversion(collection)
                     }
