@@ -30,7 +30,7 @@ enum PendingCaptureStore {
     /// Appends a pending capture to the shared queue. Safe to call from any extension target.
     static func enqueue(_ capture: PendingCapture) {
         guard let defaults = UserDefaults(suiteName: appGroupID) else { return }
-        var existing = load(from: defaults)
+        var existing = decode(from: defaults)
         existing.append(capture)
         defaults.set(try? JSONEncoder().encode(existing), forKey: key)
     }
@@ -38,15 +38,25 @@ enum PendingCaptureStore {
     /// Returns all enqueued captures without removing them.
     static func load() -> [PendingCapture] {
         guard let defaults = UserDefaults(suiteName: appGroupID) else { return [] }
-        return load(from: defaults)
+        return decode(from: defaults)
     }
 
-    /// Removes all enqueued captures. Call after flushing to SwiftData.
+    /// Snapshots and clears the queue in a single defaults lookup, returning the captured items.
+    /// Prefer this over a separate `load()` + `clear()` pair to narrow the window during which
+    /// a concurrent extension enqueue could be silently discarded by the subsequent `clear()`.
+    static func loadAndClear() -> [PendingCapture] {
+        guard let defaults = UserDefaults(suiteName: appGroupID) else { return [] }
+        let captures = decode(from: defaults)
+        defaults.removeObject(forKey: key)
+        return captures
+    }
+
+    /// Removes all enqueued captures.
     static func clear() {
         UserDefaults(suiteName: appGroupID)?.removeObject(forKey: key)
     }
 
-    private static func load(from defaults: UserDefaults) -> [PendingCapture] {
+    private static func decode(from defaults: UserDefaults) -> [PendingCapture] {
         guard let data = defaults.data(forKey: key),
               let captures = try? JSONDecoder().decode([PendingCapture].self, from: data)
         else { return [] }

@@ -6,6 +6,10 @@ import AppIntents
 import SwiftUI
 import WidgetKit
 
+// Burnt orange — matches Theme.Colors.accentPrimary light-mode value (#D35400).
+// Defined once here because the widget target cannot import the main app's Theme module.
+private let widgetAccentColor = Color(red: 0.827, green: 0.329, blue: 0.0)
+
 // MARK: - Timeline Entry
 
 struct OffloadWidgetEntry: TimelineEntry {
@@ -47,7 +51,7 @@ struct SmallWidgetView: View {
     var body: some View {
         Link(destination: URL(string: "offload://capture")!) {
             ZStack {
-                Color(red: 0.82, green: 0.38, blue: 0.19) // burnt orange — matches accentPrimary
+                widgetAccentColor
                 VStack(spacing: 6) {
                     Image(systemName: "brain.head.profile")
                         .font(.system(size: 28, weight: .medium))

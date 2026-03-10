@@ -31,11 +31,11 @@ struct CaptureView: View {
     @State private var brainDumpItem: Item?
     @State private var decisionFatigueItem: Item?
     @State private var quickCaptureText: String = ""
-    @FocusState private var isQuickBarFocused: Bool
 
     private var style: ThemeStyle { themeManager.currentStyle }
     /// Extra clearance for the OffloadCTA button that lifts above the floating tab bar.
     private var ctaClearance: CGFloat { Theme.Spacing.xl + Theme.Spacing.lg }
+    private var isQuickCaptureEmpty: Bool { quickCaptureText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
     init(navigationTitle: String = "Capture") {
         self.navigationTitle = navigationTitle
@@ -266,26 +266,22 @@ struct CaptureView: View {
             TextField("What's on your mind?", text: $quickCaptureText)
                 .font(Theme.Typography.body)
                 .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                .focused($isQuickBarFocused)
                 .onSubmit { quickSave() }
                 .submitLabel(.send)
                 .accessibilityLabel("Quick capture")
                 .accessibilityHint("Type a thought and hit return to save instantly.")
 
             Button(action: quickSave) {
-                Image(systemName: quickCaptureText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    ? "arrow.up.circle"
-                    : "arrow.up.circle.fill"
-                )
-                .font(.system(size: 26))
-                .foregroundStyle(
-                    quickCaptureText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                        ? Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.4)
-                        : Theme.Colors.primary(colorScheme, style: style)
-                )
+                Image(systemName: isQuickCaptureEmpty ? "arrow.up.circle" : "arrow.up.circle.fill")
+                    .font(.system(size: 26))
+                    .foregroundStyle(
+                        isQuickCaptureEmpty
+                            ? Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.4)
+                            : Theme.Colors.primary(colorScheme, style: style)
+                    )
             }
             .buttonStyle(.plain)
-            .disabled(quickCaptureText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            .disabled(isQuickCaptureEmpty)
             .accessibilityLabel("Send")
             .accessibilityHint("Save this capture.")
         }

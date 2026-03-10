@@ -17,8 +17,10 @@ final class QuickCaptureService {
 
     /// Moves all `PendingCapture` records from the App Group queue into SwiftData.
     /// Safe to call on every foreground transition — a no-op when the queue is empty.
+    /// Uses `loadAndClear()` to snapshot and remove the queue atomically before processing,
+    /// so a concurrent extension enqueue cannot be lost by a subsequent clear.
     func flushPending() {
-        let pending = PendingCaptureStore.load()
+        let pending = PendingCaptureStore.loadAndClear()
         guard !pending.isEmpty else { return }
         AppLogger.workflow.info("QuickCaptureService flush - count: \(pending.count, privacy: .public)")
         var flushed = 0
@@ -38,7 +40,6 @@ final class QuickCaptureService {
                 )
             }
         }
-        PendingCaptureStore.clear()
         if flushed > 0 {
             NotificationCenter.default.post(name: .captureItemsChanged, object: nil)
             AppLogger.workflow.info("QuickCaptureService flush completed - flushed: \(flushed, privacy: .public)")
