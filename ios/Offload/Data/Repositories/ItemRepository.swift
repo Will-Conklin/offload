@@ -26,6 +26,7 @@ final class ItemRepository {
 
     // MARK: - Create
 
+    @discardableResult
     func create(
         type: String? = nil,
         content: String,
