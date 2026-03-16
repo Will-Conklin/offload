@@ -34,11 +34,21 @@ struct AppRootView: View {
                     AppLogger.general.info("Repository bundle initialized")
                 }
 
+                // Flush any captures queued by the Share Extension or App Intents
+                if let repos = repositories {
+                    QuickCaptureService(itemRepository: repos.itemRepository).flushPending()
+                }
+
                 let startupDuration = Date().timeIntervalSince(startupStart)
                 let memoryAfterStartup = MemoryDiagnostics.residentMemoryBytes()
                 AppLogger.general.info(
                     "Startup diagnostics end - launchId: \(self.launchCorrelationId, privacy: .public), durationMs: \(Int((startupDuration * 1000).rounded()), privacy: .public), memoryAfter: \(MemoryDiagnostics.residentMemoryMBString(), privacy: .public), memoryDelta: \(MemoryDiagnostics.deltaMBString(before: memoryBeforeStartup, after: memoryAfterStartup), privacy: .public)"
                 )
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                if let repos = repositories {
+                    QuickCaptureService(itemRepository: repos.itemRepository).flushPending()
+                }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in
                 let timestamp = Date().ISO8601Format()

@@ -91,6 +91,7 @@ struct CaptureComposeView: View {
                     if voiceService.isRecording { voiceService.cancelRecording() }
                     dismiss()
                 }
+                .keyboardShortcut(".", modifiers: .command)
             }
         }
         .sheet(isPresented: $showingTags) {
@@ -347,6 +348,7 @@ struct CaptureComposeView: View {
                             y: Theme.Shadows.offsetYUltraLight
                         )
                 }
+                .keyboardShortcut(.return, modifiers: .command)
                 .disabled(!canSave)
                 .opacity(canSave ? 1 : 0.5)
             }

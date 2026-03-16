@@ -30,11 +30,13 @@ struct CaptureView: View {
     @State private var breakdownItem: Item?
     @State private var brainDumpItem: Item?
     @State private var decisionFatigueItem: Item?
+    @State private var quickCaptureText: String = ""
 
     private var style: ThemeStyle { themeManager.currentStyle }
-    private var floatingTabBarClearance: CGFloat {
-        Theme.Spacing.xxl + Theme.Spacing.xl + Theme.Spacing.lg + Theme.Spacing.md
-    }
+    /// Extra clearance for the OffloadCTA button that lifts above the floating tab bar.
+    private var ctaClearance: CGFloat { Theme.Spacing.xl + Theme.Spacing.lg }
+    private var isQuickCaptureEmpty: Bool { quickCaptureText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    private var isQuickCaptureAtLimit: Bool { quickCaptureText.count >= PendingCaptureStore.maxContentLength }
 
     init(navigationTitle: String = "Capture") {
         self.navigationTitle = navigationTitle
@@ -93,8 +95,10 @@ struct CaptureView: View {
                     .padding(.bottom, Theme.Spacing.lg)
                 }
                 .safeAreaInset(edge: .bottom) {
-                    Color.clear
-                        .frame(height: floatingTabBarClearance)
+                    VStack(spacing: 0) {
+                        quickCaptureBar
+                        Color.clear.frame(height: ctaClearance)
+                    }
                 }
             }
             .navigationTitle(navigationTitle)
@@ -252,6 +256,71 @@ struct CaptureView: View {
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
             }
+        }
+    }
+
+    // MARK: - Quick Capture Bar
+
+    /// Persistent inline text bar pinned above the floating tab bar for zero-step captures.
+    private var quickCaptureBar: some View {
+        HStack(spacing: Theme.Spacing.sm) {
+            TextField("What's on your mind?", text: $quickCaptureText)
+                .font(Theme.Typography.body)
+                .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                .onSubmit { quickSave() }
+                .submitLabel(.send)
+                .onChange(of: quickCaptureText) { _, new in
+                    if new.count > PendingCaptureStore.maxContentLength {
+                        quickCaptureText = String(new.prefix(PendingCaptureStore.maxContentLength))
+                    }
+                }
+                .accessibilityLabel("Quick capture")
+                .accessibilityHint("Type a thought and hit return to save instantly.")
+                .accessibilityValue(isQuickCaptureAtLimit ? "Character limit reached" : "")
+
+            Button(action: quickSave) {
+                Image(systemName: isQuickCaptureEmpty ? "arrow.up.circle" : "arrow.up.circle.fill")
+                    .font(.system(size: 26))
+                    .foregroundStyle(
+                        isQuickCaptureEmpty
+                            ? Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.4)
+                            : Theme.Colors.primary(colorScheme, style: style)
+                    )
+            }
+            .buttonStyle(.plain)
+            .disabled(isQuickCaptureEmpty)
+            .accessibilityLabel("Send")
+            .accessibilityHint("Save this capture.")
+        }
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.vertical, Theme.Spacing.sm)
+        .background(
+            Theme.Surface.card(colorScheme, style: style)
+                .overlay(alignment: .top) {
+                    Rectangle()
+                        .fill(Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.3))
+                        .frame(height: 0.5)
+                }
+        )
+    }
+
+    /// Saves the quick-bar text as a bare capture (type: nil, no tags, no attachment).
+    private func quickSave() {
+        let trimmed = quickCaptureText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        do {
+            _ = try itemRepository.create(
+                type: nil,
+                content: trimmed,
+                attachmentData: nil,
+                tags: [],
+                isStarred: false
+            )
+            quickCaptureText = ""
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            refreshItems()
+        } catch {
+            errorPresenter.present(error)
         }
     }
 

@@ -120,7 +120,7 @@ assert_scheme_exists() {
 
   rm -f "${list_stderr}"
 
-  if ! printf "%s\n" "${list_output}" | grep -Eq "^[[:space:]]*${SCHEME}[[:space:]]*$"; then
+  if ! grep -Eq "^[[:space:]]*${SCHEME}[[:space:]]*$" <<< "${list_output}"; then
     err "Scheme '${SCHEME}' not found in ${PROJECT_PATH}."
     err "Available schemes:"
     printf "%s\n" "${list_output}" | awk '/Schemes:/{flag=1;next}/^[[:space:]]*$/{flag=0}flag {print "  - "$0}'
@@ -167,7 +167,7 @@ print_devices_for_pinned_runtime() {
     return
   fi
 
-  if ! printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}" | grep -Fq -- "${runtime_header}"; then
+  if ! grep -Fq -- "${runtime_header}" <<< "${SIMCTL_DEVICES_OUTPUT}"; then
     echo "  (no devices found for ${runtime_header})"
     return
   fi
@@ -185,7 +185,7 @@ assert_destination_available() {
   if [[ -n ${destination_id} ]]; then
     # Validate UDID against simctl output (authoritative source for simulators)
     # xcodebuild -showdestinations may not list specific UDIDs on CI runners
-    if printf "%s\n" "${SIMCTL_DEVICES_OUTPUT}" | grep -Fq "${destination_id}"; then
+    if grep -Fq "${destination_id}" <<< "${SIMCTL_DEVICES_OUTPUT}"; then
       info "Validated simulator UDID ${destination_id} exists in simctl output"
       return 0
     fi
@@ -197,7 +197,7 @@ assert_destination_available() {
     print_diagnostics
     exit 1
   else
-    if printf "%s\n" "${DESTINATIONS_OUTPUT}" | grep -Eq "OS: ?${OS_VERSION}.*,.*name:${DEVICE_NAME}"; then
+    if grep -Eq "OS: ?${OS_VERSION}.*,.*name:${DEVICE_NAME}" <<< "${DESTINATIONS_OUTPUT}"; then
       return 0
     fi
   fi

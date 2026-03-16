@@ -34,6 +34,14 @@ struct MainTabView: View {
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
             }
+            // ⌘N — open compose from anywhere on iPad with keyboard
+            .background(
+                Button("New Capture") { quickCaptureMode = .write }
+                    .keyboardShortcut("n", modifiers: .command)
+                    .accessibilityHidden(true)
+                    .frame(width: 0, height: 0)
+                    .opacity(0)
+            )
     }
 
     enum Tab: CaseIterable {
@@ -198,83 +206,30 @@ private struct OffloadCTA: View {
     let style: ThemeStyle
     let onQuickWrite: () -> Void
     let onQuickVoice: () -> Void
-    @State private var isExpanded = false
-    @State private var quickActionBounce: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ScaledMetric(relativeTo: .body) private var scaledMainButtonSize = Theme.TabShell.mainButtonSize
-    @ScaledMetric(relativeTo: .body) private var scaledQuickActionLift = Theme.TabShell.quickActionLift
 
     private var slotWidth: CGFloat { scaledMainButtonSize + Theme.TabShell.mainButtonSlotPadding }
     private var mainButtonYOffset: CGFloat { Theme.TabShell.mainButtonVerticalOffset }
-    private var quickActionYOffset: CGFloat { mainButtonYOffset - quickActionLift }
-    private var quickActionLift: CGFloat { scaledQuickActionLift }
-
-    private var expansionAnimation: Animation? {
-        TabShellMotionPolicy.animation(.spring(response: 0.4, dampingFraction: 0.6), reduceMotion: reduceMotion)
-    }
 
     var body: some View {
-        ZStack {
-            OffloadMainButton(
-                colorScheme: colorScheme,
-                style: style,
-                size: scaledMainButtonSize,
-                isExpanded: isExpanded
-            ) {
-                toggleExpanded()
-            }
-            .offset(y: mainButtonYOffset)
-        }
+        OffloadMainButton(
+            colorScheme: colorScheme,
+            style: style,
+            size: scaledMainButtonSize,
+            onTap: onQuickWrite,
+            onLongPress: onQuickVoice
+        )
+        .offset(y: mainButtonYOffset)
         .frame(width: slotWidth, height: scaledMainButtonSize)
-        .overlay(alignment: .top) {
-            OffloadQuickActionTray(
-                colorScheme: colorScheme,
-                style: style,
-                isExpanded: isExpanded,
-                onQuickWrite: { triggerQuickAction(onQuickWrite) },
-                onQuickVoice: { triggerQuickAction(onQuickVoice) }
-            )
-            .offset(y: quickActionYOffset + quickActionBounce)
-        }
-        .accessibilityElement(children: .contain)
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(TabShellAccessibility.offloadGroupLabel)
+        .accessibilityHint("Tap to write a capture. Long press to capture by voice.")
+        .accessibilityAction(named: "Quick Write") { onQuickWrite() }
+        .accessibilityAction(named: "Quick Voice") { onQuickVoice() }
         .accessibilityIdentifier(TabShellAccessibility.offloadGroupIdentifier)
+        .accessibilityAddTraits(.isButton)
         .zIndex(1)
-    }
-
-    /// Toggles quick-action expansion and applies motion policy compliant bounce behavior.
-    private func toggleExpanded() {
-        if isExpanded {
-            withAnimation(expansionAnimation) {
-                isExpanded = false
-            }
-            quickActionBounce = 0
-            return
-        }
-
-        quickActionBounce = TabShellMotionPolicy.initialQuickActionBounce(reduceMotion: reduceMotion)
-        withAnimation(expansionAnimation) {
-            isExpanded = true
-        }
-        guard TabShellMotionPolicy.shouldAnimateBounce(reduceMotion: reduceMotion) else { return }
-        withAnimation(TabShellMotionPolicy.animation(.spring(response: 0.28, dampingFraction: 0.5), reduceMotion: reduceMotion)) {
-            quickActionBounce = TabShellMotionPolicy.overshootQuickActionBounce(reduceMotion: reduceMotion)
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + Theme.TabShell.quickActionBounceSettleDelay) {
-            guard isExpanded else { return }
-            withAnimation(TabShellMotionPolicy.animation(.spring(response: 0.25, dampingFraction: 0.75), reduceMotion: reduceMotion)) {
-                quickActionBounce = 0
-            }
-        }
-    }
-
-    /// Collapses the quick-action tray before executing the selected capture action.
-    private func triggerQuickAction(_ action: () -> Void) {
-        withAnimation(expansionAnimation) {
-            isExpanded = false
-        }
-        quickActionBounce = 0
-        action()
     }
 }
 
@@ -282,144 +237,76 @@ private struct OffloadMainButton: View {
     let colorScheme: ColorScheme
     let style: ThemeStyle
     let size: CGFloat
-    let isExpanded: Bool
-    let action: () -> Void
+    /// Fired on a short tap — opens write compose sheet.
+    let onTap: () -> Void
+    /// Fired on a long press (≥ 0.5 s) — opens voice compose sheet.
+    let onLongPress: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pressStart: Date?
+    @State private var isHighlighted = false
+
+    private let longPressDuration: TimeInterval = 0.5
 
     var body: some View {
-        Button(action: action) {
-            ZStack {
-                // Subtle outer glow
-                Circle()
-                    .fill(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
-                    .frame(width: size + Theme.TabShell.mainButtonGlowDelta, height: size + Theme.TabShell.mainButtonGlowDelta)
+        ZStack {
+            // Subtle outer glow
+            Circle()
+                .fill(Theme.Colors.primary(colorScheme, style: style).opacity(0.15))
+                .frame(width: size + Theme.TabShell.mainButtonGlowDelta, height: size + Theme.TabShell.mainButtonGlowDelta)
 
-                // Main circle with gradient
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Theme.Colors.primary(colorScheme, style: style),
-                                Theme.Colors.primary(colorScheme, style: style).opacity(0.9),
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+            // Main circle with gradient
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Theme.Colors.primary(colorScheme, style: style),
+                            Theme.Colors.primary(colorScheme, style: style).opacity(0.9),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                    .frame(width: size, height: size)
+                )
+                .frame(width: size, height: size)
+                .scaleEffect(isHighlighted ? 0.92 : 1.0)
+                .animation(
+                    TabShellMotionPolicy.animation(.spring(response: 0.25, dampingFraction: 0.7), reduceMotion: reduceMotion),
+                    value: isHighlighted
+                )
 
-                // Plus icon
-                AppIcon(name: Icons.add, size: Theme.TabShell.mainButtonIconSize)
-                    .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
-                    .rotationEffect(.degrees(isExpanded ? 45 : 0))
-            }
+            // Plus icon
+            AppIcon(name: Icons.add, size: Theme.TabShell.mainButtonIconSize)
+                .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
         }
-        .buttonStyle(.plain)
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    if pressStart == nil {
+                        pressStart = Date()
+                        withAnimation(TabShellMotionPolicy.animation(.spring(response: 0.2, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
+                            isHighlighted = true
+                        }
+                    }
+                }
+                .onEnded { _ in
+                    guard let start = pressStart else { return }
+                    let duration = Date().timeIntervalSince(start)
+                    pressStart = nil
+                    withAnimation(TabShellMotionPolicy.animation(.spring(response: 0.2, dampingFraction: 0.7), reduceMotion: reduceMotion)) {
+                        isHighlighted = false
+                    }
+                    if duration >= longPressDuration {
+                        onLongPress()
+                    } else {
+                        onTap()
+                    }
+                }
+        )
         .frame(
             minWidth: Theme.TabShell.mainButtonControlSize,
             minHeight: Theme.TabShell.mainButtonControlSize
         )
-        .animation(TabShellMotionPolicy.animation(.spring(response: 0.4, dampingFraction: 0.7), reduceMotion: reduceMotion), value: isExpanded)
-        .accessibilityLabel(isExpanded ? TabShellAccessibility.offloadMainExpandedLabel : TabShellAccessibility.offloadMainCollapsedLabel)
-        .accessibilityHint(TabShellAccessibility.offloadMainHint)
         .accessibilityIdentifier(TabShellAccessibility.mainButtonIdentifier)
-        .accessibilitySortPriority(TabShellAccessibility.mainButtonSortPriority)
-        .accessibilityAddTraits(.isButton)
-    }
-}
-
-private struct OffloadQuickActionButton: View {
-    let title: String
-    let iconName: String
-    let gradient: [Color]
-    let accessibilityIdentifier: String
-    let accessibilitySortPriority: Double
-    let action: () -> Void
-
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-    @ScaledMetric(relativeTo: .body) private var scaledButtonSize = Theme.TabShell.quickActionButtonSize
-    private var style: ThemeStyle { themeManager.currentStyle }
-
-    var body: some View {
-        Button(action: action) {
-            // Kidney-shaped button with solid color
-            ZStack {
-                RoundedRectangle(cornerRadius: Theme.TabShell.quickActionCornerRadius, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: gradient,
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: scaledButtonSize, height: scaledButtonSize)
-
-                ZStack {
-                    AppIcon(name: iconName, size: Theme.TabShell.mainButtonIconSize)
-                        .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
-                }
-                .frame(width: scaledButtonSize, height: scaledButtonSize)
-            }
-        }
-        .buttonStyle(.plain)
-        .frame(
-            minWidth: Theme.HitTarget.minimum.width,
-            minHeight: Theme.HitTarget.minimum.height
-        )
-        .accessibilityLabel(title)
-        .accessibilityHint("Opens \(title) \(TabShellAccessibility.quickActionHintSuffix)")
-        .accessibilityIdentifier(accessibilityIdentifier)
-        .accessibilitySortPriority(accessibilitySortPriority)
-        .accessibilityAddTraits(.isButton)
-    }
-}
-
-private struct OffloadQuickActionTray: View {
-    let colorScheme: ColorScheme
-    let style: ThemeStyle
-    let isExpanded: Bool
-    let onQuickWrite: () -> Void
-    let onQuickVoice: () -> Void
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    var body: some View {
-        HStack(alignment: .top, spacing: TabShellLayoutPolicy.quickActionTraySpacing(for: dynamicTypeSize)) {
-            OffloadQuickActionButton(
-                title: TabShellAccessibility.quickWriteLabel,
-                iconName: Icons.write,
-                gradient: [
-                    Theme.Colors.primary(colorScheme, style: style),
-                    Theme.Colors.primary(colorScheme, style: style),
-                ],
-                accessibilityIdentifier: TabShellAccessibility.quickWriteIdentifier,
-                accessibilitySortPriority: TabShellAccessibility.quickWriteSortPriority,
-                action: onQuickWrite
-            )
-
-            OffloadQuickActionButton(
-                title: TabShellAccessibility.quickVoiceLabel,
-                iconName: Icons.microphone,
-                gradient: [
-                    Theme.Colors.secondary(colorScheme, style: style),
-                    Theme.Colors.secondary(colorScheme, style: style),
-                ],
-                accessibilityIdentifier: TabShellAccessibility.quickVoiceIdentifier,
-                accessibilitySortPriority: TabShellAccessibility.quickVoiceSortPriority,
-                action: onQuickVoice
-            )
-        }
-        .padding(.horizontal, Theme.TabShell.quickActionTrayHorizontalPadding)
-        .padding(.vertical, Theme.TabShell.quickActionTrayVerticalPadding)
-        .opacity(isExpanded ? 1 : 0)
-        .scaleEffect(isExpanded ? 1 : 0.6, anchor: .bottom)
-        .allowsHitTesting(isExpanded)
-        .accessibilityHidden(!isExpanded)
-        .accessibilityIdentifier(TabShellAccessibility.offloadQuickTrayIdentifier)
-        .animation(TabShellMotionPolicy.animation(.spring(response: 0.4, dampingFraction: 0.7), reduceMotion: reduceMotion), value: isExpanded)
     }
 }
 
