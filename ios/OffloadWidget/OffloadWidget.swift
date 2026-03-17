@@ -49,19 +49,17 @@ struct OffloadWidgetProvider: TimelineProvider {
 struct SmallWidgetView: View {
     var body: some View {
         Link(destination: URL(string: "offload://capture")!) {
-            ZStack {
-                widgetAccentColor
-                VStack(spacing: 6) {
-                    Image(systemName: "brain.head.profile")
-                        .font(.system(size: 28, weight: .medium))
-                        .foregroundStyle(.white)
-                    Text("Offload")
-                        .font(.system(size: 13, weight: .bold, design: .default))
-                        .foregroundStyle(.white)
-                }
+            VStack(spacing: 6) {
+                Image(systemName: "brain.head.profile")
+                    .font(.system(size: 28, weight: .medium))
+                    .foregroundStyle(.white)
+                Text("Offload")
+                    .font(.system(size: 13, weight: .bold, design: .default))
+                    .foregroundStyle(.white)
             }
         }
         .accessibilityLabel("Open Offload capture")
+        .containerBackground(widgetAccentColor, for: .widget)
     }
 }
 
@@ -74,18 +72,16 @@ struct MediumWidgetView: View {
         HStack(spacing: 0) {
             // Left column: Offload button
             Link(destination: URL(string: "offload://capture")!) {
-                ZStack {
-                    widgetAccentColor
-                    VStack(spacing: 6) {
-                        Image(systemName: "brain.head.profile")
-                            .font(.system(size: 26, weight: .medium))
-                            .foregroundStyle(.white)
-                        Text("Offload")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(.white)
-                    }
+                VStack(spacing: 6) {
+                    Image(systemName: "brain.head.profile")
+                        .font(.system(size: 26, weight: .medium))
+                        .foregroundStyle(.white)
+                    Text("Offload")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(.white)
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(widgetAccentColor)
             }
             .accessibilityLabel("Open Offload capture")
 
@@ -113,6 +109,7 @@ struct MediumWidgetView: View {
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
         }
+        .containerBackground(.background, for: .widget)
     }
 }
 
