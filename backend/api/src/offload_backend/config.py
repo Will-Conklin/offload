@@ -51,6 +51,8 @@ class Settings(BaseSettings):
     max_input_chars: int = Field(default=4000, ge=1)
     default_feature_quota: int = Field(default=100, ge=0)
     usage_db_path: str = ".offload-backend/usage.sqlite3"
+    apple_bundle_id: str = "wc.Offload"
+    apple_jwks_url: str = "https://appleid.apple.com/auth/keys"
 
     @model_validator(mode="after")
     def validate_session_secret_policy(self) -> Settings:

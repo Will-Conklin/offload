@@ -72,6 +72,18 @@ class UsageReconcileResponse(BaseModel):
     reconciled_at: datetime
 
 
+class AppleAuthRequest(BaseModel):
+    apple_identity_token: str = Field(min_length=1)
+    install_id: str = Field(min_length=8, max_length=128)
+    display_name: str | None = Field(default=None, max_length=128)
+
+
+class AppleAuthResponse(BaseModel):
+    session_token: str
+    expires_at: datetime
+    user_id: str
+
+
 class ErrorBody(BaseModel):
     code: str
     message: str

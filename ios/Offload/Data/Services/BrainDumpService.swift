@@ -66,9 +66,7 @@ final class DefaultBrainDumpService: BrainDumpService {
         consentStore: CloudAIConsentStore,
         usageStore: UsageCounterStore,
         onDeviceGenerator: OnDeviceBrainDumpGenerating = SimpleOnDeviceBrainDumpGenerator(),
-        installIDProvider: @escaping () -> String = {
-            UIDevice.current.identifierForVendor?.uuidString ?? "unknown-install"
-        }
+        installIDProvider: @escaping () -> String = { DeviceInfo.installId }
     ) {
         self.backendClient = backendClient
         self.consentStore = consentStore

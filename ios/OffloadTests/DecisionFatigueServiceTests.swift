@@ -245,6 +245,10 @@ private final class MockDecisionBackendClient: AIBackendClient {
         return try suggestResult.get()
     }
 
+    func signInWithApple(request _: AppleAuthRequest) async throws -> AppleAuthResponse {
+        throw AIBackendClientError.transport
+    }
+
     func reconcileUsage(request _: UsageReconcileRequest) async throws -> UsageReconcileResponse {
         throw AIBackendClientError.transport
     }

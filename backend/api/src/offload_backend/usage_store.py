@@ -12,6 +12,20 @@ class UsageStore(Protocol):
     def close(self) -> None: ...
 
 
+def _open_sqlite_connection(db_path: str) -> sqlite3.Connection:
+    """Open a SQLite connection with WAL mode and a busy timeout.
+
+    Creates the parent directory for file-based databases if it does not exist.
+    Passing ':memory:' opens an in-process, in-memory database.
+    """
+    if db_path != ":memory:":
+        Path(db_path).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(db_path, check_same_thread=False)
+    connection.execute("PRAGMA journal_mode=WAL")
+    connection.execute("PRAGMA busy_timeout=5000")
+    return connection
+
+
 class InMemoryUsageStore:
     def __init__(self):
         self._counts: dict[tuple[str, str], int] = {}
@@ -40,12 +54,7 @@ class SQLiteUsageStore:
         self._bootstrap_schema()
 
     def _open_connection(self, *, db_path: str) -> sqlite3.Connection:
-        if db_path != ":memory:":
-            Path(db_path).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
-        connection = sqlite3.connect(db_path, check_same_thread=False)
-        connection.execute("PRAGMA journal_mode=WAL")
-        connection.execute("PRAGMA busy_timeout=5000")
-        return connection
+        return _open_sqlite_connection(db_path)
 
     def _bootstrap_schema(self) -> None:
         with self._lock:

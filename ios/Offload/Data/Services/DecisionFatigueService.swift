@@ -109,9 +109,7 @@ final class DefaultDecisionFatigueService: DecisionFatigueService {
         consentStore: CloudAIConsentStore,
         usageStore: UsageCounterStore,
         onDeviceGenerator: OnDeviceDecisionGenerating = SimpleOnDeviceDecisionGenerator(),
-        installIDProvider: @escaping () -> String = {
-            UIDevice.current.identifierForVendor?.uuidString ?? "unknown-install"
-        }
+        installIDProvider: @escaping () -> String = { DeviceInfo.installId }
     ) {
         self.backendClient = backendClient
         self.consentStore = consentStore

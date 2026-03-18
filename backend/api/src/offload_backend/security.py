@@ -31,6 +31,7 @@ class SessionClaims(BaseModel):
 
     install_id: str
     expires_at: datetime
+    user_id: str | None = None
 
 
 class TokenManager:
@@ -61,14 +62,19 @@ class TokenManager:
         self,
         install_id: str,
         ttl_seconds: int,
+        user_id: str | None = None,
         now: datetime | None = None,
     ) -> SessionClaims:
         now = now or self._now_provider()
-        return SessionClaims(install_id=install_id, expires_at=now + timedelta(seconds=ttl_seconds))
+        return SessionClaims(
+            install_id=install_id,
+            expires_at=now + timedelta(seconds=ttl_seconds),
+            user_id=user_id,
+        )
 
     def encode(self, claims: SessionClaims) -> str:
         issued_at = int(self._now_provider().timestamp())
-        payload = {
+        payload: dict[str, object] = {
             "v": TOKEN_VERSION,
             "kid": self._active_kid,
             "iat": issued_at,
@@ -78,6 +84,8 @@ class TokenManager:
             "install_id": claims.install_id,
             "exp": int(claims.expires_at.timestamp()),
         }
+        if claims.user_id is not None:
+            payload["user_id"] = claims.user_id
         payload_b64 = _encode_payload(payload)
         signature = hmac.new(
             self._signing_keys[self._active_kid],
@@ -138,7 +146,10 @@ class TokenManager:
         if expires_at <= now:
             raise ExpiredTokenError("Token expired")
 
-        return SessionClaims(install_id=install_id, expires_at=expires_at)
+        user_id_raw = payload.get("user_id")
+        user_id = str(user_id_raw) if isinstance(user_id_raw, str) and user_id_raw else None
+
+        return SessionClaims(install_id=install_id, expires_at=expires_at, user_id=user_id)
 
 
 def _build_signing_keys(

@@ -70,9 +70,7 @@ final class DefaultBreakdownService: BreakdownService {
         consentStore: CloudAIConsentStore,
         usageStore: UsageCounterStore,
         onDeviceGenerator: OnDeviceBreakdownGenerating = SimpleOnDeviceBreakdownGenerator(),
-        installIDProvider: @escaping () -> String = {
-            UIDevice.current.identifierForVendor?.uuidString ?? "unknown-install"
-        }
+        installIDProvider: @escaping () -> String = { DeviceInfo.installId }
     ) {
         self.backendClient = backendClient
         self.consentStore = consentStore

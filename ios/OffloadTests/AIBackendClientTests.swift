@@ -103,6 +103,50 @@ final class AIBackendClientTests: XCTestCase {
         XCTAssertEqual(transport.sentRequests[2].headers["Authorization"], "Bearer refreshed-token")
     }
 
+    func testKeychainTokenSurvivesReinstantiation() async throws {
+        // Seed a fresh KeychainSessionTokenStore with a non-expired token.
+        let seedStore = KeychainSessionTokenStore()
+        defer { seedStore.clear() }
+        seedStore.token = "cached-bearer"
+        seedStore.expiresAt = Date().addingTimeInterval(3600)
+
+        let transport = MockTransport()
+        let consent = StubConsentStore(isCloudAIEnabled: true)
+
+        transport.enqueue(status: 200, jsonObject: [
+            "steps": [["title": "Cached Step", "substeps": []]],
+            "provider": "openai",
+            "latency_ms": 5,
+            "usage": ["input_tokens": 1, "output_tokens": 1],
+        ])
+
+        // Create a new store instance simulating an app relaunch loading from Keychain.
+        let reloadedStore = KeychainSessionTokenStore()
+        let client = NetworkAIBackendClient(
+            transport: transport,
+            tokenStore: reloadedStore,
+            consentStore: consent,
+            installIDProvider: { "install-99" },
+            appVersionProvider: { "1.0" },
+            platformProvider: { "ios" }
+        )
+
+        let response = try await client.generateBreakdown(
+            request: BreakdownGenerateRequest(
+                inputText: "Write report",
+                granularity: 2,
+                contextHints: [],
+                templateIds: []
+            )
+        )
+
+        XCTAssertEqual(response.steps.first?.title, "Cached Step")
+        // Only the breakdown request was sent — no session creation.
+        XCTAssertEqual(transport.sentRequests.count, 1)
+        XCTAssertEqual(transport.sentRequests[0].path, "/v1/ai/breakdown/generate")
+        XCTAssertEqual(transport.sentRequests[0].headers["Authorization"], "Bearer cached-bearer")
+    }
+
     func testConsentDisabledFailsClosed() async throws {
         let transport = MockTransport()
         let tokenStore = InMemorySessionTokenStore()

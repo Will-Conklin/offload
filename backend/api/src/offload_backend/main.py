@@ -8,8 +8,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 
+from offload_backend.apple_auth import AppleTokenValidator
 from offload_backend.config import get_settings
 from offload_backend.errors import APIException, api_exception_response, error_response
+from offload_backend.routers.auth import router as auth_router
 from offload_backend.routers.braindump import router as braindump_router
 from offload_backend.routers.breakdown import router as breakdown_router
 from offload_backend.routers.decide import router as decide_router
@@ -17,6 +19,7 @@ from offload_backend.routers.health import router as health_router
 from offload_backend.routers.sessions import router as sessions_router
 from offload_backend.routers.usage import router as usage_router
 from offload_backend.usage_store import SQLiteUsageStore
+from offload_backend.user_store import SQLiteUserStore
 
 logger = logging.getLogger("offload_backend")
 
@@ -28,10 +31,18 @@ def create_app() -> FastAPI:
         usage_store = getattr(app.state, "usage_store", None)
         if usage_store is not None:
             usage_store.close()
+        user_store = getattr(app.state, "user_store", None)
+        if user_store is not None:
+            user_store.close()
 
     app = FastAPI(title="Offload Backend API", version="0.1.0", lifespan=lifespan)
     settings = get_settings()
     app.state.usage_store = SQLiteUsageStore(db_path=settings.usage_db_path)
+    app.state.user_store = SQLiteUserStore(db_path=settings.usage_db_path)
+    app.state.apple_validator = AppleTokenValidator(
+        jwks_url=settings.apple_jwks_url,
+        audience=settings.apple_bundle_id,
+    )
 
     @app.middleware("http")
     async def request_context_middleware(request: Request, call_next):
@@ -83,6 +94,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health_router, prefix="/v1")
     app.include_router(sessions_router, prefix="/v1")
+    app.include_router(auth_router, prefix="/v1")
     app.include_router(breakdown_router, prefix="/v1")
     app.include_router(braindump_router, prefix="/v1")
     app.include_router(decide_router, prefix="/v1")

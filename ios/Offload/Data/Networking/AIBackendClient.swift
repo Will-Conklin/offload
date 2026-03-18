@@ -130,6 +130,7 @@ final class UserDefaultsUsageCounterStore: UsageCounterStore {
 
 protocol AIBackendClient {
     func createAnonymousSession(request: AnonymousSessionRequest) async throws -> AnonymousSessionResponse
+    func signInWithApple(request: AppleAuthRequest) async throws -> AppleAuthResponse
     func generateBreakdown(request: BreakdownGenerateRequest) async throws -> BreakdownGenerateResponse
     func compileBrainDump(request: BrainDumpCompileRequest) async throws -> BrainDumpCompileResponse
     func suggestDecisions(request: DecisionRecommendRequest) async throws -> DecisionRecommendResponse
@@ -146,11 +147,9 @@ final class NetworkAIBackendClient: AIBackendClient {
 
     init(
         transport: APITransporting = APIClient.shared,
-        tokenStore: SessionTokenStore = InMemorySessionTokenStore(),
+        tokenStore: SessionTokenStore = KeychainSessionTokenStore(),
         consentStore: CloudAIConsentStore = UserDefaultsCloudAIConsentStore(),
-        installIDProvider: @escaping () -> String = {
-            UIDevice.current.identifierForVendor?.uuidString ?? "unknown-install"
-        },
+        installIDProvider: @escaping () -> String = { DeviceInfo.installId },
         appVersionProvider: @escaping () -> String = {
             Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
         },
@@ -167,6 +166,19 @@ final class NetworkAIBackendClient: AIBackendClient {
     func createAnonymousSession(request: AnonymousSessionRequest) async throws -> AnonymousSessionResponse {
         let response: AnonymousSessionResponse = try await performRequest(
             path: "/v1/sessions/anonymous",
+            method: "POST",
+            body: request,
+            headers: [:],
+            retryUnauthorized: false
+        )
+        tokenStore.token = response.sessionToken
+        tokenStore.expiresAt = response.expiresAt
+        return response
+    }
+
+    func signInWithApple(request: AppleAuthRequest) async throws -> AppleAuthResponse {
+        let response: AppleAuthResponse = try await performRequest(
+            path: "/v1/auth/apple",
             method: "POST",
             body: request,
             headers: [:],

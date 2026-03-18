@@ -6,6 +6,7 @@ import logging
 from fastapi import Depends, Header, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from offload_backend.apple_auth import AppleTokenValidator
 from offload_backend.config import Settings, get_settings
 from offload_backend.errors import APIException
 from offload_backend.providers.anthropic_adapter import AnthropicProviderAdapter
@@ -23,6 +24,7 @@ from offload_backend.session_rate_limiter import (
     SessionRateLimitExceeded,
 )
 from offload_backend.usage_store import UsageStore
+from offload_backend.user_store import UserStore
 
 bearer_scheme = HTTPBearer(auto_error=False)
 logger = logging.getLogger("offload_backend")
@@ -89,6 +91,14 @@ def get_provider(settings: Settings = Depends(get_app_settings)) -> AIProvider:
 
 def get_usage_store(request: Request) -> UsageStore:
     return request.app.state.usage_store
+
+
+def get_user_store(request: Request) -> UserStore:
+    return request.app.state.user_store
+
+
+def get_apple_validator(request: Request) -> AppleTokenValidator:
+    return request.app.state.apple_validator
 
 
 def get_session_rate_limiter(

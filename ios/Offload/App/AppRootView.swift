@@ -11,7 +11,9 @@ import UIKit
 struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var themeManager: ThemeManager
+    @EnvironmentObject private var authManager: AuthManager
     @State private var repositories: RepositoryBundle?
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     private let launchCorrelationId = UUID().uuidString
 
     var body: some View {
@@ -22,6 +24,14 @@ struct AppRootView: View {
             .environment(\.tagRepository, repositories?.tagRepository ?? TagRepository(modelContext: modelContext))
             .preferredColorScheme(themeManager.appearancePreference.colorScheme)
             .withToast()
+            .sheet(isPresented: Binding(
+                get: { !hasCompletedOnboarding },
+                set: { showSheet in if !showSheet { hasCompletedOnboarding = true } }
+            )) {
+                OnboardingView(onComplete: { hasCompletedOnboarding = true })
+                    .environmentObject(themeManager)
+                    .environmentObject(authManager)
+            }
             .task {
                 let startupStart = Date()
                 let memoryBeforeStartup = MemoryDiagnostics.residentMemoryBytes()

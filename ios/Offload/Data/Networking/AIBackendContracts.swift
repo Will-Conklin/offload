@@ -5,6 +5,30 @@
 
 import Foundation
 
+struct AppleAuthRequest: Encodable {
+    let appleIdentityToken: String
+    let installId: String
+    let displayName: String?
+
+    enum CodingKeys: String, CodingKey {
+        case appleIdentityToken = "apple_identity_token"
+        case installId = "install_id"
+        case displayName = "display_name"
+    }
+}
+
+struct AppleAuthResponse: Decodable {
+    let sessionToken: String
+    let expiresAt: Date
+    let userId: String
+
+    enum CodingKeys: String, CodingKey {
+        case sessionToken = "session_token"
+        case expiresAt = "expires_at"
+        case userId = "user_id"
+    }
+}
+
 struct AnonymousSessionRequest: Codable, Equatable {
     let installId: String
     let appVersion: String
