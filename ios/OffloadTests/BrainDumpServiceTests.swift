@@ -124,8 +124,16 @@ private final class MockBrainDumpBackendClient: AIBackendClient {
 
     private(set) var compileCalls = 0
 
-    func createAnonymousSession(request _: AnonymousSessionRequest) async throws -> AnonymousSessionResponse {
-        AnonymousSessionResponse(sessionToken: "token", expiresAt: .distantFuture)
+    func createAnonymousSession(request _: AnonymousSessionRequest) async throws -> SessionResponse {
+        SessionResponse(sessionToken: "token", expiresAt: .distantFuture)
+    }
+
+    func createAppleSession(request _: AppleSessionRequest) async throws -> SessionResponse {
+        SessionResponse(sessionToken: "token", expiresAt: .distantFuture)
+    }
+
+    func refreshSessionToken(request _: SessionRefreshRequest) async throws -> SessionResponse {
+        SessionResponse(sessionToken: "token", expiresAt: .distantFuture)
     }
 
     func generateBreakdown(request _: BreakdownGenerateRequest) async throws -> BreakdownGenerateResponse {

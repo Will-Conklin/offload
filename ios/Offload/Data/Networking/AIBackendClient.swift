@@ -129,7 +129,9 @@ final class UserDefaultsUsageCounterStore: UsageCounterStore {
 }
 
 protocol AIBackendClient {
-    func createAnonymousSession(request: AnonymousSessionRequest) async throws -> AnonymousSessionResponse
+    func createAnonymousSession(request: AnonymousSessionRequest) async throws -> SessionResponse
+    func createAppleSession(request: AppleSessionRequest) async throws -> SessionResponse
+    func refreshSessionToken(request: SessionRefreshRequest) async throws -> SessionResponse
     func generateBreakdown(request: BreakdownGenerateRequest) async throws -> BreakdownGenerateResponse
     func compileBrainDump(request: BrainDumpCompileRequest) async throws -> BrainDumpCompileResponse
     func suggestDecisions(request: DecisionRecommendRequest) async throws -> DecisionRecommendResponse
@@ -164,9 +166,37 @@ final class NetworkAIBackendClient: AIBackendClient {
         self.platformProvider = platformProvider
     }
 
-    func createAnonymousSession(request: AnonymousSessionRequest) async throws -> AnonymousSessionResponse {
-        let response: AnonymousSessionResponse = try await performRequest(
+    func createAnonymousSession(request: AnonymousSessionRequest) async throws -> SessionResponse {
+        let response: SessionResponse = try await performRequest(
             path: "/v1/sessions/anonymous",
+            method: "POST",
+            body: request,
+            headers: [:],
+            retryUnauthorized: false
+        )
+        tokenStore.token = response.sessionToken
+        tokenStore.expiresAt = response.expiresAt
+        return response
+    }
+
+    /// Creates an authenticated session using a Sign in with Apple identity token.
+    func createAppleSession(request: AppleSessionRequest) async throws -> SessionResponse {
+        let response: SessionResponse = try await performRequest(
+            path: "/v1/sessions/apple",
+            method: "POST",
+            body: request,
+            headers: [:],
+            retryUnauthorized: false
+        )
+        tokenStore.token = response.sessionToken
+        tokenStore.expiresAt = response.expiresAt
+        return response
+    }
+
+    /// Refreshes an existing session token, returning a new token and expiry.
+    func refreshSessionToken(request: SessionRefreshRequest) async throws -> SessionResponse {
+        let response: SessionResponse = try await performRequest(
+            path: "/v1/sessions/refresh",
             method: "POST",
             body: request,
             headers: [:],
@@ -335,13 +365,26 @@ final class NetworkAIBackendClient: AIBackendClient {
         }
     }
 
+    /// Attempts to refresh the current session token; falls back to anonymous session creation on failure.
     private func refreshSession() async throws {
-        let request = AnonymousSessionRequest(
+        if let existingToken = tokenStore.token {
+            do {
+                let request = SessionRefreshRequest(
+                    sessionToken: existingToken,
+                    installId: installIDProvider()
+                )
+                _ = try await refreshSessionToken(request: request)
+                return
+            } catch {
+                // Refresh failed, fall back to anonymous
+            }
+        }
+        let anonRequest = AnonymousSessionRequest(
             installId: installIDProvider(),
             appVersion: appVersionProvider(),
             platform: platformProvider()
         )
-        _ = try await createAnonymousSession(request: request)
+        _ = try await createAnonymousSession(request: anonRequest)
     }
 
     private func performRequest<RequestBody: Encodable, ResponseBody: Decodable>(

@@ -17,13 +17,40 @@ struct AnonymousSessionRequest: Codable, Equatable {
     }
 }
 
-struct AnonymousSessionResponse: Codable, Equatable {
+/// Unified response for all session creation endpoints (anonymous, Apple, refresh).
+struct SessionResponse: Codable, Equatable {
     let sessionToken: String
     let expiresAt: Date
 
     enum CodingKeys: String, CodingKey {
         case sessionToken = "session_token"
         case expiresAt = "expires_at"
+    }
+}
+
+/// Request body for Sign in with Apple session creation.
+struct AppleSessionRequest: Codable {
+    let identityToken: String
+    let installId: String
+    let appVersion: String
+    let platform: String
+
+    enum CodingKeys: String, CodingKey {
+        case identityToken = "identity_token"
+        case installId = "install_id"
+        case appVersion = "app_version"
+        case platform
+    }
+}
+
+/// Request body for refreshing an existing session token.
+struct SessionRefreshRequest: Codable {
+    let sessionToken: String
+    let installId: String
+
+    enum CodingKeys: String, CodingKey {
+        case sessionToken = "session_token"
+        case installId = "install_id"
     }
 }
 
