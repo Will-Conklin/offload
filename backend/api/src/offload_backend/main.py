@@ -15,6 +15,7 @@ from offload_backend.routers.breakdown import router as breakdown_router
 from offload_backend.routers.decide import router as decide_router
 from offload_backend.routers.health import router as health_router
 from offload_backend.routers.sessions import router as sessions_router
+from offload_backend.routers.sessions_apple import router as sessions_apple_router
 from offload_backend.routers.usage import router as usage_router
 from offload_backend.usage_store import SQLiteUsageStore
 
@@ -83,6 +84,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health_router, prefix="/v1")
     app.include_router(sessions_router, prefix="/v1")
+    app.include_router(sessions_apple_router, prefix="/v1")
     app.include_router(breakdown_router, prefix="/v1")
     app.include_router(braindump_router, prefix="/v1")
     app.include_router(decide_router, prefix="/v1")
