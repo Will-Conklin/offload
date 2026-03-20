@@ -27,10 +27,13 @@ class ExpiredTokenError(TokenError):
 
 
 class SessionClaims(BaseModel):
+    """Validated session token claims."""
+
     model_config = ConfigDict(frozen=True)
 
     install_id: str
     expires_at: datetime
+    apple_user_id: str | None = None
 
 
 class TokenManager:
@@ -62,13 +65,20 @@ class TokenManager:
         install_id: str,
         ttl_seconds: int,
         now: datetime | None = None,
+        apple_user_id: str | None = None,
     ) -> SessionClaims:
+        """Create a new session with the given install_id and optional apple_user_id."""
         now = now or self._now_provider()
-        return SessionClaims(install_id=install_id, expires_at=now + timedelta(seconds=ttl_seconds))
+        return SessionClaims(
+            install_id=install_id,
+            expires_at=now + timedelta(seconds=ttl_seconds),
+            apple_user_id=apple_user_id,
+        )
 
     def encode(self, claims: SessionClaims) -> str:
+        """Encode claims into a signed token string."""
         issued_at = int(self._now_provider().timestamp())
-        payload = {
+        payload: dict[str, object] = {
             "v": TOKEN_VERSION,
             "kid": self._active_kid,
             "iat": issued_at,
@@ -78,6 +88,8 @@ class TokenManager:
             "install_id": claims.install_id,
             "exp": int(claims.expires_at.timestamp()),
         }
+        if claims.apple_user_id is not None:
+            payload["apple_user_id"] = claims.apple_user_id
         payload_b64 = _encode_payload(payload)
         signature = hmac.new(
             self._signing_keys[self._active_kid],
@@ -87,7 +99,13 @@ class TokenManager:
         signature_b64 = base64.urlsafe_b64encode(signature).decode("utf-8").rstrip("=")
         return f"{payload_b64}.{signature_b64}"
 
-    def decode(self, token: str) -> SessionClaims:
+    def decode(self, token: str, *, allow_expired: bool = False) -> SessionClaims:
+        """Decode and verify a signed token string.
+
+        Args:
+            token: The encoded token to decode.
+            allow_expired: When True, skip expiry check but still verify HMAC signature.
+        """
         payload_b64, signature_b64 = _split_token(token)
         payload = _decode_payload(payload_b64)
         kid = _parse_key_id(payload)
@@ -105,9 +123,15 @@ class TokenManager:
         if not hmac.compare_digest(expected_signature, provided_signature):
             raise InvalidTokenError("Token signature mismatch")
 
-        return self._parse_v2_claims(payload)
+        return self._parse_v2_claims(payload, allow_expired=allow_expired)
 
-    def _parse_v2_claims(self, payload: dict[str, object]) -> SessionClaims:
+    def _parse_v2_claims(
+        self,
+        payload: dict[str, object],
+        *,
+        allow_expired: bool = False,
+    ) -> SessionClaims:
+        """Parse and validate v2 token claims from a decoded payload."""
         missing_claims = REQUIRED_V2_CLAIMS.difference(payload.keys())
         if missing_claims:
             raise InvalidTokenError("Missing token claims")
@@ -120,6 +144,10 @@ class TokenManager:
         audience = _require_str(payload, "aud")
         expires_at = datetime.fromtimestamp(_require_int(payload, "exp"), tz=UTC)
         install_id = _require_str(payload, "install_id")
+
+        # Optional claim — not in REQUIRED_V2_CLAIMS
+        raw_apple_user_id = payload.get("apple_user_id")
+        apple_user_id = str(raw_apple_user_id) if raw_apple_user_id is not None else None
 
         if version != TOKEN_VERSION:
             raise InvalidTokenError("Unsupported token version")
@@ -135,10 +163,14 @@ class TokenManager:
         now = self._now_provider()
         if now < not_before:
             raise InvalidTokenError("Token not active yet")
-        if expires_at <= now:
+        if not allow_expired and expires_at <= now:
             raise ExpiredTokenError("Token expired")
 
-        return SessionClaims(install_id=install_id, expires_at=expires_at)
+        return SessionClaims(
+            install_id=install_id,
+            expires_at=expires_at,
+            apple_user_id=apple_user_id,
+        )
 
 
 def _build_signing_keys(

@@ -134,3 +134,31 @@ def make_breakdown_payload():
         return payload
 
     return _make
+
+
+@pytest.fixture
+def token_manager(test_env: None) -> TokenManager:
+    """Standard TokenManager from test settings."""
+    settings = get_settings()
+    return TokenManager(
+        secret=settings.session_secret,
+        issuer=settings.session_token_issuer,
+        audience=settings.session_token_audience,
+        active_kid=settings.session_token_active_kid,
+        signing_keys=settings.session_signing_keys,
+    )
+
+
+@pytest.fixture
+def expired_token_manager(test_env: None) -> TokenManager:
+    """TokenManager with now_provider set 2 hours in the future."""
+    future = datetime.now(UTC) + timedelta(hours=2)
+    settings = get_settings()
+    return TokenManager(
+        secret=settings.session_secret,
+        issuer=settings.session_token_issuer,
+        audience=settings.session_token_audience,
+        active_kid=settings.session_token_active_kid,
+        signing_keys=settings.session_signing_keys,
+        now_provider=lambda: future,
+    )

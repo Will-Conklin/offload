@@ -7,7 +7,11 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from offload_backend.security import ExpiredTokenError, SessionClaims, TokenManager
+from offload_backend.security import (
+    ExpiredTokenError,
+    SessionClaims,
+    TokenManager,
+)
 
 REQUIRED_V2_CLAIMS = {"v", "kid", "iat", "nbf", "iss", "aud", "exp", "install_id"}
 
@@ -135,3 +139,61 @@ def test_token_manager_decode_uses_injected_clock_for_expiry():
     clock.advance(seconds=2)
     with pytest.raises(ExpiredTokenError):
         manager.decode(token)
+
+
+def test_session_claims_supports_optional_apple_user_id():
+    """SessionClaims accepts and stores an optional apple_user_id."""
+    claims_with = SessionClaims(
+        install_id="install-123",
+        expires_at=datetime(2026, 3, 19, 12, 0, tzinfo=UTC),
+        apple_user_id="apple.user.001",
+    )
+    assert claims_with.apple_user_id == "apple.user.001"
+
+    claims_without = SessionClaims(
+        install_id="install-123",
+        expires_at=datetime(2026, 3, 19, 12, 0, tzinfo=UTC),
+    )
+    assert claims_without.apple_user_id is None
+
+
+def test_apple_user_id_round_trips_through_token(token_manager: TokenManager):
+    """apple_user_id survives encode -> decode round-trip."""
+    claims = token_manager.issue_session(
+        install_id="install-abc",
+        ttl_seconds=300,
+        apple_user_id="apple.user.002",
+    )
+    token = token_manager.encode(claims)
+    decoded = token_manager.decode(token)
+
+    assert decoded.apple_user_id == "apple.user.002"
+    assert decoded.install_id == "install-abc"
+
+
+def test_anonymous_token_has_no_apple_user_id(token_manager: TokenManager):
+    """Anonymous session tokens have apple_user_id=None after decode."""
+    claims = token_manager.issue_session(install_id="install-anon", ttl_seconds=300)
+    token = token_manager.encode(claims)
+    decoded = token_manager.decode(token)
+
+    assert decoded.apple_user_id is None
+    assert decoded.install_id == "install-anon"
+
+
+def test_decode_allow_expired_skips_expiry_check(
+    expired_token_manager: TokenManager,
+    token_manager: TokenManager,
+):
+    """decode(allow_expired=True) returns claims for an expired token."""
+    # Issue and encode with the standard manager (current time)
+    claims = token_manager.issue_session(install_id="install-expired", ttl_seconds=300)
+    token = token_manager.encode(claims)
+
+    # The expired_token_manager's clock is 2 hours in the future, so the token is expired
+    with pytest.raises(ExpiredTokenError):
+        expired_token_manager.decode(token)
+
+    # But with allow_expired=True, it should succeed
+    decoded = expired_token_manager.decode(token, allow_expired=True)
+    assert decoded.install_id == "install-expired"
