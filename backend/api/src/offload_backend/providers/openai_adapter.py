@@ -58,68 +58,8 @@ class OpenAIProviderAdapter:
             context_hints=context_hints,
             template_ids=template_ids,
         )
-        headers = {
-            "Authorization": f"Bearer {self._settings.openai_api_key}",
-            "Content-Type": "application/json",
-        }
-        url = f"{self._settings.openai_base_url}/chat/completions"
-        timeout = httpx.Timeout(self._settings.openai_timeout_seconds)
-
-        total_delay_slept = 0.0
-        max_attempts = self._settings.ai_retry_max_attempts
-        last_retryable_error: Exception | None = None
-
-        for attempt in range(1, max_attempts + 1):
-            try:
-                response = await self._request_executor(url, payload, headers, timeout)
-            except httpx.TimeoutException:
-                last_retryable_error = ProviderTimeout("OpenAI request timed out")
-            except httpx.HTTPError:
-                last_retryable_error = ProviderRequestError("OpenAI request failed")
-            else:
-                if response.status_code >= 500:
-                    last_retryable_error = ProviderRequestError("OpenAI server error")
-                elif response.status_code == 429:
-                    last_retryable_error = ProviderRequestError("OpenAI rate limited")
-                elif response.status_code >= 400:
-                    raise ProviderRequestError("OpenAI request rejected")
-                else:
-                    result = self._parse_success_response(response)
-                    if attempt > 1:
-                        logger.info(
-                            "provider_retry_recovered",
-                            extra={"attempt_count": attempt, "provider": self.provider_name},
-                        )
-                    return result
-
-            if last_retryable_error is None:
-                raise RuntimeError("retry loop invariant violated")
-            if attempt >= max_attempts:
-                break
-            delay = compute_retry_delay(
-                attempt=attempt,
-                total_delay_slept=total_delay_slept,
-                base_delay=self._settings.ai_retry_base_delay_seconds,
-                max_delay=self._settings.ai_retry_max_delay_seconds,
-                max_total_delay=self._settings.ai_retry_max_total_delay_seconds,
-                jitter_factor=self._settings.ai_retry_jitter_factor,
-                random_fn=self._random_fn,
-            )
-            total_delay_slept += delay
-            if delay > 0:
-                await self._sleep_fn(delay)
-
-        if last_retryable_error is None:
-            raise RuntimeError("retry loop invariant violated")
-        logger.warning(
-            "provider_retry_terminal",
-            extra={
-                "attempt_count": max_attempts,
-                "error_class": last_retryable_error.__class__.__name__,
-                "provider": self.provider_name,
-            },
-        )
-        raise last_retryable_error
+        response = await self._execute_with_retry(payload=payload)
+        return self._parse_success_response(response)
 
     def _request_payload(
         self,
@@ -154,6 +94,74 @@ class OpenAIProviderAdapter:
             ],
             "response_format": {"type": "json_object"},
         }
+
+    async def _execute_with_retry(self, *, payload: dict) -> httpx.Response:
+        """Execute an OpenAI API request with exponential backoff retry.
+
+        Retries on timeouts, network errors, 429, and 5xx responses.
+        Raises the last retryable error after exhausting max attempts.
+        """
+        url = f"{self._settings.openai_base_url}/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self._settings.openai_api_key}",
+            "Content-Type": "application/json",
+        }
+        timeout = httpx.Timeout(self._settings.openai_timeout_seconds)
+
+        total_delay_slept = 0.0
+        max_attempts = self._settings.ai_retry_max_attempts
+        last_retryable_error: Exception | None = None
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = await self._request_executor(url, payload, headers, timeout)
+            except httpx.TimeoutException:
+                last_retryable_error = ProviderTimeout("OpenAI request timed out")
+            except httpx.HTTPError:
+                last_retryable_error = ProviderRequestError("OpenAI request failed")
+            else:
+                if response.status_code >= 500:
+                    last_retryable_error = ProviderRequestError("OpenAI server error")
+                elif response.status_code == 429:
+                    last_retryable_error = ProviderRequestError("OpenAI rate limited")
+                elif response.status_code >= 400:
+                    raise ProviderRequestError("OpenAI request rejected")
+                else:
+                    if attempt > 1:
+                        logger.info(
+                            "provider_retry_recovered",
+                            extra={"attempt_count": attempt, "provider": self.provider_name},
+                        )
+                    return response
+
+            if last_retryable_error is None:
+                raise RuntimeError("retry loop invariant violated")
+            if attempt >= max_attempts:
+                break
+            delay = compute_retry_delay(
+                attempt=attempt,
+                total_delay_slept=total_delay_slept,
+                base_delay=self._settings.ai_retry_base_delay_seconds,
+                max_delay=self._settings.ai_retry_max_delay_seconds,
+                max_total_delay=self._settings.ai_retry_max_total_delay_seconds,
+                jitter_factor=self._settings.ai_retry_jitter_factor,
+                random_fn=self._random_fn,
+            )
+            total_delay_slept += delay
+            if delay > 0:
+                await self._sleep_fn(delay)
+
+        if last_retryable_error is None:
+            raise RuntimeError("retry loop invariant violated")
+        logger.warning(
+            "provider_retry_terminal",
+            extra={
+                "attempt_count": max_attempts,
+                "error_class": last_retryable_error.__class__.__name__,
+                "provider": self.provider_name,
+            },
+        )
+        raise last_retryable_error
 
     async def _default_request_executor(
         self,
@@ -200,68 +208,8 @@ class OpenAIProviderAdapter:
             input_text=input_text,
             context_hints=context_hints,
         )
-        headers = {
-            "Authorization": f"Bearer {self._settings.openai_api_key}",
-            "Content-Type": "application/json",
-        }
-        url = f"{self._settings.openai_base_url}/chat/completions"
-        timeout = httpx.Timeout(self._settings.openai_timeout_seconds)
-
-        total_delay_slept = 0.0
-        max_attempts = self._settings.ai_retry_max_attempts
-        last_retryable_error: Exception | None = None
-
-        for attempt in range(1, max_attempts + 1):
-            try:
-                response = await self._request_executor(url, payload, headers, timeout)
-            except httpx.TimeoutException:
-                last_retryable_error = ProviderTimeout("OpenAI request timed out")
-            except httpx.HTTPError:
-                last_retryable_error = ProviderRequestError("OpenAI request failed")
-            else:
-                if response.status_code >= 500:
-                    last_retryable_error = ProviderRequestError("OpenAI server error")
-                elif response.status_code == 429:
-                    last_retryable_error = ProviderRequestError("OpenAI rate limited")
-                elif response.status_code >= 400:
-                    raise ProviderRequestError("OpenAI request rejected")
-                else:
-                    result = self._parse_brain_dump_response(response)
-                    if attempt > 1:
-                        logger.info(
-                            "provider_retry_recovered",
-                            extra={"attempt_count": attempt, "provider": self.provider_name},
-                        )
-                    return result
-
-            if last_retryable_error is None:
-                raise RuntimeError("retry loop invariant violated")
-            if attempt >= max_attempts:
-                break
-            delay = compute_retry_delay(
-                attempt=attempt,
-                total_delay_slept=total_delay_slept,
-                base_delay=self._settings.ai_retry_base_delay_seconds,
-                max_delay=self._settings.ai_retry_max_delay_seconds,
-                max_total_delay=self._settings.ai_retry_max_total_delay_seconds,
-                jitter_factor=self._settings.ai_retry_jitter_factor,
-                random_fn=self._random_fn,
-            )
-            total_delay_slept += delay
-            if delay > 0:
-                await self._sleep_fn(delay)
-
-        if last_retryable_error is None:
-            raise RuntimeError("retry loop invariant violated")
-        logger.warning(
-            "provider_retry_terminal",
-            extra={
-                "attempt_count": max_attempts,
-                "error_class": last_retryable_error.__class__.__name__,
-                "provider": self.provider_name,
-            },
-        )
-        raise last_retryable_error
+        response = await self._execute_with_retry(payload=payload)
+        return self._parse_brain_dump_response(response)
 
     def _brain_dump_request_payload(
         self,
@@ -334,68 +282,8 @@ class OpenAIProviderAdapter:
             context_hints=context_hints,
             clarifying_answers=clarifying_answers,
         )
-        headers = {
-            "Authorization": f"Bearer {self._settings.openai_api_key}",
-            "Content-Type": "application/json",
-        }
-        url = f"{self._settings.openai_base_url}/chat/completions"
-        timeout = httpx.Timeout(self._settings.openai_timeout_seconds)
-
-        total_delay_slept = 0.0
-        max_attempts = self._settings.ai_retry_max_attempts
-        last_retryable_error: Exception | None = None
-
-        for attempt in range(1, max_attempts + 1):
-            try:
-                response = await self._request_executor(url, payload, headers, timeout)
-            except httpx.TimeoutException:
-                last_retryable_error = ProviderTimeout("OpenAI request timed out")
-            except httpx.HTTPError:
-                last_retryable_error = ProviderRequestError("OpenAI request failed")
-            else:
-                if response.status_code >= 500:
-                    last_retryable_error = ProviderRequestError("OpenAI server error")
-                elif response.status_code == 429:
-                    last_retryable_error = ProviderRequestError("OpenAI rate limited")
-                elif response.status_code >= 400:
-                    raise ProviderRequestError("OpenAI request rejected")
-                else:
-                    result = self._parse_decision_response(response)
-                    if attempt > 1:
-                        logger.info(
-                            "provider_retry_recovered",
-                            extra={"attempt_count": attempt, "provider": self.provider_name},
-                        )
-                    return result
-
-            if last_retryable_error is None:
-                raise RuntimeError("retry loop invariant violated")
-            if attempt >= max_attempts:
-                break
-            delay = compute_retry_delay(
-                attempt=attempt,
-                total_delay_slept=total_delay_slept,
-                base_delay=self._settings.ai_retry_base_delay_seconds,
-                max_delay=self._settings.ai_retry_max_delay_seconds,
-                max_total_delay=self._settings.ai_retry_max_total_delay_seconds,
-                jitter_factor=self._settings.ai_retry_jitter_factor,
-                random_fn=self._random_fn,
-            )
-            total_delay_slept += delay
-            if delay > 0:
-                await self._sleep_fn(delay)
-
-        if last_retryable_error is None:
-            raise RuntimeError("retry loop invariant violated")
-        logger.warning(
-            "provider_retry_terminal",
-            extra={
-                "attempt_count": max_attempts,
-                "error_class": last_retryable_error.__class__.__name__,
-                "provider": self.provider_name,
-            },
-        )
-        raise last_retryable_error
+        response = await self._execute_with_retry(payload=payload)
+        return self._parse_decision_response(response)
 
     def _decision_request_payload(
         self,

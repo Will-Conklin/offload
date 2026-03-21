@@ -143,6 +143,9 @@ final class CollectionItemRepository {
     }
 
     func updateParent(_ collectionItem: CollectionItem, parentId: UUID?) throws {
+        if let parentId {
+            try validateNoCycle(itemId: collectionItem.id, proposedParentId: parentId)
+        }
         collectionItem.parentId = parentId
         try modelContext.save()
     }
@@ -228,6 +231,28 @@ final class CollectionItemRepository {
         collectionItem.position = resolvedPosition
         collectionItem.parentId = nil // Reset parent when moving
         try modelContext.save()
+    }
+
+    // MARK: - Cycle Detection
+
+    /// Walks the parentId chain from proposedParentId upward, detecting cycles
+    /// that would occur if `itemId` were made a child of `proposedParentId`.
+    private func validateNoCycle(itemId: UUID, proposedParentId: UUID) throws {
+        guard itemId != proposedParentId else {
+            throw ValidationError("An item cannot be its own parent")
+        }
+
+        var visited: Set<UUID> = [itemId]
+        var currentId: UUID? = proposedParentId
+
+        while let id = currentId {
+            guard !visited.contains(id) else {
+                throw ValidationError("Circular parent relationship detected")
+            }
+            visited.insert(id)
+            let parent = try fetchById(id)
+            currentId = parent?.parentId
+        }
     }
 
     // MARK: - Private helpers

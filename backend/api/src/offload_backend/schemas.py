@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class HealthResponse(BaseModel):
@@ -39,9 +39,26 @@ class BreakdownGenerateRequest(BaseModel):
     )
 
 
+_BREAKDOWN_MAX_DEPTH = 3
+
+
 class BreakdownStep(BaseModel):
     title: str = Field(min_length=1, max_length=280)
-    substeps: list[BreakdownStep] = Field(default_factory=list)
+    substeps: list[BreakdownStep] = Field(default_factory=list, max_length=20)
+
+    @model_validator(mode="after")
+    def _enforce_max_depth(self) -> BreakdownStep:
+        _check_substep_depth(self.substeps, current_depth=1, max_depth=_BREAKDOWN_MAX_DEPTH)
+        return self
+
+
+def _check_substep_depth(
+    substeps: list[BreakdownStep], *, current_depth: int, max_depth: int
+) -> None:
+    if current_depth > max_depth:
+        raise ValueError(f"BreakdownStep nesting exceeds maximum depth of {max_depth}")
+    for step in substeps:
+        _check_substep_depth(step.substeps, current_depth=current_depth + 1, max_depth=max_depth)
 
 
 BreakdownStep.model_rebuild()

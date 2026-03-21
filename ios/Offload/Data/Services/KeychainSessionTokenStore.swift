@@ -27,19 +27,30 @@ struct KeychainItem {
         return data
     }
 
-    func write(_ data: Data) {
+    @discardableResult
+    func write(_ data: Data) -> Bool {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: Self.service,
             kSecAttrAccount: account,
         ]
         let update: [CFString: Any] = [kSecValueData: data]
-        if SecItemUpdate(query as CFDictionary, update as CFDictionary) == errSecItemNotFound {
+        let updateStatus = SecItemUpdate(query as CFDictionary, update as CFDictionary)
+        if updateStatus == errSecItemNotFound {
             var addItem = query
             addItem[kSecValueData] = data
             addItem[kSecAttrAccessible] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
-            SecItemAdd(addItem as CFDictionary, nil)
+            let addStatus = SecItemAdd(addItem as CFDictionary, nil)
+            if addStatus != errSecSuccess {
+                AppLogger.persistence.error("Keychain add failed for \(self.account, privacy: .public): OSStatus \(addStatus, privacy: .public)")
+                return false
+            }
+            return true
+        } else if updateStatus != errSecSuccess {
+            AppLogger.persistence.error("Keychain update failed for \(self.account, privacy: .public): OSStatus \(updateStatus, privacy: .public)")
+            return false
         }
+        return true
     }
 
     func delete() {

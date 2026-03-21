@@ -160,7 +160,10 @@ final class ItemRepository {
             sortBy: [SortDescriptor(\.completedAt, order: .reverse)]
         )
         let allCompleted = try modelContext.fetch(descriptor)
-        return allCompleted.filter { $0.completedAt! >= startOfWeek }
+        return allCompleted.filter { item in
+            guard let completedAt = item.completedAt else { return false }
+            return completedAt >= startOfWeek
+        }
     }
 
     /// Returns non-completed items with a followUpDate in [startDate, endDate], sorted ascending.

@@ -29,6 +29,7 @@ final class VoiceRecordingService {
     private var recordingTimer: Timer?
     private var cachedMicrophonePermission: Bool?
     private var cachedSpeechPermission: Bool?
+    private var interruptionObserver: NSObjectProtocol?
 
     // MARK: - Permissions
 
@@ -177,6 +178,18 @@ final class VoiceRecordingService {
             }
         }
 
+        // Observe audio interruptions (phone calls, Siri, etc.)
+        interruptionObserver = NotificationCenter.default.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance(),
+            queue: nil
+        ) { [weak self] notification in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.handleAudioInterruption(notification)
+            }
+        }
+
         // Start recording timer
         isRecording = true
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
@@ -218,6 +231,12 @@ final class VoiceRecordingService {
             AppLogger.voice.warning("Failed to deactivate audio session: \(error.localizedDescription, privacy: .public)")
         }
 
+        // Remove interruption observer
+        if let observer = interruptionObserver {
+            NotificationCenter.default.removeObserver(observer)
+            interruptionObserver = nil
+        }
+
         // Cleanup
         audioEngine = nil
         recognitionRequest = nil
@@ -230,6 +249,25 @@ final class VoiceRecordingService {
         AppLogger.voice.info("Voice recording cancelled by user")
         transcribedText = ""
         stopRecording()
+    }
+
+    // MARK: - Audio Interruption
+
+    private func handleAudioInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue)
+        else { return }
+
+        switch type {
+        case .began:
+            AppLogger.voice.warning("Audio session interrupted — stopping recording")
+            stopRecording()
+        case .ended:
+            AppLogger.voice.info("Audio interruption ended")
+        @unknown default:
+            AppLogger.voice.warning("Unknown audio interruption type: \(typeValue, privacy: .public)")
+        }
     }
 
     // MARK: - Error Types
