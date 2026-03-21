@@ -8,7 +8,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from offload_backend.apple_auth import AppleTokenValidator
 from offload_backend.config import Settings, get_settings
-from offload_backend.errors import APIException
+from offload_backend.errors import APIException, get_request_id
 from offload_backend.providers.anthropic_adapter import AnthropicProviderAdapter
 from offload_backend.providers.base import AIProvider
 from offload_backend.providers.openai_adapter import OpenAIProviderAdapter
@@ -28,10 +28,6 @@ from offload_backend.user_store import UserStore
 
 bearer_scheme = HTTPBearer(auto_error=False)
 logger = logging.getLogger("offload_backend")
-
-
-def get_request_id(request: Request) -> str:
-    return getattr(request.state, "request_id", "unknown")
 
 
 def get_app_settings() -> Settings:
@@ -101,34 +97,49 @@ def get_apple_validator(request: Request) -> AppleTokenValidator:
     return request.app.state.apple_validator
 
 
+def _get_or_create_rate_limiter(
+    request: Request,
+    state_attr: str,
+    limit_per_ip: int,
+    limit_per_install: int,
+    window_seconds: int,
+) -> SessionRateLimiter:
+    """Returns a cached rate limiter from app state, creating one if needed."""
+    limiter = getattr(request.app.state, state_attr, None)
+    if limiter is None:
+        limiter = InMemorySessionRateLimiter(
+            limit_per_ip=limit_per_ip,
+            limit_per_install=limit_per_install,
+            window_seconds=window_seconds,
+        )
+        setattr(request.app.state, state_attr, limiter)
+    return limiter
+
+
 def get_session_rate_limiter(
     request: Request,
     settings: Settings = Depends(get_app_settings),
 ) -> SessionRateLimiter:
-    limiter = getattr(request.app.state, "session_rate_limiter", None)
-    if limiter is None:
-        limiter = InMemorySessionRateLimiter(
-            limit_per_ip=settings.session_issue_limit_per_ip,
-            limit_per_install=settings.session_issue_limit_per_install,
-            window_seconds=settings.session_issue_limit_window_seconds,
-        )
-        request.app.state.session_rate_limiter = limiter
-    return limiter
+    return _get_or_create_rate_limiter(
+        request,
+        "session_rate_limiter",
+        limit_per_ip=settings.session_issue_limit_per_ip,
+        limit_per_install=settings.session_issue_limit_per_install,
+        window_seconds=settings.session_issue_limit_window_seconds,
+    )
 
 
 def get_ai_inference_rate_limiter(
     request: Request,
     settings: Settings = Depends(get_app_settings),
 ) -> SessionRateLimiter:
-    limiter = getattr(request.app.state, "ai_inference_rate_limiter", None)
-    if limiter is None:
-        limiter = InMemorySessionRateLimiter(
-            limit_per_ip=settings.ai_inference_limit_per_ip,
-            limit_per_install=settings.ai_inference_limit_per_install,
-            window_seconds=settings.ai_inference_limit_window_seconds,
-        )
-        request.app.state.ai_inference_rate_limiter = limiter
-    return limiter
+    return _get_or_create_rate_limiter(
+        request,
+        "ai_inference_rate_limiter",
+        limit_per_ip=settings.ai_inference_limit_per_ip,
+        limit_per_install=settings.ai_inference_limit_per_install,
+        window_seconds=settings.ai_inference_limit_window_seconds,
+    )
 
 
 def _client_ip(request: Request) -> str:
@@ -162,18 +173,22 @@ def enforce_ai_quota(
         )
 
 
-def enforce_ai_inference_rate_limit(
+def _enforce_rate_limit(
     *,
     install_id: str,
     request: Request,
     limiter: SessionRateLimiter,
+    log_event: str,
+    error_code: str,
+    error_message: str,
 ) -> None:
+    """Shared rate-limit enforcement for session issuance and AI inference."""
     client_ip = _client_ip(request)
     try:
         limiter.check(client_ip=client_ip, install_id=install_id)
     except SessionRateLimitExceeded as exc:
         logger.info(
-            "ai_inference_throttled",
+            log_event,
             extra={
                 "request_id": get_request_id(request),
                 "path": request.url.path,
@@ -184,9 +199,25 @@ def enforce_ai_inference_rate_limit(
         )
         raise APIException(
             status_code=429,
-            code="inference_rate_limited",
-            message="Too many AI requests; retry later",
+            code=error_code,
+            message=error_message,
         ) from exc
+
+
+def enforce_ai_inference_rate_limit(
+    *,
+    install_id: str,
+    request: Request,
+    limiter: SessionRateLimiter,
+) -> None:
+    _enforce_rate_limit(
+        install_id=install_id,
+        request=request,
+        limiter=limiter,
+        log_event="ai_inference_throttled",
+        error_code="inference_rate_limited",
+        error_message="Too many AI requests; retry later",
+    )
 
 
 def enforce_session_issuance_rate_limit(
@@ -195,22 +226,11 @@ def enforce_session_issuance_rate_limit(
     request: Request,
     limiter: SessionRateLimiter,
 ) -> None:
-    client_ip = _client_ip(request)
-    try:
-        limiter.check(client_ip=client_ip, install_id=install_id)
-    except SessionRateLimitExceeded as exc:
-        logger.info(
-            "session_issuance_throttled",
-            extra={
-                "request_id": get_request_id(request),
-                "path": request.url.path,
-                "dimension": exc.dimension,
-                "retry_after_seconds": exc.retry_after_seconds,
-                "install_id_hash": _install_id_hash(install_id),
-            },
-        )
-        raise APIException(
-            status_code=429,
-            code="session_rate_limited",
-            message="Too many session requests; retry later",
-        ) from exc
+    _enforce_rate_limit(
+        install_id=install_id,
+        request=request,
+        limiter=limiter,
+        log_event="session_issuance_throttled",
+        error_code="session_rate_limited",
+        error_message="Too many session requests; retry later",
+    )

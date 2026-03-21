@@ -1,50 +1,11 @@
+from conftest import FailureAIProvider, FakeAIProvider, TimeoutAIProvider
+
 from offload_backend.dependencies import get_ai_inference_rate_limiter, get_provider
-from offload_backend.providers.base import (
-    ProviderBrainDumpResult,
-    ProviderRequestError,
-    ProviderTimeout,
-)
 from offload_backend.session_rate_limiter import InMemorySessionRateLimiter
 
 
-class FakeBrainDumpProvider:
-    provider_name = "fake"
-
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        raise NotImplementedError
-
-    async def compile_brain_dump(self, *, input_text, context_hints):
-        _ = (input_text, context_hints)
-        return ProviderBrainDumpResult(
-            items=[
-                {"title": "Call dentist", "type": "task"},
-                {"title": "Party ideas", "type": "idea"},
-            ],
-            input_tokens=15,
-            output_tokens=25,
-        )
-
-
-class TimeoutBrainDumpProvider:
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        raise NotImplementedError
-
-    async def compile_brain_dump(self, *, input_text, context_hints):
-        _ = (input_text, context_hints)
-        raise ProviderTimeout("provider timeout")
-
-
-class FailureBrainDumpProvider:
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        raise NotImplementedError
-
-    async def compile_brain_dump(self, *, input_text, context_hints):
-        _ = (input_text, context_hints)
-        raise ProviderRequestError("provider failure")
-
-
 def test_braindump_compile_success(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -69,7 +30,7 @@ def test_braindump_compile_success(client, app, create_session_token):
 
 
 def test_braindump_rejects_missing_opt_in(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -85,7 +46,7 @@ def test_braindump_rejects_missing_opt_in(client, app, create_session_token):
 
 
 def test_braindump_rejects_missing_auth(client, app):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
 
     response = client.post(
         "/v1/ai/braindump/compile",
@@ -99,7 +60,7 @@ def test_braindump_rejects_missing_auth(client, app):
 
 
 def test_braindump_rejects_expired_token(client, app, create_expired_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_expired_session_token()
 
     response = client.post(
@@ -118,7 +79,7 @@ def test_braindump_rejects_expired_token(client, app, create_expired_session_tok
 
 
 def test_braindump_rejects_oversized_input(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -137,7 +98,7 @@ def test_braindump_rejects_oversized_input(client, app, create_session_token):
 
 
 def test_braindump_provider_timeout_returns_504(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: TimeoutBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: TimeoutAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -156,7 +117,7 @@ def test_braindump_provider_timeout_returns_504(client, app, create_session_toke
 
 
 def test_braindump_provider_failure_returns_502(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FailureBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FailureAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -175,7 +136,7 @@ def test_braindump_provider_failure_returns_502(client, app, create_session_toke
 
 
 def test_braindump_schema_validation_rejects_empty_input(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -193,7 +154,7 @@ def test_braindump_schema_validation_rejects_empty_input(client, app, create_ses
 
 
 def test_braindump_accepts_context_hints(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -217,7 +178,7 @@ def test_braindump_rate_limit_throttles_excess_requests(client, app, create_sess
     tight_limiter = InMemorySessionRateLimiter(
         limit_per_install=1, limit_per_ip=1000, window_seconds=60
     )
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     app.dependency_overrides[get_ai_inference_rate_limiter] = lambda: tight_limiter
     token = create_session_token()
     headers = {"Authorization": f"Bearer {token}", "X-Offload-Cloud-Opt-In": "true"}
@@ -233,7 +194,7 @@ def test_braindump_rate_limit_throttles_excess_requests(client, app, create_sess
 
 
 def test_braindump_rejects_unknown_fields(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeBrainDumpProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(

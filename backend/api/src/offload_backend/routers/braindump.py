@@ -15,14 +15,8 @@ from offload_backend.dependencies import (
     get_usage_store,
     require_cloud_opt_in,
 )
-from offload_backend.errors import APIException
-from offload_backend.providers.base import (
-    AIProvider,
-    ProviderRequestError,
-    ProviderResponseError,
-    ProviderTimeout,
-    ProviderUnavailable,
-)
+from offload_backend.errors import APIException, call_provider
+from offload_backend.providers.base import AIProvider
 from offload_backend.schemas import (
     BrainDumpCompileRequest,
     BrainDumpCompileResponse,
@@ -64,35 +58,12 @@ async def compile_brain_dump(
 
     started_at = datetime.now(UTC)
 
-    try:
-        result = await provider.compile_brain_dump(
+    result = await call_provider(
+        lambda: provider.compile_brain_dump(
             input_text=request.input_text,
             context_hints=request.context_hints,
         )
-    except ProviderTimeout as exc:
-        raise APIException(
-            status_code=504,
-            code="provider_timeout",
-            message="Provider timeout",
-        ) from exc
-    except ProviderUnavailable as exc:
-        raise APIException(
-            status_code=503,
-            code="provider_unavailable",
-            message="Provider unavailable",
-        ) from exc
-    except ProviderResponseError as exc:
-        raise APIException(
-            status_code=502,
-            code="provider_invalid_response",
-            message="Provider returned invalid response",
-        ) from exc
-    except ProviderRequestError as exc:
-        raise APIException(
-            status_code=502,
-            code="provider_request_failed",
-            message="Provider request failed",
-        ) from exc
+    )
 
     latency_ms = max(0, int((datetime.now(UTC) - started_at).total_seconds() * 1000))
     usage_store.increment(install_id=claims.install_id, feature="braindump")

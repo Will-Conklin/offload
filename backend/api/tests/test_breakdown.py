@@ -1,48 +1,16 @@
+from conftest import FailureAIProvider, FakeAIProvider, TimeoutAIProvider
+
 from offload_backend.dependencies import (
     get_ai_inference_rate_limiter,
     get_provider,
     get_usage_store,
 )
-from offload_backend.providers.base import (
-    ProviderBreakdownResult,
-    ProviderRequestError,
-    ProviderTimeout,
-)
 from offload_backend.session_rate_limiter import InMemorySessionRateLimiter
 from offload_backend.usage_store import InMemoryUsageStore
 
 
-class FakeProvider:
-    provider_name = "fake"
-
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        _ = (input_text, granularity, context_hints, template_ids)
-        return ProviderBreakdownResult(
-            steps=[
-                {
-                    "title": "Step 1",
-                    "substeps": [{"title": "Substep 1.1", "substeps": []}],
-                }
-            ],
-            input_tokens=10,
-            output_tokens=20,
-        )
-
-
-class TimeoutProvider:
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        _ = (input_text, granularity, context_hints, template_ids)
-        raise ProviderTimeout("provider timeout")
-
-
-class FailureProvider:
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        _ = (input_text, granularity, context_hints, template_ids)
-        raise ProviderRequestError("provider failure")
-
-
 def test_breakdown_generation_success(client, app, create_session_token, make_breakdown_payload):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -69,7 +37,7 @@ def test_breakdown_rejects_missing_opt_in(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -85,7 +53,7 @@ def test_breakdown_rejects_missing_opt_in(
 
 
 def test_breakdown_schema_validation(client, app, create_session_token, make_breakdown_payload):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -104,7 +72,7 @@ def test_breakdown_schema_validation(client, app, create_session_token, make_bre
 
 
 def test_breakdown_provider_timeout_mapping(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: TimeoutProvider()
+    app.dependency_overrides[get_provider] = lambda: TimeoutAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -128,7 +96,7 @@ def test_breakdown_accepts_list_field_length_boundary(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -154,7 +122,7 @@ def test_breakdown_rejects_list_field_length_over_limit(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -177,7 +145,7 @@ def test_breakdown_rejects_context_hint_element_too_long(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -200,7 +168,7 @@ def test_breakdown_rejects_template_id_element_too_long(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -218,7 +186,7 @@ def test_breakdown_rejects_template_id_element_too_long(
 
 
 def test_breakdown_provider_failure_mapping(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FailureProvider()
+    app.dependency_overrides[get_provider] = lambda: FailureAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -242,7 +210,7 @@ def test_breakdown_request_limit_enforced(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -266,7 +234,7 @@ def test_breakdown_request_limit_counts_context_hints_and_template_ids(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -295,7 +263,7 @@ def test_breakdown_does_not_persist_prompt_content(
     create_session_token,
     make_breakdown_payload,
 ):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
     prompt = "super-private-prompt-content"
 
@@ -321,7 +289,7 @@ def test_breakdown_rate_limit_throttles_excess_requests(
     tight_limiter = InMemorySessionRateLimiter(
         limit_per_install=1, limit_per_ip=1000, window_seconds=60
     )
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     app.dependency_overrides[get_ai_inference_rate_limiter] = lambda: tight_limiter
     token = create_session_token()
     headers = {"Authorization": f"Bearer {token}", "X-Offload-Cloud-Opt-In": "true"}
@@ -351,7 +319,7 @@ def test_breakdown_quota_exhausted_returns_429(
     exhausted_store = InMemoryUsageStore()
     for _ in range(10):
         exhausted_store.increment(install_id="install-12345", feature="breakdown")
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     app.dependency_overrides[get_usage_store] = lambda: exhausted_store
     token = create_session_token()
 
@@ -373,7 +341,7 @@ def test_breakdown_quota_not_exhausted_increments(
     under_quota_store = InMemoryUsageStore()
     for _ in range(9):
         under_quota_store.increment(install_id="install-12345", feature="breakdown")
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     app.dependency_overrides[get_usage_store] = lambda: under_quota_store
     token = create_session_token()
 
@@ -395,7 +363,7 @@ def test_breakdown_provider_error_does_not_increment(
     client, app, create_session_token, make_breakdown_payload
 ):
     store = InMemoryUsageStore()
-    app.dependency_overrides[get_provider] = lambda: TimeoutProvider()
+    app.dependency_overrides[get_provider] = lambda: TimeoutAIProvider()
     app.dependency_overrides[get_usage_store] = lambda: store
     token = create_session_token()
 
@@ -420,7 +388,7 @@ def test_breakdown_quota_is_shared_across_features(
         cross_feature_store.increment(install_id="install-12345", feature="braindump")
     for _ in range(4):
         cross_feature_store.increment(install_id="install-12345", feature="decide")
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     app.dependency_overrides[get_usage_store] = lambda: cross_feature_store
     token = create_session_token()
 
@@ -437,7 +405,7 @@ def test_breakdown_quota_is_shared_across_features(
 
 
 def test_breakdown_rejects_unknown_fields(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
