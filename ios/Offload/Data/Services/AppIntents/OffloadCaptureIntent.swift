@@ -28,8 +28,10 @@ struct OffloadCaptureIntent: AppIntent {
         guard !trimmed.isEmpty else {
             throw OffloadIntentError.emptyContent
         }
-        let capture = PendingCapture(content: trimmed)
-        PendingCaptureStore.enqueue(capture)
+        await MainActor.run {
+            let capture = PendingCapture(content: trimmed)
+            PendingCaptureStore.enqueue(capture)
+        }
         return .result(dialog: "Got it — \"\(trimmed)\" captured in Offload.")
     }
 }

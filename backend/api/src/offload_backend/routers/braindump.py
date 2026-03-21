@@ -99,7 +99,7 @@ async def compile_brain_dump(
 
     return BrainDumpCompileResponse(
         items=[BrainDumpItem.model_validate(item) for item in result.items],
-        provider="openai",
+        provider=provider.provider_name,
         latency_ms=latency_ms,
         usage=BrainDumpUsage(input_tokens=result.input_tokens, output_tokens=result.output_tokens),
     )

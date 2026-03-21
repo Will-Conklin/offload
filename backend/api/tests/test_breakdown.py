@@ -13,6 +13,8 @@ from offload_backend.usage_store import InMemoryUsageStore
 
 
 class FakeProvider:
+    provider_name = "fake"
+
     async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
         _ = (input_text, granularity, context_hints, template_ids)
         return ProviderBreakdownResult(
@@ -54,7 +56,7 @@ def test_breakdown_generation_success(client, app, create_session_token, make_br
 
     assert response.status_code == 200
     body = response.json()
-    assert body["provider"] == "openai"
+    assert body["provider"] == "fake"
     assert body["usage"]["input_tokens"] == 10
     assert body["steps"][0]["title"] == "Step 1"
 

@@ -3,6 +3,7 @@
 // Governed by: CLAUDE.md
 // Additional instructions: Keep navigation flow consistent with MainTabView -> NavigationStack -> sheets.
 
+import SwiftData
 import SwiftUI
 
 struct HomeView: View {

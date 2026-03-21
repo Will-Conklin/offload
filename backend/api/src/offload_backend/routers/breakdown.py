@@ -105,7 +105,7 @@ async def generate_breakdown(
 
     return BreakdownGenerateResponse(
         steps=[BreakdownStep.model_validate(step) for step in result.steps],
-        provider="openai",
+        provider=provider.provider_name,
         latency_ms=latency_ms,
         usage=BreakdownUsage(input_tokens=result.input_tokens, output_tokens=result.output_tokens),
     )

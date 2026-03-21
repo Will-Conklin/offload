@@ -19,8 +19,8 @@ final class HomeViewModel {
 
     /// - Parameter nudgeEvaluator: Strategy for deciding whether to show a support nudge and what copy to use.
     ///   Defaults to `RulesBasedNudgeEvaluator`. Swap in an AI-backed evaluator without changing callers.
-    init(nudgeEvaluator: any SupportNudgeEvaluating = RulesBasedNudgeEvaluator()) {
-        self.nudgeEvaluator = nudgeEvaluator
+    init(nudgeEvaluator: (any SupportNudgeEvaluating)? = nil) {
+        self.nudgeEvaluator = nudgeEvaluator ?? RulesBasedNudgeEvaluator()
     }
 
     /// Loads dashboard stats and timeline items.

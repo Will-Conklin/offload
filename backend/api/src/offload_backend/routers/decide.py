@@ -111,7 +111,7 @@ async def recommend_decision(
     return DecisionRecommendResponse(
         options=[DecisionOption.model_validate(opt) for opt in result.options],
         clarifying_questions=result.clarifying_questions[:2],
-        provider="openai",
+        provider=provider.provider_name,
         latency_ms=latency_ms,
         usage=DecisionUsage(input_tokens=result.input_tokens, output_tokens=result.output_tokens),
     )

@@ -16,6 +16,8 @@ P95_THRESHOLD_MS = 100.0
 class FakeProvider:
     """Instant-return provider to isolate FastAPI + auth overhead."""
 
+    provider_name = "fake"
+
     async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
         _ = (input_text, granularity, context_hints, template_ids)
         return ProviderBreakdownResult(

@@ -28,6 +28,20 @@ from offload_backend.providers.base import (
 
 logger = logging.getLogger("offload_backend")
 
+_FENCE_PREFIXES = ("```json", "```")
+
+
+def _strip_code_fences(text: str) -> str:
+    """Strip markdown code fences from a string before JSON parsing."""
+    stripped = text.strip()
+    for prefix in _FENCE_PREFIXES:
+        if stripped.startswith(prefix):
+            stripped = stripped[len(prefix):]
+            if stripped.endswith("```"):
+                stripped = stripped[:-3]
+            return stripped.strip()
+    return stripped
+
 
 class AnthropicProviderAdapter:
     """Anthropic Claude adapter for breakdown and brain dump generation.
@@ -74,8 +88,9 @@ class AnthropicProviderAdapter:
             "system": (
                 "You generate structured task breakdowns. "
                 "Return strict JSON with this shape: "
-                '{"steps":[{"title":"...","substeps":[...]}]}. '
-                "Output only the JSON object, no other text."
+                '{"steps":[{"title":"...","substeps":[{"title":"...","substeps":[]}]}]}. '
+                "Each substep is an object with a title string and an empty substeps array. "
+                "Output only the JSON object, no markdown formatting, no other text."
             ),
             "messages": [
                 {
@@ -208,7 +223,7 @@ class AnthropicProviderAdapter:
     def _parse_breakdown_response(self, response: httpx.Response) -> ProviderBreakdownResult:
         try:
             body = response.json()
-            content = body["content"][0]["text"]
+            content = _strip_code_fences(body["content"][0]["text"])
             parsed = json.loads(content)
             steps = parsed["steps"]
         except (KeyError, IndexError, ValueError, TypeError, json.JSONDecodeError) as exc:
@@ -230,7 +245,7 @@ class AnthropicProviderAdapter:
     def _parse_brain_dump_response(self, response: httpx.Response) -> ProviderBrainDumpResult:
         try:
             body = response.json()
-            content = body["content"][0]["text"]
+            content = _strip_code_fences(body["content"][0]["text"])
             parsed = json.loads(content)
             items = parsed["items"]
         except (KeyError, IndexError, ValueError, TypeError, json.JSONDecodeError) as exc:
@@ -298,7 +313,7 @@ class AnthropicProviderAdapter:
     def _parse_decision_response(self, response: httpx.Response) -> ProviderDecisionResult:
         try:
             body = response.json()
-            content = body["content"][0]["text"]
+            content = _strip_code_fences(body["content"][0]["text"])
             parsed = json.loads(content)
             options = parsed["options"]
             clarifying_questions = parsed.get("clarifying_questions", [])

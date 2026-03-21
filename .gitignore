@@ -187,3 +187,6 @@ temp/
 
 # Git worktrees
 .worktrees/
+
+# Superpowers brainstorming sessions
+.superpowers/

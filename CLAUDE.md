@@ -4,11 +4,22 @@ iOS app built with SwiftUI and SwiftData (iPhone + iPad).
 
 ## Quick Reference
 
+- **Platform**: iOS 17+ (SwiftData minimum), Swift 5.9
+- **Architecture**: MVVM with `@Observable` ViewModels
 - **Bundle ID**: wc.Offload
 - **Pattern**: Feature-based modules with repository pattern
 - **Navigation**: `MainTabView` → `NavigationStack` → sheets
 - **Models**: Item, Collection, CollectionItem, Tag (SwiftData)
 - **Design system**: `DesignSystem/Theme.swift`, theme `midCenturyModern`
+
+## Product Philosophy
+
+Offload externalizes working memory for people with ADHD. Cognitive load is a design constraint:
+
+- **Frictionless capture first** — never make the user think before saving a thought
+- **AI organizes, human approves** — AI suggests tags/plans, never auto-applies without visibility
+- **Contextual reminders, not time-spam** — respect attention limits
+- **If a UI element requires interpretation, simplify it**
 
 ## Quick Start
 
@@ -121,6 +132,13 @@ Local testing: `just test` sources these values automatically.
 
 ## Gotchas
 
+- Use `@Observable` for new ViewModels — do not use `ObservableObject` / `@Published`
+- Use `@Bindable` for bindings to `@Observable` objects
+- Prefer value types (structs) for models; classes only for `@Observable` ViewModels
+- Use `guard` for early exits
+- Do not use UIKit unless SwiftUI has a hard blocker (document the reason)
+- Voice capture: always request microphone/speech permissions before initializing; transcription is additive (append, never replace without confirmation); handle `AVAudioSession` interruptions gracefully
+- AI tagging is suggestive only — surface suggestions in UI, require user confirmation before applying
 - **NEVER commit directly to main branch** - always use feature branches for all work
 - Always clean up merged branches
 - For GitHub issue/PR descriptions created via `gh`: use `--body-file` (or a heredoc with real line breaks) and never pass escaped `\n` sequences as body text

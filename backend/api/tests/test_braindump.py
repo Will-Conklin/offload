@@ -8,6 +8,8 @@ from offload_backend.session_rate_limiter import InMemorySessionRateLimiter
 
 
 class FakeBrainDumpProvider:
+    provider_name = "fake"
+
     async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
         raise NotImplementedError
 
@@ -56,7 +58,7 @@ def test_braindump_compile_success(client, app, create_session_token):
 
     assert response.status_code == 200
     body = response.json()
-    assert body["provider"] == "openai"
+    assert body["provider"] == "fake"
     assert body["usage"]["input_tokens"] == 15
     assert len(body["items"]) == 2
     assert body["items"][0]["title"] == "Call dentist"

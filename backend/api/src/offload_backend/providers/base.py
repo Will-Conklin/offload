@@ -73,6 +73,8 @@ class ProviderDecisionResult(BaseModel):
 
 
 class AIProvider(Protocol):
+    provider_name: str
+
     async def generate_breakdown(
         self,
         *,

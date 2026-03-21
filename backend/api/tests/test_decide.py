@@ -8,6 +8,8 @@ from offload_backend.session_rate_limiter import InMemorySessionRateLimiter
 
 
 class FakeDecisionProvider:
+    provider_name = "fake"
+
     async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
         raise NotImplementedError
 
@@ -64,7 +66,7 @@ def test_decide_recommend_success(client, app, create_session_token):
 
     assert response.status_code == 200
     body = response.json()
-    assert body["provider"] == "openai"
+    assert body["provider"] == "fake"
     assert body["usage"]["input_tokens"] == 20
     assert len(body["options"]) == 2
     assert body["options"][0]["title"] == "Option A"
