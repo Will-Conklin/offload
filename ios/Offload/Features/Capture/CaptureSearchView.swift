@@ -32,82 +32,59 @@ struct CaptureSearchView: View {
                 VStack(spacing: 0) {
                     // Search bar
                     HStack(spacing: Theme.Spacing.sm) {
-                        HStack(spacing: Theme.Spacing.sm) {
+                        HStack(spacing: Theme.Spacing.xs) {
                             AppIcon(name: Icons.search, size: 16)
                                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
 
                             TextField("Search captures...", text: $searchQuery)
                                 .font(Theme.Typography.body)
                                 .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
                                 .focused($isSearchFocused)
                                 .onChange(of: searchQuery) { _, newValue in
                                     performSearch(newValue)
                                 }
-                        }
-                        .padding(Theme.Spacing.sm)
-                        .background(Theme.Colors.surface(colorScheme, style: style))
-                        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
 
-                        if !searchQuery.isEmpty {
-                            Button {
-                                searchQuery = ""
-                                searchResults = []
-                            } label: {
-                                AppIcon(name: Icons.closeCircleFilled, size: 20)
-                                    .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                            if !searchQuery.isEmpty {
+                                Button {
+                                    searchQuery = ""
+                                    searchResults = []
+                                } label: {
+                                    AppIcon(name: Icons.closeCircleFilled, size: 16)
+                                        .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Clear search")
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("Clear search")
                         }
+                        .padding(.horizontal, Theme.Spacing.md)
+                        .padding(.vertical, Theme.Spacing.sm)
+                        .background(
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)
+                                .fill(Theme.Colors.surface(colorScheme, style: style))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.cardSoft, style: .continuous)
+                                        .stroke(
+                                            Theme.Colors.borderMuted(colorScheme, style: style)
+                                                .opacity(Theme.Opacity.borderMuted(colorScheme)),
+                                            lineWidth: 0.6
+                                        )
+                                )
+                        )
                     }
-                    .padding(Theme.Spacing.md)
+                    .padding(.horizontal, Theme.Spacing.md)
+                    .padding(.top, Theme.Spacing.md)
 
                     // Tag chips
                     if !matchingTags.isEmpty {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: Theme.Spacing.xs) {
-                                ForEach(matchingTags) { tag in
-                                    Button {
-                                        toggleTagSelection(tag)
-                                    } label: {
-                                        HStack(spacing: 4) {
-                                            Text(tag.name)
-                                                .font(Theme.Typography.caption)
-                                            if selectedTags.contains(tag.id) {
-                                                AppIcon(name: Icons.closeCircleFilled, size: 12)
-                                            }
-                                        }
-                                        .foregroundStyle(
-                                            selectedTags.contains(tag.id)
-                                                ? Theme.Colors.cardTextPrimary(colorScheme, style: style)
-                                                : Theme.Colors.textSecondary(colorScheme, style: style)
-                                        )
-                                        .padding(.horizontal, Theme.Spacing.pillHorizontal)
-                                        .padding(.vertical, Theme.Spacing.pillVertical)
-                                        .background(
-                                            Capsule()
-                                                .fill(
-                                                    selectedTags.contains(tag.id)
-                                                        ? (tag.color.flatMap { Color(hex: $0) } ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style))
-                                                        : Theme.Colors.surface(colorScheme, style: style)
-                                                )
-                                        )
-                                        .overlay(
-                                            Capsule()
-                                                .strokeBorder(
-                                                    selectedTags.contains(tag.id)
-                                                        ? Color.clear
-                                                        : Theme.Colors.borderMuted(colorScheme, style: style),
-                                                    lineWidth: 1
-                                                )
-                                        )
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                            .padding(.horizontal, Theme.Spacing.md)
-                        }
-                        .padding(.bottom, Theme.Spacing.sm)
+                        SearchTagChips(
+                            tags: matchingTags,
+                            selectedIds: selectedTags,
+                            colorScheme: colorScheme,
+                            style: style,
+                            onToggle: toggleTagSelection
+                        )
                     }
                     // Results
                     if searchQuery.isEmpty {

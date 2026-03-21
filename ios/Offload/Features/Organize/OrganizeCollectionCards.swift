@@ -123,17 +123,12 @@ struct DraggableCollectionCard: View {
                     }
             )
             .draggable(collection.id.uuidString) {
-                // Preview while dragging
-                Text(collection.name)
-                    .font(Theme.Typography.caption)
-                    .lineLimit(2)
-                    .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
-                    .padding(Theme.Spacing.sm)
-                    .frame(width: 200)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-                            .fill(Theme.Colors.cardColor(index: collection.stableColorIndex, colorScheme, style: style))
-                    )
+                DragPreview(
+                    text: collection.name,
+                    colorScheme: colorScheme,
+                    style: style,
+                    colorIndex: collection.stableColorIndex
+                )
             }
         }
         .dropDestination(for: String.self) { droppedIds, _ in
@@ -187,52 +182,8 @@ struct DraggableCollectionCard: View {
 
 // MARK: - Bottom Collection Drop Zone
 
-struct BottomCollectionDropZone: View {
-    let colorScheme: ColorScheme
-    let style: ThemeStyle
-    let onDrop: (UUID) -> Void
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var isDropTarget = false
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-            .fill(isDropTarget
-                ? Theme.Colors.primary(colorScheme, style: style).opacity(0.08)
-                : Color.white.opacity(0.001)
-            )
-            .frame(
-                height: isDropTarget
-                    ? AdvancedAccessibilityLayoutPolicy.dropZoneTargetHeight(for: dynamicTypeSize)
-                    : AdvancedAccessibilityLayoutPolicy.dropZoneBaseHeight(for: dynamicTypeSize)
-            )
-            .overlay {
-                if isDropTarget {
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-                        .strokeBorder(
-                            Theme.Colors.primary(colorScheme, style: style),
-                            style: StrokeStyle(lineWidth: 2, dash: [6, 3])
-                        )
-                }
-            }
-            .dropDestination(for: String.self) { droppedIds, _ in
-                guard let droppedIdString = droppedIds.first,
-                      let droppedId = UUID(uuidString: droppedIdString)
-                else {
-                    return false
-                }
-
-                onDrop(droppedId)
-                return true
-            } isTargeted: { isTargeted in
-                withAnimation(Theme.Animations.motion(.easeInOut(duration: 0.2), reduceMotion: reduceMotion)) {
-                    isDropTarget = isTargeted
-                }
-            }
-            .accessibilityHidden(true)
-    }
-}
+/// Reuses `BottomDropZone` from `CollectionDetailItemRows.swift`.
+typealias BottomCollectionDropZone = BottomDropZone
 
 // MARK: - Collection Card
 
@@ -310,15 +261,15 @@ struct CollectionCard: View {
                         }
 
                         Button(action: onAddTag) {
-                            HStack(spacing: 4) {
+                            HStack(spacing: Theme.Spacing.xs) {
                                 AppIcon(name: Icons.add, size: 8)
                                 Text("TAG")
-                                    .font(.system(size: 8, weight: .bold, design: .default))
+                                    .font(Theme.Typography.badge)
                                     .tracking(0.5)
                             }
                             .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
+                            .padding(.horizontal, Theme.Spacing.chipHorizontal)
+                            .padding(.vertical, Theme.Spacing.chipVertical)
                             .background(
                                 Capsule()
                                     .strokeBorder(
@@ -330,7 +281,7 @@ struct CollectionCard: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.leading, 12)
+                .padding(.leading, Theme.Spacing.sm)
             }
         }
         .overlay(alignment: .bottomTrailing) {

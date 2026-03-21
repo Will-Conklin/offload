@@ -100,17 +100,12 @@ struct HierarchicalItemRow: View {
                 onError: onError
             )
             .draggable(collectionItem.id.uuidString) {
-                // Preview while dragging - simple view without environment objects
-                Text(item.content)
-                    .font(Theme.Typography.caption)
-                    .lineLimit(2)
-                    .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
-                    .padding(Theme.Spacing.sm)
-                    .frame(width: 200)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-                            .fill(Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style))
-                    )
+                DragPreview(
+                    text: item.content,
+                    colorScheme: colorScheme,
+                    style: style,
+                    colorIndex: item.stableColorIndex
+                )
             }
             .dropDestination(for: String.self) { droppedIds, _ in
                 guard let droppedIdString = droppedIds.first,
@@ -268,17 +263,12 @@ struct DraggableItemRow: View {
             onError: onError
         )
         .draggable(collectionItem.id.uuidString) {
-            // Preview while dragging - simple view without environment objects
-            Text(item.content)
-                .font(Theme.Typography.caption)
-                .lineLimit(2)
-                .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
-                .padding(Theme.Spacing.sm)
-                .frame(width: 200)
-                .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
-                        .fill(Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style))
-                )
+            DragPreview(
+                text: item.content,
+                colorScheme: colorScheme,
+                style: style,
+                colorIndex: item.stableColorIndex
+            )
         }
         .dropDestination(for: String.self) { droppedIds, _ in
             guard let droppedIdString = droppedIds.first,

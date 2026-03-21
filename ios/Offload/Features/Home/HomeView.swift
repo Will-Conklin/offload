@@ -87,8 +87,7 @@ struct HomeView: View {
                                 .font(Theme.Typography.body)
                                 .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
                             Spacer()
-                            Image(systemName: Icons.chevronRight)
-                                .font(.system(size: 14, weight: .medium))
+                            AppIcon(name: Icons.chevronRight, size: 14)
                                 .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         }
                     }

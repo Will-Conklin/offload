@@ -18,10 +18,9 @@ struct SupportNudgeCard: View {
     var body: some View {
         CardSurface(fill: Theme.Colors.cardColor(index: 2, colorScheme, style: style)) {
             HStack(alignment: .top, spacing: Theme.Spacing.sm) {
-                Image(systemName: Icons.heart)
-                    .font(.system(size: 18))
+                AppIcon(name: Icons.heart, size: 18)
                     .foregroundStyle(Theme.Colors.accentSecondary(colorScheme, style: style))
-                    .padding(.top, 2)
+                    .padding(.top, Theme.Spacing.xs)
 
                 VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                     Text(message.headline)
@@ -37,8 +36,7 @@ struct SupportNudgeCard: View {
                 Spacer(minLength: 0)
 
                 Button(action: onDismiss) {
-                    Image(systemName: Icons.xmark)
-                        .font(.system(size: 14, weight: .medium))
+                    AppIcon(name: Icons.xmark, size: 14)
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())

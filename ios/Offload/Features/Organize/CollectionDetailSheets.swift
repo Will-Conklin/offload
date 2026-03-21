@@ -13,8 +13,12 @@ struct ItemEditSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
     @State private var errorPresenter = ErrorPresenter()
     @State private var content: String
+
+    private var style: ThemeStyle { themeManager.currentStyle }
 
     init(item: Item) {
         self.item = item
@@ -41,8 +45,10 @@ struct ItemEditSheet: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.Colors.background(colorScheme, style: style))
             .navigationTitle("Edit Item")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -112,7 +118,7 @@ struct AddItemSheet: View {
             }
             .background(Theme.Colors.background(colorScheme, style: style))
             .navigationTitle("Add Item")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -205,8 +211,8 @@ struct AddItemSheet: View {
                                 Text("Add details...")
                                     .font(Theme.Typography.body)
                                     .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
-                                    .padding(.top, 8)
-                                    .padding(.leading, 5)
+                                    .padding(.top, Theme.Spacing.sm)
+                                    .padding(.leading, Theme.Spacing.xs)
                                     .allowsHitTesting(false)
                             }
                         }
@@ -219,7 +225,7 @@ struct AddItemSheet: View {
                         )
 
                     if voiceService.isRecording {
-                        HStack(spacing: 6) {
+                        HStack(spacing: Theme.Spacing.xs) {
                             Circle()
                                 .fill(Theme.Colors.destructive(colorScheme, style: style))
                                 .frame(width: 8, height: 8)
@@ -257,7 +263,7 @@ struct AddItemSheet: View {
 
                 if !selectedTags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 6) {
+                        HStack(spacing: Theme.Spacing.xs) {
                             ForEach(selectedTags) { tag in
                                 TagPill(
                                     name: tag.name,
@@ -467,9 +473,13 @@ struct EditCollectionSheet: View {
 
     @Environment(\.collectionRepository) private var collectionRepository
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
 
     @State private var name: String
     @State private var errorPresenter = ErrorPresenter()
+
+    private var style: ThemeStyle { themeManager.currentStyle }
 
     init(collection: Collection) {
         self.collection = collection
@@ -494,8 +504,10 @@ struct EditCollectionSheet: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.Colors.background(colorScheme, style: style))
             .navigationTitle("Edit Collection")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

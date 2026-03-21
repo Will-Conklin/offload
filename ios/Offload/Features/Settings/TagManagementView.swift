@@ -24,11 +24,11 @@ struct TagManagementView: View {
             Section {
                 ForEach(tags) { tag in
                     HStack(spacing: Theme.Spacing.sm) {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.iconTile, style: .continuous)
                             .fill(Theme.Colors.tagColor(for: tag.name, colorScheme, style: style))
                             .frame(width: 12, height: 22)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                RoundedRectangle(cornerRadius: Theme.CornerRadius.iconTile, style: .continuous)
                                     .stroke(
                                         Theme.Colors.borderMuted(colorScheme, style: style).opacity(0.45),
                                         lineWidth: 0.6

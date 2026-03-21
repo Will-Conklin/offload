@@ -11,8 +11,12 @@ struct CaptureDetailView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.itemRepository) private var itemRepository
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
     @State private var errorPresenter = ErrorPresenter()
     @State private var content: String
+
+    private var style: ThemeStyle { themeManager.currentStyle }
 
     init(item: Item) {
         self.item = item
@@ -27,6 +31,8 @@ struct CaptureDetailView: View {
                         .frame(minHeight: 100)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.Colors.background(colorScheme, style: style))
             .navigationTitle("Capture Detail")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -49,10 +55,12 @@ struct CaptureDetailView: View {
     }
 }
 
-// MARK: - Move to Plan Sheet
+// MARK: - Move to Collection Sheet (unified Plan/List)
 
-struct MoveToPlanSheet: View {
+/// Unified sheet for moving an item to a plan or list collection.
+struct MoveToCollectionSheet: View {
     let item: Item
+    let isStructured: Bool
     let onComplete: () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -64,11 +72,12 @@ struct MoveToPlanSheet: View {
     @State private var collections: [Collection] = []
     @State private var selectedCollection: Collection?
     @State private var createNew = false
-    @State private var newPlanName = ""
+    @State private var newCollectionName = ""
     @State private var isLoading = true
     @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
+    private var collectionLabel: String { isStructured ? "Plan" : "List" }
 
     var body: some View {
         NavigationStack {
@@ -82,11 +91,11 @@ struct MoveToPlanSheet: View {
                         }
                     }
                 } else if !collections.isEmpty {
-                    Section("Select Plan") {
+                    Section("Select \(collectionLabel)") {
                         ForEach(collections) { collection in
                             Button {
                                 selectedCollection = collection
-                                moveToSelectedPlan()
+                                moveToSelected()
                             } label: {
                                 Text(collection.name)
                                     .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
@@ -100,7 +109,7 @@ struct MoveToPlanSheet: View {
                         createNew = true
                     } label: {
                         Label {
-                            Text("Create New Plan")
+                            Text("Create New \(collectionLabel)")
                         } icon: {
                             AppIcon(name: Icons.addCircleFilled, size: 16)
                         }
@@ -108,145 +117,21 @@ struct MoveToPlanSheet: View {
                     }
                 }
             }
-            .navigationTitle("Move to Plan")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-            }
-            .alert("New Plan", isPresented: $createNew) {
-                TextField("Plan name", text: $newPlanName)
-                Button("Cancel", role: .cancel) {}
-                Button("Create") {
-                    createNewPlanAndMove()
-                }
-            } message: {
-                Text("Enter a name for the new plan")
-            }
-            .onAppear {
-                loadCollections()
-            }
-        }
-        .errorToasts(errorPresenter)
-    }
-
-    private func loadCollections() {
-        do {
-            collections = try collectionRepository.fetchStructured()
-        } catch {
-            errorPresenter.present(error)
-            collections = []
-        }
-        isLoading = false
-    }
-
-    private func moveToSelectedPlan() {
-        guard let collection = selectedCollection else { return }
-
-        do {
-            let position = collectionRepository.nextPosition(in: collection, parentId: nil)
-            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: position)
-
-            dismiss()
-            onComplete()
-        } catch {
-            errorPresenter.present(error)
-        }
-    }
-
-    private func createNewPlanAndMove() {
-        let trimmed = newPlanName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-
-        do {
-            // Create collection
-            let collection = try collectionRepository.create(name: trimmed, isStructured: true)
-
-            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: 0)
-
-            dismiss()
-            onComplete()
-        } catch {
-            errorPresenter.present(error)
-        }
-    }
-}
-
-// MARK: - Move to List Sheet
-
-struct MoveToListSheet: View {
-    let item: Item
-    let onComplete: () -> Void
-
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.itemRepository) private var itemRepository
-    @Environment(\.collectionRepository) private var collectionRepository
-    @Environment(\.colorScheme) private var colorScheme
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    @State private var collections: [Collection] = []
-    @State private var selectedCollection: Collection?
-    @State private var createNew = false
-    @State private var newListName = ""
-    @State private var isLoading = true
-    @State private var errorPresenter = ErrorPresenter()
-
-    private var style: ThemeStyle { themeManager.currentStyle }
-
-    var body: some View {
-        NavigationStack {
-            List {
-                if isLoading {
-                    Section {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                            Spacer()
-                        }
-                    }
-                } else if !collections.isEmpty {
-                    Section("Select List") {
-                        ForEach(collections) { collection in
-                            Button {
-                                selectedCollection = collection
-                                moveToSelectedList()
-                            } label: {
-                                Text(collection.name)
-                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                            }
-                        }
-                    }
-                }
-
-                Section {
-                    Button {
-                        createNew = true
-                    } label: {
-                        Label {
-                            Text("Create New List")
-                        } icon: {
-                            AppIcon(name: Icons.addCircleFilled, size: 16)
-                        }
-                        .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                    }
-                }
-            }
-            .navigationTitle("Move to List")
+            .navigationTitle("Move to \(collectionLabel)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
             }
-            .alert("New List", isPresented: $createNew) {
-                TextField("List name", text: $newListName)
+            .alert("New \(collectionLabel)", isPresented: $createNew) {
+                TextField("\(collectionLabel) name", text: $newCollectionName)
                 Button("Cancel", role: .cancel) {}
                 Button("Create") {
-                    createNewListAndMove()
+                    createNewAndMove()
                 }
             } message: {
-                Text("Enter a name for the new list")
+                Text("Enter a name for the new \(collectionLabel.lowercased())")
             }
             .onAppear {
                 loadCollections()
@@ -257,7 +142,9 @@ struct MoveToListSheet: View {
 
     private func loadCollections() {
         do {
-            collections = try collectionRepository.fetchUnstructured()
+            collections = isStructured
+                ? try collectionRepository.fetchStructured()
+                : try collectionRepository.fetchUnstructured()
         } catch {
             errorPresenter.present(error)
             collections = []
@@ -265,12 +152,16 @@ struct MoveToListSheet: View {
         isLoading = false
     }
 
-    private func moveToSelectedList() {
+    private func moveToSelected() {
         guard let collection = selectedCollection else { return }
 
         do {
-            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: nil)
-
+            let position = isStructured
+                ? collectionRepository.nextPosition(in: collection, parentId: nil)
+                : nil
+            try itemRepository.moveToCollectionAtomically(
+                item, collection: collection, targetType: "task", position: position
+            )
             dismiss()
             onComplete()
         } catch {
@@ -278,16 +169,16 @@ struct MoveToListSheet: View {
         }
     }
 
-    private func createNewListAndMove() {
-        let trimmed = newListName.trimmingCharacters(in: .whitespacesAndNewlines)
+    private func createNewAndMove() {
+        let trimmed = newCollectionName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
         do {
-            // Create collection
-            let collection = try collectionRepository.create(name: trimmed, isStructured: false)
-
-            try itemRepository.moveToCollectionAtomically(item, collection: collection, targetType: "task", position: nil)
-
+            let collection = try collectionRepository.create(name: trimmed, isStructured: isStructured)
+            let position = isStructured ? 0 : nil
+            try itemRepository.moveToCollectionAtomically(
+                item, collection: collection, targetType: "task", position: position
+            )
             dismiss()
             onComplete()
         } catch {

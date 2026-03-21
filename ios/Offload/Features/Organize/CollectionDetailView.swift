@@ -259,12 +259,14 @@ struct CollectionDetailView: View {
         .sheet(isPresented: $showingEdit) {
             if let collection {
                 EditCollectionSheet(collection: collection)
+                    .environmentObject(themeManager)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
         }
         .sheet(item: $editingItem) { item in
             ItemEditSheet(item: item)
+                .environmentObject(themeManager)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }

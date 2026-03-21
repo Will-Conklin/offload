@@ -136,11 +136,13 @@ struct CaptureView: View {
                     .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showingSettings) {
-                SettingsView()
+                AccountView(showsDismiss: true)
                     .environmentObject(themeManager)
+                    .environmentObject(AuthManager.shared)
             }
             .sheet(item: $selectedItem) { item in
                 CaptureDetailView(item: item)
+                    .environmentObject(themeManager)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
@@ -151,7 +153,7 @@ struct CaptureView: View {
             }
             .sheet(isPresented:
                 Binding(
-                    get: { moveItem != nil && moveDestination == .plan },
+                    get: { moveItem != nil && moveDestination != nil },
                     set: { presented in
                         if !presented {
                             moveItem = nil
@@ -160,31 +162,17 @@ struct CaptureView: View {
                     }
                 )
             ) {
-                if let item = moveItem {
-                    MoveToPlanSheet(item: item) {
-                        moveItem = nil
-                        moveDestination = nil
-                        refreshItems()
-                    }
-                }
-            }
-            .sheet(isPresented:
-                Binding(
-                    get: { moveItem != nil && moveDestination == .list },
-                    set: { presented in
-                        if !presented {
+                if let item = moveItem, let destination = moveDestination {
+                    MoveToCollectionSheet(
+                        item: item,
+                        isStructured: destination == .plan,
+                        onComplete: {
                             moveItem = nil
                             moveDestination = nil
+                            refreshItems()
                         }
-                    }
-                )
-            ) {
-                if let item = moveItem {
-                    MoveToListSheet(item: item) {
-                        moveItem = nil
-                        moveDestination = nil
-                        refreshItems()
-                    }
+                    )
+                    .environmentObject(themeManager)
                 }
             }
             .sheet(item: $breakdownItem) { item in
@@ -219,7 +207,7 @@ struct CaptureView: View {
 
     private var typeFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
+            HStack(spacing: Theme.Spacing.xs) {
                 ForEach(ItemType.allCases.filter(\.isUserAssignable), id: \.rawValue) { type in
                     let isSelected = viewModel.typeFilter == type
                     Button {
@@ -279,8 +267,7 @@ struct CaptureView: View {
                 .accessibilityValue(isQuickCaptureAtLimit ? "Character limit reached" : "")
 
             Button(action: quickSave) {
-                Image(systemName: isQuickCaptureEmpty ? "arrow.up.circle" : "arrow.up.circle.fill")
-                    .font(.system(size: 26))
+                AppIcon(name: isQuickCaptureEmpty ? "arrow.up.circle" : "arrow.up.circle.fill", size: 26)
                     .foregroundStyle(
                         isQuickCaptureEmpty
                             ? Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.4)

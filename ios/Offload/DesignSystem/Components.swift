@@ -1056,3 +1056,86 @@ struct TagSelectionSheet: View {
     .environment(\.colorScheme, previewScheme)
     .environmentObject(ThemeManager.shared)
 }
+
+// MARK: - Search Tag Chips
+
+/// Horizontally scrolling tag filter chips used by search views.
+struct SearchTagChips: View {
+    let tags: [Tag]
+    let selectedIds: Set<UUID>
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
+    let onToggle: (Tag) -> Void
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Theme.Spacing.xs) {
+                ForEach(tags) { tag in
+                    let isSelected = selectedIds.contains(tag.id)
+                    Button {
+                        onToggle(tag)
+                    } label: {
+                        HStack(spacing: Theme.Spacing.xs) {
+                            Text(tag.name)
+                                .font(Theme.Typography.caption)
+                            if isSelected {
+                                AppIcon(name: Icons.closeCircleFilled, size: 12)
+                            }
+                        }
+                        .foregroundStyle(
+                            isSelected
+                                ? Theme.Colors.cardTextPrimary(colorScheme, style: style)
+                                : Theme.Colors.textSecondary(colorScheme, style: style)
+                        )
+                        .padding(.horizontal, Theme.Spacing.pillHorizontal)
+                        .padding(.vertical, Theme.Spacing.pillVertical)
+                        .background(
+                            Capsule()
+                                .fill(
+                                    isSelected
+                                        ? (tag.color.flatMap { Color(hex: $0) }
+                                            ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style))
+                                        : Theme.Colors.surface(colorScheme, style: style)
+                                )
+                        )
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(
+                                    isSelected
+                                        ? Color.clear
+                                        : Theme.Colors.borderMuted(colorScheme, style: style),
+                                    lineWidth: 1
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.md)
+        }
+        .padding(.bottom, Theme.Spacing.sm)
+    }
+}
+
+// MARK: - Drag Preview
+
+/// Compact drag preview card used across draggable views.
+struct DragPreview: View {
+    let text: String
+    let colorScheme: ColorScheme
+    let style: ThemeStyle
+    let colorIndex: Int
+
+    var body: some View {
+        Text(text)
+            .font(Theme.Typography.caption)
+            .lineLimit(2)
+            .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+            .padding(Theme.Spacing.sm)
+            .frame(width: 200)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.md, style: .continuous)
+                    .fill(Theme.Colors.cardColor(index: colorIndex, colorScheme, style: style))
+            )
+    }
+}

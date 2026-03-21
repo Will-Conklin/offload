@@ -24,7 +24,7 @@ struct CollectionFormSheet: View {
                 TextField(isStructured ? "Plan name" : "List name", text: $name)
             }
             .navigationTitle(isStructured ? "New Plan" : "New List")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .scrollContentBackground(.hidden)
             .background(Theme.Colors.background(colorScheme, style: style))
             .toolbar {
@@ -100,7 +100,7 @@ struct CollectionTagPickerSheet: View {
                 }
             }
             .navigationTitle("Tags")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(Theme.Colors.background(colorScheme, style: style))
@@ -206,50 +206,13 @@ struct OrganizeSearchView: View {
 
                     // Tag chips
                     if !matchingTags.isEmpty {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: Theme.Spacing.xs) {
-                                ForEach(matchingTags) { tag in
-                                    Button {
-                                        toggleTagSelection(tag)
-                                    } label: {
-                                        HStack(spacing: 4) {
-                                            Text(tag.name)
-                                                .font(Theme.Typography.caption)
-                                            if selectedTags.contains(tag.id) {
-                                                AppIcon(name: Icons.closeCircleFilled, size: 12)
-                                            }
-                                        }
-                                        .foregroundStyle(
-                                            selectedTags.contains(tag.id)
-                                                ? Theme.Colors.cardTextPrimary(colorScheme, style: style)
-                                                : Theme.Colors.textSecondary(colorScheme, style: style)
-                                        )
-                                        .padding(.horizontal, Theme.Spacing.pillHorizontal)
-                                        .padding(.vertical, Theme.Spacing.pillVertical)
-                                        .background(
-                                            Capsule()
-                                                .fill(
-                                                    selectedTags.contains(tag.id)
-                                                        ? (tag.color.flatMap { Color(hex: $0) } ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style))
-                                                        : Theme.Colors.surface(colorScheme, style: style)
-                                                )
-                                        )
-                                        .overlay(
-                                            Capsule()
-                                                .strokeBorder(
-                                                    selectedTags.contains(tag.id)
-                                                        ? Color.clear
-                                                        : Theme.Colors.borderMuted(colorScheme, style: style),
-                                                    lineWidth: 1
-                                                )
-                                        )
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                            .padding(.horizontal, Theme.Spacing.md)
-                        }
-                        .padding(.bottom, Theme.Spacing.sm)
+                        SearchTagChips(
+                            tags: matchingTags,
+                            selectedIds: selectedTags,
+                            colorScheme: colorScheme,
+                            style: style,
+                            onToggle: toggleTagSelection
+                        )
                     }
                     // Results
                     ScrollView {
@@ -271,7 +234,7 @@ struct OrganizeSearchView: View {
                 }
             }
             .navigationTitle("Search Collections")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }

@@ -7,7 +7,10 @@ import AuthenticationServices
 import SwiftUI
 
 struct AccountView: View {
+    var showsDismiss: Bool = false
+
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var authManager: AuthManager
     @Environment(\.aiBackendClient) private var backendClient
@@ -47,6 +50,13 @@ struct AccountView: View {
             .background(Theme.Colors.background(colorScheme, style: style))
             .navigationTitle("Account")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                if showsDismiss {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Done") { dismiss() }
+                    }
+                }
+            }
         }
         .sheet(isPresented: $isEditingName) {
             EditNameSheet(displayName: $displayName)
