@@ -263,22 +263,6 @@ final class CollectionItemRepository {
             return
         }
 
-        let ordered = siblings.sorted { lhs, rhs in
-            let lhsPosition = lhs.position ?? Int.max
-            let rhsPosition = rhs.position ?? Int.max
-            if lhsPosition != rhsPosition {
-                return lhsPosition < rhsPosition
-            }
-            let lhsDate = lhs.item?.createdAt ?? .distantFuture
-            let rhsDate = rhs.item?.createdAt ?? .distantFuture
-            if lhsDate != rhsDate {
-                return lhsDate < rhsDate
-            }
-            return lhs.id.uuidString < rhs.id.uuidString
-        }
-
-        for (index, sibling) in ordered.enumerated() {
-            sibling.position = index
-        }
+        ReorderPositionMapper.compactPositions(siblings)
     }
 }

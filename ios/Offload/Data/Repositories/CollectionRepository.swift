@@ -65,57 +65,21 @@ final class CollectionRepository {
         let descriptor = FetchDescriptor<Collection>(
             predicate: #Predicate { $0.isStructured == true }
         )
-        let collections = try modelContext.fetch(descriptor)
-        // Sort by position (if set), then by createdAt
-        return collections.sorted { c1, c2 in
-            if let p1 = c1.position, let p2 = c2.position {
-                p1 < p2
-            } else if c1.position != nil {
-                true // c1 has position, c2 doesn't
-            } else if c2.position != nil {
-                false // c2 has position, c1 doesn't
-            } else {
-                c1.createdAt > c2.createdAt // Both nil, use createdAt descending
-            }
-        }
+        return ReorderPositionMapper.sortedCollections(try modelContext.fetch(descriptor))
     }
 
     func fetchUnstructured() throws -> [Collection] {
         let descriptor = FetchDescriptor<Collection>(
             predicate: #Predicate { $0.isStructured == false }
         )
-        let collections = try modelContext.fetch(descriptor)
-        // Sort by position (if set), then by createdAt
-        return collections.sorted { c1, c2 in
-            if let p1 = c1.position, let p2 = c2.position {
-                p1 < p2
-            } else if c1.position != nil {
-                true // c1 has position, c2 doesn't
-            } else if c2.position != nil {
-                false // c2 has position, c1 doesn't
-            } else {
-                c1.createdAt > c2.createdAt // Both nil, use createdAt descending
-            }
-        }
+        return ReorderPositionMapper.sortedCollections(try modelContext.fetch(descriptor))
     }
 
     func fetchPage(isStructured: Bool, limit: Int, offset: Int) throws -> [Collection] {
-        // Fetch all, sort, then apply pagination
         let descriptor = FetchDescriptor<Collection>(
             predicate: #Predicate { $0.isStructured == isStructured }
         )
-        let collections = try modelContext.fetch(descriptor)
-        let sorted = collections.sorted { c1, c2 in
-            if let p1 = c1.position, let p2 = c2.position {
-                p1 < p2
-            } else if c1.position != nil {
-                true
-            } else if c2.position != nil {
-                false
-            } else {
-                c1.createdAt > c2.createdAt
-            }
-        }
+        let sorted = ReorderPositionMapper.sortedCollections(try modelContext.fetch(descriptor))
         let startIndex = min(offset, sorted.count)
         let endIndex = min(offset + limit, sorted.count)
         return Array(sorted[startIndex ..< endIndex])
@@ -429,24 +393,7 @@ final class CollectionRepository {
     }
 
     private func compactStructuredPositions(in collection: Collection, parentId: UUID?) {
-        let siblings = (collection.collectionItems ?? [])
-            .filter { $0.parentId == parentId }
-            .sorted { lhs, rhs in
-                let lhsPosition = lhs.position ?? Int.max
-                let rhsPosition = rhs.position ?? Int.max
-                if lhsPosition != rhsPosition {
-                    return lhsPosition < rhsPosition
-                }
-                let lhsDate = lhs.item?.createdAt ?? .distantFuture
-                let rhsDate = rhs.item?.createdAt ?? .distantFuture
-                if lhsDate != rhsDate {
-                    return lhsDate < rhsDate
-                }
-                return lhs.id.uuidString < rhs.id.uuidString
-            }
-
-        for (index, sibling) in siblings.enumerated() {
-            sibling.position = index
-        }
+        let siblings = (collection.collectionItems ?? []).filter { $0.parentId == parentId }
+        ReorderPositionMapper.compactPositions(siblings)
     }
 }

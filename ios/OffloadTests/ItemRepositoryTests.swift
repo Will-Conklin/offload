@@ -783,20 +783,6 @@ final class ItemRepositoryTests: XCTestCase {
         XCTAssertEqual(try repository.fetchAll().count, 0)
     }
 
-    func testDeleteMultiple() throws {
-        let item1 = try repository.create(content: "Item 1")
-        let item2 = try repository.create(content: "Item 2")
-        let item3 = try repository.create(content: "Item 3")
-
-        XCTAssertEqual(try repository.fetchAll().count, 3)
-
-        try repository.deleteMultiple([item1, item3])
-
-        let remaining = try repository.fetchAll()
-        XCTAssertEqual(remaining.count, 1)
-        XCTAssertEqual(remaining[0].id, item2.id)
-    }
-
     func testDeleteAll() throws {
         let item1 = try repository.create(content: "Item 1")
         let item2 = try repository.create(content: "Item 2")

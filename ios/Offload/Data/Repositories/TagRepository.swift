@@ -51,7 +51,8 @@ final class TagRepository {
         return allTags.first { Tag.normalizedName($0.name) == normalizedQuery }
     }
 
-    func search(query: String) throws -> [Tag] {
+    /// Searches tags by name substring, returning all tags when query is empty.
+    func searchByName(_ query: String) throws -> [Tag] {
         let normalizedQuery = Tag.normalizedName(query)
         guard !normalizedQuery.isEmpty else {
             return try fetchAll()
@@ -64,13 +65,8 @@ final class TagRepository {
         return allTags.filter { Tag.normalizedName($0.name).contains(normalizedQuery) }
     }
 
-    /// Search tags by name (alias for search)
-    func searchByName(_ query: String) throws -> [Tag] {
-        try search(query: query)
-    }
-
-    /// Find or create a tag by name
-    func findOrCreate(name: String, color: String? = nil) throws -> Tag {
+    /// Finds an existing tag by name or creates a new one.
+    func fetchOrCreate(_ name: String, color: String? = nil) throws -> Tag {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         if let existing = try fetchByName(trimmedName) {
             return existing
@@ -79,11 +75,6 @@ final class TagRepository {
         let newTag = Tag(name: trimmedName, color: color)
         try create(tag: newTag)
         return newTag
-    }
-
-    /// Fetch or create a tag by name (alias for findOrCreate).
-    func fetchOrCreate(_ name: String, color: String? = nil) throws -> Tag {
-        try findOrCreate(name: name, color: color)
     }
 
     // MARK: - Update

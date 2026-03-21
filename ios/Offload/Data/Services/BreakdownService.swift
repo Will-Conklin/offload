@@ -60,8 +60,6 @@ protocol BreakdownService {
 
 final class DefaultBreakdownService: BreakdownService {
     static let featureKey = "breakdown"
-    private static let allAIFeatures = ["breakdown", "braindump", "decide"]
-    private static let cloudQuotaLimit = 100
 
     private let backendClient: AIBackendClient
     private let consentStore: CloudAIConsentStore
@@ -100,7 +98,7 @@ final class DefaultBreakdownService: BreakdownService {
             return BreakdownExecutionResult(steps: steps, source: .onDevice, usage: nil)
         }
 
-        if usageStore.totalMergedCount(for: Self.allAIFeatures) >= Self.cloudQuotaLimit {
+        if AIQuotaConfig.isQuotaExceeded(usageStore: usageStore) {
             throw AIBackendClientError.server(code: "quota_exceeded", status: 429)
         }
 
@@ -128,24 +126,16 @@ final class DefaultBreakdownService: BreakdownService {
                 templateIds: templateIds
             )
             return BreakdownExecutionResult(steps: steps, source: .onDevice, usage: nil)
-        } catch {
-            throw error
         }
     }
 
     func reconcileUsage(feature: String) async throws -> UsageReconcileResponse? {
-        guard consentStore.isCloudAIEnabled else {
-            return nil
-        }
-
-        let response = try await backendClient.reconcileUsage(
-            request: UsageReconcileRequest(
-                installId: installIDProvider(),
-                feature: feature,
-                localCount: usageStore.mergedCount(for: feature)
-            )
+        try await AIQuotaConfig.reconcileUsage(
+            feature: feature,
+            backendClient: backendClient,
+            consentStore: consentStore,
+            usageStore: usageStore,
+            installIDProvider: installIDProvider
         )
-        usageStore.updateServerCount(feature: feature, serverCount: response.serverCount)
-        return response
     }
 }

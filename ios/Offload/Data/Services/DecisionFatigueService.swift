@@ -97,8 +97,6 @@ protocol DecisionFatigueService {
 
 final class DefaultDecisionFatigueService: DecisionFatigueService {
     static let featureKey = "decide"
-    private static let allAIFeatures = ["breakdown", "braindump", "decide"]
-    private static let cloudQuotaLimit = 100
 
     private let backendClient: AIBackendClient
     private let consentStore: CloudAIConsentStore
@@ -126,7 +124,7 @@ final class DefaultDecisionFatigueService: DecisionFatigueService {
         clarifyingAnswers: [DecisionClarifyingAnswer]
     ) async throws -> DecisionFatigueExecutionResult {
         guard consentStore.isCloudAIEnabled else {
-            usageStore.increment(feature: DefaultDecisionFatigueService.featureKey, by: 1)
+            usageStore.increment(feature: Self.featureKey, by: 1)
             let options = try await onDeviceGenerator.suggestDecisions(
                 inputText: inputText,
                 contextHints: contextHints,
@@ -140,11 +138,11 @@ final class DefaultDecisionFatigueService: DecisionFatigueService {
             )
         }
 
-        if usageStore.totalMergedCount(for: Self.allAIFeatures) >= Self.cloudQuotaLimit {
+        if AIQuotaConfig.isQuotaExceeded(usageStore: usageStore) {
             throw AIBackendClientError.server(code: "quota_exceeded", status: 429)
         }
 
-        usageStore.increment(feature: DefaultDecisionFatigueService.featureKey, by: 1)
+        usageStore.increment(feature: Self.featureKey, by: 1)
 
         do {
             let cloudResponse = try await backendClient.suggestDecisions(
@@ -172,24 +170,16 @@ final class DefaultDecisionFatigueService: DecisionFatigueService {
                 source: .onDevice,
                 usage: nil
             )
-        } catch {
-            throw error
         }
     }
 
     func reconcileUsage(feature: String) async throws -> UsageReconcileResponse? {
-        guard consentStore.isCloudAIEnabled else {
-            return nil
-        }
-
-        let response = try await backendClient.reconcileUsage(
-            request: UsageReconcileRequest(
-                installId: installIDProvider(),
-                feature: feature,
-                localCount: usageStore.mergedCount(for: feature)
-            )
+        try await AIQuotaConfig.reconcileUsage(
+            feature: feature,
+            backendClient: backendClient,
+            consentStore: consentStore,
+            usageStore: usageStore,
+            installIDProvider: installIDProvider
         )
-        usageStore.updateServerCount(feature: feature, serverCount: response.serverCount)
-        return response
     }
 }

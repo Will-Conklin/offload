@@ -515,10 +515,6 @@ final class ItemRepository {
         }
     }
 
-    func deleteMultiple(_ items: [Item]) throws {
-        try deleteAll(items)
-    }
-
     // MARK: - Private helpers
 
     private func currentWeekStart() -> Date {

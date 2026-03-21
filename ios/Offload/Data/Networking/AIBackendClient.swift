@@ -101,39 +101,6 @@ protocol UsageCounterStore: AnyObject {
     func totalMergedCount(for features: [String]) -> Int
 }
 
-final class UserDefaultsUsageCounterStore: UsageCounterStore {
-    private let defaults: UserDefaults
-    private let localPrefix = "offload.usage.local."
-    private let serverPrefix = "offload.usage.server."
-
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
-    }
-
-    func increment(feature: String, by amount: Int = 1) {
-        let key = localPrefix + feature
-        defaults.set(localCount(for: feature) + amount, forKey: key)
-    }
-
-    func localCount(for feature: String) -> Int {
-        defaults.integer(forKey: localPrefix + feature)
-    }
-
-    func mergedCount(for feature: String) -> Int {
-        max(localCount(for: feature), defaults.integer(forKey: serverPrefix + feature))
-    }
-
-    func updateServerCount(feature: String, serverCount: Int) {
-        let key = serverPrefix + feature
-        let existing = defaults.integer(forKey: key)
-        defaults.set(max(existing, serverCount), forKey: key)
-    }
-
-    func totalMergedCount(for features: [String]) -> Int {
-        features.reduce(0) { $0 + mergedCount(for: $1) }
-    }
-}
-
 protocol AIBackendClient {
     func createAnonymousSession(request: AnonymousSessionRequest) async throws -> AnonymousSessionResponse
     func signInWithApple(request: AppleAuthRequest) async throws -> AppleAuthResponse
@@ -196,149 +163,19 @@ final class NetworkAIBackendClient: AIBackendClient {
     }
 
     func generateBreakdown(request: BreakdownGenerateRequest) async throws -> BreakdownGenerateResponse {
-        guard consentStore.isCloudAIEnabled else {
-            throw AIBackendClientError.consentRequired
-        }
-
-        try await ensureActiveSession()
-        guard let token = tokenStore.token else {
-            throw AIBackendClientError.missingSession
-        }
-
-        do {
-            return try await performRequest(
-                path: "/v1/ai/breakdown/generate",
-                method: "POST",
-                body: request,
-                headers: [
-                    "Authorization": "Bearer \(token)",
-                    "X-Offload-Cloud-Opt-In": "true",
-                ],
-                retryUnauthorized: false
-            )
-        } catch AIBackendClientError.unauthorized {
-            try await refreshSession()
-            guard let refreshedToken = tokenStore.token else {
-                throw AIBackendClientError.missingSession
-            }
-            return try await performRequest(
-                path: "/v1/ai/breakdown/generate",
-                method: "POST",
-                body: request,
-                headers: [
-                    "Authorization": "Bearer \(refreshedToken)",
-                    "X-Offload-Cloud-Opt-In": "true",
-                ],
-                retryUnauthorized: false
-            )
-        }
+        try await performAuthorizedAIRequest(path: "/v1/ai/breakdown/generate", body: request)
     }
 
     func reconcileUsage(request: UsageReconcileRequest) async throws -> UsageReconcileResponse {
-        try await ensureActiveSession()
-        guard let token = tokenStore.token else {
-            throw AIBackendClientError.missingSession
-        }
-
-        do {
-            return try await performRequest(
-                path: "/v1/usage/reconcile",
-                method: "POST",
-                body: request,
-                headers: ["Authorization": "Bearer \(token)"],
-                retryUnauthorized: false
-            )
-        } catch AIBackendClientError.unauthorized {
-            try await refreshSession()
-            guard let refreshedToken = tokenStore.token else {
-                throw AIBackendClientError.missingSession
-            }
-            return try await performRequest(
-                path: "/v1/usage/reconcile",
-                method: "POST",
-                body: request,
-                headers: ["Authorization": "Bearer \(refreshedToken)"],
-                retryUnauthorized: false
-            )
-        }
+        try await performAuthorizedRequest(path: "/v1/usage/reconcile", body: request)
     }
 
     func compileBrainDump(request: BrainDumpCompileRequest) async throws -> BrainDumpCompileResponse {
-        guard consentStore.isCloudAIEnabled else {
-            throw AIBackendClientError.consentRequired
-        }
-
-        try await ensureActiveSession()
-        guard let token = tokenStore.token else {
-            throw AIBackendClientError.missingSession
-        }
-
-        do {
-            return try await performRequest(
-                path: "/v1/ai/braindump/compile",
-                method: "POST",
-                body: request,
-                headers: [
-                    "Authorization": "Bearer \(token)",
-                    "X-Offload-Cloud-Opt-In": "true",
-                ],
-                retryUnauthorized: false
-            )
-        } catch AIBackendClientError.unauthorized {
-            try await refreshSession()
-            guard let refreshedToken = tokenStore.token else {
-                throw AIBackendClientError.missingSession
-            }
-            return try await performRequest(
-                path: "/v1/ai/braindump/compile",
-                method: "POST",
-                body: request,
-                headers: [
-                    "Authorization": "Bearer \(refreshedToken)",
-                    "X-Offload-Cloud-Opt-In": "true",
-                ],
-                retryUnauthorized: false
-            )
-        }
+        try await performAuthorizedAIRequest(path: "/v1/ai/braindump/compile", body: request)
     }
 
     func suggestDecisions(request: DecisionRecommendRequest) async throws -> DecisionRecommendResponse {
-        guard consentStore.isCloudAIEnabled else {
-            throw AIBackendClientError.consentRequired
-        }
-
-        try await ensureActiveSession()
-        guard let token = tokenStore.token else {
-            throw AIBackendClientError.missingSession
-        }
-
-        do {
-            return try await performRequest(
-                path: "/v1/ai/decide/recommend",
-                method: "POST",
-                body: request,
-                headers: [
-                    "Authorization": "Bearer \(token)",
-                    "X-Offload-Cloud-Opt-In": "true",
-                ],
-                retryUnauthorized: false
-            )
-        } catch AIBackendClientError.unauthorized {
-            try await refreshSession()
-            guard let refreshedToken = tokenStore.token else {
-                throw AIBackendClientError.missingSession
-            }
-            return try await performRequest(
-                path: "/v1/ai/decide/recommend",
-                method: "POST",
-                body: request,
-                headers: [
-                    "Authorization": "Bearer \(refreshedToken)",
-                    "X-Offload-Cloud-Opt-In": "true",
-                ],
-                retryUnauthorized: false
-            )
-        }
+        try await performAuthorizedAIRequest(path: "/v1/ai/decide/recommend", body: request)
     }
 
     private func ensureActiveSession() async throws {
@@ -362,14 +199,60 @@ final class NetworkAIBackendClient: AIBackendClient {
         _ = try await createAnonymousSession(request: request)
     }
 
+    /// Performs an authorized request with consent check and cloud opt-in header.
+    private func performAuthorizedAIRequest<RequestBody: Encodable, ResponseBody: Decodable>(
+        path: String,
+        body: RequestBody
+    ) async throws -> ResponseBody {
+        guard consentStore.isCloudAIEnabled else {
+            throw AIBackendClientError.consentRequired
+        }
+        return try await performAuthorizedRequest(
+            path: path,
+            body: body,
+            extraHeaders: ["X-Offload-Cloud-Opt-In": "true"]
+        )
+    }
+
+    /// Performs a session-authenticated request, retrying once on 401.
+    private func performAuthorizedRequest<RequestBody: Encodable, ResponseBody: Decodable>(
+        path: String,
+        body: RequestBody,
+        extraHeaders: [String: String] = [:]
+    ) async throws -> ResponseBody {
+        try await ensureActiveSession()
+        guard let token = tokenStore.token else {
+            throw AIBackendClientError.missingSession
+        }
+
+        var headers = extraHeaders
+        headers["Authorization"] = "Bearer \(token)"
+
+        do {
+            return try await performRequest(
+                path: path, method: "POST", body: body,
+                headers: headers, retryUnauthorized: false
+            )
+        } catch AIBackendClientError.unauthorized {
+            try await refreshSession()
+            guard let refreshedToken = tokenStore.token else {
+                throw AIBackendClientError.missingSession
+            }
+            headers["Authorization"] = "Bearer \(refreshedToken)"
+            return try await performRequest(
+                path: path, method: "POST", body: body,
+                headers: headers, retryUnauthorized: false
+            )
+        }
+    }
+
     private func performRequest<RequestBody: Encodable, ResponseBody: Decodable>(
         path: String,
         method: String,
         body: RequestBody,
         headers: [String: String],
-        retryUnauthorized: Bool
+        retryUnauthorized _: Bool = false
     ) async throws -> ResponseBody {
-        _ = retryUnauthorized
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(body)

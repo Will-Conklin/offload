@@ -23,8 +23,8 @@ struct AccountView: View {
     @State private var signInError: Error?
     @State private var showSignOutConfirm = false
 
-    private static let allAIFeatures = ["breakdown", "braindump", "decide"]
-    private static let totalQuota = 100
+    private static let allAIFeatures = AIQuotaConfig.allFeatures
+    private static let totalQuota = AIQuotaConfig.cloudLimit
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
