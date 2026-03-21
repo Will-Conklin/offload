@@ -9,6 +9,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 from offload_backend.config import get_settings
+from offload_backend.providers.base import (
+    ProviderBrainDumpResult,
+    ProviderBreakdownResult,
+    ProviderDecisionResult,
+    ProviderRequestError,
+    ProviderTimeout,
+)
 from offload_backend.security import SessionClaims, TokenManager
 
 
@@ -134,3 +141,71 @@ def make_breakdown_payload():
         return payload
 
     return _make
+
+
+# ---------------------------------------------------------------------------
+# Shared fake AI providers for router tests
+# ---------------------------------------------------------------------------
+
+
+class FakeAIProvider:
+    """Fake provider returning canned responses for all AI endpoints."""
+
+    provider_name = "fake"
+
+    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
+        _ = (input_text, granularity, context_hints, template_ids)
+        return ProviderBreakdownResult(
+            steps=[{"title": "Step 1", "substeps": [{"title": "Substep 1.1", "substeps": []}]}],
+            input_tokens=10,
+            output_tokens=20,
+        )
+
+    async def compile_brain_dump(self, *, input_text, context_hints):
+        _ = (input_text, context_hints)
+        return ProviderBrainDumpResult(
+            items=[
+                {"title": "Call dentist", "type": "task"},
+                {"title": "Party ideas", "type": "idea"},
+            ],
+            input_tokens=15,
+            output_tokens=25,
+        )
+
+    async def suggest_decisions(self, *, input_text, context_hints, clarifying_answers):
+        _ = (input_text, context_hints, clarifying_answers)
+        return ProviderDecisionResult(
+            options=[
+                {"title": "Option A", "description": "First good option", "is_recommended": True},
+                {"title": "Option B", "description": "Second good option", "is_recommended": False},
+            ],
+            clarifying_questions=["What is your timeline?"],
+            input_tokens=20,
+            output_tokens=40,
+        )
+
+
+class TimeoutAIProvider:
+    """Provider that raises ProviderTimeout on every method."""
+
+    async def generate_breakdown(self, **_):
+        raise ProviderTimeout("provider timeout")
+
+    async def compile_brain_dump(self, **_):
+        raise ProviderTimeout("provider timeout")
+
+    async def suggest_decisions(self, **_):
+        raise ProviderTimeout("provider timeout")
+
+
+class FailureAIProvider:
+    """Provider that raises ProviderRequestError on every method."""
+
+    async def generate_breakdown(self, **_):
+        raise ProviderRequestError("provider failure")
+
+    async def compile_brain_dump(self, **_):
+        raise ProviderRequestError("provider failure")
+
+    async def suggest_decisions(self, **_):
+        raise ProviderRequestError("provider failure")

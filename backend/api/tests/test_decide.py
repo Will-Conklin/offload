@@ -1,58 +1,11 @@
+from conftest import FailureAIProvider, FakeAIProvider, TimeoutAIProvider
+
 from offload_backend.dependencies import get_ai_inference_rate_limiter, get_provider
-from offload_backend.providers.base import (
-    ProviderDecisionResult,
-    ProviderRequestError,
-    ProviderTimeout,
-)
 from offload_backend.session_rate_limiter import InMemorySessionRateLimiter
 
 
-class FakeDecisionProvider:
-    provider_name = "fake"
-
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        raise NotImplementedError
-
-    async def compile_brain_dump(self, *, input_text, context_hints):
-        raise NotImplementedError
-
-    async def suggest_decisions(self, *, input_text, context_hints, clarifying_answers):
-        _ = (input_text, context_hints, clarifying_answers)
-        return ProviderDecisionResult(
-            options=[
-                {"title": "Option A", "description": "First good option", "is_recommended": True},
-                {"title": "Option B", "description": "Second good option", "is_recommended": False},
-            ],
-            clarifying_questions=["What is your timeline?"],
-            input_tokens=20,
-            output_tokens=40,
-        )
-
-
-class TimeoutDecisionProvider:
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        raise NotImplementedError
-
-    async def compile_brain_dump(self, *, input_text, context_hints):
-        raise NotImplementedError
-
-    async def suggest_decisions(self, *, input_text, context_hints, clarifying_answers):
-        raise ProviderTimeout("provider timeout")
-
-
-class FailureDecisionProvider:
-    async def generate_breakdown(self, *, input_text, granularity, context_hints, template_ids):
-        raise NotImplementedError
-
-    async def compile_brain_dump(self, *, input_text, context_hints):
-        raise NotImplementedError
-
-    async def suggest_decisions(self, *, input_text, context_hints, clarifying_answers):
-        raise ProviderRequestError("provider failure")
-
-
 def test_decide_recommend_success(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -78,7 +31,7 @@ def test_decide_recommend_success(client, app, create_session_token):
 
 
 def test_decide_recommend_with_answers(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -101,7 +54,7 @@ def test_decide_recommend_with_answers(client, app, create_session_token):
 
 
 def test_decide_recommend_rejects_missing_opt_in(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -117,7 +70,7 @@ def test_decide_recommend_rejects_missing_opt_in(client, app, create_session_tok
 
 
 def test_decide_recommend_rejects_missing_auth(client, app):
-    app.dependency_overrides[get_provider] = lambda: FakeDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
 
     response = client.post(
         "/v1/ai/decide/recommend",
@@ -131,7 +84,7 @@ def test_decide_recommend_rejects_missing_auth(client, app):
 
 
 def test_decide_recommend_rejects_oversized_input(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -150,7 +103,7 @@ def test_decide_recommend_rejects_oversized_input(client, app, create_session_to
 
 
 def test_decide_recommend_rejects_too_many_answers(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FakeDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -173,7 +126,7 @@ def test_decide_recommend_rejects_too_many_answers(client, app, create_session_t
 
 
 def test_decide_recommend_timeout_returns_504(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: TimeoutDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: TimeoutAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -192,7 +145,7 @@ def test_decide_recommend_timeout_returns_504(client, app, create_session_token)
 
 
 def test_decide_recommend_provider_failure_returns_502(client, app, create_session_token):
-    app.dependency_overrides[get_provider] = lambda: FailureDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FailureAIProvider()
     token = create_session_token()
 
     response = client.post(
@@ -211,7 +164,7 @@ def test_decide_recommend_provider_failure_returns_502(client, app, create_sessi
 
 def test_decide_rate_limit_enforced(client, app, create_session_token):
     limiter = InMemorySessionRateLimiter(limit_per_install=1, limit_per_ip=1000, window_seconds=60)
-    app.dependency_overrides[get_provider] = lambda: FakeDecisionProvider()
+    app.dependency_overrides[get_provider] = lambda: FakeAIProvider()
     app.dependency_overrides[get_ai_inference_rate_limiter] = lambda: limiter
     token = create_session_token()
 
