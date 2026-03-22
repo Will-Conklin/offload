@@ -4,21 +4,6 @@ Known bugs, features, and enhancements that do not yet have a plan doc. Items ar
 
 ---
 
-## Release Prep
-
-App Store submission and TestFlight distribution. Blocked by UAT (see `docs/plans/uat-checklist.md`). Requires Apple Developer Program membership + App Store Connect access.
-
-**Scope:**
-
-- Update README for shipped features; draft release notes
-- App Store metadata: name, subtitle, description, keywords, category, screenshots (iPhone 6.7"/6.1" + iPad), 1024×1024 app icon, age rating, privacy policy URL, support URL, bundle ID + version verification
-- TestFlight: release build archive, upload, configure internal testing group, triage feedback
-- Security release gate (requires explicit sign-off): production secret policy, session rate limiting, privacy policy alignment, incident response + rollback runbook
-
-**Related:** GitHub issue #113
-
----
-
 ## New Item Types — Remaining Tasks
 
 `ItemType` enum expanded and shipped. Two deferred items remain:
