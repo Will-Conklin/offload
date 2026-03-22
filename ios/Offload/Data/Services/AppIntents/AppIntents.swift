@@ -5,6 +5,8 @@
 import AppIntents
 import Foundation
 
+// MARK: - OffloadCaptureIntent
+
 /// Captures a thought via Siri, Shortcuts, Spotlight, or the Action Button.
 /// Enqueues the capture to PendingCaptureStore; the main app flushes it to SwiftData on next foreground.
 @available(iOS 16.0, *)
@@ -45,5 +47,26 @@ enum OffloadIntentError: Swift.Error, CustomLocalizedStringResourceConvertible {
         case .emptyContent:
             "Please say or type something to capture."
         }
+    }
+}
+
+// MARK: - OffloadShortcutsProvider
+
+/// Registers suggested Siri phrases for the Offload capture intent.
+/// Apple requires the app name in the phrase.
+@available(iOS 16.0, *)
+struct OffloadShortcutsProvider: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(
+            intent: OffloadCaptureIntent(),
+            phrases: [
+                "Offload something in \(.applicationName)",
+                "Offload a thought in \(.applicationName)",
+                "Capture a thought in \(.applicationName)",
+                "Capture in \(.applicationName)",
+            ],
+            shortTitle: "Capture a Thought",
+            systemImageName: "brain.head.profile"
+        )
     }
 }

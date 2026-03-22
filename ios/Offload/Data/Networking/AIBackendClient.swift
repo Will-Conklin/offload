@@ -55,22 +55,6 @@ private struct APIErrorEnvelope: Decodable {
     let error: APIErrorBody
 }
 
-protocol SessionTokenStore: AnyObject {
-    var token: String? { get set }
-    var expiresAt: Date? { get set }
-    func clear()
-}
-
-final class InMemorySessionTokenStore: SessionTokenStore {
-    var token: String?
-    var expiresAt: Date?
-
-    func clear() {
-        token = nil
-        expiresAt = nil
-    }
-}
-
 protocol CloudAIConsentStore: AnyObject {
     var isCloudAIEnabled: Bool { get set }
 }

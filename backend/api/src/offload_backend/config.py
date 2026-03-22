@@ -7,7 +7,7 @@ from typing import Literal
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from offload_backend.session_security import (
+from offload_backend.security import (
     is_production_like_environment,
     is_strong_session_secret,
 )

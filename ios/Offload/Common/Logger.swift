@@ -1,10 +1,19 @@
-// Purpose: Shared utilities and helpers.
+// Purpose: Shared utilities, logging, and app-wide notification names.
 // Authority: Code-level
 // Governed by: CLAUDE.md
 // Additional instructions: Prefer small, reusable helpers and avoid feature-specific coupling.
 
+import Foundation
 import OSLog
 import UIKit
+
+// MARK: - Notifications
+
+extension Notification.Name {
+    static let captureItemsChanged = Notification.Name("wc.Offload.captureItemsChanged")
+}
+
+// MARK: - Logging
 
 enum AppLogger {
     static let subsystem = "wc.Offload"

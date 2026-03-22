@@ -52,6 +52,8 @@ and accessibility review before release prep begins.
 
 **Status:** Not Started
 
+Execute the [UAT Checklist](./uat-checklist.md) end-to-end and record results in its Evidence table.
+
 - [ ] Run the [launch manual testing checklist](../design.md#manual-testing-checklist)
       end-to-end.
 - [ ] Record results in a manual testing results artifact (create in `docs/plans/` or a shared doc).

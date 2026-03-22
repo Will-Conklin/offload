@@ -1,9 +1,28 @@
-// Purpose: Keychain-backed session token store for anonymous backend sessions.
+// Purpose: Session token storage protocol and implementations (in-memory + Keychain).
 // Authority: Code-level
 // Governed by: CLAUDE.md
 
 import Foundation
 import Security
+
+// MARK: - SessionTokenStore Protocol
+
+protocol SessionTokenStore: AnyObject {
+    var token: String? { get set }
+    var expiresAt: Date? { get set }
+    func clear()
+}
+
+/// In-memory session token store for testing.
+final class InMemorySessionTokenStore: SessionTokenStore {
+    var token: String?
+    var expiresAt: Date?
+
+    func clear() {
+        token = nil
+        expiresAt = nil
+    }
+}
 
 // MARK: - KeychainItem
 
