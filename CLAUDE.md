@@ -130,6 +130,16 @@ Local testing: `just test` sources these values automatically.
 - `backend/api/tests/test_*.py` — pytest modules
 - `backend/api/tests/conftest.py` — pytest fixtures and test config
 
+## UX Conventions (Intentional Patterns)
+
+- **Navigation**: Items open as sheets (quick peek, dismiss easily); collections drill down via `navigationDestination` (hierarchy); settings use `List` + `NavigationLink` (standard iOS). Do not "fix" these to be the same pattern.
+- **Form inputs**: CaptureComposeView uses custom InputCard for frictionless capture; AccountView uses standard `List` with `.rowStyle(.card)` for settings. These serve different UX purposes.
+- **Save button**: `buttonDark` in CaptureComposeView/edit sheets is distinct from `FloatingActionButton` — different purpose (confirm modal action vs. initiate new action).
+- **Toolbar button colors**: Action buttons (Add, Search) use `accentPrimary`; utility buttons (Settings, Edit) use `textSecondary`. Follow this split consistently.
+- **All sheets must use design system components** (InputCard, ActionBarContainer, IconTile, TagPill, Theme tokens). Never use plain `Form { TextField }` — wrap in InputCard with themed background.
+- **All destructive actions must show `.confirmationDialog`** before executing — items, tags, and collections alike.
+- **Item edit sheets** support type selection, tag editing, star toggle, and photo add/remove (matching create views). Voice recording is create-only (deferred from edit).
+
 ## Gotchas
 
 - Use `@Observable` for new ViewModels — do not use `ObservableObject` / `@Published`
