@@ -224,3 +224,31 @@ class ExecFunctionPromptResponse(BaseModel):
     provider: str
     latency_ms: int = Field(ge=0)
     usage: ExecFunctionUsage
+
+
+# Communication Draft
+
+
+class CommunicationDraftRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    input_text: str = Field(min_length=1)
+    channel: str = Field(min_length=1, max_length=16)
+    contact_name: str | None = Field(default=None, max_length=128)
+    context_hints: list[Annotated[str, Field(min_length=1, max_length=280)]] = Field(
+        default_factory=list,
+        max_length=32,
+    )
+
+
+class CommunicationDraftUsage(BaseModel):
+    input_tokens: int = Field(ge=0)
+    output_tokens: int = Field(ge=0)
+
+
+class CommunicationDraftResponse(BaseModel):
+    draft_text: str = Field(min_length=1, max_length=2000)
+    tone: str = Field(min_length=1, max_length=32)
+    provider: str
+    latency_ms: int = Field(ge=0)
+    usage: CommunicationDraftUsage

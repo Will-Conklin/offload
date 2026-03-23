@@ -317,3 +317,57 @@ struct ExecFunctionPromptResponse: Codable, Equatable {
         case usage
     }
 }
+
+// MARK: - Communication Draft
+
+struct CommunicationDraftRequest: Codable, Equatable {
+    let inputText: String
+    let channel: String
+    let contactName: String?
+    let contextHints: [String]
+
+    init(
+        inputText: String,
+        channel: String,
+        contactName: String? = nil,
+        contextHints: [String] = []
+    ) {
+        self.inputText = inputText
+        self.channel = channel
+        self.contactName = contactName
+        self.contextHints = contextHints
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case inputText = "input_text"
+        case channel
+        case contactName = "contact_name"
+        case contextHints = "context_hints"
+    }
+}
+
+struct CommunicationDraftUsage: Codable, Equatable {
+    let inputTokens: Int
+    let outputTokens: Int
+
+    enum CodingKeys: String, CodingKey {
+        case inputTokens = "input_tokens"
+        case outputTokens = "output_tokens"
+    }
+}
+
+struct CommunicationDraftResponse: Codable, Equatable {
+    let draftText: String
+    let tone: String
+    let provider: String
+    let latencyMs: Int
+    let usage: CommunicationDraftUsage
+
+    enum CodingKeys: String, CodingKey {
+        case draftText = "draft_text"
+        case tone
+        case provider
+        case latencyMs = "latency_ms"
+        case usage
+    }
+}

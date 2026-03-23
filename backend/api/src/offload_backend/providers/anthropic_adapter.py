@@ -17,6 +17,7 @@ from offload_backend.providers.base import (
     ProviderBrainDumpResult,
     ProviderBreakdownResult,
     ProviderDecisionResult,
+    ProviderDraftResult,
     ProviderExecFunctionResult,
     ProviderRequestError,
     ProviderResponseError,
@@ -418,6 +419,79 @@ class AnthropicProviderAdapter:
             detected_challenge=detected_challenge,
             strategies=strategies[:3],
             encouragement=str(encouragement)[:280],
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+
+    async def draft_communication(
+        self,
+        *,
+        input_text: str,
+        channel: str,
+        contact_name: str | None,
+        context_hints: list[str],
+    ) -> ProviderDraftResult:
+        """Generate a draft message for a communication item using Claude."""
+        if not self._settings.anthropic_api_key:
+            raise ProviderUnavailable("Anthropic API key is not configured")
+
+        recipient = f" to {contact_name}" if contact_name else ""
+        payload = {
+            "model": self._settings.anthropic_model,
+            "max_tokens": 1024,
+            "system": (
+                f"You help users draft {channel} messages{recipient}. "
+                "The user has ADHD and may struggle with composing messages. "
+                "Generate a concise, friendly draft based on their notes. "
+                "For calls, draft talking points. For texts, keep it brief. "
+                "For emails, include a subject-appropriate greeting and sign-off. "
+                "Return strict JSON with this shape: "
+                '{"draft_text":"...","tone":"friendly"}. '
+                "Valid tones: friendly, professional, casual, urgent. "
+                "Never be pushy or guilt-inducing. Keep the tone warm. "
+                "Output only the JSON object, no other text."
+            ),
+            "messages": [
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "input_text": input_text,
+                            "channel": channel,
+                            "contact_name": contact_name,
+                            "context_hints": context_hints,
+                        }
+                    ),
+                }
+            ],
+        }
+        response = await self._execute_with_retry(payload=payload)
+        return self._parse_draft_response(response)
+
+    def _parse_draft_response(self, response: httpx.Response) -> ProviderDraftResult:
+        try:
+            body = response.json()
+            content = _strip_code_fences(body["content"][0]["text"])
+            parsed = json.loads(content)
+            draft_text = parsed["draft_text"]
+            tone = parsed.get("tone", "friendly")
+        except (KeyError, IndexError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            raise ProviderResponseError(
+                "Anthropic draft response parsing failed"
+            ) from exc
+
+        usage = body.get("usage", {})
+        input_tokens = int(usage.get("input_tokens", 0))
+        output_tokens = int(usage.get("output_tokens", 0))
+
+        if not isinstance(draft_text, str) or not draft_text:
+            raise ProviderResponseError(
+                "Anthropic draft response did not return a draft_text string"
+            )
+
+        return ProviderDraftResult(
+            draft_text=str(draft_text)[:2000],
+            tone=str(tone)[:32],
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )

@@ -38,6 +38,14 @@ struct CaptureComposeView: View {
     @State private var imagePickerSource: UIImagePickerController.SourceType = .photoLibrary
     @State private var showingCameraUnavailableAlert = false
     @State private var selectedType: ItemType?
+    @State private var selectedChannel: CommunicationChannel?
+    @State private var commContactName: String?
+    @State private var commContactIdentifier: String?
+    @State private var commContactValue: String?
+    @State private var showingContactPicker = false
+    @State private var contactValuePickerValues: [String] = []
+    @State private var showingContactValuePicker = false
+    @State private var contactValuePickerChannel: CommunicationChannel = .call
     @State private var voiceService = VoiceRecordingService()
     @State private var preRecordingText = ""
     @State private var showingPermissionAlert = false
@@ -143,6 +151,36 @@ struct CaptureComposeView: View {
             Text("This device does not support camera capture.")
         }
         .celebrationOverlay(style: .firstCapture, isActive: $showFirstCaptureCelebration)
+        .sheet(isPresented: $showingContactPicker) {
+            ContactPickerView(
+                onSelect: { result in
+                    commContactName = result.name
+                    commContactIdentifier = result.identifier
+                    let channel = selectedChannel ?? .call
+                    let values = channel == .email ? result.emailAddresses : result.phoneNumbers
+                    if values.count == 1 {
+                        commContactValue = values.first
+                    } else if values.count > 1 {
+                        contactValuePickerValues = values
+                        contactValuePickerChannel = channel
+                        showingContactValuePicker = true
+                    }
+                },
+                onCancel: {}
+            )
+        }
+        .sheet(isPresented: $showingContactValuePicker) {
+            ContactValuePickerSheet(
+                contactName: commContactName ?? "",
+                values: contactValuePickerValues,
+                channel: contactValuePickerChannel,
+                onSelect: { value in
+                    commContactValue = value
+                }
+            )
+            .environmentObject(themeManager)
+            .presentationDetents([.medium])
+        }
     }
 
     private var textInputSection: some View {
@@ -252,6 +290,10 @@ struct CaptureComposeView: View {
                     }
                 }
 
+                if selectedType == .communication {
+                    communicationFieldsSection
+                }
+
                 if !selectedTags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
@@ -267,6 +309,103 @@ struct CaptureComposeView: View {
             }
         }
         .padding(Theme.Spacing.md)
+    }
+
+    private var communicationFieldsSection: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            // Channel selector
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(CommunicationChannel.allCases, id: \.rawValue) { channel in
+                        let isSelected = selectedChannel == channel
+                        Button {
+                            selectedChannel = isSelected ? nil : channel
+                        } label: {
+                            Label(channel.displayName, systemImage: channel.icon)
+                                .font(Theme.Typography.metadata)
+                                .foregroundStyle(
+                                    isSelected
+                                        ? Theme.Colors.secondaryButtonText(colorScheme, style: style)
+                                        : Theme.Colors.textSecondary(colorScheme, style: style)
+                                )
+                                .padding(.horizontal, Theme.Spacing.sm)
+                                .padding(.vertical, Theme.Spacing.xs)
+                                .background(
+                                    Capsule()
+                                        .fill(
+                                            isSelected
+                                                ? Theme.Colors.secondary(colorScheme, style: style)
+                                                : Theme.Colors.secondary(colorScheme, style: style).opacity(0.08)
+                                        )
+                                )
+                                .overlay(
+                                    Capsule()
+                                        .strokeBorder(
+                                            Theme.Colors.secondary(colorScheme, style: style).opacity(isSelected ? 0 : 0.25),
+                                            lineWidth: 0.8
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(channel.displayName) channel")
+                        .accessibilityHint(isSelected ? "Selected. Tap to deselect." : "Tap to select this channel.")
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                    }
+                }
+            }
+
+            // Contact link
+            if let contactName = commContactName {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: Icons.contactLink)
+                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
+                    Text(contactName)
+                        .font(Theme.Typography.callout)
+                        .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+                    if let value = commContactValue {
+                        Text(value)
+                            .font(Theme.Typography.metadata)
+                            .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+                    }
+                    Spacer()
+                    Button {
+                        commContactName = nil
+                        commContactIdentifier = nil
+                        commContactValue = nil
+                    } label: {
+                        Image(systemName: Icons.closeCircleFilled)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Remove contact")
+                }
+                .padding(Theme.Spacing.sm)
+                .background(Theme.Colors.surface(colorScheme, style: style))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+            } else {
+                Button { showingContactPicker = true } label: {
+                    Label("Link Contact", systemImage: Icons.contactLink)
+                        .font(Theme.Typography.metadata)
+                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
+                        .padding(.horizontal, Theme.Spacing.sm)
+                        .padding(.vertical, Theme.Spacing.xs)
+                        .background(
+                            Capsule()
+                                .fill(Theme.Colors.accentPrimary(colorScheme, style: style).opacity(0.08))
+                        )
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(
+                                    Theme.Colors.accentPrimary(colorScheme, style: style).opacity(0.25),
+                                    lineWidth: 0.8
+                                )
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Link a contact")
+                .accessibilityHint("Opens the contact picker to link a contact to this communication.")
+            }
+        }
     }
 
     private var bottomBar: some View {
@@ -403,9 +542,21 @@ struct CaptureComposeView: View {
             AppLogger.workflow.info(
                 "CaptureCompose save requested - textLength: \(trimmedText.count, privacy: .public), tags: \(selectedTags.count, privacy: .public), attachment: \(attachmentData != nil, privacy: .public), starred: \(isStarred, privacy: .public)"
             )
+
+            var metadata = ItemMetadata()
+            if selectedType == .communication, let channel = selectedChannel {
+                metadata.communicationMetadata = CommunicationMetadata(
+                    channel: channel,
+                    contactName: commContactName,
+                    contactIdentifier: commContactIdentifier,
+                    contactValue: commContactValue
+                )
+            }
+
             let item = try itemRepository.create(
                 type: selectedType?.rawValue,
                 content: trimmedText,
+                metadata: metadata.encodeToJSONString(),
                 attachmentData: attachmentData,
                 tags: selectedTags,
                 isStarred: isStarred

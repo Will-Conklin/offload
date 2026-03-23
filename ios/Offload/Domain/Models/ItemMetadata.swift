@@ -238,6 +238,81 @@ struct ItemMetadata: Codable, Equatable {
     }
 }
 
+// MARK: - Communication Metadata
+
+/// Channel type for communication items.
+enum CommunicationChannel: String, Codable, CaseIterable {
+    case call
+    case text
+    case email
+
+    /// User-facing display name for the channel.
+    var displayName: String {
+        switch self {
+        case .call: "Call"
+        case .text: "Text"
+        case .email: "Email"
+        }
+    }
+
+    /// SF Symbol icon name for the channel.
+    var icon: String {
+        switch self {
+        case .call: Icons.channelCall
+        case .text: Icons.channelText
+        case .email: Icons.channelEmail
+        }
+    }
+
+    /// URL scheme prefix for one-touch actions.
+    var urlScheme: String {
+        switch self {
+        case .call: "tel:"
+        case .text: "sms:"
+        case .email: "mailto:"
+        }
+    }
+}
+
+/// Structured metadata for communication-type items.
+struct CommunicationMetadata: Codable, Equatable {
+    var channel: CommunicationChannel
+    var contactName: String?
+    var contactIdentifier: String?
+    var contactValue: String?
+}
+
+extension ItemMetadata {
+    static let communicationKey = "communication"
+
+    /// Typed accessor for communication metadata stored in extensions.
+    var communicationMetadata: CommunicationMetadata? {
+        get {
+            guard let value = extensions[Self.communicationKey],
+                  case let .object(obj) = value
+            else { return nil }
+            let encoder = JSONEncoder()
+            let decoder = JSONDecoder()
+            guard let data = try? encoder.encode(obj),
+                  let meta = try? decoder.decode(CommunicationMetadata.self, from: data)
+            else { return nil }
+            return meta
+        }
+        set {
+            if let newValue {
+                let encoder = JSONEncoder()
+                let decoder = JSONDecoder()
+                guard let data = try? encoder.encode(newValue),
+                      let obj = try? decoder.decode([String: ItemMetadataValue].self, from: data)
+                else { return }
+                extensions[Self.communicationKey] = .object(obj)
+            } else {
+                extensions.removeValue(forKey: Self.communicationKey)
+            }
+        }
+    }
+}
+
 private struct DynamicCodingKey: CodingKey {
     let stringValue: String
     let intValue: Int?

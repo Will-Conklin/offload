@@ -13,6 +13,7 @@ from offload_backend.providers.base import (
     ProviderBrainDumpResult,
     ProviderBreakdownResult,
     ProviderDecisionResult,
+    ProviderDraftResult,
     ProviderExecFunctionResult,
     ProviderRequestError,
     ProviderTimeout,
@@ -203,6 +204,15 @@ class FakeAIProvider:
             output_tokens=45,
         )
 
+    async def draft_communication(self, *, input_text, channel, contact_name, context_hints):
+        _ = (input_text, channel, contact_name, context_hints)
+        return ProviderDraftResult(
+            draft_text="Hi! I wanted to reach out about this.",
+            tone="friendly",
+            input_tokens=30,
+            output_tokens=50,
+        )
+
 
 class TimeoutAIProvider:
     """Provider that raises ProviderTimeout on every method."""
@@ -219,6 +229,9 @@ class TimeoutAIProvider:
     async def prompt_executive_function(self, **_):
         raise ProviderTimeout("provider timeout")
 
+    async def draft_communication(self, **_):
+        raise ProviderTimeout("provider timeout")
+
 
 class FailureAIProvider:
     """Provider that raises ProviderRequestError on every method."""
@@ -233,4 +246,7 @@ class FailureAIProvider:
         raise ProviderRequestError("provider failure")
 
     async def prompt_executive_function(self, **_):
+        raise ProviderRequestError("provider failure")
+
+    async def draft_communication(self, **_):
         raise ProviderRequestError("provider failure")

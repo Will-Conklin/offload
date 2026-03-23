@@ -31,6 +31,7 @@ struct CaptureView: View {
     @State private var brainDumpItem: Item?
     @State private var decisionFatigueItem: Item?
     @State private var execFunctionItem: Item?
+    @State private var draftItem: Item?
     @State private var quickCaptureText: String = ""
     @State private var itemToDelete: Item?
     @State private var showDeleteConfirmation = false
@@ -83,7 +84,8 @@ struct CaptureView: View {
                                 onBreakdown: { breakdownItem = item },
                                 onBrainDump: { brainDumpItem = item },
                                 onDecisionFatigue: { decisionFatigueItem = item },
-                                onExecFunction: { execFunctionItem = item }
+                                onExecFunction: { execFunctionItem = item },
+                                onDraftCommunication: item.itemType == .communication ? { draftItem = item } : nil
                             )
                             .onAppear {
                                 if index == viewModel.items.count - 1 {
@@ -202,6 +204,12 @@ struct CaptureView: View {
             }
             .sheet(item: $execFunctionItem) { item in
                 ExecFunctionSheet(item: item)
+                    .environmentObject(themeManager)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+            }
+            .sheet(item: $draftItem) { item in
+                CommunicationDraftSheet(item: item)
                     .environmentObject(themeManager)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)

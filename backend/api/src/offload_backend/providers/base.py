@@ -82,6 +82,15 @@ class ProviderExecFunctionResult(BaseModel):
     output_tokens: int
 
 
+class ProviderDraftResult(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    draft_text: str = ""
+    tone: str = "friendly"
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+
 class AIProvider(Protocol):
     provider_name: str
 
@@ -116,3 +125,12 @@ class AIProvider(Protocol):
         context_hints: list[str],
         strategy_history: list[dict],
     ) -> ProviderExecFunctionResult: ...
+
+    async def draft_communication(
+        self,
+        *,
+        input_text: str,
+        channel: str,
+        contact_name: str | None,
+        context_hints: list[str],
+    ) -> ProviderDraftResult: ...

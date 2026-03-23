@@ -25,6 +25,14 @@ struct CaptureDetailView: View {
     @State private var showingImagePicker = false
     @State private var imagePickerSource: UIImagePickerController.SourceType = .photoLibrary
     @State private var showingCameraUnavailableAlert = false
+    @State private var selectedChannel: CommunicationChannel?
+    @State private var commContactName: String?
+    @State private var commContactIdentifier: String?
+    @State private var commContactValue: String?
+    @State private var showingContactPicker = false
+    @State private var contactValuePickerValues: [String] = []
+    @State private var showingContactValuePicker = false
+    @State private var contactValuePickerChannel: CommunicationChannel = .call
     @FocusState private var isFocused: Bool
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -35,6 +43,11 @@ struct CaptureDetailView: View {
         _selectedType = State(initialValue: item.itemType)
         _isStarred = State(initialValue: item.isStarred)
         _selectedTags = State(initialValue: item.tags)
+        let commMeta = item.communicationMetadata
+        _selectedChannel = State(initialValue: commMeta?.channel)
+        _commContactName = State(initialValue: commMeta?.contactName)
+        _commContactIdentifier = State(initialValue: commMeta?.contactIdentifier)
+        _commContactValue = State(initialValue: commMeta?.contactValue)
     }
 
     private var canSave: Bool {
@@ -89,6 +102,36 @@ struct CaptureDetailView: View {
                 attachmentData = itemRepository.attachmentDataForDisplay(item)
                 isFocused = true
             }
+            .sheet(isPresented: $showingContactPicker) {
+                ContactPickerView(
+                    onSelect: { result in
+                        commContactName = result.name
+                        commContactIdentifier = result.identifier
+                        let channel = selectedChannel ?? .call
+                        let values = channel == .email ? result.emailAddresses : result.phoneNumbers
+                        if values.count == 1 {
+                            commContactValue = values.first
+                        } else if values.count > 1 {
+                            contactValuePickerValues = values
+                            contactValuePickerChannel = channel
+                            showingContactValuePicker = true
+                        }
+                    },
+                    onCancel: {}
+                )
+            }
+            .sheet(isPresented: $showingContactValuePicker) {
+                ContactValuePickerSheet(
+                    contactName: commContactName ?? "",
+                    values: contactValuePickerValues,
+                    channel: contactValuePickerChannel,
+                    onSelect: { value in
+                        commContactValue = value
+                    }
+                )
+                .environmentObject(themeManager)
+                .presentationDetents([.medium])
+            }
         }
         .errorToasts(errorPresenter)
     }
@@ -130,6 +173,10 @@ struct CaptureDetailView: View {
                             .accessibilityAddTraits(selectedType == type ? .isSelected : [])
                         }
                     }
+                }
+
+                if selectedType == .communication {
+                    communicationFieldsSection
                 }
 
                 TextEditor(text: $content)
@@ -246,11 +293,116 @@ struct CaptureDetailView: View {
         .padding(.bottom, Theme.Spacing.sm)
     }
 
+    private var communicationFieldsSection: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(CommunicationChannel.allCases, id: \.rawValue) { channel in
+                        let isSelected = selectedChannel == channel
+                        Button {
+                            selectedChannel = isSelected ? nil : channel
+                        } label: {
+                            Label(channel.displayName, systemImage: channel.icon)
+                                .font(Theme.Typography.metadata)
+                                .foregroundStyle(
+                                    isSelected
+                                        ? Theme.Colors.secondaryButtonText(colorScheme, style: style)
+                                        : Theme.Colors.textSecondary(colorScheme, style: style)
+                                )
+                                .padding(.horizontal, Theme.Spacing.sm)
+                                .padding(.vertical, Theme.Spacing.xs)
+                                .background(
+                                    Capsule()
+                                        .fill(
+                                            isSelected
+                                                ? Theme.Colors.secondary(colorScheme, style: style)
+                                                : Theme.Colors.secondary(colorScheme, style: style).opacity(0.08)
+                                        )
+                                )
+                                .overlay(
+                                    Capsule()
+                                        .strokeBorder(
+                                            Theme.Colors.secondary(colorScheme, style: style).opacity(isSelected ? 0 : 0.25),
+                                            lineWidth: 0.8
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(channel.displayName) channel")
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                    }
+                }
+            }
+
+            if let contactName = commContactName {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: Icons.contactLink)
+                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
+                    Text(contactName)
+                        .font(Theme.Typography.callout)
+                        .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+                    if let value = commContactValue {
+                        Text(value)
+                            .font(Theme.Typography.metadata)
+                            .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+                    }
+                    Spacer()
+                    Button {
+                        commContactName = nil
+                        commContactIdentifier = nil
+                        commContactValue = nil
+                    } label: {
+                        Image(systemName: Icons.closeCircleFilled)
+                            .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Remove contact")
+                }
+                .padding(Theme.Spacing.sm)
+                .background(Theme.Colors.surface(colorScheme, style: style))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
+            } else {
+                Button { showingContactPicker = true } label: {
+                    Label("Link Contact", systemImage: Icons.contactLink)
+                        .font(Theme.Typography.metadata)
+                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
+                        .padding(.horizontal, Theme.Spacing.sm)
+                        .padding(.vertical, Theme.Spacing.xs)
+                        .background(
+                            Capsule()
+                                .fill(Theme.Colors.accentPrimary(colorScheme, style: style).opacity(0.08))
+                        )
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(
+                                    Theme.Colors.accentPrimary(colorScheme, style: style).opacity(0.25),
+                                    lineWidth: 0.8
+                                )
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Link a contact")
+            }
+        }
+    }
+
     private func save() {
         do {
             let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
             try itemRepository.updateContent(item, content: trimmed)
             try itemRepository.updateType(item, type: selectedType?.rawValue)
+
+            // Persist communication metadata
+            if selectedType == .communication, let channel = selectedChannel {
+                item.communicationMetadata = CommunicationMetadata(
+                    channel: channel,
+                    contactName: commContactName,
+                    contactIdentifier: commContactIdentifier,
+                    contactValue: commContactValue
+                )
+            } else if selectedType != .communication {
+                item.communicationMetadata = nil
+            }
 
             if isStarred != item.isStarred {
                 try itemRepository.toggleStar(item)

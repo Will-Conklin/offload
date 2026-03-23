@@ -13,6 +13,7 @@ from offload_backend.providers.base import (
     ProviderBrainDumpResult,
     ProviderBreakdownResult,
     ProviderDecisionResult,
+    ProviderDraftResult,
     ProviderExecFunctionResult,
     ProviderRequestError,
     ProviderResponseError,
@@ -446,6 +447,96 @@ class OpenAIProviderAdapter:
             detected_challenge=detected_challenge,
             strategies=strategies[:3],
             encouragement=str(encouragement)[:280],
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+
+    async def draft_communication(
+        self,
+        *,
+        input_text: str,
+        channel: str,
+        contact_name: str | None,
+        context_hints: list[str],
+    ) -> ProviderDraftResult:
+        """Generate a draft message for a communication item."""
+        if not self._settings.openai_api_key:
+            raise ProviderUnavailable("OpenAI API key is not configured")
+
+        payload = self._draft_request_payload(
+            input_text=input_text,
+            channel=channel,
+            contact_name=contact_name,
+            context_hints=context_hints,
+        )
+        response = await self._execute_with_retry(payload=payload)
+        return self._parse_draft_response(response)
+
+    def _draft_request_payload(
+        self,
+        *,
+        input_text: str,
+        channel: str,
+        contact_name: str | None,
+        context_hints: list[str],
+    ) -> dict:
+        recipient = f" to {contact_name}" if contact_name else ""
+        return {
+            "model": self._settings.openai_model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        f"You help users draft {channel} messages{recipient}. "
+                        "The user has ADHD and may struggle with composing messages. "
+                        "Generate a concise, friendly draft based on their notes. "
+                        "For calls, draft talking points. For texts, keep it brief. "
+                        "For emails, include a subject-appropriate greeting and sign-off. "
+                        "Return strict JSON with this shape: "
+                        '{"draft_text":"...","tone":"friendly"}. '
+                        "Valid tones: friendly, professional, casual, urgent. "
+                        "Never be pushy or guilt-inducing. Keep the tone warm."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "input_text": input_text,
+                            "channel": channel,
+                            "contact_name": contact_name,
+                            "context_hints": context_hints,
+                        }
+                    ),
+                },
+            ],
+            "response_format": {"type": "json_object"},
+        }
+
+    def _parse_draft_response(self, response: httpx.Response) -> ProviderDraftResult:
+        try:
+            body = response.json()
+            content = body["choices"][0]["message"]["content"]
+            parsed = json.loads(content)
+            draft_text = parsed["draft_text"]
+            tone = parsed.get("tone", "friendly")
+        except (KeyError, IndexError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            raise ProviderResponseError(
+                "OpenAI draft response parsing failed"
+            ) from exc
+
+        usage = body.get("usage", {})
+        input_tokens = int(usage.get("prompt_tokens", 0))
+        output_tokens = int(usage.get("completion_tokens", 0))
+
+        if not isinstance(draft_text, str) or not draft_text:
+            raise ProviderResponseError(
+                "OpenAI draft response did not return a draft_text string"
+            )
+
+        return ProviderDraftResult(
+            draft_text=str(draft_text)[:2000],
+            tone=str(tone)[:32],
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )

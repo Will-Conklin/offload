@@ -21,6 +21,7 @@ struct ItemCard: View {
     let onBrainDump: () -> Void
     let onDecisionFatigue: () -> Void
     let onExecFunction: () -> Void
+    var onDraftCommunication: (() -> Void)?
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -48,16 +49,22 @@ struct ItemCard: View {
             }
 
             CardSurface(fill: Theme.Colors.cardColor(index: item.stableColorIndex, colorScheme, style: style)) {
-                MCMCardContent(
-                    icon: item.itemType?.icon,
-                    title: item.content,
-                    typeLabel: item.itemType?.displayName,
-                    timestamp: item.relativeTimestamp,
-                    image: itemRepository.attachmentDataForDisplay(item).flatMap { UIImage(data: $0) },
-                    tags: item.tags,
-                    onAddTag: onAddTag,
-                    size: .compact // Compact size for item cards
-                )
+                VStack(alignment: .leading, spacing: 0) {
+                    MCMCardContent(
+                        icon: communicationIcon ?? item.itemType?.icon,
+                        title: item.content,
+                        typeLabel: communicationTypeLabel ?? item.itemType?.displayName,
+                        timestamp: item.relativeTimestamp,
+                        image: itemRepository.attachmentDataForDisplay(item).flatMap { UIImage(data: $0) },
+                        tags: item.tags,
+                        onAddTag: onAddTag,
+                        size: .compact
+                    )
+
+                    if let commMeta = item.communicationMetadata {
+                        communicationBar(commMeta)
+                    }
+                }
             }
             .overlay(alignment: .bottomTrailing) {
                 StarButton(isStarred: item.isStarred, action: onToggleStar)
@@ -247,6 +254,70 @@ struct ItemCard: View {
                     AppIcon(name: Icons.execFunction, size: 14)
                 }
             }
+
+            if item.itemType == .communication, let onDraft = onDraftCommunication {
+                Button {
+                    onDraft()
+                } label: {
+                    Label {
+                        Text("Draft with AI")
+                    } icon: {
+                        AppIcon(name: Icons.write, size: 14)
+                    }
+                }
+            }
         }
+    }
+
+    /// Shows the channel-specific icon for communication items instead of the generic type icon.
+    private var communicationIcon: String? {
+        item.communicationMetadata?.channel.icon
+    }
+
+    /// Shows a more specific type label like "Call" or "Email" for communication items.
+    private var communicationTypeLabel: String? {
+        item.communicationMetadata?.channel.displayName
+    }
+
+    /// Renders a contact name and one-touch action button below the card content.
+    private func communicationBar(_ meta: CommunicationMetadata) -> some View {
+        HStack(spacing: Theme.Spacing.sm) {
+            if let name = meta.contactName {
+                Image(systemName: Icons.contactLink)
+                    .font(.caption)
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+                Text(name)
+                    .font(Theme.Typography.metadata)
+                    .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            if let contactValue = meta.contactValue {
+                Button {
+                    CommunicationActionService.performAction(
+                        channel: meta.channel,
+                        contactValue: contactValue,
+                        subject: item.content
+                    )
+                } label: {
+                    Label(meta.channel.displayName, systemImage: meta.channel.icon)
+                        .font(Theme.Typography.badge)
+                        .foregroundStyle(Theme.Colors.secondaryButtonText(colorScheme, style: style))
+                        .padding(.horizontal, Theme.Spacing.sm)
+                        .padding(.vertical, Theme.Spacing.xs)
+                        .background(
+                            Capsule()
+                                .fill(Theme.Colors.secondary(colorScheme, style: style))
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(meta.channel.displayName) \(meta.contactName ?? "")")
+                .accessibilityHint("Opens \(meta.channel.displayName.lowercased()) app.")
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.bottom, Theme.Spacing.sm)
     }
 }

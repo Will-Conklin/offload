@@ -92,6 +92,7 @@ protocol AIBackendClient {
     func compileBrainDump(request: BrainDumpCompileRequest) async throws -> BrainDumpCompileResponse
     func suggestDecisions(request: DecisionRecommendRequest) async throws -> DecisionRecommendResponse
     func promptExecFunction(request: ExecFunctionPromptRequest) async throws -> ExecFunctionPromptResponse
+    func draftCommunication(request: CommunicationDraftRequest) async throws -> CommunicationDraftResponse
     func reconcileUsage(request: UsageReconcileRequest) async throws -> UsageReconcileResponse
 }
 
@@ -165,6 +166,10 @@ final class NetworkAIBackendClient: AIBackendClient {
 
     func promptExecFunction(request: ExecFunctionPromptRequest) async throws -> ExecFunctionPromptResponse {
         try await performAuthorizedAIRequest(path: "/v1/ai/executive-function/prompt", body: request)
+    }
+
+    func draftCommunication(request: CommunicationDraftRequest) async throws -> CommunicationDraftResponse {
+        try await performAuthorizedAIRequest(path: "/v1/ai/communication/draft", body: request)
     }
 
     private func ensureActiveSession() async throws {
