@@ -177,4 +177,17 @@ extension Item {
     var isBrainDumpCandidate: Bool {
         wordCount > 75
     }
+
+    /// True when the item content contains signals that the user may be stuck.
+    var isStuckCandidate: Bool {
+        guard !isBrainDumpCandidate else { return false }
+        let lower = content.lowercased()
+        let stuckKeywords = [
+            "can't start", "don't know where to begin", "stuck",
+            "overwhelm", "too much", "can't decide", "procrastinat",
+            "putting off", "don't know what to do", "can't figure out",
+            "keep going back and forth", "paralyz",
+        ]
+        return stuckKeywords.contains { lower.contains($0) }
+    }
 }

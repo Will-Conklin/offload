@@ -177,3 +177,50 @@ class DecisionRecommendResponse(BaseModel):
     provider: str
     latency_ms: int = Field(ge=0)
     usage: DecisionUsage
+
+
+class ExecFunctionPromptRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    input_text: str = Field(min_length=1)
+    context_hints: list[Annotated[str, Field(min_length=1, max_length=280)]] = Field(
+        default_factory=list,
+        max_length=32,
+    )
+    strategy_history: list[ExecFunctionStrategyFeedback] = Field(
+        default_factory=list,
+        max_length=50,
+    )
+
+
+class ExecFunctionStrategyFeedback(BaseModel):
+    """Historical feedback for a strategy the user has tried before."""
+
+    challenge_type: str = Field(min_length=1, max_length=32)
+    strategy_id: str = Field(min_length=1, max_length=64)
+    thumbs_up: bool
+    led_to_completion: bool
+
+
+class ExecFunctionStrategy(BaseModel):
+    """A micro-strategy suggested for an executive function challenge."""
+
+    strategy_id: str = Field(min_length=1, max_length=64)
+    challenge_type: str = Field(min_length=1, max_length=32)
+    title: str = Field(min_length=1, max_length=280)
+    description: str = Field(min_length=1, max_length=560)
+    action_prompt: str = Field(min_length=1, max_length=560)
+
+
+class ExecFunctionUsage(BaseModel):
+    input_tokens: int = Field(ge=0)
+    output_tokens: int = Field(ge=0)
+
+
+class ExecFunctionPromptResponse(BaseModel):
+    detected_challenge: str = Field(min_length=1, max_length=32)
+    strategies: list[ExecFunctionStrategy] = Field(max_length=3)
+    encouragement: str = Field(min_length=1, max_length=280)
+    provider: str
+    latency_ms: int = Field(ge=0)
+    usage: ExecFunctionUsage

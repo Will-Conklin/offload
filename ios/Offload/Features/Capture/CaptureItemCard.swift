@@ -20,6 +20,7 @@ struct ItemCard: View {
     let onBreakdown: () -> Void
     let onBrainDump: () -> Void
     let onDecisionFatigue: () -> Void
+    let onExecFunction: () -> Void
 
     @Environment(\.itemRepository) private var itemRepository
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -78,6 +79,22 @@ struct ItemCard: View {
                     .padding(Theme.Spacing.sm)
                     .accessibilityLabel("Compile Brain Dump")
                     .accessibilityHint("Extracts and categorizes items from this capture")
+                } else if item.isStuckCandidate {
+                    Button(action: onExecFunction) {
+                        Label("Stuck?", systemImage: Icons.execFunction)
+                            .font(Theme.Typography.badge)
+                            .foregroundStyle(Theme.Colors.accentSecondary(colorScheme, style: style))
+                            .padding(.horizontal, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.xs)
+                            .background(
+                                Capsule()
+                                    .fill(Theme.Colors.accentSecondary(colorScheme, style: style).opacity(0.12))
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .padding(Theme.Spacing.sm)
+                    .accessibilityLabel("Get unstuck")
+                    .accessibilityHint("Suggests strategies to help you get started")
                 }
             }
             .overlay {
@@ -166,6 +183,9 @@ struct ItemCard: View {
         .accessibilityAction(named: AdvancedAccessibilityActionPolicy.decisionFatigueActionName) {
             onDecisionFatigue()
         }
+        .accessibilityAction(named: "I'm Stuck") {
+            onExecFunction()
+        }
         .accessibilityElement(children: .combine)
         .contextMenu {
             Button {
@@ -215,6 +235,16 @@ struct ItemCard: View {
                     Text("Get Options")
                 } icon: {
                     AppIcon(name: Icons.decisionFatigue, size: 14)
+                }
+            }
+
+            Button {
+                onExecFunction()
+            } label: {
+                Label {
+                    Text("I'm Stuck")
+                } icon: {
+                    AppIcon(name: Icons.execFunction, size: 14)
                 }
             }
         }

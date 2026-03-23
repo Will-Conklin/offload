@@ -38,9 +38,17 @@ Detects natural completion patterns (≥3 completions), surfaces gentle suggesti
 **Feature 4 — Tone Assistant** (after infra proven):
 Transforms captures into toned messages (formal, friendly, concise, empathetic, direct, neutral). Saves named presets. Multiple simultaneous previews.
 
-**Feature 5 — Executive Function Prompts** (after infra proven; ⚠️ needs human gate):
+**Feature 5 — Executive Function Prompts** (after infra proven):
 Conversational scaffolding when a user is stuck. Detects challenge type via clarifying questions, offers micro-strategies. Learns which strategies work per user.
-⚠️ Human gate: define challenge detection heuristics and learning model before implementation.
+
+Design decisions (resolved 2026-03-23):
+
+- Trigger: explicit "I'm stuck" button + AI content analysis for stuck signals (vague tasks, overwhelm language like "I don't know where to start"). Content analysis surfaces a subtle suggestion badge, never a notification
+- Challenge types (all four): task initiation ("can't start"), prioritization ("too many things"), overwhelm ("everything is too much"), decision paralysis ("keep going back and forth")
+- Strategies per type: task initiation → 2-minute rule, body doubling prompt, environment setup checklist; prioritization → energy matching, urgency/importance sort, "pick any one" nudge; overwhelm → brain dump first, permission to do less, smallest possible next step; decision paralysis → emotional scaffolding (complements Decision Fatigue Reducer's option comparison)
+- Learning model: thumbs up/down feedback after each strategy + track whether task completed within 24h of using the strategy. Weighted scoring per challenge type. All local (no cloud sync). Stored in UserDefaults
+- Cloud endpoint: `POST /v1/ai/executive-function/prompt` — AI detects challenge type from content, selects strategies personalized by learning history
+- On-device fallback: keyword-based challenge detection + rotate through strategies (no personalization)
 
 **Feature 6 — Decision Fatigue Reducer** (implemented 2026-03-09):
 Surfaces max 2–3 "good enough" recommendations with optional 1–2 clarifying questions for refinement and a "Just pick for me" mode. Cloud endpoint: `POST /v1/ai/decide/recommend`. Core implementation shipped: `DecisionFatigueSheet.swift` (ViewModel + UI), `DecisionFatigueService.swift`, backend router with schemas and OpenAI/Anthropic provider methods, wired into `CaptureItemCard` context menu and accessibility actions, and `CaptureView` sheet presentation. Fully on-device fallback (parses "or"-style alternatives; falls back to generic options).

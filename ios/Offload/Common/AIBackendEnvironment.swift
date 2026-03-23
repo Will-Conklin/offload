@@ -41,6 +41,14 @@ private struct DecisionFatigueServiceKey: EnvironmentKey {
     )
 }
 
+private struct ExecFunctionServiceKey: EnvironmentKey {
+    static let defaultValue: ExecFunctionService = DefaultExecFunctionService(
+        backendClient: AIBackendClientKey.defaultValue,
+        consentStore: CloudAIConsentStoreKey.defaultValue,
+        usageStore: UsageCounterStoreKey.defaultValue
+    )
+}
+
 extension EnvironmentValues {
     var aiBackendClient: AIBackendClient {
         get { self[AIBackendClientKey.self] }
@@ -70,5 +78,10 @@ extension EnvironmentValues {
     var decisionFatigueService: DecisionFatigueService {
         get { self[DecisionFatigueServiceKey.self] }
         set { self[DecisionFatigueServiceKey.self] = newValue }
+    }
+
+    var execFunctionService: ExecFunctionService {
+        get { self[ExecFunctionServiceKey.self] }
+        set { self[ExecFunctionServiceKey.self] = newValue }
     }
 }

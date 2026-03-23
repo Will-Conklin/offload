@@ -13,6 +13,7 @@ from offload_backend.providers.base import (
     ProviderBrainDumpResult,
     ProviderBreakdownResult,
     ProviderDecisionResult,
+    ProviderExecFunctionResult,
     ProviderRequestError,
     ProviderTimeout,
 )
@@ -184,6 +185,24 @@ class FakeAIProvider:
             output_tokens=40,
         )
 
+    async def prompt_executive_function(self, *, input_text, context_hints, strategy_history):
+        _ = (input_text, context_hints, strategy_history)
+        return ProviderExecFunctionResult(
+            detected_challenge="task_initiation",
+            strategies=[
+                {
+                    "strategy_id": "two_minute_rule",
+                    "challenge_type": "task_initiation",
+                    "title": "The 2-Minute Rule",
+                    "description": "Commit to just 2 minutes of work.",
+                    "action_prompt": "Set a timer for 2 minutes and begin.",
+                },
+            ],
+            encouragement="Starting is the bravest part.",
+            input_tokens=25,
+            output_tokens=45,
+        )
+
 
 class TimeoutAIProvider:
     """Provider that raises ProviderTimeout on every method."""
@@ -197,6 +216,9 @@ class TimeoutAIProvider:
     async def suggest_decisions(self, **_):
         raise ProviderTimeout("provider timeout")
 
+    async def prompt_executive_function(self, **_):
+        raise ProviderTimeout("provider timeout")
+
 
 class FailureAIProvider:
     """Provider that raises ProviderRequestError on every method."""
@@ -208,4 +230,7 @@ class FailureAIProvider:
         raise ProviderRequestError("provider failure")
 
     async def suggest_decisions(self, **_):
+        raise ProviderRequestError("provider failure")
+
+    async def prompt_executive_function(self, **_):
         raise ProviderRequestError("provider failure")

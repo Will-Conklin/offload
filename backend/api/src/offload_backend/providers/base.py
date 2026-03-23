@@ -72,6 +72,16 @@ class ProviderDecisionResult(BaseModel):
     output_tokens: int
 
 
+class ProviderExecFunctionResult(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    detected_challenge: str
+    strategies: list[dict] = Field(default_factory=list)
+    encouragement: str = ""
+    input_tokens: int
+    output_tokens: int
+
+
 class AIProvider(Protocol):
     provider_name: str
 
@@ -98,3 +108,11 @@ class AIProvider(Protocol):
         context_hints: list[str],
         clarifying_answers: list[dict],
     ) -> ProviderDecisionResult: ...
+
+    async def prompt_executive_function(
+        self,
+        *,
+        input_text: str,
+        context_hints: list[str],
+        strategy_history: list[dict],
+    ) -> ProviderExecFunctionResult: ...

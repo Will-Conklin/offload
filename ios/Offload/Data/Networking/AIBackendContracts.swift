@@ -235,3 +235,85 @@ struct DecisionRecommendResponse: Codable, Equatable {
         case usage
     }
 }
+
+// MARK: - Executive Function Prompts
+
+struct ExecFunctionStrategyFeedback: Codable, Equatable {
+    let challengeType: String
+    let strategyId: String
+    let thumbsUp: Bool
+    let ledToCompletion: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case challengeType = "challenge_type"
+        case strategyId = "strategy_id"
+        case thumbsUp = "thumbs_up"
+        case ledToCompletion = "led_to_completion"
+    }
+}
+
+struct ExecFunctionPromptRequest: Codable, Equatable {
+    let inputText: String
+    let contextHints: [String]
+    let strategyHistory: [ExecFunctionStrategyFeedback]
+
+    init(
+        inputText: String,
+        contextHints: [String] = [],
+        strategyHistory: [ExecFunctionStrategyFeedback] = []
+    ) {
+        self.inputText = inputText
+        self.contextHints = contextHints
+        self.strategyHistory = strategyHistory
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case inputText = "input_text"
+        case contextHints = "context_hints"
+        case strategyHistory = "strategy_history"
+    }
+}
+
+struct ExecFunctionStrategy: Codable, Equatable {
+    let strategyId: String
+    let challengeType: String
+    let title: String
+    let description: String
+    let actionPrompt: String
+
+    enum CodingKeys: String, CodingKey {
+        case strategyId = "strategy_id"
+        case challengeType = "challenge_type"
+        case title
+        case description
+        case actionPrompt = "action_prompt"
+    }
+}
+
+struct ExecFunctionUsage: Codable, Equatable {
+    let inputTokens: Int
+    let outputTokens: Int
+
+    enum CodingKeys: String, CodingKey {
+        case inputTokens = "input_tokens"
+        case outputTokens = "output_tokens"
+    }
+}
+
+struct ExecFunctionPromptResponse: Codable, Equatable {
+    let detectedChallenge: String
+    let strategies: [ExecFunctionStrategy]
+    let encouragement: String
+    let provider: String
+    let latencyMs: Int
+    let usage: ExecFunctionUsage
+
+    enum CodingKeys: String, CodingKey {
+        case detectedChallenge = "detected_challenge"
+        case strategies
+        case encouragement
+        case provider
+        case latencyMs = "latency_ms"
+        case usage
+    }
+}

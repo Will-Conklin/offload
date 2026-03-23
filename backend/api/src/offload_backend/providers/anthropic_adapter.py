@@ -17,6 +17,7 @@ from offload_backend.providers.base import (
     ProviderBrainDumpResult,
     ProviderBreakdownResult,
     ProviderDecisionResult,
+    ProviderExecFunctionResult,
     ProviderRequestError,
     ProviderResponseError,
     ProviderTimeout,
@@ -332,6 +333,91 @@ class AnthropicProviderAdapter:
         return ProviderDecisionResult(
             options=options,
             clarifying_questions=clarifying_questions[:2],
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+
+    async def prompt_executive_function(
+        self,
+        *,
+        input_text: str,
+        context_hints: list[str],
+        strategy_history: list[dict],
+    ) -> ProviderExecFunctionResult:
+        """Generate executive function scaffolding strategies using Claude."""
+        if not self._settings.anthropic_api_key:
+            raise ProviderUnavailable("Anthropic API key is not configured")
+
+        payload = {
+            "model": self._settings.anthropic_model,
+            "max_tokens": 1024,
+            "system": (
+                "You are a supportive executive function coach for neurodivergent users. "
+                "Detect which challenge type the user is experiencing from their text. "
+                "Valid challenge types: task_initiation, prioritization, "
+                "overwhelm, decision_paralysis. "
+                "Suggest 1–3 micro-strategies tailored to the detected challenge. "
+                "Each strategy needs a unique strategy_id (snake_case), a short title, "
+                "a description of why it helps, and an action_prompt "
+                "the user can follow immediately. "
+                "Include a brief, warm encouragement message (no urgency, no guilt). "
+                "If strategy_history is provided, prefer strategies the user found helpful "
+                "(thumbs_up=true, led_to_completion=true) and avoid ones they disliked. "
+                "Return strict JSON with this shape: "
+                '{"detected_challenge":"...","strategies":[{"strategy_id":"...","challenge_type":"...",'
+                '"title":"...","description":"...","action_prompt":"..."}],'
+                '"encouragement":"..."}. '
+                "Never use urgency language. All suggestions are optional and dismissible. "
+                "Output only the JSON object, no other text."
+            ),
+            "messages": [
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "input_text": input_text,
+                            "context_hints": context_hints,
+                            "strategy_history": strategy_history,
+                        }
+                    ),
+                }
+            ],
+        }
+        response = await self._execute_with_retry(payload=payload)
+        return self._parse_exec_function_response(response)
+
+    def _parse_exec_function_response(
+        self, response: httpx.Response
+    ) -> ProviderExecFunctionResult:
+        try:
+            body = response.json()
+            content = _strip_code_fences(body["content"][0]["text"])
+            parsed = json.loads(content)
+            detected_challenge = parsed["detected_challenge"]
+            strategies = parsed["strategies"]
+            encouragement = parsed.get("encouragement", "")
+        except (KeyError, IndexError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            raise ProviderResponseError(
+                "Anthropic executive function response parsing failed"
+            ) from exc
+
+        usage = body.get("usage", {})
+        input_tokens = int(usage.get("input_tokens", 0))
+        output_tokens = int(usage.get("output_tokens", 0))
+
+        if not isinstance(strategies, list):
+            raise ProviderResponseError(
+                "Anthropic response did not return a strategies array"
+            )
+        if not isinstance(detected_challenge, str):
+            raise ProviderResponseError(
+                "Anthropic response did not return a detected_challenge string"
+            )
+
+        return ProviderExecFunctionResult(
+            detected_challenge=detected_challenge,
+            strategies=strategies[:3],
+            encouragement=str(encouragement)[:280],
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )

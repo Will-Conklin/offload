@@ -35,6 +35,7 @@ enum Icons {
     static let breakdown = "list.number"
     static let brainDump = "brain"
     static let decisionFatigue = "arrow.triangle.branch"
+    static let execFunction = "figure.mind.and.body"
     static let externalLink = "arrow.up.right.square"
     static let closeCircleFilled = "xmark.circle.fill"
     static let check = "checkmark"
