@@ -189,6 +189,25 @@ Local testing: `just test` sources these values automatically.
 - SwiftUI gesture composition: use `.simultaneousGesture()` for multiple gestures; `abs(dx) > abs(dy)` differentiates horizontal from vertical
 - New or modified production functions/methods should include concise doc comments covering purpose, key parameters, and return behavior when not `Void`
 
+## UX Consistency Check (Required Closing Step)
+
+Every implementation that touches UI must end with a UX consistency verification before committing. This ensures views and flows feel like one cohesive app, not a patchwork of independent screens.
+
+### What to check
+
+1. **Component reuse** — Verify new/changed views use the same design system components (`CardSurface`, `MCMCardContent`, `TagPill`, `FloatingActionButton`, etc.) as peer views serving a similar purpose. If a sibling view uses `InputCard` for text entry, the new view must too.
+2. **Token consistency** — Confirm colors, typography, spacing, corner radii, and animations all come from `Theme.*` tokens and match how neighboring views apply them (e.g., same heading level uses the same `Theme.Typography` token everywhere).
+3. **Interaction patterns** — Ensure equivalent actions behave the same way across the app: destructive actions always show `.confirmationDialog`, save/confirm buttons use the same style in equivalent contexts, navigation patterns follow the conventions in "UX Conventions" above.
+4. **Visual rhythm** — Spot-check that padding, card sizing, and layout density are consistent between the changed view and related views (e.g., all list cards use the same spacing, all sheet headers look the same).
+5. **Empty and edge states** — Verify empty states use `EmptyStateView`, loading indicators match other screens, and error presentation follows existing patterns.
+6. **Accessibility parity** — Confirm new interactive elements have `.accessibilityLabel`/`.accessibilityHint` and that VoiceOver flow mirrors the pattern of existing peer views.
+
+### How to verify
+
+- Read at least one peer view that serves a similar purpose and compare patterns side-by-side.
+- If inconsistencies are found, fix them in the current implementation before committing — do not defer to a follow-up task.
+- If an inconsistency exists in the peer view (pre-existing), note it but do not fix it in the same PR unless trivial; file an issue instead.
+
 ## Design System Rules
 
 ### Aesthetic
