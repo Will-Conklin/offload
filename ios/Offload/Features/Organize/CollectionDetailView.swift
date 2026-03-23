@@ -30,6 +30,8 @@ struct CollectionDetailView: View {
     @State private var errorPresenter = ErrorPresenter()
     @State private var viewModel = CollectionDetailViewModel()
     @State private var expandedItems: Set<UUID> = [] // Track which parent items are expanded
+    @State private var collectionItemToDelete: CollectionItem?
+    @State private var showDeleteConfirmation = false
 
     private var style: ThemeStyle { themeManager.currentStyle }
     private var floatingTabBarClearance: CGFloat {
@@ -89,7 +91,10 @@ struct CollectionDetailView: View {
                                             colorScheme: colorScheme,
                                             style: style,
                                             onAddTag: { tagPickerItem = item },
-                                            onDelete: { deleteItem(collectionItem) },
+                                            onDelete: {
+                                                collectionItemToDelete = collectionItem
+                                                showDeleteConfirmation = true
+                                            },
                                             onEdit: { editingItem = item },
                                             onOpenLink: { openLinkedCollection($0) },
                                             onError: { errorPresenter.present($0) },
@@ -158,7 +163,10 @@ struct CollectionDetailView: View {
                                             colorScheme: colorScheme,
                                             style: style,
                                             onAddTag: { tagPickerItem = item },
-                                            onDelete: { deleteItem(collectionItem) },
+                                            onDelete: {
+                                                collectionItemToDelete = collectionItem
+                                                showDeleteConfirmation = true
+                                            },
                                             onEdit: { editingItem = item },
                                             onOpenLink: { openLinkedCollection($0) },
                                             onError: { errorPresenter.present($0) },
@@ -286,6 +294,21 @@ struct CollectionDetailView: View {
         }
         .onAppear {
             loadCollection()
+        }
+        .confirmationDialog(
+            "Delete this item? This cannot be undone.",
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete Item", role: .destructive) {
+                if let collectionItem = collectionItemToDelete {
+                    deleteItem(collectionItem)
+                }
+                collectionItemToDelete = nil
+            }
+            Button("Cancel", role: .cancel) {
+                collectionItemToDelete = nil
+            }
         }
         .errorToasts(errorPresenter)
     }

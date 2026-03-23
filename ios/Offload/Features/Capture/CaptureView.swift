@@ -31,6 +31,8 @@ struct CaptureView: View {
     @State private var brainDumpItem: Item?
     @State private var decisionFatigueItem: Item?
     @State private var quickCaptureText: String = ""
+    @State private var itemToDelete: Item?
+    @State private var showDeleteConfirmation = false
 
     private var style: ThemeStyle { themeManager.currentStyle }
     /// Extra clearance for the OffloadCTA button that lifts above the floating tab bar.
@@ -68,7 +70,10 @@ struct CaptureView: View {
                                 onTap: { selectedItem = item },
                                 onAddTag: { tagPickerItem = item },
                                 onToggleStar: { toggleStar(item) },
-                                onDelete: { deleteItem(item) },
+                                onDelete: {
+                                    itemToDelete = item
+                                    showDeleteConfirmation = true
+                                },
                                 onComplete: { completeItem(item) },
                                 onMoveTo: { destination in
                                     moveItem = item
@@ -192,6 +197,21 @@ struct CaptureView: View {
                     .environmentObject(themeManager)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
+            }
+            .confirmationDialog(
+                "Delete this item? This cannot be undone.",
+                isPresented: $showDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Delete Item", role: .destructive) {
+                    if let item = itemToDelete {
+                        deleteItem(item)
+                    }
+                    itemToDelete = nil
+                }
+                Button("Cancel", role: .cancel) {
+                    itemToDelete = nil
+                }
             }
             .errorToasts(errorPresenter)
         }

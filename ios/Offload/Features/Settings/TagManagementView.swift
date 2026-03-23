@@ -16,6 +16,8 @@ struct TagManagementView: View {
     @Query(sort: \Tag.name) private var tags: [Tag]
     @State private var showingAddTag = false
     @State private var errorPresenter = ErrorPresenter()
+    @State private var tagToDelete: Tag?
+    @State private var showDeleteConfirmation = false
 
     private var style: ThemeStyle { themeManager.currentStyle }
 
@@ -42,7 +44,12 @@ struct TagManagementView: View {
                     }
                     .rowStyle(.card)
                 }
-                .onDelete(perform: deleteTags)
+                .onDelete { offsets in
+                    if let index = offsets.first {
+                        tagToDelete = tags[index]
+                        showDeleteConfirmation = true
+                    }
+                }
 
                 Button {
                     showingAddTag = true
@@ -73,17 +80,26 @@ struct TagManagementView: View {
         .sheet(isPresented: $showingAddTag) {
             AddTagSheet()
         }
-        .errorToasts(errorPresenter)
-    }
-
-    private func deleteTags(offsets: IndexSet) {
-        for index in offsets {
-            do {
-                try tagRepository.delete(tag: tags[index])
-            } catch {
-                errorPresenter.present(error)
+        .confirmationDialog(
+            "Delete this tag? This cannot be undone.",
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete Tag", role: .destructive) {
+                if let tag = tagToDelete {
+                    do {
+                        try tagRepository.delete(tag: tag)
+                    } catch {
+                        errorPresenter.present(error)
+                    }
+                }
+                tagToDelete = nil
+            }
+            Button("Cancel", role: .cancel) {
+                tagToDelete = nil
             }
         }
+        .errorToasts(errorPresenter)
     }
 }
 
