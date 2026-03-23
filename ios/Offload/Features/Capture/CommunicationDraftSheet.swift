@@ -14,6 +14,7 @@ struct CommunicationDraftSheet: View {
     @State private var draftText: String = ""
     @State private var isLoading = false
     @State private var hasGenerated = false
+    @State private var showUseDraftConfirmation = false
     @State private var errorPresenter = ErrorPresenter()
 
     private var style: ThemeStyle { themeManager.currentStyle }
@@ -41,6 +42,18 @@ struct CommunicationDraftSheet: View {
                     Button("Cancel") { dismiss() }
                 }
             }
+        }
+        .confirmationDialog(
+            "Open \(commMeta?.channel.displayName ?? "app") with this draft?",
+            isPresented: $showUseDraftConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Open \(commMeta?.channel.displayName ?? "App")") { useDraft() }
+            Button("Copy to Clipboard") {
+                UIPasteboard.general.string = draftText
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) {}
         }
         .errorToasts(errorPresenter)
     }
@@ -120,11 +133,13 @@ struct CommunicationDraftSheet: View {
                 }
                 .disabled(isLoading)
                 .opacity(isLoading ? 0.5 : 1)
+                .accessibilityLabel(hasGenerated ? "Regenerate draft" : "Generate draft")
+                .accessibilityHint("Uses AI to create a message draft from your notes.")
 
                 Spacer()
 
                 if !draftText.isEmpty {
-                    Button(action: useDraft) {
+                    Button { showUseDraftConfirmation = true } label: {
                         Text("Use Draft")
                             .font(Theme.Typography.buttonLabel)
                             .foregroundStyle(Theme.Colors.buttonDarkText(colorScheme, style: style))
@@ -133,6 +148,8 @@ struct CommunicationDraftSheet: View {
                             .background(Theme.Colors.buttonDark(colorScheme))
                             .clipShape(Capsule())
                     }
+                    .accessibilityLabel("Use draft")
+                    .accessibilityHint("Opens the \(commMeta?.channel.displayName.lowercased() ?? "communication") app with this draft.")
                 }
             }
             .padding(.vertical, Theme.Spacing.sm)

@@ -28,6 +28,8 @@ struct ItemCard: View {
     @State private var swipeOffset: CGFloat = 0
     @State private var dragStartOffset: CGFloat = 0
     @State private var isSwipeDragging = false
+    @State private var showCommunicationConfirmation = false
+    @State private var pendingCommunicationMeta: CommunicationMetadata?
 
     private let swipeModel = SwipeInteractionModel.capture
 
@@ -294,13 +296,10 @@ struct ItemCard: View {
 
             Spacer()
 
-            if let contactValue = meta.contactValue {
+            if meta.contactValue != nil {
                 Button {
-                    CommunicationActionService.performAction(
-                        channel: meta.channel,
-                        contactValue: contactValue,
-                        subject: item.content
-                    )
+                    pendingCommunicationMeta = meta
+                    showCommunicationConfirmation = true
                 } label: {
                     Label(meta.channel.displayName, systemImage: meta.channel.icon)
                         .font(Theme.Typography.badge)
@@ -319,5 +318,21 @@ struct ItemCard: View {
         }
         .padding(.horizontal, Theme.Spacing.md)
         .padding(.bottom, Theme.Spacing.sm)
+        .confirmationDialog(
+            "Open \(meta.channel.displayName)?",
+            isPresented: $showCommunicationConfirmation,
+            titleVisibility: .visible
+        ) {
+            if let contactValue = meta.contactValue {
+                Button("\(meta.channel.displayName) \(meta.contactName ?? contactValue)") {
+                    CommunicationActionService.performAction(
+                        channel: meta.channel,
+                        contactValue: contactValue,
+                        subject: item.content
+                    )
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
 }

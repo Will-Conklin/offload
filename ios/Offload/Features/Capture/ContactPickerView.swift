@@ -82,19 +82,23 @@ struct ContactValuePickerSheet: View {
                             onSelect(value)
                             dismiss()
                         } label: {
-                            HStack {
-                                Image(systemName: channel.icon)
-                                    .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
-                                Text(value)
-                                    .font(Theme.Typography.body)
-                                    .foregroundStyle(Theme.Colors.textPrimary(colorScheme, style: style))
-                                Spacer()
+                            CardSurface(fill: Theme.Colors.cardColor(index: values.firstIndex(of: value) ?? 0, colorScheme, style: style)) {
+                                HStack {
+                                    Image(systemName: channel.icon)
+                                        .foregroundStyle(Theme.Colors.accentPrimary(colorScheme, style: style))
+                                    Text(value)
+                                        .font(Theme.Typography.body)
+                                        .foregroundStyle(Theme.Colors.cardTextPrimary(colorScheme, style: style))
+                                    Spacer()
+                                    AppIcon(name: Icons.chevronRight, size: 12)
+                                        .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
+                                }
+                                .padding(Theme.Spacing.md)
                             }
-                            .padding(Theme.Spacing.md)
-                            .background(Theme.Surface.card(colorScheme, style: style))
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.sm, style: .continuous))
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("\(channel == .email ? "Email" : "Phone number"): \(value)")
+                        .accessibilityHint("Select this \(channel == .email ? "email address" : "phone number").")
                     }
                 }
                 .padding(Theme.Spacing.md)
