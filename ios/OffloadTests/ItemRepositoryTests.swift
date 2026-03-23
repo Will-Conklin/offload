@@ -303,7 +303,7 @@ final class ItemRepositoryTests: XCTestCase {
         try repository.create(type: "task", content: "Task 2")
         try repository.create(type: "link", content: "Link 1")
         try repository.create(type: "idea", content: "Idea 1")
-        try repository.create(type: "concern", content: "Concern 1")
+        try repository.create(type: "decision", content: "Decision 1")
         try repository.create(content: "Capture")
 
         let tasks = try repository.fetchByType("task")
@@ -315,8 +315,8 @@ final class ItemRepositoryTests: XCTestCase {
         let ideas = try repository.fetchByType("idea")
         XCTAssertEqual(ideas.count, 1)
 
-        let concerns = try repository.fetchByType("concern")
-        XCTAssertEqual(concerns.count, 1)
+        let decisions = try repository.fetchByType("decision")
+        XCTAssertEqual(decisions.count, 1)
     }
 
     func testFetchCaptureItemsByTypeExcludesCompleted() throws {
