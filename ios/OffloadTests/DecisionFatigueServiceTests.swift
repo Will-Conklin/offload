@@ -249,6 +249,10 @@ private final class MockDecisionBackendClient: AIBackendClient {
         throw AIBackendClientError.transport
     }
 
+    func promptExecFunction(request _: ExecFunctionPromptRequest) async throws -> ExecFunctionPromptResponse {
+        throw AIBackendClientError.transport
+    }
+
     func reconcileUsage(request _: UsageReconcileRequest) async throws -> UsageReconcileResponse {
         throw AIBackendClientError.transport
     }
