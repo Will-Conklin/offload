@@ -355,6 +355,7 @@ enum Theme {
 
         static let buttonLabel = bebas(size: 17) // Strong geometric buttons
         static let buttonLabelEmphasis = bebas(size: 18)
+        static let buttonLabelHeavy = spaceGrotesk(size: 13, weight: .bold) // FAB capsule labels
 
         static let inputLabel = spaceGrotesk(size: 15, weight: .semibold)
         static let inputLabelEmphasis = spaceGrotesk(size: 15, weight: .bold)
@@ -365,6 +366,10 @@ enum Theme {
 
         static let badge = spaceGrotesk(size: 11, weight: .semibold)
         static let badgeEmphasis = spaceGrotesk(size: 11, weight: .bold)
+
+        // Micro sizes (for compact card metadata, tag pills)
+        static let microBold = spaceGrotesk(size: 8, weight: .bold)
+        static let microMedium = spaceGrotesk(size: 9, weight: .semibold)
 
         // Retro monospaced typography
         static let timestampMono = Font.system(.caption2, design: .monospaced).weight(.semibold).monospacedDigit()
@@ -395,6 +400,10 @@ enum Theme {
         // Type chip padding (smaller than pill)
         static let chipHorizontal: CGFloat = 8
         static let chipVertical: CGFloat = 4
+
+        // Card content gutter (leading padding between columns)
+        static let gutterCompact: CGFloat = 12
+        static let gutterStandard: CGFloat = 16
 
         // Action button size
         static let actionButtonSize: CGFloat = 44

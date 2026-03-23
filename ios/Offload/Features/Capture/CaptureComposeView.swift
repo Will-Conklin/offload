@@ -159,7 +159,7 @@ struct CaptureComposeView: View {
                             Text("What's on your mind?")
                                 .font(Theme.Typography.body)
                                 .foregroundStyle(Theme.Colors.cardTextSecondary(colorScheme, style: style))
-                                .padding(.top, 8)
+                                .padding(.top, Theme.Spacing.sm)
                                 .padding(.leading, 5)
                                 .allowsHitTesting(false)
                         }

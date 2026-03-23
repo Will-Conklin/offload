@@ -54,7 +54,7 @@ struct FloatingActionButton: View {
             } icon: {
                 AppIcon(name: iconName, size: 14)
             }
-            .font(.system(.footnote, design: .default).weight(.black))
+            .font(Theme.Typography.buttonLabelHeavy)
             .tracking(0.8)
             .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
             .padding(.vertical, Theme.Spacing.sm + 2)
@@ -481,11 +481,11 @@ struct TagPill: View {
 
     var body: some View {
         Text(name.uppercased())
-            .font(.system(size: 8, weight: .bold, design: .default))
+            .font(Theme.Typography.microBold)
             .tracking(0.5)
             .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: themeManager.currentStyle))
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.horizontal, Theme.Spacing.chipHorizontal)
+            .padding(.vertical, Theme.Spacing.chipVertical)
             .background(
                 Capsule()
                     .fill(
@@ -622,18 +622,6 @@ struct MCMCardContent: View {
         size == .compact ? 14 : 18
     }
 
-    private var titleSize: CGFloat {
-        size == .compact ? 18 : 26
-    }
-
-    private var titleWeight: Font.Weight {
-        size == .compact ? .bold : .heavy
-    }
-
-    private var bodySize: CGFloat {
-        size == .compact ? 14 : 15
-    }
-
     private var columnSpacing: CGFloat {
         size == .compact ? Theme.Spacing.sm : Theme.Spacing.md
     }
@@ -675,14 +663,14 @@ struct MCMCardContent: View {
 
                 if let typeLabel {
                     Text(typeLabel.uppercased())
-                        .font(.system(size: size == .compact ? 8 : 9, weight: .bold, design: .default))
+                        .font(size == .compact ? Theme.Typography.microBold : Theme.Typography.microMedium)
                         .tracking(0.5)
                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style).opacity(0.6))
                 }
 
                 if let timestamp {
                     Text(timestamp)
-                        .font(.system(size: size == .compact ? 8 : 9, weight: .medium, design: .default))
+                        .font(size == .compact ? Theme.Typography.microBold : Theme.Typography.microMedium)
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.8))
                 }
             }
@@ -692,7 +680,7 @@ struct MCMCardContent: View {
             VStack(alignment: .leading, spacing: columnSpacing) {
                 // Title - dramatic for collections, moderate for items
                 Text(title)
-                    .font(.system(size: titleSize, weight: titleWeight, design: .default))
+                    .font(size == .compact ? Theme.Typography.cardBody : Theme.Typography.cardTitleEmphasis)
                     .foregroundStyle(
                         size == .standard
                             ? LinearGradient(
@@ -717,7 +705,7 @@ struct MCMCardContent: View {
 
                 if let bodyText {
                     Text(bodyText)
-                        .font(.system(size: bodySize, weight: .regular, design: .default))
+                        .font(size == .compact ? Theme.Typography.caption : Theme.Typography.subheadline)
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style))
                         .lineLimit(size == .compact ? 3 : 4)
                         .lineSpacing(size == .compact ? 2 : 4)
@@ -754,11 +742,11 @@ struct MCMCardContent: View {
                                 ?? Theme.Colors.tagColor(for: tag.name, colorScheme, style: style)
 
                             Text(tag.name.uppercased())
-                                .font(.system(size: size == .compact ? 8 : 10, weight: .bold, design: .default))
+                                .font(size == .compact ? Theme.Typography.microBold : Theme.Typography.badge)
                                 .tracking(0.5)
                                 .foregroundStyle(Theme.Colors.accentButtonText(colorScheme, style: style))
-                                .padding(.horizontal, size == .compact ? 8 : 10)
-                                .padding(.vertical, size == .compact ? 4 : 6)
+                                .padding(.horizontal, size == .compact ? Theme.Spacing.chipHorizontal : Theme.Spacing.pillHorizontal)
+                                .padding(.vertical, size == .compact ? Theme.Spacing.chipVertical : Theme.Spacing.pillVertical)
                                 .background(
                                     Capsule()
                                         .fill(
@@ -776,15 +764,15 @@ struct MCMCardContent: View {
 
                         if let onAddTag {
                             Button(action: onAddTag) {
-                                HStack(spacing: 4) {
+                                HStack(spacing: Theme.Spacing.xs) {
                                     AppIcon(name: Icons.add, size: 8)
                                     Text("TAG")
-                                        .font(.system(size: 8, weight: .bold, design: .default))
+                                        .font(Theme.Typography.microBold)
                                         .tracking(0.5)
                                 }
                                 .foregroundStyle(Theme.Colors.primary(colorScheme, style: style))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
+                                .padding(.horizontal, Theme.Spacing.chipHorizontal)
+                                .padding(.vertical, Theme.Spacing.chipVertical)
                                 .background(
                                     Capsule()
                                         .strokeBorder(
@@ -798,7 +786,7 @@ struct MCMCardContent: View {
                     }
                 }
             }
-            .padding(.leading, size == .compact ? 12 : 16) // Less margin for compact
+            .padding(.leading, size == .compact ? Theme.Spacing.gutterCompact : Theme.Spacing.gutterStandard)
         }
     }
 }
