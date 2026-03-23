@@ -129,7 +129,7 @@ struct CaptureView: View {
                             iconName: Icons.settings,
                             iconSize: 18,
                             tileSize: 44,
-                            style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
+                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
                         )
                     }
                     .accessibilityLabel("Settings")
@@ -366,6 +366,7 @@ struct CaptureView: View {
 
             // Celebrate successful completion
             UIImpactFeedbackGenerator(style: CelebrationStyle.itemCompleted.hapticStyle).impactOccurred()
+            toastManager.show("Done!", type: .success)
 
             // Check if this completion finishes any collection
             checkCollectionCompletion(for: item)

@@ -19,6 +19,8 @@ struct HomeView: View {
 
     @State private var viewModel = HomeViewModel()
     @State private var showCelebration = false
+    @State private var showingSettings = false
+    @State private var showingSearch = false
     @AppStorage("home.supportNudgeDismissed") private var nudgeDismissed = false
 
     var body: some View {
@@ -42,6 +44,42 @@ struct HomeView: View {
             .background(Theme.Gradients.deepBackground(colorScheme).ignoresSafeArea())
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                        showingSearch = true
+                    } label: {
+                        IconTile(
+                            iconName: Icons.search,
+                            iconSize: 18,
+                            tileSize: 44,
+                            style: .secondaryOutlined(Theme.Colors.accentPrimary(colorScheme, style: style))
+                        )
+                    }
+                    .accessibilityLabel("Search")
+
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        IconTile(
+                            iconName: Icons.settings,
+                            iconSize: 18,
+                            tileSize: 44,
+                            style: .secondaryOutlined(Theme.Colors.textSecondary(colorScheme, style: style))
+                        )
+                    }
+                    .accessibilityLabel("Settings")
+                }
+            }
+            .sheet(isPresented: $showingSettings) {
+                AccountView()
+                    .environmentObject(themeManager)
+            }
+            .sheet(isPresented: $showingSearch) {
+                OrganizeSearchView(searchQuery: .constant(""))
+                    .environmentObject(themeManager)
+                    .presentationDragIndicator(.visible)
+            }
             .task { await loadStats() }
         }
     }
