@@ -81,6 +81,41 @@ struct DraggableCollectionCard: View {
                 }
                 onTap()
             }
+            .contextMenu {
+                Button {
+                    onToggleStar()
+                } label: {
+                    Label(
+                        collection.isStarred ? "Unstar" : "Star",
+                        systemImage: collection.isStarred ? Icons.starFilled : Icons.star
+                    )
+                }
+
+                Button {
+                    onAddTag()
+                } label: {
+                    Label("Tags", systemImage: Icons.tag)
+                }
+
+                if let onConvert {
+                    Button {
+                        onConvert()
+                    } label: {
+                        Label(
+                            collection.isStructured ? "Convert to List" : "Convert to Plan",
+                            systemImage: Icons.convert
+                        )
+                    }
+                }
+
+                Divider()
+
+                Button(role: .destructive) {
+                    onDeleteRequested()
+                } label: {
+                    Label("Delete", systemImage: Icons.deleteFilled)
+                }
+            }
             .simultaneousGesture(
                 DragGesture()
                     .onChanged { value in
