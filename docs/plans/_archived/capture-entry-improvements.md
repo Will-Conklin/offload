@@ -1,3 +1,6 @@
+> **Status: Shipped** — All phases (1–4) implemented. Archived 2026-03-22.
+> Remaining polish items tracked in `docs/plans/backlog.md`.
+
 # Capture Entry Improvements — Proposal
 
 ## Problem

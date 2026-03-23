@@ -72,3 +72,14 @@ Local quota enforcement, server reconciliation, and usage UX.
 - Implement local quota enforcement (`QuotaStore`: UserDefaults counter + Keychain mirror)
 - Build server reconciliation (`max(local, server)` merge)
 - Add quota-approached UX (non-judgmental; no upgrade nudge)
+
+---
+
+## Capture Entry Improvements — Remaining Polish
+
+All phases shipped (single-tap capture, persistent bar, iPad shortcuts, Share Extension, App Intents/Siri, Widget). Four polish items remain:
+
+- Quick capture bar mic button: add system dictation button to the quick capture bar in `CaptureView.swift`
+- App Group SwiftData migration: add one-time migration bridge from pre-App-Group store location to App Group path (prevents silent data abandonment on upgrade)
+- Widget deep link wiring: register `offload` URL scheme in Info.plist (`CFBundleURLSchemes`) and add `.onOpenURL` handler in `MainTabView` to open compose on `offload://capture`
+- Additional shortcut intents: implement "List Recent Captures" and "Search Captures" App Intents (currently only "Capture a Thought" exists)
