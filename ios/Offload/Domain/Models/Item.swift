@@ -173,9 +173,30 @@ extension Item {
         abs(id.hashValue) % 8 // Use 8 color palette
     }
 
-    /// Formatted relative timestamp (e.g., "2 hours ago")
+    /// Compact relative timestamp for narrow metadata gutters (e.g., "2h", "yest.", "1 wk").
     var relativeTimestamp: String {
-        createdAt.formatted(.relative(presentation: .named))
+        let diff = Date.now.timeIntervalSince(createdAt)
+        switch diff {
+        case ..<60:
+            return "now"
+        case 60..<3600:
+            return "\(Int(diff / 60))m"
+        case 3600..<86400:
+            return "\(Int(diff / 3600))h"
+        case 86400..<(86400 * 2):
+            return "yest."
+        case (86400 * 2)..<(86400 * 7):
+            return "\(Int(diff / 86400))d"
+        case (86400 * 7)..<(86400 * 30):
+            let weeks = Int(diff / (86400 * 7))
+            return "\(weeks) wk"
+        case (86400 * 30)..<(86400 * 365):
+            let months = Int(diff / (86400 * 30))
+            return "\(months) mo"
+        default:
+            let years = Int(diff / (86400 * 365))
+            return "\(years) yr"
+        }
     }
 
     /// Number of words in the item content.

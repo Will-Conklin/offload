@@ -666,15 +666,19 @@ struct MCMCardContent: View {
                         .font(size == .compact ? Theme.Typography.microBold : Theme.Typography.microMedium)
                         .tracking(0.5)
                         .foregroundStyle(Theme.Colors.primary(colorScheme, style: style).opacity(0.6))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
 
                 if let timestamp {
                     Text(timestamp)
                         .font(size == .compact ? Theme.Typography.microBold : Theme.Typography.microMedium)
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.8))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
             }
-            .frame(width: size == .compact ? 50 : 60, alignment: .leading)
+            .frame(width: size == .compact ? 60 : 72, alignment: .leading)
 
             // Right column (wide - content hierarchy)
             VStack(alignment: .leading, spacing: columnSpacing) {
