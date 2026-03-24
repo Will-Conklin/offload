@@ -9,7 +9,7 @@ iOS app built with SwiftUI and SwiftData (iPhone + iPad).
 - **Bundle ID**: wc.Offload
 - **Pattern**: Feature-based modules with repository pattern
 - **Navigation**: `MainTabView` → `NavigationStack` → sheets
-- **Models**: Item, Collection, CollectionItem, Tag (SwiftData)
+- **Models**: Item, Collection, CollectionItem, Tag, ItemMetadata (SwiftData)
 - **Design system**: `DesignSystem/Theme.swift`, theme `midCenturyModern`
 
 ## Product Philosophy
@@ -43,6 +43,12 @@ Required for production-like environments:
 - `OFFLOAD_SESSION_TOKEN_ACTIVE_KID` — Active key ID (default: v2-default)
 - `OFFLOAD_SESSION_SIGNING_KEYS` — Optional JSON map for key rotation (e.g., `{"v2-default":"<secret>"}`)
 - `OFFLOAD_USAGE_DB_PATH` — Path to usage tracking database
+- `OFFLOAD_AI_PROVIDER` — AI backend to use: `openai` (default) or `anthropic`
+- `OFFLOAD_ANTHROPIC_API_KEY` — Anthropic API key (required when `OFFLOAD_AI_PROVIDER=anthropic`)
+- `OFFLOAD_ANTHROPIC_BASE_URL` — Anthropic API base URL (default: `https://api.anthropic.com`)
+- `OFFLOAD_ANTHROPIC_MODEL` — Anthropic model ID (default: `claude-haiku-4-5-20251001`)
+- `OFFLOAD_ANTHROPIC_VERSION` — Anthropic API version header (default: `2023-06-01`)
+- `OFFLOAD_ANTHROPIC_TIMEOUT_SECONDS` — Request timeout for Anthropic (default: `20.0`)
 
 Development/test: If `OFFLOAD_SESSION_SECRET` is unset, a random in-memory secret is generated at startup.
 
@@ -88,7 +94,7 @@ Local testing: `just test` sources these values automatically.
 - `ios/Offload/Data/Repositories/` — CRUD repositories
 - `ios/Offload/Data/Networking/` — Backend API client and contracts
 - `ios/Offload/Data/Persistence/` — SwiftData container setup
-- `ios/Offload/Data/Services/` — Voice recording, breakdown, attachment services
+- `ios/Offload/Data/Services/` — Voice recording, breakdown, attachment, communication draft/action services
 - `ios/Offload/Common/` — Shared utilities, repository environment, error handling
 - `ios/Offload/DesignSystem/` — Theme, components, icons, textures
 - `scripts/ci/` — CI lane scripts (iOS/backend/scripts)
@@ -105,7 +111,7 @@ Local testing: `just test` sources these values automatically.
   - `usage_store.py` — Usage tracking persistence
   - `schemas.py` — Pydantic request/response models
   - `errors.py` — API exception types and error handlers
-  - `routers/` — FastAPI route modules (breakdown, usage, health)
+  - `routers/` — FastAPI route modules (breakdown, usage, health, draft)
   - `providers/` — External service adapters (OpenAI with retry)
 
 **Documentation:**
