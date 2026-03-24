@@ -90,10 +90,7 @@ enum ItemType: String, Codable, CaseIterable {
     case link
     case note
     case idea
-    case question
     case decision
-    case concern
-    case reference
 
     var displayName: String {
         switch self {
@@ -101,10 +98,7 @@ enum ItemType: String, Codable, CaseIterable {
         case .link: "Link"
         case .note: "Note"
         case .idea: "Idea"
-        case .question: "Question"
         case .decision: "Decision"
-        case .concern: "Concern"
-        case .reference: "Reference"
         }
     }
 
@@ -114,10 +108,7 @@ enum ItemType: String, Codable, CaseIterable {
         case .link: Icons.externalLink
         case .note: Icons.typeNote
         case .idea: Icons.typeIdea
-        case .question: Icons.typeQuestion
         case .decision: Icons.typeDecision
-        case .concern: Icons.typeConcern
-        case .reference: Icons.typeReference
         }
     }
 

@@ -17,7 +17,7 @@ struct ShareComposeView: View {
 
     private static let itemTypes: [(label: String, value: String)] = [
         ("Task", "task"), ("Note", "note"), ("Idea", "idea"),
-        ("Link", "link"), ("Question", "question"), ("Decision", "decision"),
+        ("Link", "link"), ("Decision", "decision"),
     ]
 
     private var canSave: Bool {

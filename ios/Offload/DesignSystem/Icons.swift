@@ -62,8 +62,5 @@ enum Icons {
 
     static let typeNote = "note.text"
     static let typeIdea = "lightbulb"
-    static let typeQuestion = "questionmark.circle"
     static let typeDecision = "arrow.triangle.branch"
-    static let typeConcern = "exclamationmark.triangle"
-    static let typeReference = "doc.text"
 }
