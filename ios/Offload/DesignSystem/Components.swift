@@ -674,7 +674,7 @@ struct MCMCardContent: View {
                         .foregroundStyle(Theme.Colors.textSecondary(colorScheme, style: style).opacity(0.8))
                 }
             }
-            .frame(width: size == .compact ? 50 : 60, alignment: .leading)
+            .frame(width: size == .compact ? 60 : 72, alignment: .leading)
 
             // Right column (wide - content hierarchy)
             VStack(alignment: .leading, spacing: columnSpacing) {
